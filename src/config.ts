@@ -25,6 +25,8 @@ export const RECIPE_PATH_PATTERNS = [
   /\/opskrifter\//i,
   /\/recipes\//i,
   /\/bagning\//i,
+  /\/mad\//i,
+  /\/kog\//i,
 ];
 
 export const DENYLIST_PATTERNS = [
@@ -39,7 +41,11 @@ export const DENYLIST_PATTERNS = [
   /\/feed\//i,
   /\/wp-json\//i,
   /\/page\/\d+/i,
-  /\/\d{4}\/\d{2}\/$/,
+  /\/\d{4}\/\d{2}\/?$/,
+  /\/account(?:$|[/?])/i,
+  /\/konto(?:$|[/?])/i,
+  /\/checkout(?:$|[/?])/i,
+  /\/betaling(?:$|[/?])/i,
 ];
 
 export const DANISH_KEYWORDS = [
