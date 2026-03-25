@@ -17,6 +17,11 @@ const INSTRUCTION_KEYWORDS = [
 ];
 
 export function extractHtmlFallback($: CheerioAPI): HtmlExtractionResult {
+  // Try microdata first (higher confidence than heuristics)
+  const microdataResult = extractMicrodata($);
+  if (microdataResult) return microdataResult;
+
+  // Fall back to heuristic extraction
   const signals: string[] = [];
   const recipe: Record<string, unknown> = {};
   let fieldsFound = 0;
@@ -61,6 +66,56 @@ export function extractHtmlFallback($: CheerioAPI): HtmlExtractionResult {
   const recipes = fieldsFound > 0 ? [recipe] : [];
 
   return { recipes, confidence, signals };
+}
+
+function extractMicrodata($: CheerioAPI): HtmlExtractionResult | null {
+  const recipeEl = $('[itemtype*="schema.org/Recipe"]');
+  if (recipeEl.length === 0) return null;
+
+  const signals: string[] = ["microdata-found"];
+  const recipe: Record<string, unknown> = {};
+  let fieldsFound = 0;
+
+  // Extract itemprop fields from the microdata-annotated element
+  const name = recipeEl.find('[itemprop="name"]').first().text().trim()
+    || recipeEl.attr("itemscope") !== undefined && recipeEl.find("h1, h2").first().text().trim()
+    || "";
+  if (name) {
+    recipe["name"] = name;
+    fieldsFound++;
+  }
+
+  const ingredients: string[] = [];
+  recipeEl.find('[itemprop="recipeIngredient"], [itemprop="ingredients"]').each((_i, el) => {
+    const text = $(el).text().trim();
+    if (text) ingredients.push(text);
+  });
+  if (ingredients.length > 0) {
+    recipe["recipeIngredient"] = ingredients;
+    fieldsFound++;
+  }
+
+  const instructions: string[] = [];
+  recipeEl.find('[itemprop="recipeInstructions"]').each((_i, el) => {
+    const text = $(el).text().trim();
+    if (text) instructions.push(text);
+  });
+  if (instructions.length > 0) {
+    recipe["recipeInstructions"] = instructions;
+    fieldsFound++;
+  }
+
+  const image = recipeEl.find('[itemprop="image"]').first();
+  const imageUrl = image.attr("src") || image.attr("content");
+  if (imageUrl) recipe["image"] = imageUrl;
+
+  if (fieldsFound === 0) return null;
+
+  return {
+    recipes: [recipe],
+    confidence: Math.min(fieldsFound / 3, 1.0),
+    signals,
+  };
 }
 
 function findListNearKeyword(
