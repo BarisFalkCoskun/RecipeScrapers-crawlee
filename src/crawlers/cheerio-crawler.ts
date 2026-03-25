@@ -7,7 +7,7 @@ import {
 } from "crawlee";
 import { extractJsonLdRecipes } from "../extractors/json-ld.js";
 import { extractHtmlFallback } from "../extractors/html-fallback.js";
-import { canonicalizeUrl } from "../utils/canonicalize.js";
+import { canonicalizeUrl, normalizeDomain } from "../utils/canonicalize.js";
 import { hashRecipe, hashHtml } from "../utils/hash.js";
 import { LinkFilter } from "../discovery/link-filter.js";
 import { RecipeStore } from "../storage/mongodb.js";
@@ -40,7 +40,7 @@ export function createCheerioCrawlerInstance(
   router.addDefaultHandler(async ({ request, $, body, enqueueLinks, response }) => {
     const html = typeof body === "string" ? body : body.toString();
     const requestUrl = request.loadedUrl ?? request.url;
-    const domain = new URL(requestUrl).hostname;
+    const domain = normalizeDomain(new URL(requestUrl).hostname);
 
     // Dynamic canonicalization — handle relative canonical tags
     const canonicalTag = $('link[rel="canonical"]').attr("href");
@@ -231,7 +231,7 @@ export function createCheerioCrawlerInstance(
     maxRequestRetries: CHEERIO_CONFIG.maxRequestRetries,
     async failedRequestHandler({ request }, error) {
       const requestUrl = request.url;
-      const domain = new URL(requestUrl).hostname;
+      const domain = normalizeDomain(new URL(requestUrl).hostname);
       log.error(`Failed after retries: ${requestUrl} - ${error.message}`);
       await store.upsertPage({
         canonicalUrl: canonicalizeUrl(requestUrl),

@@ -7,7 +7,7 @@ import {
 } from "crawlee";
 import { extractJsonLdRecipes } from "../extractors/json-ld.js";
 import { extractHtmlFallback } from "../extractors/html-fallback.js";
-import { canonicalizeUrl } from "../utils/canonicalize.js";
+import { canonicalizeUrl, normalizeDomain } from "../utils/canonicalize.js";
 import { hashRecipe, hashHtml } from "../utils/hash.js";
 import { RecipeStore } from "../storage/mongodb.js";
 import { PLAYWRIGHT_CONFIG, EXTRACTOR_VERSION } from "../config.js";
@@ -31,7 +31,7 @@ export function createPlaywrightCrawlerInstance(
 
   router.addDefaultHandler(async ({ request, page, enqueueLinks }) => {
     const requestUrl = request.loadedUrl ?? request.url;
-    const domain = new URL(requestUrl).hostname;
+    const domain = normalizeDomain(new URL(requestUrl).hostname);
 
     await page.waitForLoadState("networkidle");
 
@@ -180,7 +180,7 @@ export function createPlaywrightCrawlerInstance(
     },
     async failedRequestHandler({ request }, error) {
       const requestUrl = request.url;
-      const domain = new URL(requestUrl).hostname;
+      const domain = normalizeDomain(new URL(requestUrl).hostname);
       log.error(`Playwright failed after retries: ${requestUrl} - ${error.message}`);
       await store.upsertPage({
         canonicalUrl: canonicalizeUrl(requestUrl),

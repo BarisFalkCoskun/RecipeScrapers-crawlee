@@ -60,4 +60,15 @@ describe("canonicalizeUrl", () => {
   it("throws on relative URL without baseUrl", () => {
     expect(() => canonicalizeUrl("/opskrift/kage")).toThrow();
   });
+
+  it("strips www. prefix", () => {
+    expect(canonicalizeUrl("https://www.example.dk/page"))
+      .toBe("https://example.dk/page");
+  });
+
+  it("normalizes www and non-www to same URL", () => {
+    const a = canonicalizeUrl("https://www.valdemarsro.dk/opskrift/kage");
+    const b = canonicalizeUrl("https://valdemarsro.dk/opskrift/kage");
+    expect(a).toBe(b);
+  });
 });

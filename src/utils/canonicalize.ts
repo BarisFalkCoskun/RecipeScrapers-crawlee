@@ -3,8 +3,11 @@ import { STRIP_QUERY_PARAMS } from "../config.js";
 export function canonicalizeUrl(rawUrl: string, baseUrl?: string): string {
   const url = new URL(rawUrl, baseUrl);
 
-  // Lowercase hostname
+  // Lowercase hostname and strip www. prefix
   url.hostname = url.hostname.toLowerCase();
+  if (url.hostname.startsWith("www.")) {
+    url.hostname = url.hostname.slice(4);
+  }
 
   // Remove fragments
   url.hash = "";
@@ -32,4 +35,9 @@ export function canonicalizeUrl(rawUrl: string, baseUrl?: string): string {
   }
 
   return url.toString();
+}
+
+export function normalizeDomain(hostname: string): string {
+  const lower = hostname.toLowerCase();
+  return lower.startsWith("www.") ? lower.slice(4) : lower;
 }
