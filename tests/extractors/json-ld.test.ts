@@ -92,4 +92,26 @@ describe("extractJsonLdRecipes", () => {
     expect(result.recipes).toHaveLength(1);
     expect(result.recipes[0]["name"]).toBe("ArrayRecipe");
   });
+
+  it("decodes HTML entities in JSON-LD", () => {
+    const html = `<html><head>
+      <script type="application/ld+json">
+        {"@type": "Recipe", "name": "Bread &amp; Butter"}
+      </script>
+    </head><body></body></html>`;
+    const result = extractJsonLdRecipes(html);
+    expect(result.recipes).toHaveLength(1);
+    expect(result.recipes[0]["name"]).toBe("Bread & Butter");
+  });
+
+  it("handles https://schema.org/Recipe type", () => {
+    const html = `<html><head>
+      <script type="application/ld+json">
+        {"@type": "https://schema.org/Recipe", "name": "FullUrlType"}
+      </script>
+    </head><body></body></html>`;
+    const result = extractJsonLdRecipes(html);
+    expect(result.recipes).toHaveLength(1);
+    expect(result.recipes[0]["name"]).toBe("FullUrlType");
+  });
 });

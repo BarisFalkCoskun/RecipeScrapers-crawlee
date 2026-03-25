@@ -11,8 +11,16 @@ export function extractJsonLdRecipes(html: string): JsonLdResult {
   const signals: string[] = [];
 
   $('script[type="application/ld+json"]').each((_i, el) => {
-    const raw = $(el).html();
+    let raw = $(el).html();
     if (!raw) return;
+
+    // Decode HTML entities that some sites inject into JSON-LD script tags
+    raw = raw
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'");
 
     let parsed: unknown;
     try {

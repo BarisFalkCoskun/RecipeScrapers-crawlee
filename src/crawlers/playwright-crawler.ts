@@ -33,7 +33,9 @@ export function createPlaywrightCrawlerInstance(
     const requestUrl = request.loadedUrl ?? request.url;
     const domain = normalizeDomain(new URL(requestUrl).hostname);
 
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("networkidle", { timeout: 15_000 }).catch(() => {
+      log.warning(`networkidle timeout for ${requestUrl}, proceeding with current content`);
+    });
 
     const html = await page.content();
 

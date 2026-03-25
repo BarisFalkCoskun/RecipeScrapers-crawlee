@@ -44,11 +44,19 @@ export class RecipeStore {
     try {
       await this.recipes.insertOne(recipe as RecipeDocument);
     } catch (err: unknown) {
+      // Duplicate contentHash — update if new extraction has higher confidence
       if (
         err instanceof Error &&
         "code" in err &&
         (err as { code: number }).code === 11000
       ) {
+        await this.recipes.updateOne(
+          {
+            contentHash: recipe.contentHash,
+            extractionConfidence: { $lt: recipe.extractionConfidence },
+          },
+          { $set: recipe }
+        );
         return;
       }
       throw err;
