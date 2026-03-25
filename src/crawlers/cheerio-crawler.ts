@@ -37,7 +37,7 @@ export function createCheerioCrawlerInstance(
     options;
   const router = createCheerioRouter();
 
-  router.addDefaultHandler(async ({ request, $, body, enqueueLinks }) => {
+  router.addDefaultHandler(async ({ request, $, body, enqueueLinks, response }) => {
     const html = typeof body === "string" ? body : body.toString();
     const requestUrl = request.loadedUrl ?? request.url;
     const domain = new URL(requestUrl).hostname;
@@ -124,7 +124,8 @@ export function createCheerioCrawlerInstance(
       canonicalUrl,
       domain,
       fetchedAt: new Date(),
-      httpStatus: 200,
+      httpStatus: response.statusCode ?? 200,
+      fetchMode: "cheerio",
       redirectChain:
         request.loadedUrl && request.loadedUrl !== request.url
           ? [request.url, request.loadedUrl]
@@ -237,6 +238,7 @@ export function createCheerioCrawlerInstance(
         domain,
         fetchedAt: new Date(),
         httpStatus: 0,
+        fetchMode: "cheerio",
         extractionMethod: "failed",
         extractorVersion: EXTRACTOR_VERSION,
         extractionConfidence: 0,

@@ -14,6 +14,7 @@ export interface PageDocument {
   domain: string;
   fetchedAt: Date;
   httpStatus: number;
+  fetchMode: "cheerio" | "playwright";
   redirectChain?: string[];
   extractionMethod: "json-ld" | "html-parsing" | "partial" | "failed";
   extractorVersion: string;

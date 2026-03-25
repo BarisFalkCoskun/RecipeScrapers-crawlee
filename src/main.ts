@@ -76,6 +76,7 @@ async function main() {
   const playwrightCrawler = createPlaywrightCrawlerInstance({
     store,
     playwrightQueue,
+    linkFilter,
   });
 
   log.info("Starting crawlers...");

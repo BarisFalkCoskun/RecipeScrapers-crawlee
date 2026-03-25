@@ -11,6 +11,7 @@ import { canonicalizeUrl } from "../utils/canonicalize.js";
 import { hashRecipe, hashHtml } from "../utils/hash.js";
 import { RecipeStore } from "../storage/mongodb.js";
 import { PLAYWRIGHT_CONFIG, EXTRACTOR_VERSION } from "../config.js";
+import { LinkFilter } from "../discovery/link-filter.js";
 import type { ExtractionResult } from "../types.js";
 import { gzipSync } from "zlib";
 import { Binary } from "mongodb";
@@ -19,15 +20,16 @@ import * as cheerio from "cheerio";
 interface CreatePlaywrightCrawlerOptions {
   store: RecipeStore;
   playwrightQueue: RequestQueue;
+  linkFilter: LinkFilter;
 }
 
 export function createPlaywrightCrawlerInstance(
   options: CreatePlaywrightCrawlerOptions
 ) {
-  const { store, playwrightQueue } = options;
+  const { store, playwrightQueue, linkFilter } = options;
   const router = createPlaywrightRouter();
 
-  router.addDefaultHandler(async ({ request, page }) => {
+  router.addDefaultHandler(async ({ request, page, enqueueLinks }) => {
     const requestUrl = request.loadedUrl ?? request.url;
     const domain = new URL(requestUrl).hostname;
 
@@ -90,11 +92,30 @@ export function createPlaywrightCrawlerInstance(
       `Playwright extracted ${extraction.recipes.length} recipes from ${canonicalUrl}`
     );
 
+    // Collect outbound recipe links from rendered page
+    const $ = extraction.method !== "json-ld" ? cheerio.load(html) : null;
+    const $forLinks = $ ?? cheerio.load(html);
+    const outboundRecipeLinks: string[] = [];
+    $forLinks("a[href]").each((_i, el) => {
+      const href = $forLinks(el).attr("href");
+      if (!href) return;
+      try {
+        const absolute = new URL(href, requestUrl).toString();
+        const canonical = canonicalizeUrl(absolute);
+        if (linkFilter.isRecipeLikeUrl(canonical)) {
+          outboundRecipeLinks.push(canonical);
+        }
+      } catch {
+        // Invalid URL
+      }
+    });
+
     await store.upsertPage({
       canonicalUrl,
       domain,
       fetchedAt: new Date(),
       httpStatus: 200,
+      fetchMode: "playwright",
       extractionMethod: extraction.method,
       extractorVersion: EXTRACTOR_VERSION,
       extractionConfidence: extraction.confidence,
@@ -104,7 +125,7 @@ export function createPlaywrightCrawlerInstance(
         ? new Binary(gzipSync(Buffer.from(html)))
         : undefined,
       pageContentHash,
-      outboundRecipeLinks: [],
+      outboundRecipeLinks,
     });
 
     for (const rawRecipe of extraction.recipes) {
@@ -126,6 +147,24 @@ export function createPlaywrightCrawlerInstance(
         sourceHash: contentHash,
       });
     }
+
+    // Discover and enqueue links from Playwright-rendered page
+    await enqueueLinks({
+      strategy: "all",
+      transformRequestFunction: (req) => {
+        try {
+          const canonical = canonicalizeUrl(req.url, requestUrl);
+          if (!linkFilter.shouldEnqueue(canonical)) return false;
+          if (!linkFilter.isRecipeLikeUrl(canonical)) return false;
+          linkFilter.recordEnqueued();
+          req.url = canonical;
+          req.uniqueKey = canonical;
+          return req;
+        } catch {
+          return false;
+        }
+      },
+    });
   });
 
   return new PlaywrightCrawler({
@@ -148,6 +187,7 @@ export function createPlaywrightCrawlerInstance(
         domain,
         fetchedAt: new Date(),
         httpStatus: 0,
+        fetchMode: "playwright",
         extractionMethod: "failed",
         extractorVersion: EXTRACTOR_VERSION,
         extractionConfidence: 0,
