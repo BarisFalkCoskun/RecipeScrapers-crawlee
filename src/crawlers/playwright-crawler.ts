@@ -40,9 +40,14 @@ export function createPlaywrightCrawlerInstance(
       .first()
       .getAttribute("href")
       .catch(() => null);
-    const canonicalUrl = canonicalTag
-      ? canonicalizeUrl(canonicalTag)
-      : canonicalizeUrl(requestUrl);
+    let canonicalUrl: string;
+    try {
+      canonicalUrl = canonicalTag
+        ? canonicalizeUrl(canonicalTag, requestUrl)
+        : canonicalizeUrl(requestUrl);
+    } catch {
+      canonicalUrl = canonicalizeUrl(requestUrl);
+    }
 
     let extraction: ExtractionResult;
     const jsonLdResult = extractJsonLdRecipes(html);

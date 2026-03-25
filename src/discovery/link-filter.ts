@@ -41,12 +41,10 @@ export class LinkFilter {
     }
 
     if (domain.endsWith(".dk")) {
-      this.totalEnqueued++;
       return true;
     }
 
     if (options?.isDanishRecipe) {
-      this.totalEnqueued++;
       return true;
     }
 
@@ -83,6 +81,10 @@ export class LinkFilter {
 
   getDomainCount(domain: string): number {
     return this.domainPageCounts.get(domain) ?? 0;
+  }
+
+  recordEnqueued(): void {
+    this.totalEnqueued++;
   }
 
   getTotalEnqueued(): number {

@@ -1,7 +1,7 @@
 import { STRIP_QUERY_PARAMS } from "../config.js";
 
-export function canonicalizeUrl(rawUrl: string): string {
-  const url = new URL(rawUrl);
+export function canonicalizeUrl(rawUrl: string, baseUrl?: string): string {
+  const url = new URL(rawUrl, baseUrl);
 
   // Lowercase hostname
   url.hostname = url.hostname.toLowerCase();

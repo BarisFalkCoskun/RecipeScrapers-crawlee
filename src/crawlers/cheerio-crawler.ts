@@ -42,10 +42,16 @@ export function createCheerioCrawlerInstance(
     const requestUrl = request.loadedUrl ?? request.url;
     const domain = new URL(requestUrl).hostname;
 
+    // Dynamic canonicalization — handle relative canonical tags
     const canonicalTag = $('link[rel="canonical"]').attr("href");
-    const canonicalUrl = canonicalTag
-      ? canonicalizeUrl(canonicalTag)
-      : canonicalizeUrl(requestUrl);
+    let canonicalUrl: string;
+    try {
+      canonicalUrl = canonicalTag
+        ? canonicalizeUrl(canonicalTag, requestUrl)
+        : canonicalizeUrl(requestUrl);
+    } catch {
+      canonicalUrl = canonicalizeUrl(requestUrl);
+    }
 
     linkFilter.recordPageCrawled(domain);
 
@@ -201,6 +207,7 @@ export function createCheerioCrawlerInstance(
             return false;
           }
 
+          linkFilter.recordEnqueued();
           req.url = canonical;
           req.uniqueKey = canonical;
           req.userData = {

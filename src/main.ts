@@ -81,10 +81,12 @@ async function main() {
   log.info("Starting crawlers...");
 
   try {
-    await Promise.all([
-      cheerioCrawler.run(),
-      playwrightCrawler.run(),
-    ]);
+    // Run Cheerio first — it discovers pages and enqueues JS-fallback URLs to playwrightQueue
+    await cheerioCrawler.run();
+    log.info("CheerioCrawler finished. Running Playwright for JS-fallback pages...");
+
+    // Now run Playwright on whatever was enqueued during Cheerio crawling
+    await playwrightCrawler.run();
   } finally {
     await store.close();
     log.info("Crawl complete. MongoDB connection closed.");

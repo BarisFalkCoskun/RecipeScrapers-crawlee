@@ -51,4 +51,13 @@ describe("canonicalizeUrl", () => {
     expect(canonicalizeUrl("https://Example.DK/amp/page/?utm_source=fb#top"))
       .toBe("https://example.dk/page");
   });
+
+  it("resolves relative URL with baseUrl", () => {
+    expect(canonicalizeUrl("/opskrift/kage", "https://example.dk/page"))
+      .toBe("https://example.dk/opskrift/kage");
+  });
+
+  it("throws on relative URL without baseUrl", () => {
+    expect(() => canonicalizeUrl("/opskrift/kage")).toThrow();
+  });
 });
