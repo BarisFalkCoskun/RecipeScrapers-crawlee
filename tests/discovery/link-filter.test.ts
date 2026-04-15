@@ -8,16 +8,16 @@ describe("LinkFilter", () => {
     filter = new LinkFilter();
   });
 
-  it("allows .dk domains", () => {
+  it("allows queue-eligible URLs regardless of TLD", () => {
     expect(filter.shouldEnqueue("https://example.dk/page")).toBe(true);
+    expect(filter.shouldEnqueue("https://example.com/page")).toBe(true);
   });
 
-  it("rejects non-.dk domains without recipe signals", () => {
-    expect(filter.shouldEnqueue("https://example.com/page")).toBe(false);
-  });
-
-  it("allows non-.dk domains with isDanishRecipe flag", () => {
-    expect(filter.shouldEnqueue("https://example.com/page", { isDanishRecipe: true })).toBe(true);
+  it("returns base eligibility reasons", () => {
+    expect(filter.getQueueEligibility("notaurl")).toEqual({
+      allowed: false,
+      reasons: ["invalid-url"],
+    });
   });
 
   it("rejects denylist patterns", () => {
@@ -26,6 +26,14 @@ describe("LinkFilter", () => {
     expect(filter.shouldEnqueue("https://example.dk/login")).toBe(false);
     expect(filter.shouldEnqueue("https://example.dk/wp-json/api")).toBe(false);
     expect(filter.shouldEnqueue("https://example.dk/page/3")).toBe(false);
+  });
+
+  it("rejects URLs with image/media file extensions", () => {
+    expect(filter.shouldEnqueue("https://example.dk/photo.webp")).toBe(false);
+    expect(filter.shouldEnqueue("https://example.dk/recipe/image.jpg")).toBe(false);
+    expect(filter.shouldEnqueue("https://example.dk/video.mp4")).toBe(false);
+    expect(filter.shouldEnqueue("https://example.dk/style.css")).toBe(false);
+    expect(filter.shouldEnqueue("https://example.dk/recipe/kage")).toBe(true);
   });
 
   it("identifies recipe-like URLs", () => {
@@ -38,16 +46,23 @@ describe("LinkFilter", () => {
   it("enforces per-domain page budget", () => {
     const smallFilter = new LinkFilter(2);
     expect(smallFilter.shouldEnqueue("https://example.dk/page1")).toBe(true);
-    smallFilter.recordPageCrawled("example.dk");
+    smallFilter.recordEnqueued("https://example.dk/page1");
     expect(smallFilter.shouldEnqueue("https://example.dk/page2")).toBe(true);
-    smallFilter.recordPageCrawled("example.dk");
+    smallFilter.recordEnqueued("https://example.dk/page2");
     expect(smallFilter.shouldEnqueue("https://example.dk/page3")).toBe(false);
   });
 
   it("tracks domain budgets independently", () => {
     const smallFilter = new LinkFilter(1);
-    smallFilter.recordPageCrawled("a.dk");
+    smallFilter.recordEnqueued("https://a.dk/page");
     expect(smallFilter.shouldEnqueue("https://b.dk/page")).toBe(true);
+  });
+
+  it("reserves per-domain capacity when URLs are enqueued", () => {
+    const smallFilter = new LinkFilter(1);
+    smallFilter.recordEnqueued("https://example.dk/page1");
+    expect(smallFilter.getDomainAdmissionCount("example.dk")).toBe(1);
+    expect(smallFilter.shouldEnqueue("https://example.dk/page2")).toBe(false);
   });
 
   it("shouldFollowLink allows recipe URLs always", () => {
@@ -61,5 +76,56 @@ describe("LinkFilter", () => {
 
   it("shouldFollowLink blocks non-recipe from non-recipe page", () => {
     expect(filter.shouldFollowLink("https://a.dk/about", false, false, 0)).toBe(false);
+  });
+
+  it("restores persisted state", async () => {
+    const stateStore = {
+      getValue: async () => ({
+        domainPageCounts: [["example.dk", 2]],
+        domainAdmissionCounts: [["example.dk", 4]],
+        totalEnqueued: 7,
+      }),
+      setValue: async () => undefined,
+    };
+
+    const persistedFilter = await LinkFilter.open({
+      persistStateKey: "link-filter-state",
+      stateStore,
+    });
+
+    expect(persistedFilter.getDomainCount("example.dk")).toBe(2);
+    expect(persistedFilter.getDomainAdmissionCount("example.dk")).toBe(4);
+    expect(persistedFilter.getTotalEnqueued()).toBe(7);
+  });
+
+  it("persists updated state on close", async () => {
+    let savedState: unknown;
+    const stateStore = {
+      getValue: async () => null,
+      setValue: async (_key: string, value: unknown) => {
+        savedState = value;
+      },
+    };
+
+    const persistedFilter = await LinkFilter.open({
+      persistStateKey: "link-filter-state",
+      stateStore,
+    });
+    persistedFilter.recordPageCrawled("example.dk");
+    persistedFilter.recordEnqueued([
+      "https://example.dk/a",
+      "https://example.dk/b",
+      "https://other.dk/c",
+    ]);
+    await persistedFilter.close();
+
+    expect(savedState).toEqual({
+      domainPageCounts: [["example.dk", 1]],
+      domainAdmissionCounts: [
+        ["example.dk", 3],
+        ["other.dk", 1],
+      ],
+      totalEnqueued: 3,
+    });
   });
 });

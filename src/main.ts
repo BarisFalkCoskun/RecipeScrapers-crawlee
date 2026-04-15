@@ -2,12 +2,18 @@
 import { RequestQueue, log, LogLevel } from "crawlee";
 import { config } from "dotenv";
 import { RecipeStore } from "./storage/mongodb.js";
+import { CrawlMetrics } from "./telemetry/crawl-metrics.js";
 import { LinkFilter } from "./discovery/link-filter.js";
-import { fetchSitemapUrls } from "./discovery/sitemap.js";
+import { enqueueFreshRequestsFromSitemap } from "./discovery/enqueue-fresh.js";
+import { createSitemapRequestList } from "./discovery/sitemap.js";
 import { SEEDS } from "./discovery/seeds.js";
 import { createCheerioCrawlerInstance } from "./crawlers/cheerio-crawler.js";
 import { createPlaywrightCrawlerInstance } from "./crawlers/playwright-crawler.js";
-import { canonicalizeUrl } from "./utils/canonicalize.js";
+import { REQUEST_LABELS } from "./crawlers/request-routing.js";
+import { DISCOVERY } from "./config.js";
+import type { SeedConfig } from "./types.js";
+import { canonicalizeUrl, normalizeDomain } from "./utils/canonicalize.js";
+import { getRecrawlCutoff } from "./utils/recrawl.js";
 
 config(); // Load .env
 
@@ -16,54 +22,112 @@ log.setLevel(LogLevel.INFO);
 async function main() {
   const mongoUri = process.env["MONGODB_URI"] ?? "mongodb://localhost:27017";
   const dbName = process.env["DB_NAME"] ?? "danishRecipes";
+  const recrawlCutoff = getRecrawlCutoff(DISCOVERY.recrawlAfterDays);
+  const startedAt = new Date();
 
   const store = new RecipeStore(mongoUri, dbName);
   await store.connect();
   log.info("Connected to MongoDB");
+  log.info(
+    `Recrawl TTL enabled: skipping pages fetched since ${recrawlCutoff.toISOString()}`
+  );
 
-  const linkFilter = new LinkFilter();
+  const normalizedSeeds = SEEDS.map((seed) => normalizeSeed(seed));
+  const metrics = new CrawlMetrics(
+    normalizedSeeds.map((seed) => normalizeDomain(seed.domain))
+  );
+  const seedRolesByDomain = new Map(
+    normalizedSeeds.map((seed) => [
+      normalizeDomain(seed.domain),
+      seed.admissionRole,
+    ])
+  );
 
-  const cheerioQueue = await RequestQueue.open("cheerio-queue");
-  const playwrightQueue = await RequestQueue.open("playwright-queue");
+  const linkFilter = await LinkFilter.open({
+    maxPagesByDomain: new Map(
+      normalizedSeeds.map((seed) => [normalizeDomain(seed.domain), seed.maxPages])
+    ),
+    persistStateKey: "link-filter-state",
+  });
 
-  log.info(`Loading sitemaps from ${SEEDS.length} seed domains...`);
+  const cheerioSeeds = normalizedSeeds.filter((seed) => !seed.requiresJs);
+  const playwrightSeeds = normalizedSeeds.filter((seed) => seed.requiresJs);
 
-  for (const seed of SEEDS) {
-    const entries = await fetchSitemapUrls(seed);
-    const requests = entries.map((entry) => {
-      const canonical = canonicalizeUrl(entry.url);
-      return {
-        url: entry.url,
-        uniqueKey: canonical,
-        userData: {
-          fromSitemap: true,
-          domain: seed.domain,
-        },
-      };
-    });
+  const [cheerioQueue, playwrightQueue, cheerioRequestList, playwrightRequestList] =
+    await Promise.all([
+      RequestQueue.open("cheerio-queue"),
+      RequestQueue.open("playwright-queue"),
+      createSitemapRequestList(cheerioSeeds, "cheerio-sitemap-request-list"),
+      createSitemapRequestList(
+        playwrightSeeds,
+        "playwright-sitemap-request-list"
+      ),
+    ]);
 
-    if (seed.requiresJs) {
-      await playwrightQueue.addRequests(requests);
-    } else {
-      await cheerioQueue.addRequests(requests);
+  log.info(`Prepared sitemap sources for ${SEEDS.length} seed domains`);
+
+  await Promise.all([
+    enqueueFreshRequestsFromSitemap({
+      queue: cheerioQueue,
+      requestList: cheerioRequestList,
+      store,
+      recrawlCutoff,
+      metrics,
+      fetchMode: "cheerio",
+      linkFilter,
+      seedRolesByDomain,
+    }),
+    enqueueFreshRequestsFromSitemap({
+      queue: playwrightQueue,
+      requestList: playwrightRequestList,
+      store,
+      recrawlCutoff,
+      metrics,
+      fetchMode: "playwright",
+      linkFilter,
+      seedRolesByDomain,
+    }),
+  ]);
+
+  for (const seed of normalizedSeeds) {
+    const rootUrl = `https://${normalizeDomain(seed.domain)}`;
+    const canonicalRootUrl = canonicalizeUrl(rootUrl);
+    const fetchMode = seed.requiresJs ? "playwright" : "cheerio";
+    if (await store.wasPageFetchedSince(canonicalRootUrl, recrawlCutoff)) {
+      metrics.recordRecrawlSkip({
+        domain: normalizeDomain(seed.domain),
+        fetchMode,
+      });
+      log.info(`Skipping fresh seed root ${canonicalRootUrl}`);
+      continue;
     }
 
-    log.info(`Enqueued ${requests.length} URLs from ${seed.domain}`);
-  }
-
-  for (const seed of SEEDS) {
-    const rootUrl = `https://${seed.domain}`;
     const queue = seed.requiresJs ? playwrightQueue : cheerioQueue;
-    await queue.addRequest({
+    const addResult = await queue.addRequest({
       url: rootUrl,
-      uniqueKey: canonicalizeUrl(rootUrl),
-      userData: { fromSitemap: false, domain: seed.domain },
+      uniqueKey: canonicalRootUrl,
+      label: REQUEST_LABELS.seedRoot,
+      userData: {
+        seedDomain: normalizeDomain(seed.domain),
+        isTrustedSource: seed.admissionRole === "trusted",
+        discoverySource: REQUEST_LABELS.seedRoot,
+        admissionSignals: ["same-domain-trusted-seed"],
+      },
     });
+    if (!addResult.wasAlreadyPresent && !addResult.wasAlreadyHandled) {
+      linkFilter.recordEnqueued(canonicalRootUrl);
+    }
   }
 
   const seedDomains = new Map(
-    SEEDS.map((s) => [s.domain, { requiresJs: s.requiresJs }])
+    normalizedSeeds.map((seed) => [normalizeDomain(seed.domain), seed])
   );
+  const trustedSeedDomains = new Set(
+    normalizedSeeds
+      .filter((seed) => seed.admissionRole === "trusted")
+      .map((seed) => normalizeDomain(seed.domain))
+  );
+  const maxRequestsPerCrawl = calculateMaxRequestsPerCrawl(normalizedSeeds);
 
   const cheerioCrawler = createCheerioCrawlerInstance({
     store,
@@ -71,12 +135,11 @@ async function main() {
     playwrightQueue,
     cheerioQueue,
     seedDomains,
-  });
-
-  const playwrightCrawler = createPlaywrightCrawlerInstance({
-    store,
-    playwrightQueue,
-    linkFilter,
+    trustedSeedDomains,
+    maxRequestsPerCrawl,
+    respectRobotsTxtFile: shouldRespectRobotsTxt(cheerioSeeds),
+    recrawlCutoff,
+    metrics,
   });
 
   log.info("Starting crawlers...");
@@ -84,11 +147,38 @@ async function main() {
   try {
     // Run Cheerio first — it discovers pages and enqueues JS-fallback URLs to playwrightQueue
     await cheerioCrawler.run();
-    log.info("CheerioCrawler finished. Running Playwright for JS-fallback pages...");
+    if (await playwrightQueue.isEmpty()) {
+      log.info("CheerioCrawler finished. No Playwright work was enqueued.");
+      return;
+    }
 
-    // Now run Playwright on whatever was enqueued during Cheerio crawling
+    log.info("CheerioCrawler finished. Starting Playwright for queued fallback pages...");
+
+    const playwrightCrawler = createPlaywrightCrawlerInstance({
+      store,
+      playwrightQueue,
+      linkFilter,
+      trustedSeedDomains,
+      maxRequestsPerCrawl,
+      respectRobotsTxtFile: shouldRespectRobotsTxt(playwrightSeeds),
+      recrawlCutoff,
+      metrics,
+    });
+
+    // Run Playwright only when there is queued JS work or JS-only seeds to process.
     await playwrightCrawler.run();
   } finally {
+    const finishedAt = new Date();
+    const summary = metrics.buildSummary();
+    metrics.logSummary();
+    await store.insertCrawlRun({
+      startedAt,
+      finishedAt,
+      recrawlCutoff,
+      seeds: normalizedSeeds.map((seed) => normalizeDomain(seed.domain)),
+      summary,
+    });
+    await linkFilter.close();
     await store.close();
     log.info("Crawl complete. MongoDB connection closed.");
   }
@@ -98,3 +188,18 @@ main().catch((err) => {
   log.error(`Fatal error: ${err}`);
   process.exit(1);
 });
+
+function normalizeSeed(seed: SeedConfig): SeedConfig {
+  return {
+    ...seed,
+    domain: normalizeDomain(seed.domain),
+  };
+}
+
+function calculateMaxRequestsPerCrawl(seeds: SeedConfig[]): number {
+  return seeds.reduce((sum, seed) => sum + seed.maxPages, 0);
+}
+
+function shouldRespectRobotsTxt(seeds: SeedConfig[]): boolean {
+  return seeds.length > 0 && seeds.every((seed) => seed.respectRobotsTxt);
+}

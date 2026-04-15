@@ -1,12 +1,19 @@
 import { MongoClient, type Db, type Collection } from "mongodb";
-import type { PageDocument, RecipeDocument } from "../types.js";
+import type {
+  CrawlRunDocument,
+  PageDocument,
+  RecipeDocument,
+} from "../types.js";
+import { STORAGE } from "../config.js";
+import type { CrawlStore } from "./store.js";
 
-export class RecipeStore {
+export class RecipeStore implements CrawlStore {
   private client: MongoClient;
   private dbName: string;
   private db!: Db;
   private pages!: Collection<PageDocument>;
   private recipes!: Collection<RecipeDocument>;
+  private crawlRuns!: Collection<CrawlRunDocument>;
 
   constructor(uri: string, dbName: string) {
     this.client = new MongoClient(uri);
@@ -18,10 +25,14 @@ export class RecipeStore {
     this.db = this.client.db(this.dbName);
     this.pages = this.db.collection<PageDocument>("pages");
     this.recipes = this.db.collection<RecipeDocument>("recipes");
+    this.crawlRuns = this.db.collection<CrawlRunDocument>("crawl_runs");
     await this.ensureIndexes();
   }
 
   private async ensureIndexes(): Promise<void> {
+    const crawlRunRetentionSeconds =
+      STORAGE.crawlRunRetentionDays * 24 * 60 * 60;
+
     await this.pages.createIndex({ canonicalUrl: 1 }, { unique: true });
     await this.pages.createIndex({ domain: 1, fetchedAt: 1 });
     await this.pages.createIndex({ extractionMethod: 1 });
@@ -30,6 +41,12 @@ export class RecipeStore {
     await this.recipes.createIndex({ contentHash: 1 }, { unique: true });
     await this.recipes.createIndex({ domain: 1 });
     await this.recipes.createIndex({ pageUrl: 1 });
+
+    await this.crawlRuns.createIndex({ startedAt: -1 });
+    await this.crawlRuns.createIndex(
+      { finishedAt: 1 },
+      { expireAfterSeconds: crawlRunRetentionSeconds }
+    );
   }
 
   async upsertPage(page: Omit<PageDocument, "_id">): Promise<void> {
@@ -67,12 +84,60 @@ export class RecipeStore {
     return this.pages.findOne({ canonicalUrl });
   }
 
+  async wasPageFetchedSince(
+    canonicalUrl: string,
+    fetchedAfter: Date
+  ): Promise<boolean> {
+    const freshPage = await this.pages.findOne(
+      {
+        canonicalUrl,
+        fetchedAt: { $gte: fetchedAfter },
+      },
+      {
+        projection: { _id: 1 },
+      }
+    );
+
+    return freshPage !== null;
+  }
+
+  async findFreshPageUrls(
+    canonicalUrls: string[],
+    fetchedAfter: Date
+  ): Promise<Set<string>> {
+    if (canonicalUrls.length === 0) {
+      return new Set();
+    }
+
+    const freshPages = await this.pages
+      .find(
+        {
+          canonicalUrl: { $in: canonicalUrls },
+          fetchedAt: { $gte: fetchedAfter },
+        },
+        {
+          projection: { canonicalUrl: 1 },
+        }
+      )
+      .toArray();
+
+    return new Set(freshPages.map((page) => page.canonicalUrl));
+  }
+
   async countPages(domain: string): Promise<number> {
     return this.pages.countDocuments({ domain });
   }
 
   async countRecipes(domain: string): Promise<number> {
     return this.recipes.countDocuments({ domain });
+  }
+
+  async insertCrawlRun(run: Omit<CrawlRunDocument, "_id">): Promise<void> {
+    await this.crawlRuns.insertOne(run as CrawlRunDocument);
+  }
+
+  async listCrawlRuns(): Promise<CrawlRunDocument[]> {
+    return this.crawlRuns.find({}).toArray();
   }
 
   async dropDatabase(): Promise<void> {

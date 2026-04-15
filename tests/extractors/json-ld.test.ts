@@ -114,4 +114,47 @@ describe("extractJsonLdRecipes", () => {
     expect(result.recipes).toHaveLength(1);
     expect(result.recipes[0]["name"]).toBe("FullUrlType");
   });
+
+  it("unwraps itemListElement list wrappers", () => {
+    const html = `<html><head>
+      <script type="application/ld+json">
+        {
+          "@type": "ItemList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "item": { "@type": "Recipe", "name": "Wrapped Recipe" } }
+          ]
+        }
+      </script>
+    </head><body></body></html>`;
+    const result = extractJsonLdRecipes(html);
+    expect(result.recipes).toHaveLength(1);
+    expect(result.recipes[0]["name"]).toBe("Wrapped Recipe");
+    expect(result.signals).toContain("item-list-wrapper");
+  });
+
+  it("normalizes ingredient and instruction field shapes", () => {
+    const html = `<html><head>
+      <script type="application/ld+json">
+        {
+          "@type": "Recipe",
+          "headline": "Normalized Recipe",
+          "ingredients": "1 ag\\n2 dl maelk",
+          "recipeInstructions": [
+            { "@type": "HowToStep", "text": "Pisk aeg." },
+            { "@type": "HowToStep", "name": "Bag den." }
+          ],
+          "image": { "url": "https://example.com/kage.jpg" },
+          "yield": "4 portioner"
+        }
+      </script>
+    </head><body></body></html>`;
+    const result = extractJsonLdRecipes(html);
+    expect(result.recipes).toHaveLength(1);
+    expect(result.recipes[0]["name"]).toBe("Normalized Recipe");
+    expect(result.recipes[0]["recipeIngredient"]).toEqual(["1 ag", "2 dl maelk"]);
+    expect(result.recipes[0]["recipeInstructions"]).toEqual(["Pisk aeg.", "Bag den."]);
+    expect(result.recipes[0]["image"]).toBe("https://example.com/kage.jpg");
+    expect(result.recipes[0]["recipeYield"]).toBe("4 portioner");
+    expect(result.signals).toContain("json-ld-normalized-fields");
+  });
 });

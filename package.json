@@ -7,7 +7,10 @@
     "start": "tsx src/main.ts",
     "build": "tsc",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:all": "mkdir -p logs && { npm run build && npm test && npm run smoke:crawl; } 2>&1 | tee \"logs/test-run-$(date +%Y%m%d-%H%M%S).txt\"",
+    "test:watch": "vitest",
+    "report:runs": "tsx src/scripts/report-crawl-runs.ts",
+    "smoke:crawl": "node --import tsx/esm src/scripts/smoke-crawl.ts"
   },
   "engines": {
     "node": ">=18.0.0"

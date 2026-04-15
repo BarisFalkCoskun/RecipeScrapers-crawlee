@@ -1,11 +1,25 @@
 import { Binary, ObjectId } from "mongodb";
 
+export type SeedAdmissionRole = "trusted";
+
+export type DiscoverySource =
+  | "seed-root"
+  | "sitemap"
+  | "discovered"
+  | "playwright-fallback";
+
 export interface SeedConfig {
   domain: string;
-  sitemapUrl: string;
+  sitemapUrl?: string;
   requiresJs: boolean;
   respectRobotsTxt: boolean;
   maxPages: number;
+  admissionRole: SeedAdmissionRole;
+}
+
+export interface FetchModeCounters {
+  cheerio: number;
+  playwright: number;
 }
 
 export interface PageDocument {
@@ -23,6 +37,10 @@ export interface PageDocument {
   recipeCount: number;
   rawHtml?: Binary;
   pageContentHash: string;
+  discoverySource: DiscoverySource;
+  sourceDomain?: string;
+  admissionSignals: string[];
+  playwrightFallbackReason?: string;
   sitemapLastmod?: Date;
   etag?: string;
   lastModified?: string;
@@ -53,4 +71,43 @@ export interface ExtractionResult {
 export interface SitemapEntry {
   url: string;
   lastmod?: Date;
+}
+
+export interface DomainMetricsSummary {
+  domain: string;
+  processedPages: number;
+  recipePages: number;
+  extractedRecipes: number;
+  recrawlSkips: number;
+  fallbacksEnqueued: number;
+  offDomainAdmissions: number;
+  processedByMode: FetchModeCounters;
+  recrawlSkipsByMode: FetchModeCounters;
+  recipePageYield: number;
+  fallbackRate: number;
+}
+
+export interface CrawlMetricsSummary {
+  processedPages: number;
+  recipePages: number;
+  extractedRecipes: number;
+  recrawlSkips: number;
+  fallbacksEnqueued: number;
+  offDomainAdmissions: number;
+  processedByMode: FetchModeCounters;
+  recrawlSkipsByMode: FetchModeCounters;
+  recipePageYield: number;
+  fallbackRate: number;
+  newlyAdmittedDomains: string[];
+  playwrightFallbacksByReason: Record<string, number>;
+  domains: DomainMetricsSummary[];
+}
+
+export interface CrawlRunDocument {
+  _id?: ObjectId;
+  startedAt: Date;
+  finishedAt: Date;
+  recrawlCutoff: Date;
+  seeds: string[];
+  summary: CrawlMetricsSummary;
 }
