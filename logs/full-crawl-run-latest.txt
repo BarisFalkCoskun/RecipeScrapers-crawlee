@@ -1,0 +1,88 @@
+Run started: 2026-04-17T13:48:14+02:00
+Working directory: /Users/boris/Repositories/RecipeScrapers/RecipeScrapers-crawlee
+Log prefix: full-crawl-run
+
+[1/4] npm run build
+
+
+> recipe-scrapers-crawlee@1.0.0 build
+> tsc
+
+
+[2/4] npm test
+
+
+> recipe-scrapers-crawlee@1.0.0 test
+> vitest run
+
+
+ RUN  v4.1.4 /Users/boris/Repositories/RecipeScrapers/RecipeScrapers-crawlee
+
+
+ Test Files  13 passed (13)
+      Tests  91 passed (91)
+   Start at  13:48:16
+   Duration  1.36s (transform 665ms, setup 0ms, import 3.96s, tests 272ms, environment 2ms)
+
+
+[3/4] npm run smoke:crawl
+
+
+> recipe-scrapers-crawlee@1.0.0 smoke:crawl
+> node --import tsx/esm src/scripts/smoke-crawl.ts
+
+[32mINFO[39m  Opening SitemapRequestList with 1 sitemap sources for 1 seed domains
+[32mINFO[39m  Prepared 2 cheerio sitemap requests and skipped 1 fresh URLs before crawl
+[32mINFO[39m [33m CheerioCrawler:[39m Starting the crawler.
+[32mINFO[39m  Enqueueing to Playwright: http://127.0.0.1:49559/recipe/js-shell
+[32mINFO[39m [33m CheerioCrawler:[39m All requests from the queue have been processed, the crawler will shut down.
+[32mINFO[39m [33m CheerioCrawler:[39m Final request statistics:[90m {"requestsFinished":4,"requestsFailed":0,"retryHistogram":[4],"requestAvgFailedDurationMillis":null,"requestAvgFinishedDurationMillis":27,"requestsFinishedPerMinute":1446,"requestsFailedPerMinute":0,"requestTotalDurationMillis":108,"requestsTotal":4,"crawlerRuntimeMillis":166}[39m
+[32mINFO[39m [33m CheerioCrawler:[39m Finished! Total 4 requests: 4 succeeded, 0 failed.[90m {"terminal":true}[39m
+[32mINFO[39m [33m PlaywrightCrawler:[39m Starting the crawler.
+[32mINFO[39m  Playwright extracted 1 recipes from http://127.0.0.1:49559/recipe/js-shell
+[32mINFO[39m [33m PlaywrightCrawler:Statistics:[39m PlaywrightCrawler request statistics:[90m {"requestAvgFailedDurationMillis":null,"requestAvgFinishedDurationMillis":30716,"requestsFinishedPerMinute":1,"requestsFailedPerMinute":0,"requestTotalDurationMillis":30716,"requestsTotal":1,"crawlerRuntimeMillis":60170,"retryHistogram":[1]}[39m
+[32mINFO[39m [33m PlaywrightCrawler:AutoscaledPool:[39m state[90m {"currentConcurrency":2,"desiredConcurrency":3,"systemStatus":{"isSystemIdle":true,"memInfo":{"isOverloaded":false,"limitRatio":0.2,"actualRatio":0},"eventLoopInfo":{"isOverloaded":false,"limitRatio":0.6,"actualRatio":0},"cpuInfo":{"isOverloaded":false,"limitRatio":0.4,"actualRatio":0},"clientInfo":{"isOverloaded":false,"limitRatio":0.3,"actualRatio":0}}}[39m
+[32mINFO[39m  Playwright extracted 1 recipes from http://127.0.0.1:49559/recipe/playwright-discovered
+[32mINFO[39m  Playwright extracted 1 recipes from http://localhost:49559/collection/seasonal
+[32mINFO[39m  Playwright extracted 1 recipes from http://localhost:49559/recipe/cross-domain-discovered
+[32mINFO[39m [33m PlaywrightCrawler:[39m All requests from the queue have been processed, the crawler will shut down.
+[32mINFO[39m [33m PlaywrightCrawler:[39m Final request statistics:[90m {"requestsFinished":4,"requestsFailed":0,"retryHistogram":[4],"requestAvgFailedDurationMillis":null,"requestAvgFinishedDurationMillis":30334,"requestsFinishedPerMinute":3,"requestsFailedPerMinute":0,"requestTotalDurationMillis":121334,"requestsTotal":4,"crawlerRuntimeMillis":91459}[39m
+[32mINFO[39m [33m PlaywrightCrawler:[39m Finished! Total 4 requests: 4 succeeded, 0 failed.[90m {"terminal":true}[39m
+Smoke crawl passed: cheerio=4, playwright=4, skips=1, fallbacks=1
+
+[4/4] npm start
+
+
+> recipe-scrapers-crawlee@1.0.0 start
+> tsx src/main.ts
+
+◇ injected env (2) from .env // tip: ⌘ suppress logs { quiet: true }
+[32mINFO[39m  Connected to MongoDB
+[32mINFO[39m  Recrawl TTL enabled: skipping pages fetched since 2026-03-18T12:49:57.584Z
+[32mINFO[39m  Opening SitemapRequestList with 7 sitemap sources for 7 seed domains
+[33mWARN[39m  Malformed sitemap content: https://www.dk-kogebogen.dk/sitemap.xml, retrying... (Error: Failed to fetch sitemap: https://www.dk-kogebogen.dk/sitemap.xml, status code: 404)
+[33mWARN[39m  Malformed sitemap content: https://www.dk-kogebogen.dk/sitemap.xml, retrying... (Error: Failed to fetch sitemap: https://www.dk-kogebogen.dk/sitemap.xml, status code: 404)
+[33mWARN[39m  Malformed sitemap content: https://www.dk-kogebogen.dk/sitemap.xml, retrying... (Error: Failed to fetch sitemap: https://www.dk-kogebogen.dk/sitemap.xml, status code: 404)
+[33mWARN[39m  Malformed sitemap content: https://www.dk-kogebogen.dk/sitemap.xml, no retries left. (Error: Failed to fetch sitemap: https://www.dk-kogebogen.dk/sitemap.xml, status code: 404)
+[32mINFO[39m  Prepared sitemap sources for 7 seed domains
+[33mWARN[39m  Malformed sitemap content: https://www.nemlig.com/sitemap.xml, retrying... (MaxRedirectsError: Redirected 10 times. Aborting.)
+[33mWARN[39m  Malformed sitemap content: https://www.nemlig.com/sitemap.xml, retrying... (MaxRedirectsError: Redirected 10 times. Aborting.)
+[33mWARN[39m  Malformed sitemap content: https://www.nemlig.com/sitemap.xml, retrying... (MaxRedirectsError: Redirected 10 times. Aborting.)
+[33mWARN[39m  Malformed sitemap content: https://www.nemlig.com/sitemap.xml, no retries left. (MaxRedirectsError: Redirected 10 times. Aborting.)
+[32mINFO[39m  Prepared 10971 cheerio sitemap requests and skipped 0 fresh URLs before crawl
+[32mINFO[39m  Starting crawlers...
+[32mINFO[39m [33m CheerioCrawler:[39m Starting the crawler.
+[33mWARN[39m [33m CheerioCrawler:[39m Reclaiming failed request back to the list or queue. Received one or more errors
+    at async handlePageRequest (/Users/boris/Repositories/RecipeScrapers/RecipeScrapers-crawlee/src/crawlers/cheerio-crawler.ts:343:27)[90m {"id":"Xe7R5dmKMFG62oT","url":"https://spisbedre.dk/omregner","retryCount":1}[39m
+[33mWARN[39m [33m CheerioCrawler:[39m Reclaiming failed request back to the list or queue. Received one or more errors
+    at async handlePageRequest (/Users/boris/Repositories/RecipeScrapers/RecipeScrapers-crawlee/src/crawlers/cheerio-crawler.ts:343:27)[90m {"id":"bn2RlomVFAuuKVz","url":"https://madensverden.dk/paneret-laks/","retryCount":1}[39m
+[32mINFO[39m [33m CheerioCrawler:Statistics:[39m CheerioCrawler request statistics:[90m {"requestAvgFailedDurationMillis":null,"requestAvgFinishedDurationMillis":null,"requestsFinishedPerMinute":0,"requestsFailedPerMinute":0,"requestTotalDurationMillis":0,"requestsTotal":0,"crawlerRuntimeMillis":60189,"retryHistogram":[]}[39m
+[32mINFO[39m  Enqueueing to Playwright: https://spisbedre.dk/opskrifter/marengs-med-jordbaer-og-citroncreme
+[33mWARN[39m [33m CheerioCrawler:[39m Reclaiming failed request back to the list or queue. Received one or more errors
+    at async handlePageRequest (/Users/boris/Repositories/RecipeScrapers/RecipeScrapers-crawlee/src/crawlers/cheerio-crawler.ts:343:27)[90m {"id":"Yq41BaOqhdAXfBj","url":"https://madensverden.dk/grydestegte-nakkekoteletter/","retryCount":1}[39m
+[32mINFO[39m [33m CheerioCrawler:Statistics:[39m CheerioCrawler request statistics:[90m {"requestAvgFailedDurationMillis":null,"requestAvgFinishedDurationMillis":326,"requestsFinishedPerMinute":0,"requestsFailedPerMinute":0,"requestTotalDurationMillis":326,"requestsTotal":1,"crawlerRuntimeMillis":120269,"retryHistogram":[1]}[39m
+[32mINFO[39m  Enqueueing to Playwright: https://spisbedre.dk/opskrifter/brownie-med-skumfiduser-og-kiksebund
+[32mINFO[39m  Skipping fresh Cheerio page https://madensverden.dk/paneret-laks
+[32mINFO[39m [33m CheerioCrawler:Statistics:[39m CheerioCrawler request statistics:[90m {"requestAvgFailedDurationMillis":null,"requestAvgFinishedDurationMillis":448,"requestsFinishedPerMinute":1,"requestsFailedPerMinute":0,"requestTotalDurationMillis":1345,"requestsTotal":3,"crawlerRuntimeMillis":180362,"retryHistogram":[2,1]}[39m
+[32mINFO[39m  Skipping fresh Cheerio page https://madensverden.dk/grydestegte-nakkekoteletter
+[32mINFO[39m  Enqueueing to Playwright: https://spisbedre.dk/opskrifter/ossobuco-med-kartoffelmos

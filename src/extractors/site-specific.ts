@@ -17,6 +17,10 @@ const SITE_EXTRACTORS: SiteExtractor[] = [
     extract: extractArlaRecipe,
   },
   {
+    domains: ["spisbedre.dk"],
+    extract: extractSpisBedreRecipe,
+  },
+  {
     domains: ["madensverden.dk"],
     extract: extractMadensVerdenRecipe,
   },
@@ -95,6 +99,91 @@ function extractArlaRecipe($: CheerioAPI): SiteExtractionResult | null {
     recipes: [recipe],
     confidence: Math.min(fieldsFound / 3 + 0.15, 1),
     signals: ["site-specific-arla"],
+  };
+}
+
+function extractSpisBedreRecipe($: CheerioAPI): SiteExtractionResult | null {
+  const rawPageData = $("#app[data-page]").attr("data-page");
+  const pageData = parseEmbeddedJson(rawPageData);
+  if (!pageData) {
+    return null;
+  }
+
+  const component = readString(pageData["component"]);
+  const props = asRecord(pageData["props"]);
+  const recipeData = asRecord(props?.["recipe"]);
+  if (!recipeData || component !== "app/pages/Recipes/Details") {
+    return null;
+  }
+
+  const recipe: Record<string, unknown> = {};
+  let fieldsFound = 0;
+
+  const name = readString(recipeData["title"]);
+  if (name) {
+    assignTextField(recipe, "name", name, "title");
+    fieldsFound++;
+  }
+
+  const descriptionParts = [
+    readString(recipeData["description"]),
+    readString(recipeData["note_message"]),
+    readString(recipeData["tip_message"]),
+  ].filter(Boolean);
+  if (descriptionParts.length > 0) {
+    recipe["description"] = descriptionParts.join(" ");
+  }
+
+  const prepTime = formatMinutes(recipeData["preparation_time"]);
+  if (prepTime) {
+    recipe["prepTime"] = prepTime;
+  }
+
+  const totalTime = formatMinutes(recipeData["total_time"]);
+  if (totalTime) {
+    recipe["totalTime"] = totalTime;
+  }
+
+  const recipeYield = formatServingSize(
+    recipeData["serving_size"],
+    asRecord(recipeData["serving_size_type"])
+  );
+  if (recipeYield) {
+    recipe["recipeYield"] = recipeYield;
+  }
+
+  const author = readString(recipeData["author"]);
+  if (author) {
+    recipe["author"] = author;
+  }
+
+  const ingredients = extractSpisBedreIngredients(recipeData["grouped_ingredients"]);
+  if (ingredients.length > 0) {
+    assignListField(recipe, "recipeIngredient", ingredients, "ingredients");
+    fieldsFound++;
+  }
+
+  const instructions = extractSpisBedreInstructions(
+    recipeData["grouped_instructions"]
+  );
+  if (instructions.length > 0) {
+    assignListField(
+      recipe,
+      "recipeInstructions",
+      instructions,
+      "instructions"
+    );
+    fieldsFound++;
+  }
+
+  if (fieldsFound === 0) {
+    return null;
+  }
+
+  return {
+    recipes: [recipe],
+    confidence: Math.min(fieldsFound / 3 + 0.25, 1),
+    signals: ["site-specific-spisbedre", "spisbedre-page-data"],
   };
 }
 
@@ -227,6 +316,158 @@ function collectDescriptionBeforeHeading(
     .reverse();
 
   return paragraphs.length > 0 ? paragraphs.join(" ") : null;
+}
+
+function parseEmbeddedJson(value: string | undefined): Record<string, unknown> | null {
+  if (!value) {
+    return null;
+  }
+
+  for (const candidate of [value, decodeHtmlEntities(value)]) {
+    try {
+      const parsed = JSON.parse(candidate);
+      return asRecord(parsed);
+    } catch {
+      continue;
+    }
+  }
+
+  return null;
+}
+
+function decodeHtmlEntities(value: string): string {
+  return value
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">");
+}
+
+function extractSpisBedreIngredients(value: unknown): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return unique(
+    value.flatMap((group) => {
+      const ingredients = asRecord(group)?.["ingredients"];
+      if (!Array.isArray(ingredients)) {
+        return [];
+      }
+
+      return ingredients
+        .map((ingredient) => formatSpisBedreIngredient(asRecord(ingredient)))
+        .filter((ingredient): ingredient is string => Boolean(ingredient));
+    })
+  );
+}
+
+function formatSpisBedreIngredient(
+  ingredient: Record<string, unknown> | null
+): string | null {
+  if (!ingredient) {
+    return null;
+  }
+
+  const amount = formatNumericValue(ingredient["amount"]);
+  const unit = asRecord(ingredient["unit"]);
+  const ingredientName = asRecord(ingredient["ingredient"]);
+  const ingredientInflection = readString(ingredient["ingredient_inflection"]);
+  const unitAbbreviation = readString(unit?.["abbreviation"]);
+  const unitName =
+    readString(unit?.["name_singular"]) ?? readString(unit?.["name_plural"]);
+  const unitText = unitAbbreviation || unitName;
+  const name =
+    ingredientInflection === "plural"
+      ? readString(ingredientName?.["name_plural"])
+      : readString(ingredientName?.["name_singular"]) ??
+        readString(ingredientName?.["name_plural"]);
+  const prefix = readString(ingredient["prefix"]);
+  const suffix = readString(ingredient["suffix"]);
+
+  return cleanText(
+    [amount, unitText, prefix, name, suffix].filter(Boolean).join(" ")
+  );
+}
+
+function extractSpisBedreInstructions(value: unknown): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return unique(
+    value.flatMap((group) => {
+      const instructions = asRecord(group)?.["instructions"];
+      if (!Array.isArray(instructions)) {
+        return [];
+      }
+
+      return instructions
+        .map((instruction) => readString(asRecord(instruction)?.["instruction"]))
+        .filter((instruction): instruction is string => Boolean(instruction));
+    })
+  );
+}
+
+function formatMinutes(value: unknown): string | null {
+  const minutes = readNumber(value);
+  if (minutes === null) {
+    return null;
+  }
+
+  return `${formatNumericValue(minutes)} min`;
+}
+
+function formatServingSize(
+  amountValue: unknown,
+  servingSizeType: Record<string, unknown> | null
+): string | null {
+  const amount = readNumber(amountValue);
+  if (amount === null) {
+    return null;
+  }
+
+  const unit =
+    amount === 1
+      ? readString(servingSizeType?.["name_singular"])
+      : readString(servingSizeType?.["name_plural"]) ??
+        readString(servingSizeType?.["name_singular"]);
+  return cleanText([formatNumericValue(amount), unit].filter(Boolean).join(" "));
+}
+
+function readNumber(value: unknown): number | null {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  return null;
+}
+
+function formatNumericValue(value: unknown): string {
+  const number = readNumber(value);
+  if (number === null) {
+    return "";
+  }
+
+  return Number.isInteger(number)
+    ? String(number)
+    : String(number).replace(/(?:\.0+|(\.\d*?)0+)$/, "$1");
+}
+
+function readString(value: unknown): string | null {
+  return typeof value === "string" ? cleanText(value) || null : null;
+}
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return value !== null && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
 }
 
 function extractSectionItems($: CheerioAPI, headings: string[]): string[] {

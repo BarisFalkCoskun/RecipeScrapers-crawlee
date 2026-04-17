@@ -1,0 +1,10 @@
+Run started: 2026-04-16T23:32:00+02:00
+Working directory: /Users/boris/Repositories/RecipeScrapers/RecipeScrapers-crawlee
+Log prefix: sanity-check
+
+[1/1] printf 'hello from sanity\n'
+
+hello from sanity
+
+Run finished: 2026-04-16T23:32:00+02:00
+Final status: 0

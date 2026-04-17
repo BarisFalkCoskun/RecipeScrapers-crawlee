@@ -62,6 +62,95 @@ describe("extractSiteSpecificRecipe", () => {
     expect(result?.recipes[0]?.["recipeCuisine"]).toBe("Dansk");
   });
 
+  it("extracts a Spis Bedre recipe from embedded page data", () => {
+    const pageData = JSON.stringify({
+      component: "app/pages/Recipes/Details",
+      props: {
+        recipe: {
+          title: "Kylling i wok med edamamebønner og peanutbuttersauce",
+          description: "Kylling i wok er en hverdagsfavorit.",
+          preparation_time: 20,
+          total_time: 20,
+          serving_size: 4,
+          serving_size_type: {
+            name_singular: "person",
+            name_plural: "personer",
+          },
+          author: "Emma Martiny",
+          tip_message:
+            "Gør retten vegetarisk ved at udelade kylling og fordoble bønnerne.",
+          grouped_ingredients: [
+            {
+              ingredients: [
+                {
+                  amount: 100,
+                  ingredient_inflection: "singular",
+                  suffix: "eller kyllingebryst",
+                  ingredient: {
+                    name_singular: "kyllingeinderfilet",
+                    name_plural: "kyllingeinderfileter",
+                  },
+                  unit: {
+                    name_singular: "gram",
+                    name_plural: "gram",
+                    abbreviation: "g",
+                  },
+                },
+                {
+                  amount: 0.5,
+                  ingredient_inflection: "default",
+                  ingredient: {
+                    name_singular: "peanutbutter",
+                    name_plural: "peanutbutter",
+                  },
+                  unit: {
+                    name_singular: "spiseske",
+                    name_plural: "spiseskeer",
+                    abbreviation: "spsk.",
+                  },
+                },
+              ],
+            },
+          ],
+          grouped_instructions: [
+            {
+              instructions: [
+                {
+                  instruction: "Skær kyllingekødet i mindre stykker.",
+                },
+                {
+                  instruction: "Top wokretten med peanuts og koriander.",
+                },
+              ],
+            },
+          ],
+        },
+      },
+    }).replace(/"/g, "&quot;");
+
+    const html = `<html><body>
+      <div id="app" data-page="${pageData}"></div>
+    </body></html>`;
+
+    const result = extractSiteSpecificRecipe($(html), "spisbedre.dk");
+    expect(result?.signals).toContain("site-specific-spisbedre");
+    expect(result?.recipes[0]?.["name"]).toBe(
+      "Kylling i wok med edamamebønner og peanutbuttersauce"
+    );
+    expect(result?.recipes[0]?.["prepTime"]).toBe("20 min");
+    expect(result?.recipes[0]?.["totalTime"]).toBe("20 min");
+    expect(result?.recipes[0]?.["recipeYield"]).toBe("4 personer");
+    expect(result?.recipes[0]?.["author"]).toBe("Emma Martiny");
+    expect(result?.recipes[0]?.["recipeIngredient"]).toEqual([
+      "100 g kyllingeinderfilet eller kyllingebryst",
+      "0.5 spsk. peanutbutter",
+    ]);
+    expect(result?.recipes[0]?.["recipeInstructions"]).toEqual([
+      "Skær kyllingekødet i mindre stykker.",
+      "Top wokretten med peanuts og koriander.",
+    ]);
+  });
+
   it("extracts a dk-kogebogen-style recipe from text sections", () => {
     const html = `<html><body>
       <h1>Engelsk kage</h1>

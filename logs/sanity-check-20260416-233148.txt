@@ -1,0 +1,11 @@
+Run started: 2026-04-16T23:31:48+02:00
+Working directory: /Users/boris/Repositories/RecipeScrapers/RecipeScrapers-crawlee
+Log prefix: sanity-check
+
+[1/1] printf 'hello from sanity\n'
+
+/Users/boris/.bash_profile: line 17: /Users/boris/.deno/env: No such file or directory
+hello from sanity
+
+Run finished: 2026-04-16T23:31:49+02:00
+Final status: 0

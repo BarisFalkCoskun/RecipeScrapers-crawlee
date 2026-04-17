@@ -7,7 +7,8 @@
     "start": "tsx src/main.ts",
     "build": "tsc",
     "test": "vitest run",
-    "test:all": "mkdir -p logs && { npm run build && npm test && npm run smoke:crawl; } 2>&1 | tee \"logs/test-run-$(date +%Y%m%d-%H%M%S).txt\"",
+    "test:all": "bash scripts/run_logged.sh test-run \"npm run build\" \"npm test\" \"npm run smoke:crawl\"",
+    "crawl:all": "bash scripts/run_logged.sh full-crawl-run \"npm run build\" \"npm test\" \"npm run smoke:crawl\" \"npm start\"",
     "test:watch": "vitest",
     "report:runs": "tsx src/scripts/report-crawl-runs.ts",
     "smoke:crawl": "node --import tsx/esm src/scripts/smoke-crawl.ts"

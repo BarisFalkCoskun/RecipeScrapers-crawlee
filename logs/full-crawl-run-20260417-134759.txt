@@ -1,0 +1,57 @@
+Run started: 2026-04-17T13:47:59+02:00
+Working directory: /Users/boris/Repositories/RecipeScrapers/RecipeScrapers-crawlee
+Log prefix: full-crawl-run
+
+[1/4] npm run build
+
+
+> recipe-scrapers-crawlee@1.0.0 build
+> tsc
+
+
+[2/4] npm test
+
+
+> recipe-scrapers-crawlee@1.0.0 test
+> vitest run
+
+
+ RUN  v4.1.4 /Users/boris/Repositories/RecipeScrapers/RecipeScrapers-crawlee
+
+
+ Test Files  13 passed (13)
+      Tests  91 passed (91)
+   Start at  13:48:01
+   Duration  1.36s (transform 917ms, setup 0ms, import 4.39s, tests 244ms, environment 1ms)
+
+
+[3/4] npm run smoke:crawl
+
+
+> recipe-scrapers-crawlee@1.0.0 smoke:crawl
+> node --import tsx/esm src/scripts/smoke-crawl.ts
+
+node:events:497
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EPERM: operation not permitted 127.0.0.1
+    at Server.setupListenHandle [as _listen2] (node:net:1918:21)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1976:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21) {
+  code: 'EPERM',
+  errno: -1,
+  syscall: 'listen',
+  address: '127.0.0.1'
+}
+
+Node.js v22.22.2
+
+Command failed with exit code 1: npm run smoke:crawl
+
+Run finished: 2026-04-17T13:48:04+02:00
+Final status: 1
