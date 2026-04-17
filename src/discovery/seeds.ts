@@ -11,7 +11,7 @@ export const SEEDS: SeedConfig[] = [
   },
   {
     domain: "dk-kogebogen.dk",
-    sitemapUrl: undefined,
+    sitemapUrl: "https://www.dk-kogebogen.dk/sitemap/sitemap.xml",
     requiresJs: false,
     respectRobotsTxt: true,
     maxPages: 5000,

@@ -29,6 +29,8 @@ export async function createSitemapRequestList(
   });
 }
 
+const SITEMAP_DISCOVERY_TIMEOUT_MS = 30_000;
+
 async function resolveSeedSitemapUrls(seed: SeedConfig): Promise<string[]> {
   if (seed.sitemapUrl) {
     return [seed.sitemapUrl];
@@ -38,9 +40,15 @@ async function resolveSeedSitemapUrls(seed: SeedConfig): Promise<string[]> {
   const discovered: string[] = [];
 
   try {
-    for await (const sitemapUrl of discoverValidSitemaps([rootUrl])) {
-      discovered.push(sitemapUrl);
-    }
+    await withTimeout(
+      (async () => {
+        for await (const sitemapUrl of discoverValidSitemaps([rootUrl])) {
+          discovered.push(sitemapUrl);
+        }
+      })(),
+      SITEMAP_DISCOVERY_TIMEOUT_MS,
+      `sitemap discovery for ${seed.domain} exceeded ${SITEMAP_DISCOVERY_TIMEOUT_MS}ms`
+    );
   } catch (err) {
     log.warning(
       `Failed to discover sitemaps for ${seed.domain}: ${err instanceof Error ? err.message : String(err)}`
@@ -54,4 +62,22 @@ async function resolveSeedSitemapUrls(seed: SeedConfig): Promise<string[]> {
   }
 
   return discovered;
+}
+
+async function withTimeout<T>(
+  promise: Promise<T>,
+  ms: number,
+  message: string
+): Promise<T> {
+  let timer: NodeJS.Timeout | undefined;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<T>((_, reject) => {
+        timer = setTimeout(() => reject(new Error(message)), ms);
+      }),
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
 }
