@@ -11,6 +11,10 @@ import { createCheerioCrawlerInstance } from "./crawlers/cheerio-crawler.js";
 import { createPlaywrightCrawlerInstance } from "./crawlers/playwright-crawler.js";
 import { REQUEST_LABELS } from "./crawlers/request-routing.js";
 import { DISCOVERY } from "./config.js";
+import {
+  createCrawlRunStorageKeys,
+  resolveCrawlRunId,
+} from "./crawl-run.js";
 import type { SeedConfig } from "./types.js";
 import { canonicalizeUrl, normalizeDomain } from "./utils/canonicalize.js";
 import { getRecrawlCutoff } from "./utils/recrawl.js";
@@ -24,10 +28,13 @@ async function main() {
   const dbName = process.env["DB_NAME"] ?? "danishRecipes";
   const recrawlCutoff = getRecrawlCutoff(DISCOVERY.recrawlAfterDays);
   const startedAt = new Date();
+  const crawlRunId = resolveCrawlRunId(startedAt);
+  const storageKeys = createCrawlRunStorageKeys(crawlRunId);
 
   const store = new RecipeStore(mongoUri, dbName);
   await store.connect();
   log.info("Connected to MongoDB");
+  log.info(`Crawl run id: ${crawlRunId}`);
   log.info(
     `Recrawl TTL enabled: skipping pages fetched since ${recrawlCutoff.toISOString()}`
   );
@@ -47,7 +54,7 @@ async function main() {
     maxPagesByDomain: new Map(
       normalizedSeeds.map((seed) => [normalizeDomain(seed.domain), seed.maxPages])
     ),
-    persistStateKey: "link-filter-state",
+    persistStateKey: storageKeys.linkFilterStateKey,
   });
 
   const cheerioSeeds = normalizedSeeds.filter((seed) => !seed.requiresJs);
@@ -55,12 +62,12 @@ async function main() {
 
   const [cheerioQueue, playwrightQueue, cheerioRequestList, playwrightRequestList] =
     await Promise.all([
-      RequestQueue.open("cheerio-queue"),
-      RequestQueue.open("playwright-queue"),
-      createSitemapRequestList(cheerioSeeds, "cheerio-sitemap-request-list"),
+      RequestQueue.open(storageKeys.cheerioQueueName),
+      RequestQueue.open(storageKeys.playwrightQueueName),
+      createSitemapRequestList(cheerioSeeds, storageKeys.cheerioSitemapStateKey),
       createSitemapRequestList(
         playwrightSeeds,
-        "playwright-sitemap-request-list"
+        storageKeys.playwrightSitemapStateKey
       ),
     ]);
 

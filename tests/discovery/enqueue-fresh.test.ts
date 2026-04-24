@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 import { CrawlMetrics } from "../../src/telemetry/crawl-metrics.js";
-import { enqueueFreshRequestsFromSitemap } from "../../src/discovery/enqueue-fresh.js";
+import {
+  enqueueFreshRequestsFromSitemap,
+  toRequestCandidate,
+} from "../../src/discovery/enqueue-fresh.js";
 import { REQUEST_LABELS } from "../../src/crawlers/request-routing.js";
 import { MemoryCrawlStore } from "../helpers/memory-crawl-store.js";
 import { LinkFilter } from "../../src/discovery/link-filter.js";
@@ -136,5 +139,17 @@ describe("enqueueFreshRequestsFromSitemap", () => {
     expect(recordEnqueuedSpy).toHaveBeenCalledWith([
       "https://example.dk/opskrift/ok",
     ]);
+  });
+
+  it("rejects non-http request candidates before they reach Crawlee queues", () => {
+    expect(toRequestCandidate("mailto:test@example.dk")).toBeNull();
+    expect(toRequestCandidate("tel:+4512345678")).toBeNull();
+    expect(toRequestCandidate("javascript:void(0)")).toBeNull();
+    expect(toRequestCandidate("https://example.dk/opskrift/kage")).toEqual({
+      url: "https://example.dk/opskrift/kage",
+      canonicalUrl: "https://example.dk/opskrift/kage",
+      domain: "example.dk",
+      anchorText: undefined,
+    });
   });
 });

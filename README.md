@@ -13,6 +13,7 @@ Recipe crawling pipeline built on Crawlee, with Cheerio-first crawling, lazy Pla
 ## Runtime Notes
 
 - `npm start` expects MongoDB via `MONGODB_URI` and `DB_NAME`. Defaults are `mongodb://localhost:27017` and `danishRecipes`.
+- Each `npm start` uses run-scoped Crawlee queues and sitemap/link-filter state. Set `CRAWL_RUN_ID=<id>` to intentionally resume or re-run against the same local Crawlee storage.
 - Crawl-run summaries are stored in `crawl_runs` and pruned automatically with a Mongo TTL index. The retention window is configured in [src/config.ts](/Users/boris/Repositories/RecipeScrapers-crawlee/src/config.ts).
 - Playwright wait behavior is configurable through:
   - `PLAYWRIGHT_WAIT_FOR_LOAD_STATE`

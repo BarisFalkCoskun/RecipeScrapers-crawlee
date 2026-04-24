@@ -85,6 +85,13 @@ export class LinkFilter {
       };
     }
 
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+      return {
+        allowed: false,
+        reasons: ["unsupported-protocol"],
+      };
+    }
+
     if (SKIP_EXTENSIONS.test(parsed.pathname)) {
       return {
         allowed: false,

@@ -20,6 +20,14 @@ describe("LinkFilter", () => {
     });
   });
 
+  it("rejects non-http URLs", () => {
+    expect(filter.getQueueEligibility("mailto:test@example.dk")).toEqual({
+      allowed: false,
+      reasons: ["unsupported-protocol"],
+    });
+    expect(filter.shouldEnqueue("javascript:void(0)")).toBe(false);
+  });
+
   it("rejects denylist patterns", () => {
     expect(filter.shouldEnqueue("https://example.dk/tag/kage")).toBe(false);
     expect(filter.shouldEnqueue("https://example.dk/search?q=kage")).toBe(false);

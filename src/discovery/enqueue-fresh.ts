@@ -226,15 +226,24 @@ export function toRequestCandidate(
 ): RequestCandidate | null {
   try {
     const canonicalUrl = canonicalizeUrl(url);
+    const parsed = new URL(canonicalUrl);
+    if (!isHttpUrl(parsed)) {
+      return null;
+    }
+
     return {
       url,
       canonicalUrl,
-      domain: normalizeDomain(new URL(canonicalUrl).hostname),
+      domain: normalizeDomain(parsed.hostname),
       anchorText,
     };
   } catch {
     return null;
   }
+}
+
+function isHttpUrl(url: URL): boolean {
+  return url.protocol === "http:" || url.protocol === "https:";
 }
 
 function dedupeCandidates<T extends RequestCandidate>(candidates: T[]): T[] {
