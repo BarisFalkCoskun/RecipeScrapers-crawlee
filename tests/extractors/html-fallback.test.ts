@@ -161,4 +161,25 @@ describe("extractHtmlFallback", () => {
     expect(result.recipes[0]?.["cookTime"]).toBe("15 min");
     expect(result.recipes[0]?.["recipeYield"]).toBe("12 stk");
   });
+
+  it("extracts German ingredient and instruction sections", () => {
+    const html = `<html><body>
+      <h1>Apfelkuchen</h1>
+      <h2>Zutaten</h2>
+      <ul><li>200 g Mehl</li><li>2 Eier</li></ul>
+      <h2>Zubereitung</h2>
+      <ol><li>Teig rühren.</li><li>Backen.</li></ol>
+      <strong>Portionen</strong><span>8</span>
+    </body></html>`;
+    const result = extractHtmlFallback($(html));
+    expect(result.recipes[0]?.["recipeIngredient"]).toEqual([
+      "200 g Mehl",
+      "2 Eier",
+    ]);
+    expect(result.recipes[0]?.["recipeInstructions"]).toEqual([
+      "Teig rühren.",
+      "Backen.",
+    ]);
+    expect(result.recipes[0]?.["recipeYield"]).toBe("8");
+  });
 });

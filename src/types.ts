@@ -11,6 +11,8 @@ export type DiscoverySource =
 export interface SeedConfig {
   domain: string;
   sitemapUrl?: string;
+  sitemapUrls?: string[];
+  startUrls?: string[];
   requiresJs: boolean;
   respectRobotsTxt: boolean;
   maxPages: number;
@@ -26,6 +28,9 @@ export interface PageDocument {
   _id?: ObjectId;
   canonicalUrl: string;
   domain: string;
+  language: string;
+  languageConfidence: number;
+  languageSignals: string[];
   fetchedAt: Date;
   httpStatus: number;
   fetchMode: "cheerio" | "playwright";
@@ -51,6 +56,9 @@ export interface RecipeDocument {
   _id?: ObjectId;
   pageUrl: string;
   domain: string;
+  language: string;
+  languageConfidence: number;
+  languageSignals: string[];
   extractedAt: Date;
   extractionMethod: "json-ld" | "html-parsing" | "partial";
   extractorVersion: string;
@@ -78,9 +86,11 @@ export interface DomainMetricsSummary {
   processedPages: number;
   recipePages: number;
   extractedRecipes: number;
+  recipeLanguages: Record<string, number>;
   recrawlSkips: number;
   fallbacksEnqueued: number;
   offDomainAdmissions: number;
+  blockedUrlReasons: Record<string, number>;
   processedByMode: FetchModeCounters;
   recrawlSkipsByMode: FetchModeCounters;
   recipePageYield: number;
@@ -91,9 +101,11 @@ export interface CrawlMetricsSummary {
   processedPages: number;
   recipePages: number;
   extractedRecipes: number;
+  recipeLanguages: Record<string, number>;
   recrawlSkips: number;
   fallbacksEnqueued: number;
   offDomainAdmissions: number;
+  blockedUrlReasons: Record<string, number>;
   processedByMode: FetchModeCounters;
   recrawlSkipsByMode: FetchModeCounters;
   recipePageYield: number;

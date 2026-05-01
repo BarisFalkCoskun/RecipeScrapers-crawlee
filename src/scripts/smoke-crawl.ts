@@ -44,6 +44,9 @@ async function main() {
   await store.upsertPage({
     canonicalUrl: freshSkipUrl,
     domain,
+    language: "da",
+    languageConfidence: 1,
+    languageSignals: ["preseeded-language"],
     fetchedAt: new Date(),
     httpStatus: 200,
     fetchMode: "cheerio",
@@ -60,7 +63,7 @@ async function main() {
 
   const seed: SeedConfig = {
     domain,
-    sitemapUrl: `${baseUrl}/sitemap.xml`,
+    sitemapUrl: `${baseUrl}/missing-sitemap.xml`,
     requiresJs: false,
     respectRobotsTxt: true,
     maxPages: 20,
@@ -76,7 +79,11 @@ async function main() {
   const [cheerioQueue, playwrightQueue, cheerioRequestList] = await Promise.all([
     RequestQueue.open(`smoke-cheerio-queue-${runId}`),
     RequestQueue.open(`smoke-playwright-queue-${runId}`),
-    createSitemapRequestList([seed], `smoke-sitemap-request-list-${runId}`),
+    createSitemapRequestList([seed], `smoke-sitemap-request-list-${runId}`, {
+      discoverSitemaps: async function* () {
+        yield `${baseUrl}/sitemap.xml`;
+      },
+    }),
   ]);
 
   try {
@@ -201,6 +208,8 @@ function createFixtureServer(requestCounts: Map<string, number>) {
       <h1>Rodfrugtgryde</h1>
       <p>ingredienser tilberedning opskrift portioner minutter</p>
       <a href="/recipe/discovered-static">Discovered recipe</a>
+      <a href="/category/english">English recipes</a>
+      <a href="/search?q=kage">Search noise</a>
     </main>
   </body>
 </html>`);
@@ -219,6 +228,28 @@ function createFixtureServer(requestCounts: Map<string, number>) {
 
     if (url.pathname === "/recipe/playwright-discovered") {
       respondRecipePage(res, "Playwright Discovered Recipe");
+      return;
+    }
+
+    if (url.pathname === "/category/english") {
+      res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+      res.end(`<!doctype html>
+<html lang="en">
+  <head>
+    <title>English recipes</title>
+  </head>
+  <body>
+    <main>
+      <p>recipe ingredients instructions serves minutes</p>
+      <a href="/recipes/english-cake">English cake recipe</a>
+    </main>
+  </body>
+</html>`);
+      return;
+    }
+
+    if (url.pathname === "/recipes/english-cake") {
+      respondRecipePage(res, "English Cake", "en");
       return;
     }
 
@@ -295,31 +326,39 @@ function createFixtureServer(requestCounts: Map<string, number>) {
 
 function respondRecipePage(
   res: http.ServerResponse<http.IncomingMessage>,
-  title: string
+  title: string,
+  language = "da"
 ) {
   res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
   res.end(`<!doctype html>
-<html>
+<html lang="${language}">
   <head>
     <title>${title}</title>
-    <script type="application/ld+json">${jsonLdRecipe(title)}</script>
+    <script type="application/ld+json">${jsonLdRecipe(title, language)}</script>
   </head>
   <body>
     <main>
       <h1>${title}</h1>
-      <p>ingredienser tilberedning opskrift portioner minutter</p>
+      <p>${
+        language === "en"
+          ? "ingredients instructions recipe serves minutes"
+          : "ingredienser tilberedning opskrift portioner minutter"
+      }</p>
     </main>
   </body>
 </html>`);
 }
 
-function jsonLdRecipe(title: string) {
+function jsonLdRecipe(title: string, language = "da") {
   return JSON.stringify({
     "@context": "https://schema.org",
     "@type": "Recipe",
+    inLanguage: language,
     name: title,
-    recipeIngredient: ["1 kg kartofler"],
-    recipeInstructions: ["Bland det hele sammen."],
+    recipeIngredient:
+      language === "en" ? ["1 cup flour"] : ["1 kg kartofler"],
+    recipeInstructions:
+      language === "en" ? ["Mix everything together."] : ["Bland det hele sammen."],
   });
 }
 
@@ -378,10 +417,24 @@ function assertSmokeRun({
     );
   }
 
+  if ((summary.recipeLanguages["da"] ?? 0) < 1) {
+    throw new Error("Smoke crawl expected Danish recipe language metrics");
+  }
+
+  if ((summary.recipeLanguages["en"] ?? 0) < 1) {
+    throw new Error("Smoke crawl expected English recipe language metrics");
+  }
+
+  if ((summary.blockedUrlReasons["hard-denylist-pattern"] ?? 0) < 1) {
+    throw new Error("Smoke crawl expected blocked URL reason metrics");
+  }
+
   const expectedPages = [
     canonicalizeUrl(`${baseUrl}/`),
     canonicalizeUrl(`${baseUrl}/recipe/sitemap-static`),
     canonicalizeUrl(`${baseUrl}/recipe/discovered-static`),
+    canonicalizeUrl(`${baseUrl}/category/english`),
+    canonicalizeUrl(`${baseUrl}/recipes/english-cake`),
     canonicalizeUrl(`${baseUrl}/recipe/js-shell`),
     canonicalizeUrl(`${baseUrl}/recipe/playwright-discovered`),
     canonicalizeUrl(`http://localhost:${new URL(baseUrl).port}/collection/seasonal`),
@@ -402,6 +455,13 @@ function assertSmokeRun({
 
   if (store.recipes.size < 6) {
     throw new Error("Smoke crawl expected extracted recipes to be persisted");
+  }
+
+  const storedLanguages = new Set(
+    Array.from(store.recipes.values()).map((recipe) => recipe.language)
+  );
+  if (!storedLanguages.has("da") || !storedLanguages.has("en")) {
+    throw new Error("Smoke crawl expected recipes to be stored by language");
   }
 
   if (store.runs.length !== 1) {

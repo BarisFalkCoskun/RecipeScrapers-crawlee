@@ -2,16 +2,25 @@ import { SitemapRequestList, discoverValidSitemaps, log } from "crawlee";
 import type { SeedConfig } from "../types.js";
 import { normalizeDomain } from "../utils/canonicalize.js";
 
+type SitemapDiscoveryFn = (rootUrls: string[]) => AsyncIterable<string>;
+
 export async function createSitemapRequestList(
   seeds: SeedConfig[],
-  persistStateKey: string
+  persistStateKey: string,
+  options: { discoverSitemaps?: SitemapDiscoveryFn } = {}
 ) {
   if (seeds.length === 0) {
     return undefined;
   }
 
   const sitemapUrls = (
-    await Promise.all(seeds.map((seed) => resolveSeedSitemapUrls(seed)))
+    await Promise.all(
+      seeds.map((seed) =>
+        resolveSeedSitemapUrls(seed, {
+          discoverSitemaps: options.discoverSitemaps,
+        })
+      )
+    )
   ).flat();
 
   if (sitemapUrls.length === 0) {
@@ -31,18 +40,23 @@ export async function createSitemapRequestList(
 
 const SITEMAP_DISCOVERY_TIMEOUT_MS = 30_000;
 
-async function resolveSeedSitemapUrls(seed: SeedConfig): Promise<string[]> {
-  if (seed.sitemapUrl) {
-    return [seed.sitemapUrl];
-  }
+export async function resolveSeedSitemapUrls(
+  seed: SeedConfig,
+  options: { discoverSitemaps?: SitemapDiscoveryFn } = {}
+): Promise<string[]> {
+  const configured = unique([
+    ...(seed.sitemapUrl ? [seed.sitemapUrl] : []),
+    ...(seed.sitemapUrls ?? []),
+  ]);
 
-  const rootUrl = `https://${normalizeDomain(seed.domain)}`;
+  const rootUrls = getSitemapDiscoveryRootUrls(seed, configured);
   const discovered: string[] = [];
+  const discoverSitemaps = options.discoverSitemaps ?? discoverValidSitemaps;
 
   try {
     await withTimeout(
       (async () => {
-        for await (const sitemapUrl of discoverValidSitemaps([rootUrl])) {
+        for await (const sitemapUrl of discoverSitemaps(rootUrls)) {
           discovered.push(sitemapUrl);
         }
       })(),
@@ -55,13 +69,21 @@ async function resolveSeedSitemapUrls(seed: SeedConfig): Promise<string[]> {
     );
   }
 
-  if (discovered.length === 0) {
+  if (configured.length > 0 && discovered.length > 0) {
+    log.info(
+      `Using ${configured.length} configured sitemap URLs and ${discovered.length} discovered fallback sitemap URLs for ${seed.domain}`
+    );
+  } else if (configured.length > 0) {
+    log.info(
+      `Using ${configured.length} configured sitemap URLs for ${seed.domain}; no fallback sitemaps discovered`
+    );
+  } else if (discovered.length === 0) {
     log.warning(`No valid sitemaps discovered for ${seed.domain}`);
   } else {
     log.info(`Discovered ${discovered.length} sitemap URLs for ${seed.domain}`);
   }
 
-  return discovered;
+  return unique([...configured, ...discovered]);
 }
 
 async function withTimeout<T>(
@@ -80,4 +102,25 @@ async function withTimeout<T>(
   } finally {
     if (timer) clearTimeout(timer);
   }
+}
+
+function unique(values: string[]): string[] {
+  return Array.from(new Set(values));
+}
+
+function getSitemapDiscoveryRootUrls(
+  seed: SeedConfig,
+  configuredSitemapUrls: string[]
+): string[] {
+  const roots = [`https://${normalizeDomain(seed.domain)}`];
+
+  for (const sitemapUrl of configuredSitemapUrls) {
+    try {
+      roots.push(new URL("/", sitemapUrl).toString().replace(/\/$/, ""));
+    } catch {
+      continue;
+    }
+  }
+
+  return unique(roots);
 }

@@ -1,5 +1,6 @@
 // src/crawlers/playwright-crawler.ts
 import {
+  Configuration,
   PlaywrightCrawler,
   createPlaywrightRouter,
   log,
@@ -9,6 +10,7 @@ import { extractJsonLdRecipes } from "../extractors/json-ld.js";
 import { extractHtmlFallback } from "../extractors/html-fallback.js";
 import { canonicalizeUrl, normalizeDomain } from "../utils/canonicalize.js";
 import { hashRecipe, hashHtml } from "../utils/hash.js";
+import { detectLanguage } from "../utils/language.js";
 import { CrawlMetrics } from "../telemetry/crawl-metrics.js";
 import {
   filterFreshRequestCandidates,
@@ -32,9 +34,18 @@ import {
 } from "../config.js";
 import { LinkFilter } from "../discovery/link-filter.js";
 import type { ExtractionResult } from "../types.js";
+import { execFile } from "node:child_process";
+import { freemem, totalmem } from "node:os";
+import { promisify } from "node:util";
 import { gzipSync } from "zlib";
 import { Binary } from "mongodb";
 import * as cheerio from "cheerio";
+
+const execFileAsync = promisify(execFile);
+const BYTES_PER_MIB = 1024 * 1024;
+const DEFAULT_CRAWLEE_AVAILABLE_MEMORY_RATIO = 0.25;
+const SNAPSHOTTER_MAX_USED_MEMORY_RATIO = 0.9;
+const SNAPSHOTTER_RESERVE_MEMORY_RATIO = 0.5;
 
 interface CreatePlaywrightCrawlerOptions {
   store: CrawlStore;
@@ -66,6 +77,16 @@ export function createPlaywrightCrawlerInstance(
   } = options;
   const router = createPlaywrightRouter();
   const logSkippedRequest = createSkippedRequestLogger("PlaywrightCrawler");
+  let handledRequestCount = 0;
+
+  void logPlaywrightMemoryDiagnostics("crawler-start", {
+    maxConcurrency: PLAYWRIGHT_CONFIG.maxConcurrency,
+    maxRequestsPerMinute: PLAYWRIGHT_CONFIG.maxRequestsPerMinute,
+    maxRequestsPerCrawl,
+    waitForLoadState,
+    waitForLoadStateTimeoutMs,
+    respectRobotsTxtFile,
+  });
 
   const handlePageRequest = async (
     routeLabel: RequestLabel,
@@ -160,12 +181,23 @@ export function createPlaywrightCrawlerInstance(
 
     const pageContentHash = hashHtml(html);
     const shouldStoreHtml = extraction.method !== "json-ld";
+    const rawHtmlBuffer = shouldStoreHtml
+      ? gzipSync(Buffer.from(html))
+      : undefined;
 
     log.info(
       `Playwright extracted ${extraction.recipes.length} recipes from ${canonicalUrl}`
     );
 
     const $ = cheerio.load(html);
+    const bodyText = $("body").text();
+    const pageLanguage = detectLanguage({
+      $,
+      html,
+      domain,
+      bodyText,
+      recipe: extraction.recipes[0] as Record<string, unknown> | undefined,
+    });
     const outboundRecipeLinks: string[] = [];
     const discoveredCandidates: RequestCandidate[] = [];
     $("a[href]").each((_i, el) => {
@@ -187,6 +219,9 @@ export function createPlaywrightCrawlerInstance(
     await store.upsertPage({
       canonicalUrl,
       domain,
+      language: pageLanguage.language,
+      languageConfidence: pageLanguage.languageConfidence,
+      languageSignals: pageLanguage.languageSignals,
       fetchedAt: new Date(),
       httpStatus: response?.status() ?? 200,
       fetchMode: "playwright",
@@ -195,9 +230,7 @@ export function createPlaywrightCrawlerInstance(
       extractionConfidence: extraction.confidence,
       extractionSignals: extraction.signals,
       recipeCount: extraction.recipes.length,
-      rawHtml: shouldStoreHtml
-        ? new Binary(gzipSync(Buffer.from(html)))
-        : undefined,
+      rawHtml: rawHtmlBuffer ? new Binary(rawHtmlBuffer) : undefined,
       pageContentHash,
       discoverySource: sourceDiscoverySource,
       sourceDomain:
@@ -210,12 +243,24 @@ export function createPlaywrightCrawlerInstance(
       outboundRecipeLinks,
     });
 
+    const recipeLanguages: string[] = [];
     for (const rawRecipe of extraction.recipes) {
       const recipeObj = rawRecipe as Record<string, unknown>;
+      const recipeLanguage = detectLanguage({
+        recipe: recipeObj,
+        $,
+        html,
+        domain,
+        bodyText,
+      });
+      recipeLanguages.push(recipeLanguage.language);
       const contentHash = hashRecipe(recipeObj);
       await store.insertRecipe({
         pageUrl: canonicalUrl,
         domain,
+        language: recipeLanguage.language,
+        languageConfidence: recipeLanguage.languageConfidence,
+        languageSignals: recipeLanguage.languageSignals,
         extractedAt: new Date(),
         extractionMethod: extraction.method as
           | "json-ld"
@@ -234,6 +279,7 @@ export function createPlaywrightCrawlerInstance(
       domain,
       fetchMode: "playwright",
       recipeCount: extraction.recipes.length,
+      recipeLanguages,
     });
 
     const { freshCandidates } = await filterFreshRequestCandidates({
@@ -267,18 +313,28 @@ export function createPlaywrightCrawlerInstance(
         linkFilter,
       });
 
-      if (
-        !shouldFollowCandidate({
-          decision,
-          isRecipeLike: isRecipeLink,
-          sourceIsTrusted,
-          nonRecipeHops: currentNonRecipeHops,
-        })
-      ) {
+      const shouldFollow = shouldFollowCandidate({
+        decision,
+        isRecipeLike: isRecipeLink,
+        sourceIsTrusted,
+        nonRecipeHops: currentNonRecipeHops,
+      });
+
+      if (!shouldFollow) {
+        metrics.recordBlockedUrl({
+          domain: candidate.domain,
+          reasons: decision.allowed
+            ? ["non-recipe-hop-limit"]
+            : decision.reasons,
+        });
         continue;
       }
 
       if (robotsTxt && !robotsTxt.isAllowed(candidate.canonicalUrl)) {
+        metrics.recordBlockedUrl({
+          domain: candidate.domain,
+          reasons: ["robotsTxt"],
+        });
         logSkippedRequest({ url: candidate.canonicalUrl, reason: "robotsTxt" });
         continue;
       }
@@ -318,6 +374,24 @@ export function createPlaywrightCrawlerInstance(
         domain
       );
     }
+
+    handledRequestCount += 1;
+    await maybeLogPlaywrightRequestDiagnostics({
+      handledRequestCount,
+      requestUrl,
+      canonicalUrl,
+      domain,
+      routeLabel,
+      htmlBytes: Buffer.byteLength(html),
+      bodyTextChars: bodyText.length,
+      rawHtmlGzipBytes: rawHtmlBuffer?.byteLength ?? 0,
+      recipeCount: extraction.recipes.length,
+      discoveredCandidateCount: discoveredCandidates.length,
+      freshCandidateCount: freshCandidates.length,
+      queuedRequestCount: requestsToQueue.length,
+      pageCount: page.context().pages().length,
+      browserContextCount: page.context().browser()?.contexts().length ?? null,
+    });
   };
 
   router.addHandler(REQUEST_LABELS.seedRoot, async (context) => {
@@ -375,6 +449,9 @@ export function createPlaywrightCrawlerInstance(
       await store.upsertPage({
         canonicalUrl: canonicalizeUrl(requestUrl),
         domain,
+        language: "und",
+        languageConfidence: 0,
+        languageSignals: ["language-undetected"],
         fetchedAt: new Date(),
         httpStatus: 0,
         fetchMode: "playwright",
@@ -447,4 +524,246 @@ function createSkippedRequestLogger(crawlerName: string) {
 
     log.debug(`${crawlerName} skipped ${url} (${reason})`);
   };
+}
+
+interface PlaywrightRequestDiagnostics {
+  handledRequestCount: number;
+  requestUrl: string;
+  canonicalUrl: string;
+  domain: string;
+  routeLabel: RequestLabel;
+  htmlBytes: number;
+  bodyTextChars: number;
+  rawHtmlGzipBytes: number;
+  recipeCount: number;
+  discoveredCandidateCount: number;
+  freshCandidateCount: number;
+  queuedRequestCount: number;
+  pageCount: number;
+  browserContextCount: number | null;
+}
+
+async function maybeLogPlaywrightRequestDiagnostics(
+  diagnostics: PlaywrightRequestDiagnostics
+): Promise<void> {
+  const options = getPlaywrightMemoryDiagnosticsOptions();
+  if (!options.enabled) {
+    return;
+  }
+
+  if (
+    diagnostics.handledRequestCount !== 1 &&
+    diagnostics.handledRequestCount % options.interval !== 0
+  ) {
+    return;
+  }
+
+  await logPlaywrightMemoryDiagnostics("request-sample", { ...diagnostics });
+}
+
+async function logPlaywrightMemoryDiagnostics(
+  reason: string,
+  context: Record<string, unknown>
+): Promise<void> {
+  const options = getPlaywrightMemoryDiagnosticsOptions();
+  if (!options.enabled) {
+    return;
+  }
+
+  const memoryUsage = process.memoryUsage();
+  const processTree = await collectProcessTreeMemory(options.topProcesses).catch(
+    (error: unknown) => ({
+      error: error instanceof Error ? error.message : String(error),
+    })
+  );
+
+  log.info("Playwright memory diagnostics", {
+    reason,
+    context,
+    crawleeMemoryBudget: getCrawleeMemoryBudgetSnapshot(),
+    nodeMemory: {
+      rssMiB: bytesToMiB(memoryUsage.rss),
+      heapUsedMiB: bytesToMiB(memoryUsage.heapUsed),
+      heapTotalMiB: bytesToMiB(memoryUsage.heapTotal),
+      externalMiB: bytesToMiB(memoryUsage.external),
+      arrayBuffersMiB: bytesToMiB(memoryUsage.arrayBuffers),
+    },
+    hostMemory: {
+      totalMiB: bytesToMiB(totalmem()),
+      freeMiB: bytesToMiB(freemem()),
+    },
+    processTree,
+  });
+}
+
+function getCrawleeMemoryBudgetSnapshot() {
+  const crawleeConfig = Configuration.getGlobalConfig();
+  const configuredMemoryMiB = crawleeConfig.get("memoryMbytes", 0);
+  const availableMemoryRatio = crawleeConfig.get(
+    "availableMemoryRatio",
+    DEFAULT_CRAWLEE_AVAILABLE_MEMORY_RATIO
+  );
+  const budgetBytes =
+    configuredMemoryMiB > 0
+      ? configuredMemoryMiB * BYTES_PER_MIB
+      : Math.ceil(totalmem() * availableMemoryRatio);
+  const overloadBytes = budgetBytes * SNAPSHOTTER_MAX_USED_MEMORY_RATIO;
+  const criticalBytes =
+    overloadBytes +
+    budgetBytes *
+      (1 - SNAPSHOTTER_MAX_USED_MEMORY_RATIO) *
+      SNAPSHOTTER_RESERVE_MEMORY_RATIO;
+
+  return {
+    source:
+      configuredMemoryMiB > 0
+        ? "CRAWLEE_MEMORY_MBYTES"
+        : "CRAWLEE_AVAILABLE_MEMORY_RATIO",
+    configuredMemoryMiB:
+      configuredMemoryMiB > 0 ? configuredMemoryMiB : null,
+    availableMemoryRatio,
+    budgetMiB: bytesToMiB(budgetBytes),
+    overloadAtMiB: bytesToMiB(overloadBytes),
+    criticalWarningAtMiB: bytesToMiB(criticalBytes),
+    env: {
+      CRAWLEE_MEMORY_MBYTES: process.env["CRAWLEE_MEMORY_MBYTES"] ?? null,
+      CRAWLEE_AVAILABLE_MEMORY_RATIO:
+        process.env["CRAWLEE_AVAILABLE_MEMORY_RATIO"] ?? null,
+    },
+  };
+}
+
+async function collectProcessTreeMemory(topProcesses: number) {
+  const { stdout } = await execFileAsync("ps", [
+    "-A",
+    "-o",
+    "ppid=",
+    "-o",
+    "pid=",
+    "-o",
+    "rss=",
+    "-o",
+    "comm=",
+  ]);
+  const rows = stdout
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map(parseProcessRow)
+    .filter((row): row is ProcessMemoryRow => row !== null);
+  const byPid = new Map(rows.map((row) => [row.pid, row]));
+  const childrenByParent = new Map<number, ProcessMemoryRow[]>();
+  for (const row of rows) {
+    const siblings = childrenByParent.get(row.ppid) ?? [];
+    siblings.push(row);
+    childrenByParent.set(row.ppid, siblings);
+  }
+
+  const rootPid = process.pid;
+  const seen = new Set<number>([rootPid]);
+  const stack = [rootPid];
+  const processTreeRows: ProcessMemoryRow[] = [];
+  while (stack.length > 0) {
+    const pid = stack.pop();
+    if (pid === undefined) {
+      continue;
+    }
+
+    const row = byPid.get(pid);
+    if (row) {
+      processTreeRows.push(row);
+    }
+
+    for (const child of childrenByParent.get(pid) ?? []) {
+      if (seen.has(child.pid)) {
+        continue;
+      }
+
+      seen.add(child.pid);
+      stack.push(child.pid);
+    }
+  }
+
+  const mainProcess = byPid.get(rootPid);
+  const childProcesses = processTreeRows.filter((row) => row.pid !== rootPid);
+  const childRssBytes = childProcesses.reduce(
+    (sum, row) => sum + row.rssBytes,
+    0
+  );
+  const mainRssBytes = mainProcess?.rssBytes ?? process.memoryUsage().rss;
+  const topChildProcesses = [...childProcesses]
+    .sort((a, b) => b.rssBytes - a.rssBytes)
+    .slice(0, topProcesses)
+    .map((row) => ({
+      pid: row.pid,
+      command: row.command,
+      rssMiB: bytesToMiB(row.rssBytes),
+    }));
+
+  return {
+    rootPid,
+    processCount: processTreeRows.length,
+    childProcessCount: childProcesses.length,
+    mainRssMiB: bytesToMiB(mainRssBytes),
+    childRssMiB: bytesToMiB(childRssBytes),
+    totalRssMiB: bytesToMiB(mainRssBytes + childRssBytes),
+    topChildProcesses,
+  };
+}
+
+interface ProcessMemoryRow {
+  ppid: number;
+  pid: number;
+  rssBytes: number;
+  command: string;
+}
+
+function parseProcessRow(line: string): ProcessMemoryRow | null {
+  const match = line.match(/^(\d+)\s+(\d+)\s+(\d+)\s+(.+)$/);
+  if (!match) {
+    return null;
+  }
+
+  const [, ppid, pid, rssKiB, command] = match;
+  const parsed = {
+    ppid: Number.parseInt(ppid, 10),
+    pid: Number.parseInt(pid, 10),
+    rssBytes: Number.parseInt(rssKiB, 10) * 1024,
+    command,
+  };
+
+  if (
+    !Number.isFinite(parsed.ppid) ||
+    !Number.isFinite(parsed.pid) ||
+    !Number.isFinite(parsed.rssBytes)
+  ) {
+    return null;
+  }
+
+  return parsed;
+}
+
+function getPlaywrightMemoryDiagnosticsOptions() {
+  return {
+    enabled: process.env["PLAYWRIGHT_MEMORY_DIAGNOSTICS"] !== "0",
+    interval: readPositiveIntEnv("PLAYWRIGHT_MEMORY_DIAGNOSTICS_INTERVAL", 25),
+    topProcesses: readPositiveIntEnv(
+      "PLAYWRIGHT_MEMORY_DIAGNOSTICS_TOP_PROCESSES",
+      6
+    ),
+  };
+}
+
+function readPositiveIntEnv(name: string, fallback: number): number {
+  const raw = process.env[name];
+  if (!raw) {
+    return fallback;
+  }
+
+  const parsed = Number.parseInt(raw, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function bytesToMiB(bytes: number): number {
+  return Math.round((bytes / BYTES_PER_MIB) * 10) / 10;
 }

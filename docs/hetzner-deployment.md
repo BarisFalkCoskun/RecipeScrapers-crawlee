@@ -48,7 +48,28 @@ npx playwright install chromium
 
 ```bash
 cp .env.example .env
-# Defaults work as-is: mongodb://localhost:27017, danishRecipes
+# Defaults work as-is: mongodb://localhost:27017, crawlee
+```
+
+If migrating an existing local MongoDB from the old `danishRecipes` database:
+
+```bash
+mongosh --quiet --eval '
+const renames = [
+  ["danishRecipes.pages", "crawlee.pages"],
+  ["danishRecipes.recipes", "crawlee.recipes"],
+  ["danishRecipes.crawl_runs", "crawlee.crawl_runs"],
+];
+for (const [from, to] of renames) {
+  const [fromDb, fromCollection] = from.split(".");
+  if (!db.getSiblingDB(fromDb).getCollectionNames().includes(fromCollection)) {
+    print(`skip missing ${from}`);
+    continue;
+  }
+  print(`rename ${from} -> ${to}`);
+  db.adminCommand({ renameCollection: from, to });
+}
+'
 ```
 
 ## 7. Run
@@ -74,7 +95,7 @@ pm2 logs recipe-crawler
 ## 8. Monitor MongoDB
 
 ```bash
-mongosh danishRecipes --eval "db.pages.countDocuments(); db.recipes.countDocuments()"
+mongosh crawlee --eval "db.pages.countDocuments(); db.recipes.countDocuments()"
 ```
 
 ## Notes

@@ -36,6 +36,29 @@ describe("LinkFilter", () => {
     expect(filter.shouldEnqueue("https://example.dk/page/3")).toBe(false);
   });
 
+  it("allows soft discovery pages only when trusted discovery is enabled", () => {
+    expect(filter.getQueueEligibility("https://example.dk/category/dinner")).toEqual({
+      allowed: false,
+      reasons: ["soft-discovery-pattern"],
+    });
+
+    expect(
+      filter.getQueueEligibility("https://example.dk/category/dinner", {
+        allowSoftDiscovery: true,
+      })
+    ).toEqual({
+      allowed: true,
+      domain: "example.dk",
+      reasons: ["queue-eligible", "trusted-soft-discovery"],
+    });
+
+    expect(
+      filter.shouldEnqueue("https://example.dk/page/2", {
+        allowSoftDiscovery: true,
+      })
+    ).toBe(true);
+  });
+
   it("rejects URLs with image/media file extensions", () => {
     expect(filter.shouldEnqueue("https://example.dk/photo.webp")).toBe(false);
     expect(filter.shouldEnqueue("https://example.dk/recipe/image.jpg")).toBe(false);

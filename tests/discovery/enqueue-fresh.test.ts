@@ -100,10 +100,11 @@ describe("enqueueFreshRequestsFromSitemap", () => {
     });
     const eligibilitySpy = vi.spyOn(linkFilter, "getQueueEligibility");
     const recordEnqueuedSpy = vi.spyOn(linkFilter, "recordEnqueued");
+    const metrics = new CrawlMetrics(["example.dk"]);
 
     async function* requestList() {
       yield { url: "https://example.dk/opskrift/ok" };
-      yield { url: "https://example.dk/category/blocked" };
+      yield { url: "https://example.dk/search?q=blocked" };
     }
 
     const result = await enqueueFreshRequestsFromSitemap({
@@ -111,7 +112,7 @@ describe("enqueueFreshRequestsFromSitemap", () => {
       requestList: requestList(),
       store: new MemoryCrawlStore(),
       recrawlCutoff: new Date("2026-04-01T00:00:00.000Z"),
-      metrics: new CrawlMetrics(["example.dk"]),
+      metrics,
       fetchMode: "cheerio",
       linkFilter,
       seedRolesByDomain: new Map([["example.dk", "trusted"]]),
@@ -139,6 +140,9 @@ describe("enqueueFreshRequestsFromSitemap", () => {
     expect(recordEnqueuedSpy).toHaveBeenCalledWith([
       "https://example.dk/opskrift/ok",
     ]);
+    expect(metrics.buildSummary().blockedUrlReasons).toEqual({
+      "hard-denylist-pattern": 1,
+    });
   });
 
   it("rejects non-http request candidates before they reach Crawlee queues", () => {

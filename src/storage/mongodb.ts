@@ -4,7 +4,7 @@ import type {
   PageDocument,
   RecipeDocument,
 } from "../types.js";
-import { STORAGE } from "../config.js";
+import { MONGODB_CONFIG, STORAGE } from "../config.js";
 import type { CrawlStore } from "./store.js";
 
 export class RecipeStore implements CrawlStore {
@@ -23,9 +23,15 @@ export class RecipeStore implements CrawlStore {
   async connect(): Promise<void> {
     await this.client.connect();
     this.db = this.client.db(this.dbName);
-    this.pages = this.db.collection<PageDocument>("pages");
-    this.recipes = this.db.collection<RecipeDocument>("recipes");
-    this.crawlRuns = this.db.collection<CrawlRunDocument>("crawl_runs");
+    this.pages = this.db.collection<PageDocument>(
+      MONGODB_CONFIG.collections.pages
+    );
+    this.recipes = this.db.collection<RecipeDocument>(
+      MONGODB_CONFIG.collections.recipes
+    );
+    this.crawlRuns = this.db.collection<CrawlRunDocument>(
+      MONGODB_CONFIG.collections.crawlRuns
+    );
     await this.ensureIndexes();
   }
 
@@ -35,11 +41,14 @@ export class RecipeStore implements CrawlStore {
 
     await this.pages.createIndex({ canonicalUrl: 1 }, { unique: true });
     await this.pages.createIndex({ domain: 1, fetchedAt: 1 });
+    await this.pages.createIndex({ language: 1, domain: 1 });
     await this.pages.createIndex({ extractionMethod: 1 });
     await this.pages.createIndex({ pageContentHash: 1 });
 
     await this.recipes.createIndex({ contentHash: 1 }, { unique: true });
     await this.recipes.createIndex({ domain: 1 });
+    await this.recipes.createIndex({ language: 1, domain: 1 });
+    await this.recipes.createIndex({ language: 1, extractedAt: -1 });
     await this.recipes.createIndex({ pageUrl: 1 });
 
     await this.crawlRuns.createIndex({ startedAt: -1 });

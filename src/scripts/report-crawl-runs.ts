@@ -1,4 +1,5 @@
 import { config } from "dotenv";
+import { MONGODB_CONFIG } from "../config.js";
 import { RecipeStore } from "../storage/mongodb.js";
 
 config();
@@ -7,7 +8,8 @@ const DEFAULT_LIMIT = 10;
 
 async function main() {
   const mongoUri = process.env["MONGODB_URI"] ?? "mongodb://localhost:27017";
-  const dbName = process.env["DB_NAME"] ?? "danishRecipes";
+  const dbName =
+    process.env["DB_NAME"] ?? MONGODB_CONFIG.defaultDatabaseName;
   const limit = parseLimit(process.env["LIMIT"]);
 
   const store = new RecipeStore(mongoUri, dbName);
@@ -59,6 +61,16 @@ async function main() {
           `  fallback reasons: ${Object.entries(fallbacksByReason)
             .map(([reason, count]) => `${reason}=${count}`)
             .join(", ")}`
+        );
+      }
+
+      if (Object.keys(summary.recipeLanguages ?? {}).length > 0) {
+        console.log(`  languages: ${formatRecord(summary.recipeLanguages)}`);
+      }
+
+      if (Object.keys(summary.blockedUrlReasons ?? {}).length > 0) {
+        console.log(
+          `  blocked URLs: ${formatRecord(summary.blockedUrlReasons)}`
         );
       }
     }
@@ -120,6 +132,12 @@ function formatPercentDelta(value: number): string {
 
 function padLeft(value: number | string, width: number): string {
   return String(value).padStart(width, " ");
+}
+
+function formatRecord(record: Record<string, number>): string {
+  return Object.entries(record)
+    .map(([key, count]) => `${key}=${count}`)
+    .join(", ");
 }
 
 main().catch((error: unknown) => {

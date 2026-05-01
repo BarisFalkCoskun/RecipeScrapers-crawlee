@@ -1,8 +1,9 @@
 import {
-  DENYLIST_PATTERNS,
+  HARD_DENYLIST_PATTERNS,
   RECIPE_PATH_PATTERNS,
   DISCOVERY,
   SKIP_EXTENSIONS,
+  SOFT_DISCOVERY_PATTERNS,
 } from "../config.js";
 import { KeyValueStore, log } from "crawlee";
 import { normalizeDomain } from "../utils/canonicalize.js";
@@ -29,6 +30,10 @@ export interface QueueEligibilityResult {
   allowed: boolean;
   reasons: string[];
   domain?: string;
+}
+
+export interface QueueEligibilityOptions {
+  allowSoftDiscovery?: boolean;
 }
 
 export class LinkFilter {
@@ -67,7 +72,10 @@ export class LinkFilter {
     return filter;
   }
 
-  getQueueEligibility(url: string): QueueEligibilityResult {
+  getQueueEligibility(
+    url: string,
+    options: QueueEligibilityOptions = {}
+  ): QueueEligibilityResult {
     if (this.totalEnqueued >= DISCOVERY.globalQueueCap) {
       return {
         allowed: false,
@@ -99,10 +107,20 @@ export class LinkFilter {
       };
     }
 
-    if (DENYLIST_PATTERNS.some((pattern) => pattern.test(parsed.pathname))) {
+    if (HARD_DENYLIST_PATTERNS.some((pattern) => pattern.test(parsed.pathname))) {
       return {
         allowed: false,
-        reasons: ["denylist-pattern"],
+        reasons: ["hard-denylist-pattern"],
+      };
+    }
+
+    const softDiscoveryMatch = SOFT_DISCOVERY_PATTERNS.some((pattern) =>
+      pattern.test(parsed.pathname)
+    );
+    if (softDiscoveryMatch && !options.allowSoftDiscovery) {
+      return {
+        allowed: false,
+        reasons: ["soft-discovery-pattern"],
       };
     }
 
@@ -119,12 +137,15 @@ export class LinkFilter {
     return {
       allowed: true,
       domain,
-      reasons: ["queue-eligible"],
+      reasons: [
+        "queue-eligible",
+        ...(softDiscoveryMatch ? ["trusted-soft-discovery"] : []),
+      ],
     };
   }
 
-  shouldEnqueue(url: string): boolean {
-    return this.getQueueEligibility(url).allowed;
+  shouldEnqueue(url: string, options?: QueueEligibilityOptions): boolean {
+    return this.getQueueEligibility(url, options).allowed;
   }
 
   shouldFollowLink(

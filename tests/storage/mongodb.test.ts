@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { STORAGE } from "../../src/config.js";
+import { MONGODB_CONFIG, STORAGE } from "../../src/config.js";
 import { RecipeStore } from "../../src/storage/mongodb.js";
 import type {
   CrawlRunDocument,
@@ -89,7 +89,7 @@ describe("RecipeStore", () => {
   let fakeClient: { close: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
-    store = new RecipeStore("mongodb://unused", "danishRecipes_test");
+    store = new RecipeStore("mongodb://unused", "crawlee_test");
     pages = [];
     recipes = [];
     crawlRuns = [];
@@ -144,6 +144,11 @@ describe("RecipeStore", () => {
     }).crawlRuns = crawlRunsCollection;
   });
 
+  it("uses the expected MongoDB database and collection names", () => {
+    expect(MONGODB_CONFIG.defaultDatabaseName).toBe("crawlee");
+    expect(MONGODB_CONFIG.collections.recipes).toBe("recipes");
+  });
+
   it("creates a TTL index for crawl run retention", async () => {
     await (
       store as never as { ensureIndexes: () => Promise<void> }
@@ -153,12 +158,27 @@ describe("RecipeStore", () => {
       { finishedAt: 1 },
       { expireAfterSeconds: STORAGE.crawlRunRetentionDays * 24 * 60 * 60 }
     );
+    expect(pagesCollection.createIndex).toHaveBeenCalledWith({
+      language: 1,
+      domain: 1,
+    });
+    expect(recipesCollection.createIndex).toHaveBeenCalledWith({
+      language: 1,
+      domain: 1,
+    });
+    expect(recipesCollection.createIndex).toHaveBeenCalledWith({
+      language: 1,
+      extractedAt: -1,
+    });
   });
 
   it("upserts a page document", async () => {
     const page: StoredPage = {
       canonicalUrl: "https://example.dk/opskrift/kage",
       domain: "example.dk",
+      language: "da",
+      languageConfidence: 1,
+      languageSignals: ["html-lang"],
       fetchedAt: new Date(),
       httpStatus: 200,
       fetchMode: "cheerio",
@@ -182,6 +202,9 @@ describe("RecipeStore", () => {
     const page: StoredPage = {
       canonicalUrl: "https://example.dk/opskrift/kage",
       domain: "example.dk",
+      language: "da",
+      languageConfidence: 1,
+      languageSignals: ["html-lang"],
       fetchedAt: new Date(),
       httpStatus: 200,
       fetchMode: "cheerio",
@@ -212,6 +235,9 @@ describe("RecipeStore", () => {
     const recipe: StoredRecipe = {
       pageUrl: "https://example.dk/opskrift/kage",
       domain: "example.dk",
+      language: "da",
+      languageConfidence: 1,
+      languageSignals: ["recipe-inLanguage"],
       extractedAt: new Date(),
       extractionMethod: "json-ld",
       extractorVersion: "1.0.0",
@@ -230,6 +256,9 @@ describe("RecipeStore", () => {
     const baseRecipe: StoredRecipe = {
       pageUrl: "https://example.dk/opskrift/kage",
       domain: "example.dk",
+      language: "da",
+      languageConfidence: 1,
+      languageSignals: ["recipe-inLanguage"],
       extractedAt: new Date("2026-03-28T10:00:00.000Z"),
       extractionMethod: "partial",
       extractorVersion: "1.0.0",
@@ -257,6 +286,9 @@ describe("RecipeStore", () => {
     await store.upsertPage({
       canonicalUrl: "https://example.dk/fresh",
       domain: "example.dk",
+      language: "da",
+      languageConfidence: 1,
+      languageSignals: ["html-lang"],
       fetchedAt: new Date("2026-03-20T00:00:00.000Z"),
       httpStatus: 200,
       fetchMode: "cheerio",
@@ -273,6 +305,9 @@ describe("RecipeStore", () => {
     await store.upsertPage({
       canonicalUrl: "https://example.dk/stale",
       domain: "example.dk",
+      language: "da",
+      languageConfidence: 1,
+      languageSignals: ["html-lang"],
       fetchedAt: new Date("2026-01-20T00:00:00.000Z"),
       httpStatus: 200,
       fetchMode: "cheerio",
@@ -311,9 +346,11 @@ describe("RecipeStore", () => {
         processedPages: 10,
         recipePages: 4,
         extractedRecipes: 5,
+        recipeLanguages: { da: 5 },
         recrawlSkips: 2,
         fallbacksEnqueued: 1,
         offDomainAdmissions: 1,
+        blockedUrlReasons: { "hard-denylist-pattern": 3 },
         processedByMode: { cheerio: 9, playwright: 1 },
         recrawlSkipsByMode: { cheerio: 2, playwright: 0 },
         recipePageYield: 0.4,

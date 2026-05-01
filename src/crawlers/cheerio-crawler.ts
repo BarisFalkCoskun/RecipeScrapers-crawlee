@@ -9,6 +9,7 @@ import { extractJsonLdRecipes } from "../extractors/json-ld.js";
 import { extractHtmlFallback } from "../extractors/html-fallback.js";
 import { canonicalizeUrl, normalizeDomain } from "../utils/canonicalize.js";
 import { hashRecipe, hashHtml } from "../utils/hash.js";
+import { detectLanguage } from "../utils/language.js";
 import { CrawlMetrics } from "../telemetry/crawl-metrics.js";
 import {
   filterFreshRequestCandidates,
@@ -174,6 +175,14 @@ export function createCheerioCrawlerInstance(
         extraction.method !== "json-ld" || extraction.confidence < 0.5;
 
       const pageContentHash = hashHtml(html);
+      const bodyText = $("body").text();
+      const pageLanguage = detectLanguage({
+        $,
+        html,
+        domain,
+        bodyText,
+        recipe: extraction.recipes[0] as Record<string, unknown> | undefined,
+      });
 
       const outboundRecipeLinks: string[] = [];
       const discoveredCandidates: RequestCandidate[] = [];
@@ -196,6 +205,9 @@ export function createCheerioCrawlerInstance(
       await store.upsertPage({
         canonicalUrl,
         domain,
+        language: pageLanguage.language,
+        languageConfidence: pageLanguage.languageConfidence,
+        languageSignals: pageLanguage.languageSignals,
         fetchedAt: new Date(),
         httpStatus: response.statusCode ?? 200,
         fetchMode: "cheerio",
@@ -225,12 +237,24 @@ export function createCheerioCrawlerInstance(
         outboundRecipeLinks,
       });
 
+      const recipeLanguages: string[] = [];
       for (const rawRecipe of extraction.recipes) {
         const recipeObj = rawRecipe as Record<string, unknown>;
+        const recipeLanguage = detectLanguage({
+          recipe: recipeObj,
+          $,
+          html,
+          domain,
+          bodyText,
+        });
+        recipeLanguages.push(recipeLanguage.language);
         const contentHash = hashRecipe(recipeObj);
         await store.insertRecipe({
           pageUrl: canonicalUrl,
           domain,
+          language: recipeLanguage.language,
+          languageConfidence: recipeLanguage.languageConfidence,
+          languageSignals: recipeLanguage.languageSignals,
           extractedAt: new Date(),
           extractionMethod: extraction.method as
             | "json-ld"
@@ -249,6 +273,7 @@ export function createCheerioCrawlerInstance(
         domain,
         fetchMode: "cheerio",
         recipeCount: extraction.recipes.length,
+        recipeLanguages,
       });
 
       const isRecipePage = extraction.recipes.length > 0;
@@ -292,18 +317,28 @@ export function createCheerioCrawlerInstance(
           linkFilter,
         });
 
-        if (
-          !shouldFollowCandidate({
-            decision,
-            isRecipeLike: isRecipeLink,
-            sourceIsTrusted,
-            nonRecipeHops: currentNonRecipeHops,
-          })
-        ) {
+        const shouldFollow = shouldFollowCandidate({
+          decision,
+          isRecipeLike: isRecipeLink,
+          sourceIsTrusted,
+          nonRecipeHops: currentNonRecipeHops,
+        });
+
+        if (!shouldFollow) {
+          metrics.recordBlockedUrl({
+            domain: candidate.domain,
+            reasons: decision.allowed
+              ? ["non-recipe-hop-limit"]
+              : decision.reasons,
+          });
           continue;
         }
 
         if (robotsTxt && !robotsTxt.isAllowed(canonical)) {
+          metrics.recordBlockedUrl({
+            domain: candidate.domain,
+            reasons: ["robotsTxt"],
+          });
           logSkippedRequest({ url: canonical, reason: "robotsTxt" });
           continue;
         }
@@ -409,6 +444,9 @@ export function createCheerioCrawlerInstance(
       await store.upsertPage({
         canonicalUrl: canonicalizeUrl(requestUrl),
         domain,
+        language: "und",
+        languageConfidence: 0,
+        languageSignals: ["language-undetected"],
         fetchedAt: new Date(),
         httpStatus: 0,
         fetchMode: "cheerio",

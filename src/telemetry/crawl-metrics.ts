@@ -12,9 +12,11 @@ interface DomainMetrics {
   processedPages: number;
   recipePages: number;
   extractedRecipes: number;
+  recipeLanguages: Map<string, number>;
   recrawlSkips: number;
   fallbacksEnqueued: number;
   offDomainAdmissions: number;
+  blockedUrlReasons: Map<string, number>;
   processedByMode: FetchModeCounters;
   recrawlSkipsByMode: FetchModeCounters;
 }
@@ -23,6 +25,7 @@ interface PageProcessedArgs {
   domain: string;
   fetchMode: FetchMode;
   recipeCount: number;
+  recipeLanguages?: string[];
 }
 
 interface RecrawlSkipArgs {
@@ -33,6 +36,11 @@ interface RecrawlSkipArgs {
 interface OffDomainAdmissionArgs {
   sourceDomain: string;
   targetDomain: string;
+}
+
+interface BlockedUrlArgs {
+  domain: string;
+  reasons: string[];
 }
 
 export class CrawlMetrics {
@@ -47,10 +55,20 @@ export class CrawlMetrics {
     this.seedDomains = new Set(seedDomains);
   }
 
-  recordPageProcessed({ domain, fetchMode, recipeCount }: PageProcessedArgs): void {
+  recordPageProcessed({
+    domain,
+    fetchMode,
+    recipeCount,
+    recipeLanguages = [],
+  }: PageProcessedArgs): void {
     const metrics = this.ensureDomain(domain);
     this.updateProcessedCounters(this.totals, fetchMode, recipeCount);
     this.updateProcessedCounters(metrics, fetchMode, recipeCount);
+
+    for (const language of recipeLanguages) {
+      this.incrementMap(this.totals.recipeLanguages, language);
+      this.incrementMap(metrics.recipeLanguages, language);
+    }
   }
 
   recordFallbackQueued(domain: string, reason = "unspecified"): void {
@@ -83,6 +101,14 @@ export class CrawlMetrics {
     }
   }
 
+  recordBlockedUrl({ domain, reasons }: BlockedUrlArgs): void {
+    const metrics = this.ensureDomain(domain);
+    for (const reason of reasons.length > 0 ? reasons : ["unspecified"]) {
+      this.incrementMap(this.totals.blockedUrlReasons, reason);
+      this.incrementMap(metrics.blockedUrlReasons, reason);
+    }
+  }
+
   buildSummary(): CrawlMetricsSummary {
     const domains = Array.from(this.byDomain.values())
       .map((metrics) => this.toSummary(metrics))
@@ -109,8 +135,17 @@ export class CrawlMetrics {
         `recipePages=${summary.recipePages}, recipes=${summary.extractedRecipes}, ` +
         `yield=${formatPercent(summary.recipePageYield)}, recrawlSkips=${summary.recrawlSkips}, ` +
         `fallbacks=${summary.fallbacksEnqueued}, fallbackRate=${formatPercent(summary.fallbackRate)}, ` +
-        `offDomainAdmissions=${summary.offDomainAdmissions}, newlyAdmittedDomains=${summary.newlyAdmittedDomains.length}`
+        `offDomainAdmissions=${summary.offDomainAdmissions}, newlyAdmittedDomains=${summary.newlyAdmittedDomains.length}, ` +
+        `blockedUrls=${sumRecord(summary.blockedUrlReasons)}`
     );
+
+    if (Object.keys(summary.recipeLanguages).length > 0) {
+      log.info(`Recipe languages: ${formatRecord(summary.recipeLanguages)}`);
+    }
+
+    if (Object.keys(summary.blockedUrlReasons).length > 0) {
+      log.info(`Blocked URL reasons: ${formatRecord(summary.blockedUrlReasons)}`);
+    }
 
     if (Object.keys(summary.playwrightFallbacksByReason).length > 0) {
       log.info(
@@ -129,7 +164,7 @@ export class CrawlMetrics {
           `recipePages=${domain.recipePages}, recipes=${domain.extractedRecipes}, ` +
           `yield=${formatPercent(domain.recipePageYield)}, recrawlSkips=${domain.recrawlSkips}, ` +
           `fallbacks=${domain.fallbacksEnqueued}, fallbackRate=${formatPercent(domain.fallbackRate)}, ` +
-          `offDomainAdmissions=${domain.offDomainAdmissions}`
+          `offDomainAdmissions=${domain.offDomainAdmissions}, blockedUrls=${sumRecord(domain.blockedUrlReasons)}`
       );
     }
   }
@@ -151,9 +186,11 @@ export class CrawlMetrics {
       processedPages: 0,
       recipePages: 0,
       extractedRecipes: 0,
+      recipeLanguages: new Map(),
       recrawlSkips: 0,
       fallbacksEnqueued: 0,
       offDomainAdmissions: 0,
+      blockedUrlReasons: new Map(),
       processedByMode: { cheerio: 0, playwright: 0 },
       recrawlSkipsByMode: { cheerio: 0, playwright: 0 },
     };
@@ -174,7 +211,17 @@ export class CrawlMetrics {
 
   private toSummary(metrics: DomainMetrics): DomainMetricsSummary {
     return {
-      ...metrics,
+      domain: metrics.domain,
+      processedPages: metrics.processedPages,
+      recipePages: metrics.recipePages,
+      extractedRecipes: metrics.extractedRecipes,
+      recipeLanguages: mapToSortedRecord(metrics.recipeLanguages),
+      recrawlSkips: metrics.recrawlSkips,
+      fallbacksEnqueued: metrics.fallbacksEnqueued,
+      offDomainAdmissions: metrics.offDomainAdmissions,
+      blockedUrlReasons: mapToSortedRecord(metrics.blockedUrlReasons),
+      processedByMode: metrics.processedByMode,
+      recrawlSkipsByMode: metrics.recrawlSkipsByMode,
       recipePageYield:
         metrics.processedPages === 0 ? 0 : metrics.recipePages / metrics.processedPages,
       fallbackRate:
@@ -183,8 +230,28 @@ export class CrawlMetrics {
           : metrics.fallbacksEnqueued / metrics.processedByMode.cheerio,
     };
   }
+
+  private incrementMap(map: Map<string, number>, key: string): void {
+    map.set(key, (map.get(key) ?? 0) + 1);
+  }
 }
 
 function formatPercent(value: number): string {
   return `${(value * 100).toFixed(1)}%`;
+}
+
+function mapToSortedRecord(map: Map<string, number>): Record<string, number> {
+  return Object.fromEntries(
+    Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b))
+  );
+}
+
+function formatRecord(record: Record<string, number>): string {
+  return Object.entries(record)
+    .map(([key, count]) => `${key}=${count}`)
+    .join(", ");
+}
+
+function sumRecord(record: Record<string, number>): number {
+  return Object.values(record).reduce((sum, count) => sum + count, 0);
 }

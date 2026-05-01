@@ -152,7 +152,7 @@ The crawler should not depend on this stage to keep fetching new pages.
 
 ## MongoDB Data Model
 
-**Database:** `danishRecipes`
+**Database:** `crawlee`
 
 ### `pageFetches`
 

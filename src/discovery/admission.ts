@@ -37,7 +37,10 @@ export function evaluateAdmission(
   const crossDomain = candidateDomain !== sourceDomain;
 
   const queueEligibility = options.linkFilter.getQueueEligibility(
-    candidate.canonicalUrl
+    candidate.canonicalUrl,
+    {
+      allowSoftDiscovery: options.sourceIsTrusted,
+    }
   );
   if (!queueEligibility.allowed) {
     return {

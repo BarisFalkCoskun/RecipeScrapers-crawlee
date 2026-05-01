@@ -9,6 +9,7 @@ describe("CrawlMetrics", () => {
       domain: "example.dk",
       fetchMode: "cheerio",
       recipeCount: 2,
+      recipeLanguages: ["da", "da"],
     });
     metrics.recordPageProcessed({
       domain: "example.dk",
@@ -19,6 +20,7 @@ describe("CrawlMetrics", () => {
       domain: "example.dk",
       fetchMode: "playwright",
       recipeCount: 1,
+      recipeLanguages: ["en"],
     });
     metrics.recordFallbackQueued("example.dk", "thin-content");
     metrics.recordRecrawlSkip({
@@ -29,6 +31,10 @@ describe("CrawlMetrics", () => {
       sourceDomain: "example.dk",
       targetDomain: "remote.example",
     });
+    metrics.recordBlockedUrl({
+      domain: "example.dk",
+      reasons: ["hard-denylist-pattern"],
+    });
 
     const summary = metrics.buildSummary();
 
@@ -38,6 +44,10 @@ describe("CrawlMetrics", () => {
     expect(summary.fallbacksEnqueued).toBe(1);
     expect(summary.recrawlSkips).toBe(1);
     expect(summary.offDomainAdmissions).toBe(1);
+    expect(summary.recipeLanguages).toEqual({ da: 2, en: 1 });
+    expect(summary.blockedUrlReasons).toEqual({
+      "hard-denylist-pattern": 1,
+    });
     expect(summary.fallbackRate).toBeCloseTo(0.5);
     expect(summary.newlyAdmittedDomains).toEqual(["remote.example"]);
     expect(summary.playwrightFallbacksByReason).toEqual({
@@ -52,6 +62,8 @@ describe("CrawlMetrics", () => {
       recrawlSkips: 1,
       fallbacksEnqueued: 1,
       offDomainAdmissions: 1,
+      recipeLanguages: { da: 2, en: 1 },
+      blockedUrlReasons: { "hard-denylist-pattern": 1 },
     });
   });
 });

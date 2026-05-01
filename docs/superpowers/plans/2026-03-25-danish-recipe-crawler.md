@@ -106,7 +106,7 @@ tests/
 `.env.example` (committed):
 ```
 MONGODB_URI=mongodb://localhost:27017
-DB_NAME=danishRecipes
+DB_NAME=crawlee
 ```
 
 Copy to `.env` for local use:
@@ -1231,7 +1231,7 @@ describe("RecipeStore", () => {
   let store: RecipeStore;
 
   beforeAll(async () => {
-    store = new RecipeStore("mongodb://localhost:27017", "danishRecipes_test");
+    store = new RecipeStore("mongodb://localhost:27017", "crawlee_test");
     await store.connect();
   });
 
@@ -1969,7 +1969,7 @@ log.setLevel(LogLevel.INFO);
 
 async function main() {
   const mongoUri = process.env["MONGODB_URI"] ?? "mongodb://localhost:27017";
-  const dbName = process.env["DB_NAME"] ?? "danishRecipes";
+  const dbName = process.env["DB_NAME"] ?? "crawlee";
 
   // Initialize MongoDB
   const store = new RecipeStore(mongoUri, dbName);
@@ -2088,13 +2088,13 @@ Expected: Logs showing sitemap loading, URL enqueuing, and crawling starting. Ki
 
 - [ ] **Step 4: Verify data in MongoDB**
 
-Run: `mongosh danishRecipes --eval "db.pages.countDocuments()"`
+Run: `mongosh crawlee --eval "db.pages.countDocuments()"`
 Expected: Non-zero count
 
-Run: `mongosh danishRecipes --eval "db.recipes.countDocuments()"`
+Run: `mongosh crawlee --eval "db.recipes.countDocuments()"`
 Expected: Non-zero count (if any recipes were found)
 
-Run: `mongosh danishRecipes --eval "db.recipes.findOne({}, { rawRecipe: 1 })"`
+Run: `mongosh crawlee --eval "db.recipes.findOne({}, { rawRecipe: 1 })"`
 Expected: A document with a `rawRecipe` field containing recipe data
 
 - [ ] **Step 5: Commit**

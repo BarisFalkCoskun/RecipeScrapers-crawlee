@@ -10,7 +10,7 @@ import { SEEDS } from "./discovery/seeds.js";
 import { createCheerioCrawlerInstance } from "./crawlers/cheerio-crawler.js";
 import { createPlaywrightCrawlerInstance } from "./crawlers/playwright-crawler.js";
 import { REQUEST_LABELS } from "./crawlers/request-routing.js";
-import { DISCOVERY } from "./config.js";
+import { DISCOVERY, MONGODB_CONFIG } from "./config.js";
 import {
   createCrawlRunStorageKeys,
   resolveCrawlRunId,
@@ -25,7 +25,8 @@ log.setLevel(LogLevel.INFO);
 
 async function main() {
   const mongoUri = process.env["MONGODB_URI"] ?? "mongodb://localhost:27017";
-  const dbName = process.env["DB_NAME"] ?? "danishRecipes";
+  const dbName =
+    process.env["DB_NAME"] ?? MONGODB_CONFIG.defaultDatabaseName;
   const recrawlCutoff = getRecrawlCutoff(DISCOVERY.recrawlAfterDays);
   const startedAt = new Date();
   const crawlRunId = resolveCrawlRunId(startedAt);
@@ -71,7 +72,7 @@ async function main() {
       ),
     ]);
 
-  log.info(`Prepared sitemap sources for ${SEEDS.length} seed domains`);
+  log.info(`Prepared sitemap sources for ${normalizedSeeds.length} seed domains`);
 
   await Promise.all([
     enqueueFreshRequestsFromSitemap({
@@ -97,32 +98,34 @@ async function main() {
   ]);
 
   for (const seed of normalizedSeeds) {
-    const rootUrl = `https://${normalizeDomain(seed.domain)}`;
-    const canonicalRootUrl = canonicalizeUrl(rootUrl);
     const fetchMode = seed.requiresJs ? "playwright" : "cheerio";
-    if (await store.wasPageFetchedSince(canonicalRootUrl, recrawlCutoff)) {
-      metrics.recordRecrawlSkip({
-        domain: normalizeDomain(seed.domain),
-        fetchMode,
-      });
-      log.info(`Skipping fresh seed root ${canonicalRootUrl}`);
-      continue;
-    }
-
     const queue = seed.requiresJs ? playwrightQueue : cheerioQueue;
-    const addResult = await queue.addRequest({
-      url: rootUrl,
-      uniqueKey: canonicalRootUrl,
-      label: REQUEST_LABELS.seedRoot,
-      userData: {
-        seedDomain: normalizeDomain(seed.domain),
-        isTrustedSource: seed.admissionRole === "trusted",
-        discoverySource: REQUEST_LABELS.seedRoot,
-        admissionSignals: ["same-domain-trusted-seed"],
-      },
-    });
-    if (!addResult.wasAlreadyPresent && !addResult.wasAlreadyHandled) {
-      linkFilter.recordEnqueued(canonicalRootUrl);
+
+    for (const startUrl of resolveSeedStartUrls(seed)) {
+      const canonicalStartUrl = canonicalizeUrl(startUrl);
+      if (await store.wasPageFetchedSince(canonicalStartUrl, recrawlCutoff)) {
+        metrics.recordRecrawlSkip({
+          domain: normalizeDomain(seed.domain),
+          fetchMode,
+        });
+        log.info(`Skipping fresh seed start URL ${canonicalStartUrl}`);
+        continue;
+      }
+
+      const addResult = await queue.addRequest({
+        url: startUrl,
+        uniqueKey: canonicalStartUrl,
+        label: REQUEST_LABELS.seedRoot,
+        userData: {
+          seedDomain: normalizeDomain(seed.domain),
+          isTrustedSource: seed.admissionRole === "trusted",
+          discoverySource: REQUEST_LABELS.seedRoot,
+          admissionSignals: ["same-domain-trusted-seed"],
+        },
+      });
+      if (!addResult.wasAlreadyPresent && !addResult.wasAlreadyHandled) {
+        linkFilter.recordEnqueued(canonicalStartUrl);
+      }
     }
   }
 
@@ -209,4 +212,16 @@ function calculateMaxRequestsPerCrawl(seeds: SeedConfig[]): number {
 
 function shouldRespectRobotsTxt(seeds: SeedConfig[]): boolean {
   return seeds.length > 0 && seeds.every((seed) => seed.respectRobotsTxt);
+}
+
+function resolveSeedStartUrls(seed: SeedConfig): string[] {
+  const rootUrl = `https://${normalizeDomain(seed.domain)}`;
+  const urls = [
+    rootUrl,
+    ...(seed.startUrls ?? []).map((startUrl) =>
+      new URL(startUrl, rootUrl).toString()
+    ),
+  ];
+
+  return Array.from(new Set(urls));
 }

@@ -7,23 +7,64 @@ interface HtmlExtractionResult {
   signals: string[];
 }
 
-const INGREDIENT_KEYWORDS = ["ingredienser", "ingrediens", "ingredients"];
+const INGREDIENT_KEYWORDS = [
+  "ingredienser",
+  "ingrediens",
+  "ingredients",
+  "ingredient",
+  "råvaror",
+  "zutaten",
+];
 const INSTRUCTION_KEYWORDS = [
   "fremgangsmaade",
   "fremgangsmåde",
   "tilberedning",
+  "sådan gør du",
   "instructions",
   "method",
   "steps",
+  "gör så här",
+  "saadan goer du",
+  "sadan gor du",
+  "fremgangsmåte",
+  "oppskrift",
+  "zubereitung",
+  "anleitung",
+  "zubereiten",
 ];
 const PREP_TIME_KEYWORDS = [
   "forberedelsestid",
   "prep time",
   "preparation time",
+  "förberedelsetid",
+  "vorbereitungszeit",
 ];
-const COOK_TIME_KEYWORDS = ["tilberedningstid", "cook time", "cooking time"];
-const TOTAL_TIME_KEYWORDS = ["samlet tid", "total time", "tid i alt"];
-const YIELD_KEYWORDS = ["portioner", "serves", "serveringer", "udbytte"];
+const COOK_TIME_KEYWORDS = [
+  "tilberedningstid",
+  "cook time",
+  "cooking time",
+  "tillagningstid",
+  "steketid",
+  "kochzeit",
+  "backzeit",
+];
+const TOTAL_TIME_KEYWORDS = [
+  "samlet tid",
+  "total time",
+  "tid i alt",
+  "total tid",
+  "gesamtdauer",
+  "gesamtzeit",
+];
+const YIELD_KEYWORDS = [
+  "portioner",
+  "serves",
+  "serveringer",
+  "udbytte",
+  "portionen",
+  "porsjoner",
+  "antal portioner",
+];
 
 export function extractHtmlFallback($: CheerioAPI): HtmlExtractionResult {
   const microdataResult = extractMicrodata($);

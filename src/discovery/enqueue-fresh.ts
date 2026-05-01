@@ -127,14 +127,23 @@ async function flushBatch({
   });
 
   const requestsToAdd = freshCandidates.flatMap((candidate) => {
+    const seedIsTrusted =
+      (seedRolesByDomain?.get(candidate.domain) ?? "trusted") === "trusted";
     const queueEligibility = linkFilter?.getQueueEligibility(
-      candidate.canonicalUrl
+      candidate.canonicalUrl,
+      {
+        allowSoftDiscovery: seedIsTrusted,
+      }
     ) ?? {
       allowed: true,
       reasons: ["queue-eligible"],
     };
 
     if (!queueEligibility.allowed) {
+      metrics.recordBlockedUrl({
+        domain: candidate.domain,
+        reasons: queueEligibility.reasons,
+      });
       return [];
     }
 
@@ -146,9 +155,7 @@ async function flushBatch({
         userData: {
           fromSitemap: true,
           seedDomain: candidate.domain,
-          isTrustedSource:
-            (seedRolesByDomain?.get(candidate.domain) ?? "trusted") ===
-            "trusted",
+          isTrustedSource: seedIsTrusted,
           discoverySource: "sitemap",
           admissionSignals: [
             ...queueEligibility.reasons,
