@@ -577,23 +577,21 @@ async function logPlaywrightMemoryDiagnostics(
     })
   );
 
-  log.info("Playwright memory diagnostics", {
+  const payload = {
     reason,
-    context,
-    crawleeMemoryBudget: getCrawleeMemoryBudgetSnapshot(),
-    nodeMemory: {
-      rssMiB: bytesToMiB(memoryUsage.rss),
-      heapUsedMiB: bytesToMiB(memoryUsage.heapUsed),
-      heapTotalMiB: bytesToMiB(memoryUsage.heapTotal),
-      externalMiB: bytesToMiB(memoryUsage.external),
-      arrayBuffersMiB: bytesToMiB(memoryUsage.arrayBuffers),
-    },
-    hostMemory: {
-      totalMiB: bytesToMiB(totalmem()),
-      freeMiB: bytesToMiB(freemem()),
-    },
-    processTree,
-  });
+    ...prefixDiagnosticFields("context", context),
+    ...prefixDiagnosticFields("crawlee", getCrawleeMemoryBudgetSnapshot()),
+    nodeRssMiB: bytesToMiB(memoryUsage.rss),
+    nodeHeapUsedMiB: bytesToMiB(memoryUsage.heapUsed),
+    nodeHeapTotalMiB: bytesToMiB(memoryUsage.heapTotal),
+    nodeExternalMiB: bytesToMiB(memoryUsage.external),
+    nodeArrayBuffersMiB: bytesToMiB(memoryUsage.arrayBuffers),
+    hostTotalMiB: bytesToMiB(totalmem()),
+    hostFreeMiB: bytesToMiB(freemem()),
+    ...getProcessTreeDiagnosticFields(processTree),
+  };
+
+  log.info(`Playwright memory diagnostics ${JSON.stringify(payload)}`);
 }
 
 function getCrawleeMemoryBudgetSnapshot() {
@@ -625,11 +623,42 @@ function getCrawleeMemoryBudgetSnapshot() {
     budgetMiB: bytesToMiB(budgetBytes),
     overloadAtMiB: bytesToMiB(overloadBytes),
     criticalWarningAtMiB: bytesToMiB(criticalBytes),
-    env: {
-      CRAWLEE_MEMORY_MBYTES: process.env["CRAWLEE_MEMORY_MBYTES"] ?? null,
-      CRAWLEE_AVAILABLE_MEMORY_RATIO:
-        process.env["CRAWLEE_AVAILABLE_MEMORY_RATIO"] ?? null,
-    },
+    envMemoryMbytes: process.env["CRAWLEE_MEMORY_MBYTES"] ?? null,
+    envAvailableMemoryRatio:
+      process.env["CRAWLEE_AVAILABLE_MEMORY_RATIO"] ?? null,
+  };
+}
+
+function prefixDiagnosticFields(
+  prefix: string,
+  fields: Record<string, unknown>
+): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(fields).map(([key, value]) => [`${prefix}_${key}`, value])
+  );
+}
+
+function getProcessTreeDiagnosticFields(
+  processTree:
+    | Awaited<ReturnType<typeof collectProcessTreeMemory>>
+    | { error: string }
+): Record<string, unknown> {
+  if ("error" in processTree) {
+    return {
+      processTreeError: processTree.error,
+    };
+  }
+
+  return {
+    processRootPid: processTree.rootPid,
+    processCount: processTree.processCount,
+    childProcessCount: processTree.childProcessCount,
+    processMainRssMiB: processTree.mainRssMiB,
+    processChildRssMiB: processTree.childRssMiB,
+    processTotalRssMiB: processTree.totalRssMiB,
+    processTopChildren: processTree.topChildProcesses
+      .map((row) => `${row.pid}:${row.command}:${row.rssMiB}MiB`)
+      .join(","),
   };
 }
 
