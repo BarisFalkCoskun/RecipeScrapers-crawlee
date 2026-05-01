@@ -5,15 +5,6 @@ const DEFAULT_MAX_PAGES = DISCOVERY.defaultMaxPagesPerDomain;
 
 export const SEEDS: SeedConfig[] = [
   {
-    domain: "valdemarsro.dk",
-    sitemapUrl: "https://www.valdemarsro.dk/sitemap.xml",
-    startUrls: ["https://www.valdemarsro.dk/opskrifter/"],
-    requiresJs: false,
-    respectRobotsTxt: true,
-    maxPages: DEFAULT_MAX_PAGES,
-    admissionRole: "trusted",
-  },
-  {
     domain: "arla.dk",
     sitemapUrl: "https://arla.dk/sitemap.xml",
     startUrls: ["https://arla.dk/opskrifter/"],

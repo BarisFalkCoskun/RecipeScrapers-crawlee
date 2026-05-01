@@ -81,12 +81,15 @@ Cheerio processes a page and one or more of these hold:
 
 Initial high-value recipe domains:
 
-- valdemarsro.dk
 - arla.dk/opskrifter
 - dk-kogebogen.dk
 - madensverden.dk
 - nemlig.com/opskrifter
 - styrkaansen.dk (verify accessibility before implementation)
+
+Omitted because it has already been scraped separately:
+
+- valdemarsro.dk
 
 ### Discovery Pipeline
 

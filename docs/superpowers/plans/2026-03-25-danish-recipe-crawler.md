@@ -310,13 +310,6 @@ import type { SeedConfig } from "../types.js";
 
 export const SEEDS: SeedConfig[] = [
   {
-    domain: "valdemarsro.dk",
-    sitemapUrl: "https://valdemarsro.dk/sitemap.xml",
-    requiresJs: false,
-    respectRobotsTxt: false,
-    maxPages: 5000,
-  },
-  {
     domain: "arla.dk",
     sitemapUrl: "https://arla.dk/sitemap.xml",
     requiresJs: false,
