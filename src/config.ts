@@ -57,6 +57,14 @@ export const CHEERIO_CONFIG = {
     HIGH_COVERAGE ? 0.25 : 1
   ),
   statusMessageLoggingIntervalSecs: 30,
+  diagnosticsLoggingIntervalSecs: readPositiveIntEnv(
+    "CHEERIO_DIAGNOSTICS_LOG_INTERVAL_SECS",
+    60
+  ),
+  diagnosticsPageInterval: readPositiveIntEnv(
+    "CHEERIO_DIAGNOSTICS_PAGE_INTERVAL",
+    250
+  ),
 };
 
 export const PLAYWRIGHT_CONFIG = {

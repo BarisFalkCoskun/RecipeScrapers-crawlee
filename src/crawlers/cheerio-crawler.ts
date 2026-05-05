@@ -67,6 +67,11 @@ export function createCheerioCrawlerInstance(
   } = options;
   const router = createCheerioRouter();
   const logSkippedRequest = createSkippedRequestLogger("CheerioCrawler");
+  const diagnostics = new CheerioCrawlerDiagnostics({
+    linkFilter,
+    logIntervalMs: CHEERIO_CONFIG.diagnosticsLoggingIntervalSecs * 1000,
+    pageInterval: CHEERIO_CONFIG.diagnosticsPageInterval,
+  });
 
   const handlePageRequest = async (
     routeLabel: RequestLabel,
@@ -76,9 +81,12 @@ export function createCheerioCrawlerInstance(
       const html = typeof body === "string" ? body : body.toString();
       const requestUrl = request.loadedUrl ?? request.url;
       const domain = normalizeDomain(new URL(requestUrl).hostname);
+      const pageStartedAt = Date.now();
+      diagnostics.recordRequestStarted(domain, requestUrl);
       const fromSitemap =
         routeLabel === REQUEST_LABELS.sitemapPage ||
         request.userData?.["fromSitemap"] === true;
+      const admissionScore = Number(request.userData?.["admissionScore"] ?? 0);
       const sourceDiscoverySource =
         (request.userData?.["discoverySource"] as
           | "seed-root"
@@ -143,17 +151,18 @@ export function createCheerioCrawlerInstance(
         }
       }
 
+      const bodyText = $("body").text();
+      const compactBodyTextLength = bodyText.replace(/\s+/g, " ").trim().length;
       const fallbackReason = getPlaywrightFallbackReason(
         $,
         html,
         extraction,
         fromSitemap,
-        Number(request.userData?.["admissionScore"] ?? 0)
+        admissionScore
       );
       const needsPlaywright = fallbackReason !== null;
 
       if (needsPlaywright && extraction.recipes.length === 0 && fallbackReason) {
-        log.info(`Enqueueing to Playwright: ${canonicalUrl}`);
         const enqueueInfo = await playwrightQueue.addRequest({
           url: requestUrl,
           uniqueKey: canonicalizeUrl(requestUrl),
@@ -165,9 +174,21 @@ export function createCheerioCrawlerInstance(
             playwrightFallbackReason: fallbackReason,
           },
         });
-        if (!enqueueInfo.wasAlreadyPresent && !enqueueInfo.wasAlreadyHandled) {
+        const newlyQueued =
+          !enqueueInfo.wasAlreadyPresent && !enqueueInfo.wasAlreadyHandled;
+        log.info(
+          `Enqueueing to Playwright: ${canonicalUrl} ` +
+            `reason=${fallbackReason} status=${formatQueueAddStatus(enqueueInfo)} ` +
+            `route=${routeLabel} method=${extraction.method} ` +
+            `confidence=${extraction.confidence.toFixed(2)} ` +
+            `signals=${formatSignals(extraction.signals)} ` +
+            `bodyTextLength=${compactBodyTextLength} ` +
+            `fromSitemap=${fromSitemap} admissionScore=${admissionScore}`
+        );
+        if (newlyQueued) {
           metrics.recordFallbackQueued(domain, fallbackReason);
           linkFilter.recordEnqueued(canonicalizeUrl(requestUrl));
+          diagnostics.recordFallbackQueued(domain, fallbackReason);
         }
       }
 
@@ -175,7 +196,6 @@ export function createCheerioCrawlerInstance(
         extraction.method !== "json-ld" || extraction.confidence < 0.5;
 
       const pageContentHash = hashHtml(html);
-      const bodyText = $("body").text();
       const pageLanguage = detectLanguage({
         $,
         html,
@@ -374,6 +394,9 @@ export function createCheerioCrawlerInstance(
         });
       }
 
+      let newlyQueuedCheerio = 0;
+      let newlyQueuedPlaywright = 0;
+
       if (cheerioRequests.length > 0) {
         const addResult = await cheerioQueue.addRequestsBatched(
           cheerioRequests.map(({ decision, ...requestInfo }) => requestInfo),
@@ -384,6 +407,7 @@ export function createCheerioCrawlerInstance(
             !requestInfo.wasAlreadyPresent && !requestInfo.wasAlreadyHandled
         );
         const addedKeys = newlyAdded.map((requestInfo) => requestInfo.uniqueKey);
+        newlyQueuedCheerio = newlyAdded.length;
         linkFilter.recordEnqueued(addedKeys);
         recordOffDomainAdmissions(
           cheerioRequests,
@@ -403,6 +427,7 @@ export function createCheerioCrawlerInstance(
             !requestInfo.wasAlreadyPresent && !requestInfo.wasAlreadyHandled
         );
         const addedKeys = newlyAdded.map((requestInfo) => requestInfo.uniqueKey);
+        newlyQueuedPlaywright = newlyAdded.length;
         linkFilter.recordEnqueued(addedKeys);
         recordOffDomainAdmissions(
           playwrightRequests,
@@ -411,6 +436,23 @@ export function createCheerioCrawlerInstance(
           domain
         );
       }
+
+      diagnostics.recordRequestFinished({
+        domain,
+        durationMillis: Date.now() - pageStartedAt,
+        recipeCount: extraction.recipes.length,
+        discoveredCandidates: discoveredCandidates.length,
+        freshCandidates: freshCandidates.length,
+        queuedCheerio: newlyQueuedCheerio,
+        queuedPlaywright: newlyQueuedPlaywright,
+      });
+      await diagnostics.maybeLogProgress({
+        trigger: "page-finished",
+        domain,
+        latestUrl: canonicalUrl,
+        cheerioQueue,
+        playwrightQueue,
+      });
   };
 
   router.addHandler(REQUEST_LABELS.seedRoot, async (context) => {
@@ -437,10 +479,35 @@ export function createCheerioCrawlerInstance(
     respectRobotsTxtFile,
     onSkippedRequest: logSkippedRequest,
     statusMessageLoggingInterval: CHEERIO_CONFIG.statusMessageLoggingIntervalSecs,
+    async errorHandler({ request }, error) {
+      const requestUrl = request.loadedUrl ?? request.url;
+      const domain = normalizeDomain(new URL(requestUrl).hostname);
+      diagnostics.recordRetry(domain);
+      log.warning(
+        `Cheerio retry diagnostic: url=${requestUrl} ` +
+          `retryCount=${request.retryCount} label=${classifyCheerioRequest(request)} ` +
+          `error=${formatErrorMessage(error)}`
+      );
+      await diagnostics.maybeLogProgress({
+        trigger: "retry",
+        domain,
+        latestUrl: requestUrl,
+        cheerioQueue,
+        playwrightQueue,
+      });
+    },
     async failedRequestHandler({ request }, error) {
       const requestUrl = request.url;
       const domain = normalizeDomain(new URL(requestUrl).hostname);
+      diagnostics.recordFailure(domain);
       log.error(`Failed after retries: ${requestUrl} - ${error.message}`);
+      await diagnostics.maybeLogProgress({
+        trigger: "failed-request",
+        domain,
+        latestUrl: requestUrl,
+        cheerioQueue,
+        playwrightQueue,
+      });
       await store.upsertPage({
         canonicalUrl: canonicalizeUrl(requestUrl),
         domain,
@@ -470,6 +537,294 @@ export function createCheerioCrawlerInstance(
       });
     },
   });
+}
+
+interface CheerioCrawlerDiagnosticsOptions {
+  linkFilter: LinkFilter;
+  logIntervalMs: number;
+  pageInterval: number;
+}
+
+interface CheerioDomainDiagnostics {
+  domain: string;
+  started: number;
+  finished: number;
+  recipes: number;
+  fallbackQueued: number;
+  fallbackReasons: Map<string, number>;
+  discoveredCandidates: number;
+  freshCandidates: number;
+  queuedCheerio: number;
+  queuedPlaywright: number;
+  retries: number;
+  failures: number;
+  totalDurationMillis: number;
+  maxDurationMillis: number;
+  firstStartedAt?: number;
+  lastStartedAt?: number;
+  startGapSamples: number;
+  totalStartGapMillis: number;
+  maxStartGapMillis: number;
+  latestUrl?: string;
+}
+
+class CheerioCrawlerDiagnostics {
+  private domains = new Map<string, CheerioDomainDiagnostics>();
+  private totalFinished = 0;
+  private lastLogAt = Date.now();
+
+  constructor(private readonly options: CheerioCrawlerDiagnosticsOptions) {}
+
+  recordRequestStarted(domain: string, url: string): void {
+    const stats = this.ensureDomain(domain);
+    const now = Date.now();
+    stats.started += 1;
+    stats.latestUrl = url;
+
+    if (stats.lastStartedAt !== undefined) {
+      const gapMillis = now - stats.lastStartedAt;
+      stats.startGapSamples += 1;
+      stats.totalStartGapMillis += gapMillis;
+      stats.maxStartGapMillis = Math.max(stats.maxStartGapMillis, gapMillis);
+    } else {
+      stats.firstStartedAt = now;
+    }
+
+    stats.lastStartedAt = now;
+  }
+
+  recordRequestFinished({
+    domain,
+    durationMillis,
+    recipeCount,
+    discoveredCandidates,
+    freshCandidates,
+    queuedCheerio,
+    queuedPlaywright,
+  }: {
+    domain: string;
+    durationMillis: number;
+    recipeCount: number;
+    discoveredCandidates: number;
+    freshCandidates: number;
+    queuedCheerio: number;
+    queuedPlaywright: number;
+  }): void {
+    const stats = this.ensureDomain(domain);
+    this.totalFinished += 1;
+    stats.finished += 1;
+    stats.recipes += recipeCount;
+    stats.discoveredCandidates += discoveredCandidates;
+    stats.freshCandidates += freshCandidates;
+    stats.queuedCheerio += queuedCheerio;
+    stats.queuedPlaywright += queuedPlaywright;
+    stats.totalDurationMillis += durationMillis;
+    stats.maxDurationMillis = Math.max(stats.maxDurationMillis, durationMillis);
+  }
+
+  recordFallbackQueued(domain: string, reason: string): void {
+    const stats = this.ensureDomain(domain);
+    stats.fallbackQueued += 1;
+    stats.fallbackReasons.set(
+      reason,
+      (stats.fallbackReasons.get(reason) ?? 0) + 1
+    );
+  }
+
+  recordRetry(domain: string): void {
+    this.ensureDomain(domain).retries += 1;
+  }
+
+  recordFailure(domain: string): void {
+    this.ensureDomain(domain).failures += 1;
+  }
+
+  async maybeLogProgress({
+    trigger,
+    domain,
+    latestUrl,
+    cheerioQueue,
+    playwrightQueue,
+  }: {
+    trigger: string;
+    domain: string;
+    latestUrl: string;
+    cheerioQueue: RequestQueue;
+    playwrightQueue: RequestQueue;
+  }): Promise<void> {
+    const now = Date.now();
+    const reachedPageInterval =
+      this.options.pageInterval > 0 &&
+      this.totalFinished > 0 &&
+      this.totalFinished % this.options.pageInterval === 0;
+    const reachedTimeInterval = now - this.lastLogAt >= this.options.logIntervalMs;
+
+    if (!reachedPageInterval && !reachedTimeInterval) {
+      return;
+    }
+
+    this.lastLogAt = now;
+    const [cheerioInfo, playwrightInfo] = await Promise.all([
+      safeQueueInfo(cheerioQueue),
+      safeQueueInfo(playwrightQueue),
+    ]);
+    const currentDomainStats = this.domains.get(domain);
+    const topDomains = this.topDomainsByFinished(3);
+
+    log.info(
+      `Cheerio diagnostics: trigger=${trigger} totalFinished=${this.totalFinished} ` +
+        `currentDomain=${domain} current=${formatDomainDiagnostics(
+          currentDomainStats
+        )} ` +
+        `cheerioQueue=${formatQueueInfo(cheerioInfo)} ` +
+        `playwrightQueue=${formatQueueInfo(playwrightInfo)} ` +
+        `linkFilterTotalEnqueued=${this.options.linkFilter.getTotalEnqueued()} ` +
+        `latestUrl=${latestUrl}`
+    );
+
+    for (const stats of topDomains) {
+      log.info(`Cheerio domain diagnostics: ${formatDomainDiagnostics(stats)}`);
+    }
+  }
+
+  private ensureDomain(domain: string): CheerioDomainDiagnostics {
+    const existing = this.domains.get(domain);
+    if (existing) {
+      return existing;
+    }
+
+    const created: CheerioDomainDiagnostics = {
+      domain,
+      started: 0,
+      finished: 0,
+      recipes: 0,
+      fallbackQueued: 0,
+      fallbackReasons: new Map(),
+      discoveredCandidates: 0,
+      freshCandidates: 0,
+      queuedCheerio: 0,
+      queuedPlaywright: 0,
+      retries: 0,
+      failures: 0,
+      totalDurationMillis: 0,
+      maxDurationMillis: 0,
+      startGapSamples: 0,
+      totalStartGapMillis: 0,
+      maxStartGapMillis: 0,
+    };
+    this.domains.set(domain, created);
+    return created;
+  }
+
+  private topDomainsByFinished(limit: number): CheerioDomainDiagnostics[] {
+    return Array.from(this.domains.values())
+      .sort((a, b) => b.finished - a.finished)
+      .slice(0, limit);
+  }
+}
+
+async function safeQueueInfo(queue: RequestQueue): Promise<{
+  totalRequestCount: number;
+  handledRequestCount: number;
+  pendingRequestCount: number;
+} | null> {
+  try {
+    const info = await queue.getInfo();
+    if (!info) {
+      return null;
+    }
+
+    return {
+      totalRequestCount: info.totalRequestCount,
+      handledRequestCount: info.handledRequestCount,
+      pendingRequestCount: info.pendingRequestCount,
+    };
+  } catch (error) {
+    log.warning(
+      `Unable to read Cheerio queue diagnostics: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+    return null;
+  }
+}
+
+function formatQueueInfo(
+  info: Awaited<ReturnType<typeof safeQueueInfo>>
+): string {
+  if (!info) {
+    return "unavailable";
+  }
+
+  return `{total:${info.totalRequestCount},handled:${info.handledRequestCount},pending:${info.pendingRequestCount}}`;
+}
+
+function formatDomainDiagnostics(
+  stats: CheerioDomainDiagnostics | undefined
+): string {
+  if (!stats) {
+    return "unavailable";
+  }
+
+  const avgStartGapMillis =
+    stats.startGapSamples === 0
+      ? 0
+      : stats.totalStartGapMillis / stats.startGapSamples;
+  const avgDurationMillis =
+    stats.finished === 0 ? 0 : stats.totalDurationMillis / stats.finished;
+
+  return (
+    `{domain:${stats.domain},started:${stats.started},finished:${stats.finished},` +
+    `recipes:${stats.recipes},fallbackQueued:${stats.fallbackQueued},` +
+    `fallbackReasons:${formatMap(stats.fallbackReasons)},` +
+    `discovered:${stats.discoveredCandidates},fresh:${stats.freshCandidates},` +
+    `queuedCheerio:${stats.queuedCheerio},queuedPlaywright:${stats.queuedPlaywright},` +
+    `retries:${stats.retries},failures:${stats.failures},` +
+    `avgStartGapMs:${avgStartGapMillis.toFixed(0)},maxStartGapMs:${stats.maxStartGapMillis},` +
+    `avgDurationMs:${avgDurationMillis.toFixed(0)},maxDurationMs:${stats.maxDurationMillis}}`
+  );
+}
+
+function formatMap(map: Map<string, number>): string {
+  if (map.size === 0) {
+    return "none";
+  }
+
+  return Array.from(map.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, value]) => `${key}=${value}`)
+    .join("|");
+}
+
+function formatSignals(signals: string[]): string {
+  if (signals.length === 0) {
+    return "none";
+  }
+
+  const shown = signals.slice(0, 8).join("|");
+  return signals.length > 8 ? `${shown}|+${signals.length - 8}` : shown;
+}
+
+function formatQueueAddStatus({
+  wasAlreadyHandled,
+  wasAlreadyPresent,
+}: {
+  wasAlreadyHandled: boolean;
+  wasAlreadyPresent: boolean;
+}): string {
+  if (wasAlreadyHandled) {
+    return "already-handled";
+  }
+
+  if (wasAlreadyPresent) {
+    return "already-present";
+  }
+
+  return "new";
+}
+
+function formatErrorMessage(error: Error): string {
+  return error.message.replace(/\s+/g, " ").slice(0, 300);
 }
 
 function requestLabelToDiscoverySource(
