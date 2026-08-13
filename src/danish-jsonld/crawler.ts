@@ -11,6 +11,7 @@ import {
   buildRecipeDocumentV2,
   extractCompleteJsonLdRecipes,
   gzipJsonLdScripts,
+  parseJsonLdScript,
 } from "./recipe-document.js";
 import { classifySourceOutcome, type SourceRunObservation } from "./source-outcome.js";
 import type { DanishJsonLdSource } from "./source-registry.js";
@@ -81,6 +82,7 @@ export class DanishJsonLdSourceSession {
       failedRequests: 0,
       blockedRequests: 0,
       discoveredRecipeCandidates: 0,
+      processedRecipePages: 0,
       rejectedIncompleteJsonLd: 0,
       rejectedMalformedJsonLd: 0,
       playwrightFailures: 0,
@@ -142,7 +144,7 @@ export class DanishJsonLdSourceSession {
     response: DanishJsonLdResponse
   ): Promise<DanishJsonLdRoutingResult> {
     this.observation.completedRequests = (this.observation.completedRequests ?? 0) + 1;
-    const blocked = [401, 403, 429, 526].includes(response.statusCode);
+    const blocked = [401, 403, 429, 455, 526].includes(response.statusCode);
     if (blocked) {
       this.observation.blockedRequests = (this.observation.blockedRequests ?? 0) + 1;
     }
@@ -198,7 +200,7 @@ export class DanishJsonLdSourceSession {
     if (!budgeted.handled || budgeted.capReached) this.markPageCapReached();
     const blocked =
       input.statusCode !== undefined &&
-      [401, 403, 429, 526].includes(input.statusCode);
+      [401, 403, 429, 455, 526].includes(input.statusCode);
     if (blocked) {
       this.observation.blockedRequests =
         (this.observation.blockedRequests ?? 0) + 1;
@@ -327,6 +329,8 @@ export class DanishJsonLdSourceSession {
       );
       return emptyRoutes();
     }
+    this.observation.processedRecipePages =
+      (this.observation.processedRecipePages ?? 0) + 1;
     const extraction = extractCompleteJsonLdRecipes(response.body);
     this.observation.rejectedIncompleteJsonLd =
       (this.observation.rejectedIncompleteJsonLd ?? 0) +
@@ -334,11 +338,23 @@ export class DanishJsonLdSourceSession {
     this.observation.rejectedMalformedJsonLd =
       (this.observation.rejectedMalformedJsonLd ?? 0) +
       extraction.malformedJsonLdCount;
+    if (extraction.repairedJsonLdCount > 0) {
+      this.emit("json-ld-repair", {
+        repairedScriptCount: extraction.repairedJsonLdCount,
+        rawJsonLdScriptCount: extraction.rawScripts.length,
+        repair: "literal-control-characters-escaped",
+      });
+    }
 
     for (const rawScript of extraction.rawScripts.slice(0, 25)) {
-      try {
-        this.emit("json-ld-shape", inspectJsonLdShape(JSON.parse(rawScript)));
-      } catch {
+      const parsedScript = parseJsonLdScript(rawScript);
+      if (parsedScript) {
+        this.emit("json-ld-shape", {
+          ...inspectJsonLdShape(parsedScript.parsed),
+          repairedControlCharacterCount:
+            parsedScript.repairedControlCharacterCount,
+        });
+      } else {
         this.emit("json-ld-shape", {
           malformed: true,
           bytes: Buffer.byteLength(rawScript),

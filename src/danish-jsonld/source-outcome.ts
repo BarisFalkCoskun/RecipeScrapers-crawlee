@@ -11,6 +11,7 @@ export interface SourceRunObservation {
   failedRequests?: number;
   blockedRequests?: number;
   discoveredRecipeCandidates?: number;
+  processedRecipePages?: number;
   rejectedIncompleteJsonLd?: number;
   rejectedMalformedJsonLd?: number;
   playwrightFailures?: number;
@@ -46,8 +47,13 @@ export function classifySourceOutcome(
   if (persistedRecipes === 0 && (observation.blockedRequests ?? 0) > 0) {
     return { sourceId: observation.sourceId, outcome: "blocked", outcomeReasons: reasons };
   }
-  if (hasIncompleteWork(observation) || (observation.discoveredRecipeCandidates ?? 0) > 0) {
-    return { sourceId: observation.sourceId, outcome: "partial", outcomeReasons: reasons };
+  if (persistedRecipes === 0 && (
+    (observation.discoveredRecipeCandidates ?? 0) > 0 ||
+    (observation.rejectedIncompleteJsonLd ?? 0) > 0 ||
+    (observation.rejectedMalformedJsonLd ?? 0) > 0 ||
+    hasIncompleteWork(observation)
+  )) {
+    return { sourceId: observation.sourceId, outcome: "failed", outcomeReasons: reasons };
   }
   return { sourceId: observation.sourceId, outcome: "no_data", outcomeReasons: reasons };
 }
@@ -82,6 +88,12 @@ function outcomeReasons(observation: SourceRunObservation): SourceOutcomeReason[
   if ((observation.mongoFailures ?? 0) > 0) reasons.push("mongo-failure");
   if (observation.pageCapReached === true) reasons.push("max-pages-cap-reached");
   if (!observation.discoveryComplete) reasons.push("discovery-incomplete");
+  if (
+    (observation.persistedRecipes ?? 0) === 0 &&
+    (observation.processedRecipePages ?? 0) > 0 &&
+    (observation.rejectedIncompleteJsonLd ?? 0) === 0 &&
+    (observation.rejectedMalformedJsonLd ?? 0) === 0
+  ) reasons.push("structured-extraction-empty");
   reasons.push(...(observation.discoveryFailureReasons ?? []));
   if (reasons.length === 0) reasons.push("no-recipe-candidates");
   return reasons.sort();

@@ -59,8 +59,12 @@ site:
 npm run migration:status -- --format markdown
 ```
 
-Currently, this command records configuration state only. It must not be read
-as a passed canary, shadow run, or cutover for any source.
+The checklist includes the bounded pilot evidence from crawl run
+`2026-08-13T13-52-17.460Z-attempt-e656480c-a774-4c00-aa02-1fa3fdd898e0`.
+Only Mad og Have and TV2 Mad completed cleanly and are `canary_passed`.
+Arla, Coop, and KitchenAid remain `configured` because the run reached the
+50-page cap. The source reason column records each remaining block or defer
+decision; no source is `shadow_passed` or `cutover`.
 
 ## Evidence-backed source-by-source transition
 
@@ -74,9 +78,16 @@ Advance one source at a time; do not advance the whole pilot as a group.
 | `shadow_passed` to `cutover` | Recorded parity approval, verified consumer reads of `RecipeDocumentV2.normalized`, rollback owner, and an individually scheduled source cutover. Keep the legacy source available until the source's rollback window ends. |
 
 Each transition must attach the run ID, timestamp, source ID, comparison scope,
-and the reviewed evidence to the migration record. No currently registered
-source is represented here as having passed any of these gates. Arla is
-`configured`; **no source is `canary_passed`, `shadow_passed`, or `cutover`.**
+and the reviewed evidence to the migration record. The current registry records
+Mad og Have and TV2 Mad as `canary_passed`; **no source is `shadow_passed` or
+`cutover`.**
+
+The strict JSON-LD runtime preserves each exact source script. When an otherwise
+valid script contains illegal literal JSON control characters inside a quoted
+value, the parser may escape only those characters for the parsed recipe node
+and records `json-ld-control-character-repaired`. Other malformed JSON remains
+rejected. HTTP 455 WAF responses are treated as blocked; with `--vpn`, an
+explicit 455 block body is eligible for reactive Mullvad relay rotation.
 
 ## Remote-only full shadow and comparison
 

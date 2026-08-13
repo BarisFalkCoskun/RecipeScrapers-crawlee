@@ -2961,6 +2961,77 @@ const LEGACY_DISCOVERY_OVERRIDES: Partial<
   sydhavnsbloggen: { recipeUrlPatterns: LEGACY_LISTING_DEFAULT_PATTERNS },
 };
 
+const PILOT_CANARY_RUN =
+  "2026-08-13T13-52-17.460Z-attempt-e656480c-a774-4c00-aa02-1fa3fdd898e0";
+
+/**
+ * Current-site evidence discovered by the bounded pilot canary. Legacy family
+ * metadata remains unchanged, while executable discovery and checklist state
+ * reflect the live source contract.
+ */
+const CURRENT_SOURCE_OVERRIDES: Partial<
+  Record<string, Partial<DanishJsonLdSource>>
+> = {
+  arla: {
+    migrationState: "configured",
+    latestCanary: PILOT_CANARY_RUN,
+    deferOrBlockReason: "Pilot persisted recipes but reached the canary page cap",
+  },
+  coop: {
+    migrationState: "configured",
+    latestCanary: PILOT_CANARY_RUN,
+    deferOrBlockReason: "Pilot persisted recipes but reached the canary page cap",
+  },
+  kitchenaid: {
+    migrationState: "configured",
+    latestCanary: PILOT_CANARY_RUN,
+    deferOrBlockReason: "Pilot persisted recipes but reached the canary page cap",
+  },
+  madoghave: { migrationState: "canary_passed", latestCanary: PILOT_CANARY_RUN },
+  tv2mad: { migrationState: "canary_passed", latestCanary: PILOT_CANARY_RUN },
+  surdejsentusiasten: {
+    migrationState: "configured",
+    latestCanary: PILOT_CANARY_RUN,
+    deferOrBlockReason: "Pilot persisted recipes but one request failed",
+  },
+  kikkoman: {
+    migrationState: "configured",
+    latestCanary: PILOT_CANARY_RUN,
+    deferOrBlockReason: "Literal-control-character JSON-LD repair awaits canary validation",
+  },
+  gamleopskrifter: {
+    discovery: "sitemap",
+    sitemapUrls: ["https://gamleopskrifter.com/sitemap.xml"],
+    startUrls: [],
+    recipeUrlPatterns: [
+      "^https://gamleopskrifter\\.com/g/home/r/[^/?#]+/?$",
+    ],
+    migrationState: "configured",
+    latestCanary: PILOT_CANARY_RUN,
+    deferOrBlockReason: "Current sitemap discovery repair awaits canary validation",
+  },
+  sundpaabudget: {
+    migrationState: "blocked",
+    latestCanary: PILOT_CANARY_RUN,
+    deferOrBlockReason: "HTTP 455 WAF denial on configured sitemaps",
+  },
+  klinksgaard: {
+    migrationState: "blocked",
+    latestCanary: PILOT_CANARY_RUN,
+    deferOrBlockReason: "HTTP 401 security verification on configured sitemap",
+  },
+  netto: {
+    migrationState: "deferred",
+    latestCanary: PILOT_CANARY_RUN,
+    deferOrBlockReason: "Recipe JSON-LD omits required ingredients and instructions",
+  },
+  madrejsen: {
+    migrationState: "deferred",
+    latestCanary: PILOT_CANARY_RUN,
+    deferOrBlockReason: "No complete Recipe JSON-LD after Playwright rendering",
+  },
+};
+
 const LEGACY_DEFAULT_REQUEST_SETTINGS = {
   delaySeconds: 2,
   rateLimitPerMinute: null,
@@ -2996,27 +3067,33 @@ const LEGACY_REQUEST_SETTING_OVERRIDES: Record<
  * listing spiders inherit their recipe patterns and request settings.
  */
 export const DANISH_JSONLD_SOURCES: DanishJsonLdSource[] =
-  RAW_DANISH_JSONLD_SOURCES.map((source) => ({
-    ...source,
-    ...LEGACY_DISCOVERY_OVERRIDES[source.id],
-    requestSettings: {
-      ...LEGACY_DEFAULT_REQUEST_SETTINGS,
-      ...LEGACY_REQUEST_SETTING_OVERRIDES[source.id],
-    },
-    ...(source.discovery === "listing"
-      ? {
-          listingDiscovery: {
-            ...LEGACY_LISTING_DISCOVERY_DEFAULT,
-            ...LEGACY_LISTING_DISCOVERY_OVERRIDES[source.id],
-          },
-        }
-      : {
-          sitemapDiscovery: LEGACY_SITEMAP_DISCOVERY_OVERRIDES[source.id] ?? {
-            followPatterns: [],
-            skipUrlFragments: [],
-          },
-        }),
-  }));
+  RAW_DANISH_JSONLD_SOURCES.map((source) => {
+    const effectiveSource: DanishJsonLdSource = {
+      ...source,
+      ...LEGACY_DISCOVERY_OVERRIDES[source.id],
+      ...CURRENT_SOURCE_OVERRIDES[source.id],
+      requestSettings: {
+        ...LEGACY_DEFAULT_REQUEST_SETTINGS,
+        ...LEGACY_REQUEST_SETTING_OVERRIDES[source.id],
+      },
+    };
+    return {
+      ...effectiveSource,
+      ...(effectiveSource.discovery === "listing"
+        ? {
+            listingDiscovery: {
+              ...LEGACY_LISTING_DISCOVERY_DEFAULT,
+              ...LEGACY_LISTING_DISCOVERY_OVERRIDES[source.id],
+            },
+          }
+        : {
+            sitemapDiscovery: LEGACY_SITEMAP_DISCOVERY_OVERRIDES[source.id] ?? {
+              followPatterns: [],
+              skipUrlFragments: [],
+            },
+          }),
+    };
+  });
 
 /** Legacy normalized Mongo documents identify their producer by source_site. */
 export const DANISH_JSONLD_LEGACY_SOURCE_SITES: Record<string, string[]> =

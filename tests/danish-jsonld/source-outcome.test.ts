@@ -81,7 +81,7 @@ describe("Danish JSON-LD source outcomes", () => {
     ).not.toBe("no_data");
   });
 
-  it("classifies malformed JSON-LD with no persisted recipes as partial", () => {
+  it("classifies malformed JSON-LD with no persisted recipes as failed", () => {
     expect(
       classifySourceOutcome({
         sourceId: "arla",
@@ -92,8 +92,28 @@ describe("Danish JSON-LD source outcomes", () => {
       })
     ).toEqual({
       sourceId: "arla",
-      outcome: "partial",
+      outcome: "failed",
       outcomeReasons: ["malformed-json-ld-rejected"],
+    });
+  });
+
+  it("reports structured extraction empty when discovered recipe pages yield no Recipe node", () => {
+    expect(
+      classifySourceOutcome({
+        sourceId: "madrejsen",
+        persistedRecipes: 0,
+        completedRequests: 11,
+        discoveredRecipeCandidates: 5,
+        processedRecipePages: 10,
+        discoveryComplete: true,
+      })
+    ).toEqual({
+      sourceId: "madrejsen",
+      outcome: "failed",
+      outcomeReasons: [
+        "recipe-candidates-discovered",
+        "structured-extraction-empty",
+      ],
     });
   });
 

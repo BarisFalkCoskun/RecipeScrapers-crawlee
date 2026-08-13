@@ -203,6 +203,29 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
     ).toEqual(result.rawScripts);
   });
 
+  it("recovers Recipe JSON-LD containing literal control characters without changing the raw script", () => {
+    const exactScript = `{"@type":"Recipe","name":"Hummus","recipeCategory":"
+      Vegetarisk,
+      Dips","recipeIngredient":["1 dåse kikærter"],"recipeInstructions":["Blend."]}`;
+    const result = extractCompleteJsonLdRecipes(
+      `<script type="application/ld+json">${exactScript}</script>`
+    );
+
+    expect(result.rawScripts).toEqual([exactScript]);
+    expect(result.recipes).toEqual([
+      {
+        "@type": "Recipe",
+        name: "Hummus",
+        recipeCategory: "\n      Vegetarisk,\n      Dips",
+        recipeIngredient: ["1 dåse kikærter"],
+        recipeInstructions: ["Blend."],
+      },
+    ]);
+    expect(result.repairedJsonLdCount).toBe(1);
+    expect(result.malformedJsonLdCount).toBe(0);
+    expect(result.signals).toContain("json-ld-control-character-repaired");
+  });
+
   it("parses exact JSON-LD script text without decoding HTML entities", () => {
     const result = extractCompleteJsonLdRecipes(`
       <script type="application/ld+json">{"@type":"Recipe","name":"Bread &amp; Butter","recipeIngredient":["1 æg"],"recipeInstructions":["Bag."]}</script>

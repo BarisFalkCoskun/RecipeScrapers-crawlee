@@ -12,7 +12,7 @@ const PREFLIGHT_SESSION_ID = "vpn-preflight";
 const MAX_ROTATIONS_PER_REQUEST = 3;
 const REPEATED_TRANSPORT_FAILURES = 2;
 const EXPLICIT_BLOCK_PATTERN =
-  /captcha|access denied|checking your browser|cloudflare challenge|temporarily blocked|unusual traffic/iu;
+  /captcha|access denied|checking your browser|cloudflare challenge|temporarily blocked|request (?:was )?blocked|security incident detected|unusual traffic/iu;
 const TRANSPORT_ERROR_CODES = new Set([
   "ECONNRESET",
   "ETIMEDOUT",

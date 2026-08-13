@@ -13,7 +13,17 @@ export interface CompleteJsonLdExtraction {
   rejectedReasons: Array<"incomplete-json-ld" | "malformed-json-ld">;
   incompleteJsonLdCount: number;
   malformedJsonLdCount: number;
-  signals: Array<"incomplete-json-ld" | "malformed-json-ld">;
+  repairedJsonLdCount: number;
+  signals: Array<
+    | "incomplete-json-ld"
+    | "malformed-json-ld"
+    | "json-ld-control-character-repaired"
+  >;
+}
+
+export interface ParsedJsonLdScript {
+  parsed: unknown;
+  repairedControlCharacterCount: number;
 }
 
 export interface BuildRecipeDocumentV2Input {
@@ -45,18 +55,20 @@ export function extractCompleteJsonLdRecipes(
   const rejectedReasons: CompleteJsonLdExtraction["rejectedReasons"] = [];
   let incompleteJsonLdCount = 0;
   let malformedJsonLdCount = 0;
+  let repairedJsonLdCount = 0;
 
   for (const rawScript of rawScripts) {
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(rawScript);
-    } catch {
+    const parsedScript = parseJsonLdScript(rawScript);
+    if (!parsedScript) {
       rejectedReasons.push("malformed-json-ld");
       malformedJsonLdCount += 1;
       continue;
     }
+    if (parsedScript.repairedControlCharacterCount > 0) {
+      repairedJsonLdCount += 1;
+    }
 
-    for (const recipe of findRecipeNodes(parsed)) {
+    for (const recipe of findRecipeNodes(parsedScript.parsed)) {
       if (isCompleteRecipe(recipe)) {
         recipes.push(recipe);
       } else {
@@ -72,8 +84,90 @@ export function extractCompleteJsonLdRecipes(
     rejectedReasons: Array.from(new Set(rejectedReasons)),
     incompleteJsonLdCount,
     malformedJsonLdCount,
-    signals: Array.from(new Set(rejectedReasons)),
+    repairedJsonLdCount,
+    signals: Array.from(new Set([
+      ...rejectedReasons,
+      ...(repairedJsonLdCount > 0
+        ? ["json-ld-control-character-repaired" as const]
+        : []),
+    ])),
   };
+}
+
+/**
+ * Parses valid JSON unchanged. If parsing fails solely because a quoted value
+ * contains literal JSON control characters, retries with those characters
+ * escaped. Exact script bytes remain preserved separately on the page record.
+ */
+export function parseJsonLdScript(rawScript: string): ParsedJsonLdScript | null {
+  try {
+    return { parsed: JSON.parse(rawScript), repairedControlCharacterCount: 0 };
+  } catch {
+    const repaired = escapeLiteralJsonControlCharacters(rawScript);
+    if (repaired.count === 0) return null;
+    try {
+      return {
+        parsed: JSON.parse(repaired.value),
+        repairedControlCharacterCount: repaired.count,
+      };
+    } catch {
+      return null;
+    }
+  }
+}
+
+function escapeLiteralJsonControlCharacters(rawScript: string): {
+  value: string;
+  count: number;
+} {
+  let value = "";
+  let insideString = false;
+  let escaped = false;
+  let count = 0;
+
+  for (const character of rawScript) {
+    if (!insideString) {
+      value += character;
+      if (character === '"') insideString = true;
+      continue;
+    }
+    if (escaped) {
+      value += character;
+      escaped = false;
+      continue;
+    }
+    if (character === "\\") {
+      value += character;
+      escaped = true;
+      continue;
+    }
+    if (character === '"') {
+      value += character;
+      insideString = false;
+      continue;
+    }
+
+    const codePoint = character.codePointAt(0) ?? 0;
+    if (codePoint > 0x1f) {
+      value += character;
+      continue;
+    }
+    value += escapeJsonControlCharacter(codePoint);
+    count += 1;
+  }
+
+  return { value, count };
+}
+
+function escapeJsonControlCharacter(codePoint: number): string {
+  switch (codePoint) {
+    case 0x08: return "\\b";
+    case 0x09: return "\\t";
+    case 0x0a: return "\\n";
+    case 0x0c: return "\\f";
+    case 0x0d: return "\\r";
+    default: return `\\u${codePoint.toString(16).padStart(4, "0")}`;
+  }
 }
 
 /** Compresses each exact source script independently so raw provenance survives. */

@@ -9,8 +9,12 @@ describe("Danish JSON-LD source registry", () => {
 
   it("contains exactly the 99 Danish legacy JSON-LD sources", () => {
     expect(DANISH_JSONLD_SOURCES).toHaveLength(99);
-    expect(DANISH_JSONLD_SOURCES.filter((source) => source.discovery === "sitemap")).toHaveLength(65);
-    expect(DANISH_JSONLD_SOURCES.filter((source) => source.discovery === "listing")).toHaveLength(34);
+    expect(DANISH_JSONLD_SOURCES.filter(
+      (source) => source.legacyFamily === "JsonLdSitemapRecipeSpider"
+    )).toHaveLength(65);
+    expect(DANISH_JSONLD_SOURCES.filter(
+      (source) => source.legacyFamily === "JsonLdListingSpider"
+    )).toHaveLength(34);
     expect(DANISH_JSONLD_SOURCES.map((source) => source.id).sort()).toEqual(expectedLegacySourceIds);
   });
 
@@ -28,18 +32,37 @@ describe("Danish JSON-LD source registry", () => {
     }
   });
 
-  it("marks only Arla configured and does not claim cutover for any source", () => {
-    const configured = DANISH_JSONLD_SOURCES.filter(
-      (source) => source.migrationState === "configured"
-    );
+  it("records the pilot canary evidence without claiming cutover", () => {
+    const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
 
-    expect(configured.map((source) => source.id)).toEqual(["arla"]);
-    expect(
-      DANISH_JSONLD_SOURCES.filter((source) => source.id !== "arla").every(
-        (source) => source.migrationState === "not_started"
-      )
-    ).toBe(true);
+    expect(["arla", "coop", "kitchenaid", "madoghave", "tv2mad"].map(
+      (sourceId) => [sourceId, byId.get(sourceId)?.migrationState]
+    )).toEqual([
+      ["arla", "configured"],
+      ["coop", "configured"],
+      ["kitchenaid", "configured"],
+      ["madoghave", "canary_passed"],
+      ["tv2mad", "canary_passed"],
+    ]);
+    expect(byId.get("surdejsentusiasten")?.migrationState).toBe("configured");
+    expect(byId.get("kikkoman")?.migrationState).toBe("configured");
+    expect(byId.get("gamleopskrifter")?.migrationState).toBe("configured");
+    expect(byId.get("sundpaabudget")?.migrationState).toBe("blocked");
+    expect(byId.get("klinksgaard")?.migrationState).toBe("blocked");
+    expect(byId.get("netto")?.migrationState).toBe("deferred");
+    expect(byId.get("madrejsen")?.migrationState).toBe("deferred");
     expect(DANISH_JSONLD_SOURCES.filter((source) => source.migrationState === "cutover")).toHaveLength(0);
+  });
+
+  it("uses Gamle Opskrifter's current sitemap and recipe route", () => {
+    const source = DANISH_JSONLD_SOURCES.find((entry) => entry.id === "gamleopskrifter");
+
+    expect(source).toMatchObject({
+      discovery: "sitemap",
+      sitemapUrls: ["https://gamleopskrifter.com/sitemap.xml"],
+      startUrls: [],
+      recipeUrlPatterns: ["^https://gamleopskrifter\\.com/g/home/r/[^/?#]+/?$"],
+    });
   });
 
   it("preserves inherited listing patterns and Ferrero Rocher's dynamic discovery", () => {

@@ -161,6 +161,7 @@ export type SourceOutcomeReason =
   | "http-200-block-shell"
   | "loaded-url-domain-not-allowed"
   | "canonical-domain-not-allowed"
+  | "structured-extraction-empty"
   | "no-recipe-candidates";
 
 export interface SourceRunOutcomeSummary {

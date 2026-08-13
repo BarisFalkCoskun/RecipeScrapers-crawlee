@@ -221,7 +221,7 @@ describe("Danish JSON-LD source session", () => {
     expect(session.observation.discoveryComplete).toBe(false);
     expect(session.observation.discoveryFailureReasons).toContain(reason);
     expect(session.outcome()).toMatchObject({
-      outcome: reason === "http-200-block-shell" ? "blocked" : "partial",
+      outcome: reason === "http-200-block-shell" ? "blocked" : "failed",
       outcomeReasons: expect.arrayContaining([reason, "discovery-incomplete"]),
     });
   });
@@ -284,7 +284,7 @@ describe("Danish JSON-LD source session", () => {
     expect(session.outcome().outcomeReasons).toContain("canonical-domain-not-allowed");
   });
 
-  it.each([401, 403, 429, 526])(
+  it.each([401, 403, 429, 455, 526])(
     "rejects blocked HTTP %i before extraction or persistence",
     async (statusCode) => {
     const store = new MemoryV2Store();
@@ -361,6 +361,37 @@ describe("Danish JSON-LD source session", () => {
     });
   });
 
+  it("persists control-character-repaired JSON-LD and emits bounded repair evidence", async () => {
+    const store = new MemoryV2Store();
+    const diagnostics: DanishJsonLdDiagnostic[] = [];
+    const session = new DanishJsonLdSourceSession({
+      source,
+      store,
+      crawlRunId: "run-repaired-jsonld",
+      crawlAttemptId: "attempt-repaired-jsonld",
+      maxPages: 5,
+      diagnosticSink: (event) => diagnostics.push(event),
+    });
+
+    await session.handleResponse({
+      kind: "recipe",
+      fetchMode: "cheerio",
+      url: "https://example.dk/opskrifter/hummus",
+      statusCode: 200,
+      headers: {},
+      body: `<script type="application/ld+json">{"@type":"Recipe","name":"Hummus","recipeCategory":"
+        Vegetarisk","recipeIngredient":["Kikærter"],"recipeInstructions":["Blend."]}</script>`,
+    });
+
+    expect(store.recipesV2).toHaveLength(1);
+    expect(store.recipesV2[0]?.extractionSignals)
+      .toContain("json-ld-control-character-repaired");
+    expect(diagnostics).toContainEqual(expect.objectContaining({
+      event: "json-ld-repair",
+      data: expect.objectContaining({ repairedScriptCount: 1 }),
+    }));
+  });
+
   it("preserves blocked status evidence received through a terminal failure handler", async () => {
     const diagnostics: DanishJsonLdDiagnostic[] = [];
     const session = new DanishJsonLdSourceSession({
@@ -427,7 +458,7 @@ describe("Danish JSON-LD source session", () => {
     expect(session.observation.pageCapReached).toBe(true);
     expect(session.outcome()).toEqual({
       sourceId: "fixture",
-      outcome: "partial",
+      outcome: "failed",
       outcomeReasons: [
         "discovery-incomplete",
         "max-pages-cap-reached",

@@ -131,6 +131,23 @@ describe("Mullvad VPN transport", () => {
     });
   });
 
+  it("rotates for a nonstandard HTTP 455 WAF denial", async () => {
+    const { transport } = createTransport();
+    await transport.initialize();
+    await transport.proxyConfiguration.newUrl("ignored", {
+      request: requestWithSession("vpn-455-block"),
+    });
+
+    await expect(transport.handleResponse({
+      sessionId: "vpn-455-block",
+      statusCode: 455,
+      body: "455 Security Incident Detected. Your request was blocked. Do not retry.",
+    })).resolves.toMatchObject({
+      rotated: true,
+      reason: "explicit-block",
+    });
+  });
+
   it("rotates only after a repeated generic transport failure", async () => {
     const { transport } = createTransport();
     await transport.initialize();

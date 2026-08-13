@@ -308,6 +308,24 @@ describe("Danish JSON-LD discovery", () => {
     });
   });
 
+  it("discovers the current Gamle Opskrifter sitemap recipe route", () => {
+    const gamleOpskrifter = DANISH_JSONLD_SOURCES.find(
+      (entry) => entry.id === "gamleopskrifter"
+    )!;
+    const result = discoverSitemapDocument({
+      source: gamleOpskrifter,
+      sitemapUrl: "https://gamleopskrifter.com/sitemap.xml",
+      xml: `<urlset>
+        <url><loc>https://gamleopskrifter.com/</loc></url>
+        <url><loc>https://gamleopskrifter.com/g/home/r/bacongryde</loc></url>
+      </urlset>`,
+    });
+
+    expect(result.recipeUrls).toEqual([
+      "https://gamleopskrifter.com/g/home/r/bacongryde",
+    ]);
+  });
+
   it("executes Ferrero's typed JSON path for both legacy string and array URLs", () => {
     const ferrero = DANISH_JSONLD_SOURCES.find(
       (entry) => entry.id === "ferrerorocher"

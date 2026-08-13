@@ -105,7 +105,7 @@ describe("dedicated Danish JSON-LD runner", () => {
 
   it("routes every blocked status through response diagnostics", () => {
     expect(DANISH_JSONLD_OBSERVED_HTTP_ERROR_STATUS_CODES).toEqual([
-      401, 403, 429, 526,
+      401, 403, 429, 455, 526,
     ]);
   });
 

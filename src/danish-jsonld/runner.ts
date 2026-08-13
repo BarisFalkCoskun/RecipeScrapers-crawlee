@@ -39,7 +39,7 @@ export interface DanishJsonLdCrawlSelection extends DanishJsonLdCrawlOptions {
 }
 
 export const DANISH_JSONLD_OBSERVED_HTTP_ERROR_STATUS_CODES = [
-  401, 403, 429, 526,
+  401, 403, 429, 455, 526,
 ] as const;
 const QUEUE_RECLAIM_GRACE_BUFFER_MS = 100;
 
