@@ -22,6 +22,7 @@ import {
   createBoundedDiagnostic,
   inspectJsonLdShape,
 } from "./diagnostics.js";
+import { createSourceRequestBudget } from "./request-cap.js";
 
 export type DanishJsonLdRequestKind = "sitemap" | "listing" | "recipe";
 export interface DanishJsonLdRequest {
@@ -53,10 +54,10 @@ export class DanishJsonLdSourceSession {
   private readonly store: DanishJsonLdStore;
   private readonly crawlRunId: string;
   private readonly crawlAttemptId: string;
-  private readonly maxPages: number;
   private readonly diagnosticSink: (event: DanishJsonLdDiagnostic) => void;
   private readonly admittedRecipeUrls = new Set<string>();
   private readonly playwrightFallbackUrls = new Set<string>();
+  private readonly requestBudget;
 
   constructor(options: {
     source: DanishJsonLdSource;
@@ -70,7 +71,7 @@ export class DanishJsonLdSourceSession {
     this.store = options.store;
     this.crawlRunId = options.crawlRunId;
     this.crawlAttemptId = options.crawlAttemptId;
-    this.maxPages = options.maxPages;
+    this.requestBudget = createSourceRequestBudget(options.maxPages);
     this.diagnosticSink = options.diagnosticSink ?? (() => undefined);
     this.observation = {
       sourceId: options.source.id,
@@ -91,18 +92,50 @@ export class DanishJsonLdSourceSession {
       fetchMode: options.source.fetchMode,
       maxPages: options.maxPages,
       settings: options.source.requestSettings,
-      robotsEnforced: false,
+      robotsEnforced: "unknown-until-crawler-construction",
     });
   }
 
   async handleResponse(
     response: DanishJsonLdResponse
   ): Promise<DanishJsonLdRoutingResult> {
+    const budgeted = await this.requestBudget.handle(
+      `${response.fetchMode}:${response.kind}:${response.url}`,
+      async () => this.processResponse(response)
+    );
+    if (!budgeted.handled) {
+      this.markPageCapReached();
+      return emptyRoutes();
+    }
+    if (budgeted.capReached) {
+      this.markPageCapReached();
+      return emptyRoutes();
+    }
+    return budgeted.value;
+  }
+
+  isRequestCapReached(): boolean {
+    return this.requestBudget.snapshot().capReached;
+  }
+
+  private async processResponse(
+    response: DanishJsonLdResponse
+  ): Promise<DanishJsonLdRoutingResult> {
     this.observation.completedRequests = (this.observation.completedRequests ?? 0) + 1;
-    if ([401, 403, 429].includes(response.statusCode)) {
+    const blocked = [401, 403, 429, 526].includes(response.statusCode);
+    if (blocked) {
       this.observation.blockedRequests = (this.observation.blockedRequests ?? 0) + 1;
     }
     this.emitHttpDiagnostic(response);
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      if (!blocked) {
+        this.observation.failedRequests =
+          (this.observation.failedRequests ?? 0) + 1;
+      }
+      if (response.kind !== "recipe") this.observation.discoveryComplete = false;
+      return emptyRoutes();
+    }
 
     if (response.kind === "sitemap") {
       return this.handleSitemap(response);
@@ -113,42 +146,72 @@ export class DanishJsonLdSourceSession {
     return this.handleRecipe(response);
   }
 
-  recordFailedRequest(input: {
+  async recordFailedRequest(input: {
     fetchMode: "cheerio" | "playwright";
     kind: DanishJsonLdRequestKind;
     url: string;
     retryCount: number;
+    statusCode?: number;
+    headers?: Record<string, string | string[] | undefined>;
+    snippet?: string;
     error: unknown;
-  }): void {
-    this.observation.failedRequests = (this.observation.failedRequests ?? 0) + 1;
-    if (input.fetchMode === "playwright") {
+  }): Promise<void> {
+    const budgeted = await this.requestBudget.handle(
+      `failed:${input.fetchMode}:${input.kind}:${input.url}:${input.retryCount}`,
+      async () => undefined
+    );
+    if (!budgeted.handled || budgeted.capReached) this.markPageCapReached();
+    const blocked =
+      input.statusCode !== undefined &&
+      [401, 403, 429, 526].includes(input.statusCode);
+    if (blocked) {
+      this.observation.blockedRequests =
+        (this.observation.blockedRequests ?? 0) + 1;
+    } else {
+      this.observation.failedRequests =
+        (this.observation.failedRequests ?? 0) + 1;
+    }
+    if (!blocked && input.fetchMode === "playwright") {
       this.observation.playwrightFailures =
         (this.observation.playwrightFailures ?? 0) + 1;
     }
-    this.observation.discoveryComplete = false;
+    if (input.kind !== "recipe") this.observation.discoveryComplete = false;
     this.emit("request-failed", {
       fetchMode: input.fetchMode,
       kind: input.kind,
       url: input.url,
       retryCount: input.retryCount,
+      statusCode: input.statusCode,
+      retryAfter: firstHeader(input.headers ?? {}, "retry-after"),
+      cfRay: firstHeader(input.headers ?? {}, "cf-ray"),
+      server: firstHeader(input.headers ?? {}, "server"),
+      snippet: input.snippet,
       error: input.error instanceof Error ? input.error.message : String(input.error),
     });
   }
 
-  recordRetry(input: {
+  async recordRetry(input: {
     fetchMode: "cheerio" | "playwright";
     kind: DanishJsonLdRequestKind;
     url: string;
     retryCount: number;
+    statusCode?: number;
     error: unknown;
-  }): void {
+  }): Promise<boolean> {
+    const budgeted = await this.requestBudget.handle(
+      `retry:${input.fetchMode}:${input.kind}:${input.url}:${input.retryCount}`,
+      async () => undefined
+    );
+    if (!budgeted.handled || budgeted.capReached) this.markPageCapReached();
     this.emit("request-retry", {
       fetchMode: input.fetchMode,
       kind: input.kind,
       url: input.url,
       retryCount: input.retryCount,
+      statusCode: input.statusCode,
       error: input.error instanceof Error ? input.error.message : String(input.error),
     });
+    return budgeted.handled && !budgeted.capReached;
   }
 
   outcome(): SourceRunOutcomeSummary {
@@ -317,7 +380,7 @@ export class DanishJsonLdSourceSession {
         operation: "page-upsert",
         error: error instanceof Error ? error.message : String(error),
       });
-      throw error;
+      throw new DanishJsonLdStoreFailure("Page upsert failed", error);
     }
 
     for (const rawRecipe of extraction.recipes) {
@@ -379,15 +442,8 @@ export class DanishJsonLdSourceSession {
     for (const url of urls) {
       const canonicalUrl = canonicalizeUrl(url);
       if (this.admittedRecipeUrls.has(canonicalUrl)) continue;
-      if (this.admittedRecipeUrls.size >= this.maxPages) {
-        this.markPageCapReached();
-        continue;
-      }
       this.admittedRecipeUrls.add(canonicalUrl);
       requests.push({ kind: "recipe", url });
-    }
-    if (urls.length > 0 && this.admittedRecipeUrls.size >= this.maxPages) {
-      this.markPageCapReached();
     }
     return requests;
   }
@@ -407,7 +463,10 @@ export class DanishJsonLdSourceSession {
     if (/__NEXT_DATA__|__NUXT__|window\.__INITIAL_STATE__/u.test(response.body)) {
       return "client-rendering-marker";
     }
-    return "registry-recipe-url-without-complete-json-ld";
+    if (/cloudflare|captcha|access denied|enable javascript|checking your browser/iu.test(response.body)) {
+      return "blocked-or-client-rendered-shell";
+    }
+    return null;
   }
 
   private resolveCanonicalUrl(response: DanishJsonLdResponse): string {
@@ -462,4 +521,17 @@ function firstHeader(
 
 function sumCounts(counts: Record<string, number>): number {
   return Object.values(counts).reduce((sum, count) => sum + count, 0);
+}
+
+function emptyRoutes(): DanishJsonLdRoutingResult {
+  return { cheerioRequests: [], playwrightRequests: [] };
+}
+
+class DanishJsonLdStoreFailure extends Error {
+  readonly fatalScope = "store" as const;
+
+  constructor(message: string, cause: unknown) {
+    super(message, { cause });
+    this.name = "DanishJsonLdStoreFailure";
+  }
 }

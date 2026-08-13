@@ -6,7 +6,10 @@ import {
 } from "crawlee";
 import type { RecipeDocumentV2Store, CrawlStore } from "../storage/store.js";
 import type { DanishJsonLdRunSummary, SourceRunOutcomeSummary } from "../types.js";
-import { createDanishJsonLdRunSummary } from "./source-outcome.js";
+import {
+  classifySourceOutcome,
+  createDanishJsonLdRunSummary,
+} from "./source-outcome.js";
 import type { SourceRunObservation } from "./source-outcome.js";
 import type { DanishJsonLdSource } from "./source-registry.js";
 import type { DanishJsonLdCrawlOptions } from "./source-selection.js";
@@ -20,12 +23,19 @@ import {
   createDanishJsonLdCheerioCrawler,
   createDanishJsonLdPlaywrightCrawler,
 } from "./crawler-factories.js";
-import { createBudgetedDiagnosticSink } from "./diagnostics.js";
+import {
+  createBoundedDiagnostic,
+  createBudgetedDiagnosticSink,
+} from "./diagnostics.js";
 
 export interface DanishJsonLdCrawlSelection extends DanishJsonLdCrawlOptions {
   sourceIds: string[];
   sources: DanishJsonLdSource[];
 }
+
+export const DANISH_JSONLD_OBSERVED_HTTP_ERROR_STATUS_CODES = [
+  401, 403, 429, 526,
+] as const;
 export interface ExecuteSourceInput {
   source: DanishJsonLdSource;
   store: CrawlStore & RecipeDocumentV2Store;
@@ -39,6 +49,7 @@ export type ExecuteDanishJsonLdSource = (
 ) => Promise<{
   observation: SourceRunObservation;
   outcome: SourceRunOutcomeSummary;
+  robotsEnforced?: boolean | "unknown";
 }>;
 
 export async function runDanishJsonLdCrawl(input: {
@@ -54,23 +65,49 @@ export async function runDanishJsonLdCrawl(input: {
   const executeSource = input.executeSource ?? executeDanishJsonLdSource;
   const observations: SourceRunObservation[] = [];
   const outcomes: SourceRunOutcomeSummary[] = [];
+  const robotsObservations: Array<boolean | "unknown"> = [];
   const maxPages = input.selection.maxPages ?? Number.MAX_SAFE_INTEGER;
 
   for (const source of input.selection.sources) {
-    const result = await executeSource({
-      source,
-      store: input.store,
-      crawlRunId: input.crawlRunId,
-      crawlAttemptId: `${input.crawlRunId}:${source.id}`,
-      maxPages,
-      diagnosticSink: input.diagnosticSink,
-    });
-    observations.push(result.observation);
-    outcomes.push(result.outcome);
+    try {
+      const result = await executeSource({
+        source,
+        store: input.store,
+        crawlRunId: input.crawlRunId,
+        crawlAttemptId: `${input.crawlRunId}:${source.id}`,
+        maxPages,
+        diagnosticSink: input.diagnosticSink,
+      });
+      observations.push(result.observation);
+      outcomes.push(result.outcome);
+      robotsObservations.push(result.robotsEnforced ?? "unknown");
+    } catch (error) {
+      if (isFatalBatchError(error)) throw error;
+      const observed = readFailureObservation(error, source.id);
+      const observation: SourceRunObservation = {
+        ...observed,
+        sourceId: source.id,
+        failedRequests: Math.max(1, observed.failedRequests ?? 0),
+        discoveryComplete: false,
+      };
+      observations.push(observation);
+      outcomes.push(classifySourceOutcome(observation));
+      robotsObservations.push("unknown");
+      input.diagnosticSink?.(
+        createBoundedDiagnostic("source-failed", {
+          sourceId: source.id,
+          crawlRunId: input.crawlRunId,
+          error: error instanceof Error ? error.message : String(error),
+        })
+      );
+    }
   }
 
   return {
-    summary: createDanishJsonLdRunSummary(outcomes),
+    summary: createDanishJsonLdRunSummary(
+      outcomes,
+      summarizeRobotsEnforcement(robotsObservations)
+    ),
     observations,
   };
 }
@@ -80,6 +117,7 @@ export async function executeDanishJsonLdSource(
 ): Promise<{
   observation: SourceRunObservation;
   outcome: SourceRunOutcomeSummary;
+  robotsEnforced: boolean | "unknown";
 }> {
   const diagnosticSink = createBudgetedDiagnosticSink({
     maxEvents: 1_000,
@@ -90,6 +128,7 @@ export async function executeDanishJsonLdSource(
       }),
   });
   const session = new DanishJsonLdSourceSession({ ...input, diagnosticSink });
+  try {
   const queueKey = sanitizeStorageKey(input.crawlAttemptId);
   const [cheerioQueue, playwrightQueue] = await Promise.all([
     RequestQueue.open(`danish-jsonld-cheerio-${queueKey}`),
@@ -147,30 +186,34 @@ export async function executeDanishJsonLdSource(
     },
     crawlerOptions: {
       requestQueue: cheerioQueue,
-      ...(Number.isSafeInteger(input.maxPages)
-        ? { maxRequestsPerCrawl: input.maxPages + 100 }
-        : {}),
+      maxRequestsPerCrawl: input.maxPages,
+      ignoreHttpErrorStatusCodes: [
+        ...DANISH_JSONLD_OBSERVED_HTTP_ERROR_STATUS_CODES,
+      ],
       errorHandler: async (
         { request }: CheerioCrawlingContext,
         error: Error
       ) => {
-        session.recordRetry({
+        const allowRetry = await session.recordRetry({
           fetchMode: "cheerio",
           kind: requestKind(request.label, request.userData),
           url: request.url,
           retryCount: request.retryCount,
+          statusCode: parseHttpStatus(error, request.errorMessages),
           error,
         });
+        if (!allowRetry) request.noRetry = true;
       },
       failedRequestHandler: async (
         { request }: CheerioCrawlingContext,
         error: Error
       ) => {
-        session.recordFailedRequest({
+        await session.recordFailedRequest({
           fetchMode: "cheerio",
           kind: requestKind(request.label, request.userData),
           url: request.url,
           retryCount: request.retryCount,
+          statusCode: parseHttpStatus(error, request.errorMessages),
           error,
         });
       },
@@ -197,30 +240,31 @@ export async function executeDanishJsonLdSource(
     },
     crawlerOptions: {
       requestQueue: playwrightQueue,
-      ...(Number.isSafeInteger(input.maxPages)
-        ? { maxRequestsPerCrawl: input.maxPages + 100 }
-        : {}),
+      maxRequestsPerCrawl: input.maxPages,
       errorHandler: async (
         { request }: PlaywrightCrawlingContext,
         error: Error
       ) => {
-        session.recordRetry({
+        const allowRetry = await session.recordRetry({
           fetchMode: "playwright",
           kind: requestKind(request.label, request.userData),
           url: request.url,
           retryCount: request.retryCount,
+          statusCode: parseHttpStatus(error, request.errorMessages),
           error,
         });
+        if (!allowRetry) request.noRetry = true;
       },
       failedRequestHandler: async (
         { request }: PlaywrightCrawlingContext,
         error: Error
       ) => {
-        session.recordFailedRequest({
+        await session.recordFailedRequest({
           fetchMode: "playwright",
           kind: requestKind(request.label, request.userData),
           url: request.url,
           retryCount: request.retryCount,
+          statusCode: parseHttpStatus(error, request.errorMessages),
           error,
         });
       },
@@ -230,20 +274,45 @@ export async function executeDanishJsonLdSource(
 
   for (let cycle = 0; cycle < 10; cycle += 1) {
     if (!(await cheerioQueue.isEmpty())) await cheerioCrawler.run();
+    if (session.isRequestCapReached()) {
+      return {
+        observation: session.observation,
+        outcome: session.outcome(),
+        robotsEnforced: observeRobotsEnforcement(cheerioCrawler, playwrightCrawler),
+      };
+    }
     if (!(await playwrightQueue.isEmpty())) await playwrightCrawler.run();
+    if (session.isRequestCapReached()) {
+      return {
+        observation: session.observation,
+        outcome: session.outcome(),
+        robotsEnforced: observeRobotsEnforcement(cheerioCrawler, playwrightCrawler),
+      };
+    }
     if ((await cheerioQueue.isEmpty()) && (await playwrightQueue.isEmpty())) {
-      return { observation: session.observation, outcome: session.outcome() };
+      return {
+        observation: session.observation,
+        outcome: session.outcome(),
+        robotsEnforced: observeRobotsEnforcement(cheerioCrawler, playwrightCrawler),
+      };
     }
   }
 
-  session.recordFailedRequest({
+  await session.recordFailedRequest({
     fetchMode: "cheerio",
     kind: input.source.discovery,
     url: input.source.domain,
     retryCount: 0,
     error: new Error("crawler routing did not reach a terminal queue state"),
   });
-  return { observation: session.observation, outcome: session.outcome() };
+  return {
+    observation: session.observation,
+    outcome: session.outcome(),
+    robotsEnforced: observeRobotsEnforcement(cheerioCrawler, playwrightCrawler),
+  };
+  } catch (error) {
+    throw new SourceExecutionFailure(error, session.observation);
+  }
 }
 
 function initialRequests(source: DanishJsonLdSource): {
@@ -286,4 +355,67 @@ function normalizeHeaders(
 
 function sanitizeStorageKey(value: string): string {
   return value.replace(/[^a-zA-Z0-9._-]+/gu, "-").replace(/^-|-$/gu, "");
+}
+
+function parseHttpStatus(error: unknown, errorMessages: string[]): number | undefined {
+  const text = [error instanceof Error ? error.message : String(error), ...errorMessages]
+    .join(" ");
+  const match = text.match(/(?:^|\D)([1-5]\d{2})(?:\D|$)/u);
+  return match ? Number(match[1]) : undefined;
+}
+
+class SourceExecutionFailure extends Error {
+  readonly observation: SourceRunObservation;
+
+  constructor(cause: unknown, observation: SourceRunObservation) {
+    super(cause instanceof Error ? cause.message : String(cause), { cause });
+    this.name = "SourceExecutionFailure";
+    this.observation = { ...observation };
+  }
+}
+
+function readFailureObservation(
+  error: unknown,
+  sourceId: string
+): SourceRunObservation {
+  if (error !== null && typeof error === "object" && "observation" in error) {
+    const observation = (error as { observation?: unknown }).observation;
+    if (observation !== null && typeof observation === "object") {
+      return {
+        ...(observation as SourceRunObservation),
+        sourceId,
+        discoveryComplete: false,
+      };
+    }
+  }
+  return { sourceId, discoveryComplete: false };
+}
+
+function observeRobotsEnforcement(...crawlers: unknown[]): boolean | "unknown" {
+  const values = crawlers.map((crawler) =>
+    (crawler as { respectRobotsTxtFile?: unknown }).respectRobotsTxtFile
+  );
+  if (values.some((value) => value === true || typeof value === "object")) return true;
+  if (values.every((value) => value === false)) return false;
+  return "unknown";
+}
+
+function summarizeRobotsEnforcement(
+  observations: Array<boolean | "unknown">
+): boolean | "unknown" {
+  if (observations.some((value) => value === true)) return true;
+  if (observations.length > 0 && observations.every((value) => value === false)) {
+    return false;
+  }
+  return "unknown";
+}
+
+function isFatalBatchError(error: unknown): boolean {
+  let current = error;
+  for (let depth = 0; depth < 5; depth += 1) {
+    if (current === null || typeof current !== "object") return false;
+    if ((current as { fatalScope?: unknown }).fatalScope === "store") return true;
+    current = (current as { cause?: unknown }).cause;
+  }
+  return false;
 }

@@ -166,8 +166,8 @@ export interface SourceRunOutcomeSummary {
 }
 
 export interface DanishJsonLdRunSummary {
-  /** Deliberately explicit until crawler-factory enforcement is added. */
-  robotsEnforced: false;
+  /** Observed dedicated crawler state; unknown when a source fails before construction. */
+  robotsEnforced: boolean | "unknown";
   sourceOutcomes: SourceRunOutcomeSummary[];
 }
 

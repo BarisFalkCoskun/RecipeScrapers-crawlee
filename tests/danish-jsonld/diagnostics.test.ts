@@ -30,6 +30,29 @@ describe("Danish JSON-LD diagnostics", () => {
     ]);
   });
 
+  it("redacts embedded proxy credentials, query secrets, cookies, and authorization text", () => {
+    const serialized = JSON.stringify(
+      createBoundedDiagnostic("request-failed", {
+        error:
+          "proxy http://alice:s3cr3t@proxy.example/path?token=abc failed; " +
+          "Authorization: Bearer top-secret Cookie: session=private-value; theme=dark",
+        snippet:
+          "retry https://example.dk/path?api_key=hidden&safe=1 with cookie: sid=secret-cookie",
+        detail: "raw token=loose-secret",
+      })
+    );
+
+    expect(serialized).not.toContain("alice");
+    expect(serialized).not.toContain("s3cr3t");
+    expect(serialized).not.toContain("token=abc");
+    expect(serialized).not.toContain("top-secret");
+    expect(serialized).not.toContain("private-value");
+    expect(serialized).not.toContain("api_key=hidden");
+    expect(serialized).not.toContain("secret-cookie");
+    expect(serialized).not.toContain("loose-secret");
+    expect(serialized).toContain("[redacted]");
+  });
+
   it("summarizes JSON-LD wrappers, node types, fields, and leaves without payload values", () => {
     expect(
       inspectJsonLdShape({

@@ -93,4 +93,30 @@ describe("Danish JSON-LD discovery", () => {
     expect(result.recipeUrls).toEqual(["https://example.dk/opskrifter/kage"]);
     expect(result.rejectedByReason).toEqual({ "domain-not-allowed": 1 });
   });
+
+  it("recognizes Ferrero-style dynamic JSON pagination keys", () => {
+    const result = discoverListingPage({
+      source: { ...source, discovery: "listing", legacyFamily: "JsonLdListingSpider" },
+      pageUrl: "https://example.dk/api/search?page=1",
+      body: JSON.stringify({
+        hits: [{ link: "/opskrifter/kage" }],
+        pagination: {
+          next: "/api/search?page=2",
+          nextUrl: "/api/search?page=3",
+          next_url: "/api/search?page=4",
+          nextPage: { href: "/api/search?page=5" },
+        },
+      }),
+      contentType: "application/json",
+    });
+
+    expect(result.recipeUrls).toEqual(["https://example.dk/opskrifter/kage"]);
+    expect(result.nextUrls).toEqual([
+      "https://example.dk/api/search?page=2",
+      "https://example.dk/api/search?page=3",
+      "https://example.dk/api/search?page=4",
+      "https://example.dk/api/search?page=5",
+    ]);
+    expect(result.terminal).toBe(false);
+  });
 });

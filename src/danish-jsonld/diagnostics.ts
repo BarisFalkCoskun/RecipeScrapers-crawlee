@@ -133,20 +133,43 @@ function sanitizeValue(value: unknown, depth: number): unknown {
 }
 
 function sanitizeString(value: string): string {
-  const withoutBearer = value.replace(/\bBearer\s+[^\s]+/giu, "Bearer [redacted]");
+  const embeddedUrlsRedacted = value.replace(
+    /https?:\/\/[^\s"'<>]+/giu,
+    (match) => sanitizeUrl(match)
+  );
+  const headersRedacted = embeddedUrlsRedacted
+    .replace(
+      /\bAuthorization\s*:\s*(?:Bearer\s+)?[^\s,;]+/giu,
+      "Authorization: [redacted]"
+    )
+    .replace(/\bBearer\s+[^\s,;]+/giu, "Bearer [redacted]")
+    .replace(
+      /\b(?:Set-)?Cookie\s*:\s*[^\r\n]+/giu,
+      "Cookie: [redacted]"
+    );
+  const assignmentsRedacted = headersRedacted.replace(
+    /\b(token|secret|password|api[_-]?key|access[_-]?key|session(?:id)?|sid)\s*=\s*[^&\s,;]+/giu,
+    "$1=[redacted]"
+  );
   try {
-    const url = new URL(withoutBearer);
-    if (url.username || url.password) {
-      url.username = "";
-      url.password = "";
-    }
-    for (const key of [...url.searchParams.keys()]) {
-      if (SENSITIVE_KEY.test(key)) url.searchParams.set(key, REDACTED);
-    }
-    return boundString(url.toString());
+    return boundString(sanitizeUrl(assignmentsRedacted));
   } catch {
-    return boundString(withoutBearer);
+    return boundString(assignmentsRedacted);
   }
+}
+
+function sanitizeUrl(value: string): string {
+  const url = new URL(value);
+  if (url.username || url.password) {
+    url.username = "";
+    url.password = "";
+  }
+  for (const key of [...url.searchParams.keys()]) {
+    if (SENSITIVE_KEY.test(key) || /api[_-]?key|access[_-]?key/i.test(key)) {
+      url.searchParams.set(key, REDACTED);
+    }
+  }
+  return url.toString();
 }
 
 function boundString(value: string): string {

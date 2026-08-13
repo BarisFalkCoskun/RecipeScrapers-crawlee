@@ -158,6 +158,144 @@ describe("Danish JSON-LD source session", () => {
     expect(store.pages.get("https://example.dk/opskrifter/html-only")?.recipeCount).toBe(0);
   });
 
+  it("does not render ordinary complete HTML without dynamic evidence", async () => {
+    const session = new DanishJsonLdSourceSession({
+      source,
+      store: new MemoryV2Store(),
+      crawlRunId: "run-1",
+      crawlAttemptId: "attempt-no-fallback",
+      maxPages: 5,
+    });
+
+    const routes = await session.handleResponse({
+      kind: "recipe",
+      fetchMode: "cheerio",
+      url: "https://example.dk/opskrifter/no-jsonld",
+      statusCode: 200,
+      headers: {},
+      body: "<html><body><article><h1>Ordinary page</h1><p>Static content.</p></article></body></html>",
+    });
+
+    expect(routes.playwrightRequests).toEqual([]);
+  });
+
+  it.each([401, 403, 429, 526])(
+    "rejects blocked HTTP %i before extraction or persistence",
+    async (statusCode) => {
+    const store = new MemoryV2Store();
+    const diagnostics: DanishJsonLdDiagnostic[] = [];
+    const session = new DanishJsonLdSourceSession({
+      source,
+      store,
+      crawlRunId: "run-1",
+      crawlAttemptId: "attempt-blocked",
+      maxPages: 5,
+      diagnosticSink: (event) => diagnostics.push(event),
+    });
+
+    const routes = await session.handleResponse({
+      kind: "recipe",
+      fetchMode: "cheerio",
+      url: "https://example.dk/opskrifter/blocked",
+      statusCode,
+      headers: {
+        "retry-after": "60",
+        "cf-ray": "fixture-ray",
+        server: "cloudflare",
+      },
+      body: `<script type="application/ld+json">${JSON.stringify(completeRecipe)}</script> blocked`,
+    });
+
+    expect(routes).toEqual({ cheerioRequests: [], playwrightRequests: [] });
+    expect(store.pages.size).toBe(0);
+    expect(store.recipesV2).toEqual([]);
+    expect(session.outcome()).toEqual({
+      sourceId: "fixture",
+      outcome: "blocked",
+      outcomeReasons: ["requests-blocked"],
+    });
+    expect(diagnostics).toContainEqual(
+      expect.objectContaining({
+        event: "http-response",
+        data: expect.objectContaining({
+          statusCode,
+          retryAfter: "60",
+          cfRay: "fixture-ray",
+          server: "cloudflare",
+        }),
+      })
+    );
+    }
+  );
+
+  it("classifies a non-blocking 404 as a failed request, never no_data", async () => {
+    const store = new MemoryV2Store();
+    const session = new DanishJsonLdSourceSession({
+      source,
+      store,
+      crawlRunId: "run-1",
+      crawlAttemptId: "attempt-not-found",
+      maxPages: 5,
+    });
+
+    await session.handleResponse({
+      kind: "recipe",
+      fetchMode: "cheerio",
+      url: "https://example.dk/opskrifter/missing",
+      statusCode: 404,
+      headers: {},
+      body: `<script type="application/ld+json">${JSON.stringify(completeRecipe)}</script>`,
+    });
+
+    expect(store.pages.size).toBe(0);
+    expect(store.recipesV2).toEqual([]);
+    expect(session.outcome()).toEqual({
+      sourceId: "fixture",
+      outcome: "failed",
+      outcomeReasons: ["failed-requests"],
+    });
+  });
+
+  it("preserves blocked status evidence received through a terminal failure handler", async () => {
+    const diagnostics: DanishJsonLdDiagnostic[] = [];
+    const session = new DanishJsonLdSourceSession({
+      source,
+      store: new MemoryV2Store(),
+      crawlRunId: "run-1",
+      crawlAttemptId: "attempt-terminal-status",
+      maxPages: 5,
+      diagnosticSink: (event) => diagnostics.push(event),
+    });
+
+    await session.recordFailedRequest({
+      fetchMode: "cheerio",
+      kind: "recipe",
+      url: "https://example.dk/opskrifter/limited",
+      retryCount: 3,
+      statusCode: 429,
+      headers: { "retry-after": "120", "cf-ray": "terminal-ray" },
+      snippet: "rate limited",
+      error: new Error("429 response"),
+    });
+
+    expect(session.outcome()).toEqual({
+      sourceId: "fixture",
+      outcome: "blocked",
+      outcomeReasons: ["requests-blocked"],
+    });
+    expect(diagnostics).toContainEqual(
+      expect.objectContaining({
+        event: "request-failed",
+        data: expect.objectContaining({
+          statusCode: 429,
+          retryAfter: "120",
+          cfRay: "terminal-ray",
+          snippet: "rate limited",
+        }),
+      })
+    );
+  });
+
   it("marks a hard per-source canary cap as incomplete run evidence", async () => {
     const session = new DanishJsonLdSourceSession({
       source,
@@ -179,9 +317,7 @@ describe("Danish JSON-LD source session", () => {
       </urlset>`,
     });
 
-    expect(routes.cheerioRequests).toEqual([
-      { kind: "recipe", url: "https://example.dk/opskrifter/one" },
-    ]);
+    expect(routes.cheerioRequests).toEqual([]);
     expect(session.observation.discoveryComplete).toBe(false);
     expect(session.observation.pageCapReached).toBe(true);
     expect(session.outcome()).toEqual({

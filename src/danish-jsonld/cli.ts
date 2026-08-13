@@ -4,6 +4,7 @@ import { RecipeStore } from "../storage/mongodb.js";
 import { MONGODB_CONFIG } from "../config.js";
 import { resolveCrawlRunId } from "../crawl-run.js";
 import { writeFile } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
 import {
   runDanishJsonLdCrawl,
   type DanishJsonLdCrawlSelection,
@@ -45,25 +46,28 @@ export async function executeDanishJsonLdCli(
     ...dependencies,
   };
   const options = parseDanishJsonLdCrawlArgs(args);
+  if (options.vpn || options.vpnCountry) {
+    throw new Error("--vpn is unsupported until Task 4; omit --vpn and --vpn-country");
+  }
   const selection = createDanishJsonLdCrawlSelection(options);
   const startedAt = resolved.now();
-  const crawlRunId = resolveCrawlRunId(startedAt, resolved.env);
+  const baseCrawlRunId = resolveCrawlRunId(startedAt, resolved.env);
+  const crawlRunId = options.force || resolved.env["CRAWL_RUN_ID"]
+    ? `${baseCrawlRunId}-attempt-${randomUUID()}`
+    : baseCrawlRunId;
   const database = options.database ?? resolved.env["DB_NAME"] ??
     MONGODB_CONFIG.defaultDatabaseName;
   const mongoUri = resolved.env["MONGODB_URI"] ?? "mongodb://localhost:27017";
   const store = resolved.createStore(mongoUri, database);
 
-  await store.connect();
   try {
+    await store.connect();
     const result = await resolved.runCrawl({ selection, store, crawlRunId });
     const evidence = {
       crawlRunId,
       selectedSources: selection.sourceIds,
       maxPages: selection.maxPages ?? null,
       database,
-      force: selection.force,
-      vpn: selection.vpn,
-      vpnCountry: selection.vpnCountry ?? null,
       summary: result.summary,
       observations: result.observations,
     };

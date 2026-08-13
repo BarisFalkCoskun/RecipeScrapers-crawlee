@@ -76,4 +76,62 @@ describe("crawl:danish-jsonld CLI", () => {
     ).rejects.toThrow("fixture failure");
     expect(close).toHaveBeenCalledOnce();
   });
+
+  it("attempts cleanup when connect partially initializes and then rejects", async () => {
+    const close = vi.fn(async () => undefined);
+    const store = {
+      connect: vi.fn(async () => { throw new Error("partial connect"); }),
+      close,
+    };
+
+    await expect(
+      executeDanishJsonLdCli(["--sources", "arla"], {
+        env: {},
+        createStore: () => store as never,
+        output: () => undefined,
+      })
+    ).rejects.toThrow("partial connect");
+    expect(close).toHaveBeenCalledOnce();
+  });
+
+  it("rejects VPN controls until Task 4 and does not create a store", async () => {
+    const createStore = vi.fn();
+    await expect(
+      executeDanishJsonLdCli(["--sources", "arla", "--vpn"], {
+        env: {},
+        createStore,
+        output: () => undefined,
+      })
+    ).rejects.toThrow("--vpn is unsupported until Task 4");
+    expect(createStore).not.toHaveBeenCalled();
+  });
+
+  it("makes forced runs use fresh queue attempt identity when CRAWL_RUN_ID is reused", async () => {
+    const runInputs: Array<{ crawlRunId: string }> = [];
+    const store = {
+      connect: async () => undefined,
+      close: async () => undefined,
+    };
+    const dependencies = {
+      env: { CRAWL_RUN_ID: "fixed-run" },
+      now: () => new Date("2026-08-13T10:00:00.000Z"),
+      createStore: () => store as never,
+      runCrawl: async (input: { crawlRunId: string }) => {
+        runInputs.push(input);
+        return {
+          summary: { robotsEnforced: false as const, sourceOutcomes: [] },
+          observations: [],
+        };
+      },
+      writeFile: async () => undefined,
+      output: () => undefined,
+    };
+
+    await executeDanishJsonLdCli(["--sources", "arla", "--force"], dependencies);
+    await executeDanishJsonLdCli(["--sources", "arla", "--force"], dependencies);
+
+    expect(runInputs).toHaveLength(2);
+    expect(runInputs[0].crawlRunId).not.toBe("fixed-run");
+    expect(runInputs[1].crawlRunId).not.toBe(runInputs[0].crawlRunId);
+  });
 });

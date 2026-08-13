@@ -188,11 +188,34 @@ function collectJsonUrls(
   }
   if (value === null || typeof value !== "object") return;
   for (const [key, nested] of Object.entries(value as Record<string, unknown>).slice(0, 100)) {
-    if (typeof nested === "string" && /^(?:url|href|link)$/iu.test(key)) {
-      output.push({ raw: nested, next: /^next/iu.test(key) });
+    const isNextKey = /^(?:next|nextUrl|next_url|nextPage)$/iu.test(key);
+    if (
+      typeof nested === "string" &&
+      (/^(?:url|href|link)$/iu.test(key) || isNextKey)
+    ) {
+      output.push({ raw: nested, next: isNextKey });
+      continue;
+    }
+    if (isNextKey && nested !== null && typeof nested === "object") {
+      collectNextUrls(nested, output, depth + 1);
       continue;
     }
     collectJsonUrls(nested, output, depth + 1);
+  }
+}
+
+function collectNextUrls(
+  value: unknown,
+  output: Array<{ raw: string; next: boolean }>,
+  depth: number
+): void {
+  if (depth > 8 || value === null || typeof value !== "object") return;
+  for (const [key, nested] of Object.entries(value as Record<string, unknown>).slice(0, 20)) {
+    if (typeof nested === "string" && /^(?:url|href|link)$/iu.test(key)) {
+      output.push({ raw: nested, next: true });
+      continue;
+    }
+    collectNextUrls(nested, output, depth + 1);
   }
 }
 
