@@ -16,7 +16,16 @@ export interface DiscoveryResult {
 export type DiscoveryIncompleteReason =
   | "malformed-listing-payload"
   | "unexpected-listing-shape"
-  | "http-200-block-shell";
+  | "http-200-block-shell"
+  | "script-gated-continuation";
+
+/**
+ * Load-more wording used by the Danish listings. A control carrying this text
+ * without an href continues the listing through script, so the page is not a
+ * terminal listing even though it exposes no continuation URL.
+ */
+const LOAD_MORE_CONTROL_PATTERN =
+  /^(?:vis|se|hent|indl(?:æ|ae)s)\s+(?:flere|mere)\b|^(?:load|show)\s+more\b|^flere\s+opskrifter\b/iu;
 
 export function discoverSitemapDocument(input: {
   source: DanishJsonLdSource;
@@ -81,6 +90,7 @@ export function discoverListingPage(input: {
 }): DiscoveryResult {
   const result = emptyResult();
   const candidates: Array<{ raw: string; next: boolean }> = [];
+  let scriptGatedContinuation = false;
 
   if (looksLikeHttp200BlockShell(input.body)) {
     result.complete = false;
@@ -150,6 +160,7 @@ export function discoverListingPage(input: {
           /^(?:næste|naeste|next|mere|more)(?:\s|$)/iu.test(text),
       });
     });
+    scriptGatedContinuation = hasLoadMoreControl($);
   }
 
   const uniqueCandidates: Array<{ candidate: string; next: boolean }> = [];
@@ -201,7 +212,29 @@ export function discoverListingPage(input: {
 
   result.acceptedCount = result.recipeUrls.length + result.nextUrls.length;
   result.terminal = result.nextUrls.length === 0;
+  if (
+    scriptGatedContinuation &&
+    result.terminal &&
+    result.recipeUrls.length > 0
+  ) {
+    result.complete = false;
+    result.incompleteReasons.push("script-gated-continuation");
+  }
   return result;
+}
+
+/**
+ * A load-more control that is not a link keeps the remaining recipes behind a
+ * script call, so the listing must not be reported as fully discovered.
+ */
+function hasLoadMoreControl($: cheerio.CheerioAPI): boolean {
+  let found = false;
+  $("button, a:not([href]), [role='button']").each((_index, element) => {
+    if (found) return;
+    const text = $(element).text().replace(/\s+/gu, " ").trim();
+    if (LOAD_MORE_CONTROL_PATTERN.test(text)) found = true;
+  });
+  return found;
 }
 
 export function matchesSourceRecipeUrl(

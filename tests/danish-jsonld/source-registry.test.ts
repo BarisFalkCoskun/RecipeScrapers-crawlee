@@ -41,9 +41,13 @@ describe("Danish JSON-LD source registry", () => {
       ["arla", "configured"],
       ["coop", "configured"],
       ["kitchenaid", "configured"],
-      ["madoghave", "canary_passed"],
-      ["tv2mad", "canary_passed"],
+      ["madoghave", "shadow_passed"],
+      ["tv2mad", "configured"],
     ]);
+    expect(byId.get("madoghave")?.shadowParity).toBe("legacy-unhealthy");
+    expect(byId.get("tv2mad")?.deferOrBlockReason).toMatch(
+      /script-only load-more control/u
+    );
     expect(byId.get("surdejsentusiasten")?.migrationState).toBe("shadow_passed");
     expect(byId.get("kikkoman")?.migrationState).toBe("configured");
     expect(byId.get("gamleopskrifter")?.migrationState).toBe("configured");

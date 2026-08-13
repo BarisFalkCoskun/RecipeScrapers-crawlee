@@ -2994,8 +2994,20 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     latestCanary: PILOT_CANARY_RUN,
     deferOrBlockReason: "Pilot persisted recipes but reached the canary page cap",
   },
-  madoghave: { migrationState: "canary_passed", latestCanary: PILOT_CANARY_RUN },
-  tv2mad: { migrationState: "canary_passed", latestCanary: PILOT_CANARY_RUN },
+  madoghave: {
+    migrationState: "shadow_passed",
+    latestCanary:
+      "2026-08-13T20-04-47.355Z-attempt-fb13dd5c-1574-4ce6-badd-019810bd2afc",
+    shadowParity: "legacy-unhealthy",
+    deferOrBlockReason:
+      "Legacy spider emits zero recipes, so acceptance rests on complete discovery, two clean uncapped runs, and a reviewed record sample",
+  },
+  tv2mad: {
+    migrationState: "configured",
+    latestCanary: PILOT_CANARY_RUN,
+    deferOrBlockReason:
+      "Listing continues through a script-only load-more control, so the canary discovered 20 of the catalog",
+  },
   surdejsentusiasten: {
     migrationState: "shadow_passed",
     latestCanary:

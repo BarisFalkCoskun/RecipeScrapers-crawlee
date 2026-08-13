@@ -81,6 +81,65 @@ describe("Danish JSON-LD discovery", () => {
     expect(terminal.terminal).toBe(true);
   });
 
+  it("reports a script-gated load-more listing as incomplete instead of terminal", () => {
+    const result = discoverListingPage({
+      source: { ...source, discovery: "listing", legacyFamily: "JsonLdListingSpider" },
+      pageUrl: "https://example.dk/opskrifter/",
+      body: `<a href="/opskrifter/kage">Kage</a>
+        <a href="/opskrifter/boller">Boller</a>
+        <div class="ds_button-group">
+          <button class="ds_button"><span>Vis flere</span></button>
+        </div>`,
+    });
+
+    expect(result.recipeUrls).toEqual([
+      "https://example.dk/opskrifter/kage",
+      "https://example.dk/opskrifter/boller",
+    ]);
+    expect(result.nextUrls).toEqual([]);
+    expect(result.complete).toBe(false);
+    expect(result.incompleteReasons).toEqual(["script-gated-continuation"]);
+  });
+
+  it("keeps a genuinely terminal listing complete when no load-more control exists", () => {
+    const result = discoverListingPage({
+      source: { ...source, discovery: "listing", legacyFamily: "JsonLdListingSpider" },
+      pageUrl: "https://example.dk/opskrifter/page/13",
+      body: `<a href="/opskrifter/kage">Kage</a>
+        <button class="filter">Filtrer</button>`,
+    });
+
+    expect(result.complete).toBe(true);
+    expect(result.incompleteReasons).toEqual([]);
+  });
+
+  it("does not flag a load-more control when a real continuation link is present", () => {
+    const result = discoverListingPage({
+      source: { ...source, discovery: "listing", legacyFamily: "JsonLdListingSpider" },
+      pageUrl: "https://example.dk/opskrifter/",
+      body: `<a href="/opskrifter/kage">Kage</a>
+        <a rel="next" href="/opskrifter/page/2">Næste</a>
+        <button>Vis flere</button>`,
+    });
+
+    expect(result.nextUrls).toEqual(["https://example.dk/opskrifter/page/2"]);
+    expect(result.complete).toBe(true);
+    expect(result.incompleteReasons).toEqual([]);
+  });
+
+  it("ignores a load-more control on a listing that yielded no recipe links", () => {
+    const result = discoverListingPage({
+      source: { ...source, discovery: "listing", legacyFamily: "JsonLdListingSpider" },
+      pageUrl: "https://example.dk/om-os",
+      body: `<a href="/om-os">Om os</a>
+        <button>Vis flere</button>`,
+    });
+
+    expect(result.recipeUrls).toEqual([]);
+    expect(result.complete).toBe(true);
+    expect(result.incompleteReasons).toEqual([]);
+  });
+
   it("extracts dynamic listing URLs from bounded JSON responses", () => {
     const result = discoverListingPage({
       source: { ...source, discovery: "listing", legacyFamily: "JsonLdListingSpider" },

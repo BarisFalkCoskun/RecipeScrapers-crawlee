@@ -255,6 +255,32 @@ describe("Danish JSON-LD source session", () => {
     });
   });
 
+  it("keeps a script-gated load-more listing out of a succeeded outcome", async () => {
+    const session = new DanishJsonLdSourceSession({
+      source: { ...source, discovery: "listing", legacyFamily: "JsonLdListingSpider" },
+      store: new MemoryV2Store(),
+      crawlRunId: "run-script-gated",
+      crawlAttemptId: "attempt-script-gated",
+      maxPages: 5,
+    });
+
+    await session.handleResponse({
+      kind: "listing",
+      fetchMode: "cheerio",
+      url: "https://example.dk/opskrifter/",
+      statusCode: 200,
+      headers: { "content-type": "text/html" },
+      body: `<a href="/opskrifter/kage">Kage</a>
+        <button><span>Vis flere</span></button>`,
+    });
+
+    expect(session.observation.discoveryComplete).toBe(false);
+    expect(session.observation.discoveryFailureReasons).toContain(
+      "script-gated-continuation"
+    );
+    expect(session.outcome().outcome).not.toBe("succeeded");
+  });
+
   it("rejects an off-domain loaded URL before extraction or persistence", async () => {
     const store = new MemoryV2Store();
     const diagnostics: DanishJsonLdDiagnostic[] = [];

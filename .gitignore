@@ -1,6 +1,8 @@
 node_modules/
 dist/
 /storage/
+/logs/
+/evidence/
 .env
 *.log
 vpn/mullvad.json

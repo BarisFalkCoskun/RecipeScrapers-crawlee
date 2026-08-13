@@ -61,10 +61,19 @@ npm run migration:status -- --format markdown
 
 The checklist includes the bounded pilot evidence from crawl run
 `2026-08-13T13-52-17.460Z-attempt-e656480c-a774-4c00-aa02-1fa3fdd898e0`.
-Only Mad og Have and TV2 Mad completed cleanly and are `canary_passed`.
 Arla, Coop, and KitchenAid remain `configured` because the run reached the
 50-page cap. The source reason column records each remaining block or defer
-decision; no source is `shadow_passed` or `cutover`.
+decision; no source is `cutover`.
+
+A listing that continues through a script-only load-more control exposes no
+continuation URL, so link-based discovery stops on the first page while looking
+terminal. Discovery now reports that page as incomplete with the stable reason
+`script-gated-continuation`, which keeps the source out of a `succeeded`
+outcome. TV2 Mad is the known instance: its `Vis flere` control calls an
+offset-paginated JSON service, so the pilot canary saw only the first 20 recipes
+of a much larger catalog and was **demoted from `canary_passed` to
+`configured`**. Reaching the rest of that catalog needs an explicit registry
+discovery contract for the service route; it is not a canary rerun.
 
 ## Evidence-backed source-by-source transition
 
@@ -79,8 +88,14 @@ Advance one source at a time; do not advance the whole pilot as a group.
 
 Each transition must attach the run ID, timestamp, source ID, comparison scope,
 and the reviewed evidence to the migration record. The current registry records
-Mad og Have and TV2 Mad as `canary_passed`; **no source is `shadow_passed` or
-`cutover`.**
+Mad og Have as `canary_passed` and Surdejsentusiasten as `shadow_passed`;
+**no source is `cutover`.**
+
+When the legacy spider is itself unhealthy for a source, legacy parity cannot
+carry the `canary_passed` to `shadow_passed` transition. That source instead
+needs its discovery proven complete against the live listing contract, two
+complete successful uncapped runs whose second run upserts rather than
+duplicates, and a manual read of at least twenty stored records.
 
 The strict JSON-LD runtime preserves each exact source script. When an otherwise
 valid script contains illegal literal JSON control characters inside a quoted

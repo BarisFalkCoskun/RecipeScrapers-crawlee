@@ -637,6 +637,7 @@ function isSourceOutcomeReason(value: string): value is SourceOutcomeReason {
     "malformed-listing-payload",
     "unexpected-listing-shape",
     "http-200-block-shell",
+    "script-gated-continuation",
     "vpn-relay-pool-exhausted",
   ].includes(value);
 }
