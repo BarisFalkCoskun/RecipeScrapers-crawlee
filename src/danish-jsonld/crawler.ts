@@ -119,6 +119,11 @@ export class DanishJsonLdSourceSession {
     return budgeted.value;
   }
 
+  /** Logs a response attempt that will be retried without making it terminal run state. */
+  recordRetriedResponseDiagnostic(response: DanishJsonLdResponse): void {
+    this.emitHttpDiagnostic(response);
+  }
+
   isRequestCapReached(): boolean {
     return this.requestBudget.snapshot().capReached;
   }
@@ -144,7 +149,7 @@ export class DanishJsonLdSourceSession {
     response: DanishJsonLdResponse
   ): Promise<DanishJsonLdRoutingResult> {
     this.observation.completedRequests = (this.observation.completedRequests ?? 0) + 1;
-    const blocked = [401, 403, 429, 455, 526].includes(response.statusCode);
+    const blocked = [401, 403, 429, 454, 455, 526].includes(response.statusCode);
     if (blocked) {
       this.observation.blockedRequests = (this.observation.blockedRequests ?? 0) + 1;
     }
@@ -276,13 +281,19 @@ export class DanishJsonLdSourceSession {
       sitemapUrlCount: discovery.sitemapUrls.length,
       terminal: discovery.terminal,
     });
-    return {
-      cheerioRequests: [
-        ...discovery.sitemapUrls.map((url) => ({ kind: "sitemap" as const, url })),
-        ...recipeRequests,
-      ],
-      playwrightRequests: [],
-    };
+    const sitemapRequests = discovery.sitemapUrls.map((url) => ({
+      kind: "sitemap" as const,
+      url,
+    }));
+    return this.source.fetchMode === "playwright"
+      ? {
+          cheerioRequests: sitemapRequests,
+          playwrightRequests: recipeRequests,
+        }
+      : {
+          cheerioRequests: [...sitemapRequests, ...recipeRequests],
+          playwrightRequests: [],
+        };
   }
 
   private handleListing(response: DanishJsonLdResponse): DanishJsonLdRoutingResult {
@@ -309,15 +320,15 @@ export class DanishJsonLdSourceSession {
       kind: "listing" as const,
       url,
     }));
-    return response.fetchMode === "playwright"
-      ? {
-          cheerioRequests: recipeRequests,
-          playwrightRequests: nextRequests,
-        }
-      : {
-          cheerioRequests: [...recipeRequests, ...nextRequests],
-          playwrightRequests: [],
-        };
+    const playwrightRequests = [
+      ...(this.source.fetchMode === "playwright" ? recipeRequests : []),
+      ...(response.fetchMode === "playwright" ? nextRequests : []),
+    ];
+    const cheerioRequests = [
+      ...(this.source.fetchMode === "cheerio" ? recipeRequests : []),
+      ...(response.fetchMode === "cheerio" ? nextRequests : []),
+    ];
+    return { cheerioRequests, playwrightRequests };
   }
 
   private async handleRecipe(

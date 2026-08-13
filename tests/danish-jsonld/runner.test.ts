@@ -6,6 +6,7 @@ import {
   DANISH_JSONLD_OBSERVED_HTTP_ERROR_STATUS_CODES,
   cleanupDanishJsonLdAttemptQueues,
   executeDanishJsonLdSource,
+  parseHttpStatusForDiagnostics,
   runDanishJsonLdCrawl,
   type ExecuteDanishJsonLdSource,
 } from "../../src/danish-jsonld/runner.js";
@@ -15,6 +16,19 @@ import type { DanishJsonLdSource } from "../../src/danish-jsonld/source-registry
 import type { DanishJsonLdVpnTransport } from "../../src/danish-jsonld/vpn-transport.js";
 
 describe("dedicated Danish JSON-LD runner", () => {
+  it("parses only contextual HTTP status codes from failures", () => {
+    expect(parseHttpStatusForDiagnostics(
+      new Error("Response code 429 (Too Many Requests)"),
+      []
+    )).toBe(429);
+    expect(parseHttpStatusForDiagnostics(
+      Object.assign(new Error("fixture socket failed"), {
+        stack: "Error: fixture socket failed\n    at run (/srv/runner.ts:281:15)",
+      }),
+      []
+    )).toBeUndefined();
+  });
+
   it("waits out Crawlee's same-domain reclaim window before dropping attempt queues", async () => {
     let releaseGracePeriod: (() => void) | undefined;
     const sleep = vi.fn(() => new Promise<void>((resolve) => {
@@ -311,7 +325,7 @@ describe("dedicated Danish JSON-LD runner", () => {
     };
 
     try {
-      await executeDanishJsonLdSource({
+      const result = await executeDanishJsonLdSource({
         source,
         store: {} as CrawlStore & RecipeDocumentV2Store,
         crawlRunId: "rotation-run",
@@ -321,6 +335,12 @@ describe("dedicated Danish JSON-LD runner", () => {
         diagnosticSink: (event) => diagnostics.push(event),
       });
 
+      expect(result.outcome).toEqual({
+        sourceId: "rotation-fixture",
+        outcome: "no_data",
+        outcomeReasons: ["no-recipe-candidates"],
+      });
+      expect(result.observation.blockedRequests).toBe(0);
       expect(requestFunction).toHaveBeenCalledTimes(2);
       expect(handleResponse.mock.calls.map(([input]) => input.statusCode)).toEqual([403, 200]);
       expect(handleResponse.mock.calls[0][0].sessionId).toBe(
@@ -427,14 +447,19 @@ describe("dedicated Danish JSON-LD runner", () => {
     const configuration = Configuration.getGlobalConfig();
     const previousMemoryMbytes = configuration.get("memoryMbytes");
     configuration.set("memoryMbytes", 1_024);
+    const transportError = Object.assign(new Error("fixture socket failed"), {
+      code: "ECONNRESET",
+    });
+    transportError.stack = [
+      "Error: fixture socket failed",
+      "    at executeRequest (/srv/recipe/runner.ts:281:15)",
+    ].join("\n");
     const requestFunction = vi.spyOn(
       CheerioCrawler.prototype as unknown as {
         _requestFunction: () => Promise<unknown>;
       },
       "_requestFunction"
-    ).mockRejectedValue(Object.assign(new Error("fixture socket failed"), {
-      code: "ECONNRESET",
-    }));
+    ).mockRejectedValue(transportError);
     const release = vi.fn(async () => undefined);
     const noRotation = async () => ({
       rotated: false,
@@ -451,6 +476,7 @@ describe("dedicated Danish JSON-LD runner", () => {
       handleFailure: noRotation,
       release,
     };
+    const diagnostics: Array<{ event: string; data: Record<string, unknown> }> = [];
     const source: DanishJsonLdSource = {
       id: "terminal-release-fixture",
       domain: "fixture.invalid",
@@ -481,10 +507,15 @@ describe("dedicated Danish JSON-LD runner", () => {
         crawlAttemptId: `terminal-release-${randomUUID()}`,
         maxPages: 3,
         vpnTransport,
+        diagnosticSink: (event) => diagnostics.push(event),
       });
 
       expect(requestFunction).toHaveBeenCalledOnce();
       expect(release).toHaveBeenCalledOnce();
+      expect(diagnostics).toContainEqual(expect.objectContaining({
+        event: "request-failed",
+        data: expect.objectContaining({ statusCode: "undefined" }),
+      }));
     } finally {
       requestFunction.mockRestore();
       configuration.set("memoryMbytes", previousMemoryMbytes);

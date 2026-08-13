@@ -6,7 +6,7 @@ import { SocksProxyAgent } from "socks-proxy-agent";
 
 const MULLVAD_RELAYS_URL = "https://api-www.mullvad.net/www/relays/all/";
 const DEFAULT_VERIFY_TIMEOUT_MS = 10_000;
-const DEFAULT_COOLDOWN_MS = 5 * 60 * 1_000;
+export const MULLVAD_DEFAULT_COOLDOWN_MS = 5 * 60 * 1_000;
 
 export interface MullvadRelay {
   hostname: string;
@@ -78,7 +78,7 @@ export class MullvadRelayProvider {
   constructor(options: MullvadRelayProviderOptions) {
     this.options = options;
     this.country = normalizeCountry(options.country);
-    this.cooldownMs = positiveInteger(options.cooldownMs, DEFAULT_COOLDOWN_MS);
+    this.cooldownMs = positiveInteger(options.cooldownMs, MULLVAD_DEFAULT_COOLDOWN_MS);
     this.now = options.now ?? Date.now;
   }
 
@@ -220,10 +220,25 @@ export class MullvadRelayProvider {
   ): Promise<MullvadRelayLease | null> {
     const used = this.usedBySession.get(sessionId) ?? new Set<string>();
     this.usedBySession.set(sessionId, used);
+    let cooldownWaitLogged = false;
 
     while (true) {
       const relay = this.nextCandidate(used, targetScope);
       if (!relay) {
+        const cooldown = this.nextCooldown(used, targetScope);
+        if (cooldown) {
+          if (!cooldownWaitLogged) {
+            cooldownWaitLogged = true;
+            this.emit("vpn-relay-cooldown-wait", {
+              targetScope: targetScope ?? "global",
+              waitMillis: cooldown.waitMillis,
+              coolingRelayCount: cooldown.coolingRelayCount,
+            });
+          }
+          await waitForMilliseconds(Math.min(cooldown.waitMillis, 1_000));
+          if (this.closing) return null;
+          continue;
+        }
         this.emitPoolExhausted(targetScope, used);
         return null;
       }
@@ -311,6 +326,31 @@ export class MullvadRelayProvider {
         !this.cooldownUntil.has(label) &&
         !scopedCooldown?.has(label);
     });
+  }
+
+  private nextCooldown(
+    used: Set<string>,
+    targetScope?: string
+  ): { waitMillis: number; coolingRelayCount: number } | undefined {
+    const now = this.now();
+    const scoped = targetScope
+      ? this.scopedCooldownUntil.get(targetScope)
+      : undefined;
+    const waits = this.relays.flatMap((relay) => {
+      const label = boundedRelayLabel(relay);
+      if (
+        used.has(label) ||
+        this.activeRelayLabels.has(label) ||
+        this.reservedRelayLabels.has(label)
+      ) return [];
+      const availableAt = scoped?.get(label) ?? 0;
+      return availableAt > now ? [availableAt - now] : [];
+    });
+    if (waits.length === 0) return undefined;
+    return {
+      waitMillis: Math.max(1, Math.min(...waits)),
+      coolingRelayCount: waits.length,
+    };
   }
 
   private emitPoolExhausted(
@@ -615,6 +655,10 @@ function positiveInteger(value: number | undefined, fallback: number): number {
   return Number.isInteger(value) && (value ?? 0) > 0
     ? value as number
     : fallback;
+}
+
+function waitForMilliseconds(milliseconds: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
 
 function socksUrl(relay: MullvadRelay): string {

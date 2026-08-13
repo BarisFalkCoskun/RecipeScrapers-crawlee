@@ -250,10 +250,9 @@ describe("Mullvad relay provider", () => {
     await provider.initialize();
     await provider.acquire("madrejsen-a", "madrejsen.dk");
     await provider.rotate("madrejsen-a", "madrejsen.dk", "scope");
-    await provider.rotate("madrejsen-a", "madrejsen.dk", "scope");
-
-    await expect(provider.acquire("madrejsen-b", "madrejsen.dk"))
+    await expect(provider.rotate("madrejsen-a", "madrejsen.dk", "scope"))
       .resolves.toBeNull();
+
     await expect(provider.acquire("sundpaabudget", "sundpaabudget.dk"))
       .resolves.toMatchObject({ relayLabel: "dk-cph-wg-001" });
     expect(events).toContainEqual(expect.objectContaining({
@@ -262,6 +261,46 @@ describe("Mullvad relay provider", () => {
         targetScope: "madrejsen.dk",
         eligibleRelayCount: 2,
         scopedCoolingRelayCount: 2,
+        requestUsedRelayCount: 2,
+      }),
+    }));
+  });
+
+  it("waits for an expired hostname cooldown before failing a fresh request", async () => {
+    const events: Array<{ event: string; data: Record<string, unknown> }> = [];
+    const relay = RELAYS[0];
+    const provider = new MullvadRelayProvider({
+      country: "dk",
+      cooldownMs: 20,
+      fetchRelays: async () => [relay],
+      readCache: async () => [],
+      writeCache: async () => undefined,
+      verifyRelay: async () => ({
+        mullvadExitIp: true,
+        countryCode: relay.country_code,
+        hostname: relay.hostname,
+      }),
+      openBridge: async () => ({
+        proxyUrl: "http://127.0.0.1:4199",
+        close: async () => undefined,
+      }),
+      diagnosticSink: (event) => events.push(event),
+    });
+    await provider.initialize();
+    await provider.acquire("blocked-request", "madrejsen.dk");
+    await expect(provider.rotate(
+      "blocked-request",
+      "madrejsen.dk",
+      "scope"
+    )).resolves.toBeNull();
+
+    await expect(provider.acquire("fresh-request", "madrejsen.dk"))
+      .resolves.toMatchObject({ relayLabel: "dk-cph-wg-001" });
+    expect(events).toContainEqual(expect.objectContaining({
+      event: "vpn-relay-cooldown-wait",
+      data: expect.objectContaining({
+        targetScope: "madrejsen.dk",
+        coolingRelayCount: 1,
       }),
     }));
   });

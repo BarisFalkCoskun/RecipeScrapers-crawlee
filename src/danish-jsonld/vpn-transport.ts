@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { ProxyConfiguration, type Request } from "crawlee";
 import {
   createDefaultMullvadRelayProvider,
+  MULLVAD_DEFAULT_COOLDOWN_MS,
   type MullvadRelayDiagnostic,
   type MullvadRelayLease,
   type MullvadRelayProvider,
@@ -32,6 +33,7 @@ export interface VpnRotationDecision {
 
 export interface DanishJsonLdVpnTransport {
   readonly proxyConfiguration: ProxyConfiguration;
+  readonly requestHandlerTimeoutSecs?: number;
   initialize(): Promise<void>;
   handleResponse(input: {
     sessionId: string;
@@ -48,21 +50,25 @@ export interface DanishJsonLdVpnTransport {
 
 export class MullvadVpnTransport implements DanishJsonLdVpnTransport {
   readonly proxyConfiguration: ProxyConfiguration;
+  readonly requestHandlerTimeoutSecs: number;
   private readonly provider: MullvadRelayProvider;
   private readonly diagnosticSink?: (event: MullvadRelayDiagnostic) => void;
   private readonly rotations = new Map<string, number>();
   private readonly consecutiveTransportFailures = new Map<string, number>();
   private readonly sessionOperations = new Map<string, Promise<void>>();
   private readonly targetScopeBySession = new Map<string, string>();
+  private readonly leasedSessionIds = new Set<string>();
   private initialized = false;
   private preflightAvailable = false;
   private closing = false;
 
   constructor(options: {
     provider: MullvadRelayProvider;
+    requestHandlerTimeoutSecs?: number;
     diagnosticSink?: (event: MullvadRelayDiagnostic) => void;
   }) {
     this.provider = options.provider;
+    this.requestHandlerTimeoutSecs = options.requestHandlerTimeoutSecs ?? 7 * 60;
     this.diagnosticSink = options.diagnosticSink;
     this.proxyConfiguration = new ProxyConfiguration({
       newUrlFunction: async (_crawleeSessionId, options) => {
@@ -83,6 +89,7 @@ export class MullvadVpnTransport implements DanishJsonLdVpnTransport {
           if (!lease) {
             throw new VpnRelayPoolExhaustedError(targetScope);
           }
+          this.leasedSessionIds.add(sessionId);
           return lease.proxyUrl;
         });
       },
@@ -153,9 +160,12 @@ export class MullvadVpnTransport implements DanishJsonLdVpnTransport {
 
   async release(sessionId: string): Promise<void> {
     await this.runSessionOperation(sessionId, async () => {
+      const hadLease = this.leasedSessionIds.delete(sessionId);
+      this.targetScopeBySession.delete(sessionId);
       await this.provider.release(sessionId);
       this.rotations.delete(sessionId);
       this.consecutiveTransportFailures.delete(sessionId);
+      if (!hadLease) return;
       this.emit("vpn-request-lease-released", { reason: "request-terminal" });
     });
   }
@@ -168,6 +178,7 @@ export class MullvadVpnTransport implements DanishJsonLdVpnTransport {
     this.rotations.clear();
     this.consecutiveTransportFailures.clear();
     this.targetScopeBySession.clear();
+    this.leasedSessionIds.clear();
     await this.provider.cleanup();
     this.sessionOperations.clear();
   }
@@ -186,6 +197,7 @@ export class MullvadVpnTransport implements DanishJsonLdVpnTransport {
         targetScope,
         scopedAccessCooldown ? "scope" : "global"
       );
+      this.leasedSessionIds.delete(sessionId);
       this.emit("vpn-rotation-exhausted", { reason, rotationCount: count });
       return { rotated: false, eligible: true, exhausted: true, reason };
     }
@@ -198,9 +210,11 @@ export class MullvadVpnTransport implements DanishJsonLdVpnTransport {
       scopedAccessCooldown ? "scope" : "global"
     );
     if (!lease) {
+      this.leasedSessionIds.delete(sessionId);
       this.emit("vpn-rotation-exhausted", { reason, rotationCount: count });
       return { rotated: false, eligible: true, exhausted: true, reason };
     }
+    this.leasedSessionIds.add(sessionId);
     const rotationCount = count + 1;
     this.rotations.set(sessionId, rotationCount);
     this.emit("vpn-relay-rotated", {
@@ -296,15 +310,18 @@ export function createDefaultMullvadVpnTransport(options: {
   const env = options.env ?? process.env;
   const cachePath = env["MULLVAD_RELAY_CACHE"] ??
     resolve(process.cwd(), "vpn", "mullvad.json");
+  const cooldownMs = readPositiveInteger(env["MULLVAD_RELAY_COOLDOWN_MS"]) ??
+    MULLVAD_DEFAULT_COOLDOWN_MS;
   const provider = createDefaultMullvadRelayProvider({
     country: options.country,
     cachePath,
-    cooldownMs: readPositiveInteger(env["MULLVAD_RELAY_COOLDOWN_MS"]),
+    cooldownMs,
     verifyTimeoutMs: readPositiveInteger(env["MULLVAD_VERIFY_TIMEOUT_MS"]),
     diagnosticSink: options.diagnosticSink,
   });
   return new MullvadVpnTransport({
     provider,
+    requestHandlerTimeoutSecs: Math.ceil(cooldownMs / 1_000) + 120,
     diagnosticSink: options.diagnosticSink,
   });
 }

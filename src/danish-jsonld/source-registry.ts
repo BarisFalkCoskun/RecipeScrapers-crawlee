@@ -2997,9 +2997,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   madoghave: { migrationState: "canary_passed", latestCanary: PILOT_CANARY_RUN },
   tv2mad: { migrationState: "canary_passed", latestCanary: PILOT_CANARY_RUN },
   surdejsentusiasten: {
-    migrationState: "configured",
-    latestCanary: PILOT_CANARY_RUN,
-    deferOrBlockReason: "Pilot persisted recipes but one request failed",
+    migrationState: "shadow_passed",
+    latestCanary:
+      "2026-08-13T19-21-01.957Z-attempt-4c841ddc-1d13-48c9-a02c-83587d34898e",
+    shadowParity: "100%",
+    deferOrBlockReason: undefined,
   },
   kikkoman: {
     migrationState: "configured",

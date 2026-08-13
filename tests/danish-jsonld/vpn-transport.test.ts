@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Request } from "crawlee";
 import { MullvadRelayProvider, type MullvadRelay } from "../../src/danish-jsonld/mullvad-relay-provider.js";
 import {
+  createDefaultMullvadVpnTransport,
   MullvadVpnTransport,
   VpnRelayPoolExhaustedError,
   requestVpnSessionId,
@@ -46,6 +47,14 @@ function requestWithSession(vpnSessionId: string, url = "https://arla.dk/opskrif
 }
 
 describe("Mullvad VPN transport", () => {
+  it("keeps request handlers alive beyond the configured relay cooldown", () => {
+    const transport = createDefaultMullvadVpnTransport({
+      env: { MULLVAD_RELAY_COOLDOWN_MS: "900000" },
+    });
+
+    expect(transport.requestHandlerTimeoutSecs).toBe(1_020);
+  });
+
   it("fails closed during startup when no verified relay exists", async () => {
     const provider = new MullvadRelayProvider({
       fetchRelays: async () => RELAYS.slice(0, 1),
@@ -171,24 +180,16 @@ describe("Mullvad VPN transport", () => {
     })).resolves.toMatchObject({ rotated: true, reason: "explicit-block" });
   });
 
-  it("throws a typed pool-exhaustion error after all relays are blocked for one hostname", async () => {
-    const { transport } = createTransport(RELAYS.slice(0, 4));
+  it("throws a typed pool-exhaustion error while every relay is actively leased", async () => {
+    const { transport } = createTransport(RELAYS.slice(0, 1));
     await transport.initialize();
-    const sessionId = "vpn-exhausted";
     await transport.proxyConfiguration.newUrl("ignored", {
-      request: requestWithSession(sessionId, "https://madrejsen.dk/aftensmad/"),
+      request: requestWithSession("vpn-held", "https://madrejsen.dk/aftensmad/"),
     });
-    for (let index = 0; index < 4; index += 1) {
-      await transport.handleResponse({ sessionId, statusCode: 454, body: "Checking your browser" });
-    }
-    await transport.release(sessionId);
 
     await expect(transport.proxyConfiguration.newUrl("ignored", {
       request: requestWithSession("vpn-new", "https://madrejsen.dk/frokost/"),
     })).rejects.toBeInstanceOf(VpnRelayPoolExhaustedError);
-    await expect(transport.proxyConfiguration.newUrl("ignored", {
-      request: requestWithSession("vpn-other", "https://sundpaabudget.dk/sitemap.xml"),
-    })).resolves.toMatch(/^http:\/\/127\.0\.0\.1:/u);
   });
 
   it("rotates only after a repeated generic transport failure", async () => {
@@ -316,6 +317,17 @@ describe("Mullvad VPN transport", () => {
 
     expect(closed).toHaveLength(5);
     expect(new Set(closed).size).toBe(5);
+  });
+
+  it("does not report a release for a request that never leased a relay", async () => {
+    const { transport, events } = createTransport();
+    await transport.initialize();
+
+    await transport.release("vpn-never-leased");
+
+    expect(events.filter((event) =>
+      event.event === "vpn-request-lease-released"
+    )).toHaveLength(0);
   });
 
   it("waits for an in-flight transport rotation before cleanup returns", async () => {

@@ -260,15 +260,15 @@ export async function executeDanishJsonLdSource(
       const body = typeof context.body === "string"
         ? context.body
         : context.body.toString();
-      const routes = await session.handleResponse({
+      const response = {
         kind: requestKind(context.request.label, context.request.userData),
-        fetchMode: "cheerio",
+        fetchMode: "cheerio" as const,
         url: context.request.url,
         loadedUrl: context.request.loadedUrl,
         statusCode: context.response.statusCode ?? 200,
         headers: normalizeHeaders(context.response.headers),
         body,
-      });
+      };
       const rotation = input.vpnTransport
         ? await input.vpnTransport.handleResponse({
             sessionId: vpnSessionId(context.request.userData),
@@ -278,10 +278,12 @@ export async function executeDanishJsonLdSource(
         : undefined;
       if (rotation?.exhausted) context.request.noRetry = true;
       if (rotation?.rotated) {
+        session.recordRetriedResponseDiagnostic(response);
         throw new VpnRotationRetryError(
           rotation.reason ?? "eligible-response"
         );
       }
+      const routes = await session.handleResponse(response);
       await route(routes);
       await releaseVpnRequest(context.request.userData);
     },
@@ -289,6 +291,9 @@ export async function executeDanishJsonLdSource(
       requestQueue: cheerioQueue,
       useSessionPool: false,
       maxRequestsPerCrawl: input.maxPages,
+      ...(input.vpnTransport?.requestHandlerTimeoutSecs
+        ? { requestHandlerTimeoutSecs: input.vpnTransport.requestHandlerTimeoutSecs }
+        : {}),
       ignoreHttpErrorStatusCodes: [
         ...DANISH_JSONLD_OBSERVED_HTTP_ERROR_STATUS_CODES,
       ],
@@ -312,7 +317,7 @@ export async function executeDanishJsonLdSource(
           kind: requestKind(request.label, request.userData),
           url: request.url,
           retryCount: request.retryCount,
-          statusCode: parseHttpStatus(error, request.errorMessages),
+          statusCode: parseHttpStatusForDiagnostics(error, request.errorMessages),
           error,
         });
         if (!allowRetry) request.noRetry = true;
@@ -331,7 +336,7 @@ export async function executeDanishJsonLdSource(
           kind: requestKind(request.label, request.userData),
           url: request.url,
           retryCount: request.retryCount,
-          statusCode: parseHttpStatus(error, request.errorMessages),
+          statusCode: parseHttpStatusForDiagnostics(error, request.errorMessages),
           ...(relayPoolExhausted
             ? { blockedReason: "vpn-relay-pool-exhausted" as const }
             : {}),
@@ -351,15 +356,15 @@ export async function executeDanishJsonLdSource(
       const headers = context.response
         ? await context.response.allHeaders()
         : {};
-      const routes = await session.handleResponse({
+      const response = {
         kind: requestKind(context.request.label, context.request.userData),
-        fetchMode: "playwright",
+        fetchMode: "playwright" as const,
         url: context.request.url,
         loadedUrl: context.request.loadedUrl,
         statusCode: context.response?.status() ?? 200,
         headers,
         body,
-      });
+      };
       const rotation = input.vpnTransport
         ? await input.vpnTransport.handleResponse({
             sessionId: vpnSessionId(context.request.userData),
@@ -369,10 +374,12 @@ export async function executeDanishJsonLdSource(
         : undefined;
       if (rotation?.exhausted) context.request.noRetry = true;
       if (rotation?.rotated) {
+        session.recordRetriedResponseDiagnostic(response);
         throw new VpnRotationRetryError(
           rotation.reason ?? "eligible-response"
         );
       }
+      const routes = await session.handleResponse(response);
       await route(routes);
       await releaseVpnRequest(context.request.userData);
     },
@@ -380,6 +387,9 @@ export async function executeDanishJsonLdSource(
       requestQueue: playwrightQueue,
       useSessionPool: false,
       maxRequestsPerCrawl: input.maxPages,
+      ...(input.vpnTransport?.requestHandlerTimeoutSecs
+        ? { requestHandlerTimeoutSecs: input.vpnTransport.requestHandlerTimeoutSecs }
+        : {}),
       errorHandler: async (
         { request }: PlaywrightCrawlingContext,
         error: Error
@@ -400,7 +410,7 @@ export async function executeDanishJsonLdSource(
           kind: requestKind(request.label, request.userData),
           url: request.url,
           retryCount: request.retryCount,
-          statusCode: parseHttpStatus(error, request.errorMessages),
+          statusCode: parseHttpStatusForDiagnostics(error, request.errorMessages),
           error,
         });
         if (!allowRetry) request.noRetry = true;
@@ -419,7 +429,7 @@ export async function executeDanishJsonLdSource(
           kind: requestKind(request.label, request.userData),
           url: request.url,
           retryCount: request.retryCount,
-          statusCode: parseHttpStatus(error, request.errorMessages),
+          statusCode: parseHttpStatusForDiagnostics(error, request.errorMessages),
           ...(relayPoolExhausted
             ? { blockedReason: "vpn-relay-pool-exhausted" as const }
             : {}),
@@ -541,11 +551,52 @@ function sanitizeStorageKey(value: string): string {
   return value.replace(/[^a-zA-Z0-9._-]+/gu, "-").replace(/^-|-$/gu, "");
 }
 
-function parseHttpStatus(error: unknown, errorMessages: string[]): number | undefined {
-  const text = [error instanceof Error ? error.message : String(error), ...errorMessages]
-    .join(" ");
-  const match = text.match(/(?:^|\D)([1-5]\d{2})(?:\D|$)/u);
-  return match ? Number(match[1]) : undefined;
+export function parseHttpStatusForDiagnostics(
+  error: unknown,
+  errorMessages: string[]
+): number | undefined {
+  const structured = readStructuredHttpStatus(error);
+  if (structured !== undefined) return structured;
+  const patterns = [
+    /\b(?:response|status)(?:\s+code)?\s*[:=]?\s*([1-5]\d{2})\b/iu,
+    /\bHTTP(?:\/\d(?:\.\d)?)?\s+([1-5]\d{2})\b/iu,
+    /\breceived\s+([1-5]\d{2})\s+status\b/iu,
+  ];
+  for (const text of [
+    error instanceof Error ? error.message : String(error),
+    ...errorMessages,
+  ]) {
+    for (const pattern of patterns) {
+      const match = text.match(pattern);
+      if (match?.[1]) return Number(match[1]);
+    }
+  }
+  return undefined;
+}
+
+function readStructuredHttpStatus(error: unknown): number | undefined {
+  let current = error;
+  for (let depth = 0; depth < 4; depth += 1) {
+    if (current === null || typeof current !== "object") return undefined;
+    const record = current as {
+      status?: unknown;
+      statusCode?: unknown;
+      response?: { status?: unknown; statusCode?: unknown };
+      cause?: unknown;
+    };
+    for (const value of [
+      record.statusCode,
+      record.status,
+      record.response?.statusCode,
+      record.response?.status,
+    ]) {
+      if (typeof value === "number" && value >= 100 && value <= 599) {
+        return value;
+      }
+    }
+    current = record.cause;
+  }
+  return undefined;
 }
 
 function isVpnRelayPoolExhaustion(

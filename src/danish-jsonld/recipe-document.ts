@@ -362,7 +362,8 @@ function instructionTexts(value: unknown): string[] {
     );
   }
   const text = firstString(node["text"], node["name"]);
-  return text ? [text] : [];
+  if (text) return [text];
+  return numericKeyValues(node).flatMap(instructionTexts);
 }
 
 function normalizeImageUrls(value: unknown): string[] {
@@ -390,7 +391,17 @@ function normalizeStrings(value: unknown): string[] {
   if (Array.isArray(value)) {
     return value.flatMap(normalizeStrings);
   }
+  if (value && typeof value === "object") {
+    return numericKeyValues(value as Record<string, unknown>).flatMap(normalizeStrings);
+  }
   return [];
+}
+
+function numericKeyValues(node: Record<string, unknown>): unknown[] {
+  return Object.entries(node)
+    .filter(([key]) => /^\d+$/u.test(key))
+    .sort(([left], [right]) => Number(left) - Number(right))
+    .map(([, value]) => value);
 }
 
 function parseIsoDurationMinutes(value: unknown): number | undefined {

@@ -193,6 +193,35 @@ describe("Danish JSON-LD source session", () => {
     expect(routes.playwrightRequests).toEqual([]);
   });
 
+  it("keeps recipe requests on Playwright for a registry Playwright source", async () => {
+    const session = new DanishJsonLdSourceSession({
+      source: {
+        ...source,
+        discovery: "listing",
+        legacyFamily: "JsonLdListingSpider",
+        fetchMode: "playwright",
+      },
+      store: new MemoryV2Store(),
+      crawlRunId: "run-playwright-source",
+      crawlAttemptId: "attempt-playwright-source",
+      maxPages: 5,
+    });
+
+    const routes = await session.handleResponse({
+      kind: "listing",
+      fetchMode: "playwright",
+      url: "https://example.dk/opskrifter/",
+      statusCode: 200,
+      headers: { "content-type": "text/html" },
+      body: `<a href="/opskrifter/kage">Kage</a>`,
+    });
+
+    expect(routes.cheerioRequests).toEqual([]);
+    expect(routes.playwrightRequests).toEqual([
+      { kind: "recipe", url: "https://example.dk/opskrifter/kage" },
+    ]);
+  });
+
   it.each([
     ["malformed-listing-payload", "application/json", "{not-json"],
     ["http-200-block-shell", "text/html", "<html><title>Checking your browser</title><body>Cloudflare challenge</body></html>"],
@@ -430,6 +459,33 @@ describe("Danish JSON-LD source session", () => {
         }),
       })
     );
+  });
+
+  it("classifies a direct HTTP 454 browser-check response as blocked", async () => {
+    const session = new DanishJsonLdSourceSession({
+      source,
+      store: new MemoryV2Store(),
+      crawlRunId: "run-http-454",
+      crawlAttemptId: "attempt-http-454",
+      maxPages: 5,
+    });
+
+    await session.handleResponse({
+      kind: "recipe",
+      fetchMode: "cheerio",
+      url: "https://example.dk/opskrifter/browser-check",
+      statusCode: 454,
+      headers: { server: "Simply.com" },
+      body: "<html><title>Checking your browser...</title></html>",
+    });
+
+    expect(session.observation.blockedRequests).toBe(1);
+    expect(session.observation.failedRequests).toBe(0);
+    expect(session.outcome()).toEqual({
+      sourceId: "fixture",
+      outcome: "blocked",
+      outcomeReasons: ["requests-blocked"],
+    });
   });
 
   it("classifies relay-pool exhaustion as an explicit blocked outcome", async () => {

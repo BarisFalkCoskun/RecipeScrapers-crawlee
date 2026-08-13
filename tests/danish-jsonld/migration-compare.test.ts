@@ -180,7 +180,7 @@ describe("Danish JSON-LD shadow comparison", () => {
     })).rejects.toThrow("missing or malformed unintendedOffDomainAdmissions");
   });
 
-  it("fails closed on missing, malformed, or non-empty terminal outcome reasons", async () => {
+  it("accepts the legacy producer's omitted success reasons but rejects malformed or non-empty reasons", async () => {
     const options = {
       legacyDatabase: "scrapy_shadow", crawleeDatabase: "crawlee_shadow", sourceIds: ["arla"],
       scrapyEvidencePath: "scrapy.json", crawleeEvidencePath: "crawlee.json",
@@ -194,7 +194,7 @@ describe("Danish JSON-LD shadow comparison", () => {
     delete (scrapyMissing.results[0] as Record<string, unknown>).outcome_reasons;
     await expect(executeMigrationComparison(options, {
       ...base, readScrapyEvidence: async () => scrapyMissing,
-    })).rejects.toThrow("missing or malformed outcome_reasons");
+    })).resolves.toBeDefined();
     const scrapyWrongType = completeScrapyEvidence(["arla"]);
     (scrapyWrongType.results[0] as Record<string, unknown>).outcome_reasons = "none";
     await expect(executeMigrationComparison(options, {

@@ -156,6 +156,25 @@ describe("Danish JSON-LD discovery", () => {
     ]);
   });
 
+  it("keeps a continuation when a numbered pagination link repeats the next URL", () => {
+    const madoghave = DANISH_JSONLD_SOURCES.find(
+      (entry) => entry.id === "madoghave"
+    )!;
+    const result = discoverListingPage({
+      source: madoghave,
+      pageUrl: madoghave.startUrls[0],
+      body: `
+        <a href="/recipe-items/kage/">Kage</a>
+        <a class="page-numbers" href="/opskrifter/page/2/">2</a>
+        <a class="next page-numbers" href="/opskrifter/page/2/">Next &rarr;</a>
+      `,
+    });
+
+    expect(result.recipeUrls).toEqual(["https://madoghave.dk/recipe-items/kage/"]);
+    expect(result.nextUrls).toEqual(["https://madoghave.dk/opskrifter/page/2/"]);
+    expect(result.terminal).toBe(false);
+  });
+
   it.each([
     ["kitchenaid", "https://www.kitchenaid.dk/opskrifter/alle", "/opskrifter/alle/12"],
     ["klank", "https://klank.dk/index.php/opskrifter-koekken/", "/index.php/opskrifter-kategori/desserter/"],

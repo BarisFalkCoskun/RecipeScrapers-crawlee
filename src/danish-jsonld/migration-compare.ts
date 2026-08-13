@@ -430,7 +430,10 @@ function assertScrapyEvidence(evidence: unknown, options: MigrationComparisonOpt
     if (Object.keys(stats).length === 0) {
       throw new Error(`Scrapy evidence source ${sourceId} has incomplete stats`);
     }
-    if (stringArrayField(result, "outcome_reasons", `Scrapy evidence source ${sourceId}`).length > 0) {
+    const outcomeReasons = result.outcome_reasons === undefined
+      ? []
+      : stringArrayField(result, "outcome_reasons", `Scrapy evidence source ${sourceId}`);
+    if (outcomeReasons.length > 0) {
       throw new Error(`Scrapy evidence source ${sourceId} has outcome reasons`);
     }
   }

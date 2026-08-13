@@ -71,6 +71,52 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
     expect(document.sourceHash).not.toBe(document.contentHash);
   });
 
+  it("normalizes nested ingredients and numeric-keyed instruction maps", () => {
+    const rawRecipe = {
+      "@context": "https://schema.org",
+      "@type": "Recipe",
+      name: "Lammerullepølse",
+      recipeIngredient: [{
+        "0": "1 lammeslag",
+        "1": "1 håndfuld persille",
+        "3": "Friskkværnet peber",
+      }],
+      recipeInstructions: {
+        "0": { "@type": "HowToStep", text: "Lav saltlagen." },
+        "2": { "@type": "HowToStep", text: "Rul slaget stramt." },
+      },
+    };
+    const html = `<script type="application/ld+json">${JSON.stringify(rawRecipe)}</script>`;
+
+    const extraction = extractCompleteJsonLdRecipes(html);
+    expect(extraction.incompleteJsonLdCount).toBe(0);
+    expect(extraction.recipes).toEqual([rawRecipe]);
+
+    const document = buildRecipeDocumentV2({
+      sourceId: "madoghave",
+      canonicalUrl: "https://madoghave.dk/opskrift/lammerullepoelse",
+      pageUrl: "https://madoghave.dk/recipe-items/lammerullepoelse/",
+      crawlRunId: "run-nested",
+      crawlAttemptId: "attempt-nested",
+      extractedAt: new Date("2026-08-13T08:00:00.000Z"),
+      rawRecipe,
+      language: "da",
+      languageConfidence: 1,
+      languageSignals: [],
+      extractorVersion: "2.0.0",
+      extractionSignals: ["json-ld-found"],
+    });
+    expect(document.normalized.ingredients).toEqual([
+      "1 lammeslag",
+      "1 håndfuld persille",
+      "Friskkværnet peber",
+    ]);
+    expect(document.normalized.instructions).toEqual([
+      { position: 1, text: "Lav saltlagen." },
+      { position: 2, text: "Rul slaget stramt." },
+    ]);
+  });
+
   it("uses source, canonical URL, and upstream id deterministically", () => {
     const input = {
       sourceId: "example",

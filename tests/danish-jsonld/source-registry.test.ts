@@ -32,7 +32,7 @@ describe("Danish JSON-LD source registry", () => {
     }
   });
 
-  it("records the pilot canary evidence without claiming cutover", () => {
+  it("records verified migration evidence without claiming cutover", () => {
     const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
 
     expect(["arla", "coop", "kitchenaid", "madoghave", "tv2mad"].map(
@@ -44,7 +44,7 @@ describe("Danish JSON-LD source registry", () => {
       ["madoghave", "canary_passed"],
       ["tv2mad", "canary_passed"],
     ]);
-    expect(byId.get("surdejsentusiasten")?.migrationState).toBe("configured");
+    expect(byId.get("surdejsentusiasten")?.migrationState).toBe("shadow_passed");
     expect(byId.get("kikkoman")?.migrationState).toBe("configured");
     expect(byId.get("gamleopskrifter")?.migrationState).toBe("configured");
     expect(byId.get("sundpaabudget")?.migrationState).toBe("blocked");

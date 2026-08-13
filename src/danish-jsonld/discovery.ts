@@ -152,18 +152,25 @@ export function discoverListingPage(input: {
     });
   }
 
-  const seen = new Set<string>();
+  const uniqueCandidates: Array<{ candidate: string; next: boolean }> = [];
+  const candidateIndexes = new Map<string, number>();
   for (const { raw, next } of candidates) {
     const candidate = normalizeHttpUrl(raw, input.pageUrl);
     if (!candidate) {
       increment(result.rejectedByReason, "invalid-url");
       continue;
     }
-    if (seen.has(candidate)) {
+    const existingIndex = candidateIndexes.get(candidate);
+    if (existingIndex !== undefined) {
       increment(result.rejectedByReason, "duplicate");
+      if (next) uniqueCandidates[existingIndex].next = true;
       continue;
     }
-    seen.add(candidate);
+    candidateIndexes.set(candidate, uniqueCandidates.length);
+    uniqueCandidates.push({ candidate, next });
+  }
+
+  for (const { candidate, next } of uniqueCandidates) {
     if (!isAllowedDomain(input.source, candidate)) {
       increment(result.rejectedByReason, "domain-not-allowed");
       continue;
