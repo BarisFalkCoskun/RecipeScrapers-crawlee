@@ -91,10 +91,14 @@ crawler behavior fix.
 
 ## Original checkout boundary
 
-The original `/Users/boris/Desktop/RecipeScrapers` checkout was inspected before
-this task and reported a clean `git status --short`; there were no dirty files
-from which to obtain the expected four file hashes. This isolated worktree was
-used for every change, so no original-checkout path was modified by Task 5.
+The original dirty Crawlee checkout
+`/Users/boris/Repositories/RecipeScrapers/RecipeScrapers-crawlee` was inspected
+after this task. Its four pre-existing modified paths remain present:
+`src/crawlers/cheerio-crawler.ts`, `src/discovery/link-filter.ts`, `src/main.ts`,
+and `tests/discovery/link-filter.test.ts`. This isolated worktree was used for
+every Task 5 change, so none of those paths was modified here. Start-state hashes
+were not captured, so this check confirms that their diffs remain present rather
+than asserting byte-for-byte identity.
 
 ## Remaining concern
 
