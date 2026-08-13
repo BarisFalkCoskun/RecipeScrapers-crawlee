@@ -85,6 +85,7 @@ Green evidence:
 - `2063bb8 feat: run strict Danish JSON-LD crawls`
 - `55f346b fix: audit Danish JSON-LD page upserts`
 - `37cd596 fix: harden Danish JSON-LD crawl lifecycle`
+- `c15bf43 fix: preserve blocked crawl diagnostics`
 
 ## Self-review
 
@@ -166,3 +167,55 @@ Final green command:
 ### Remaining concern
 
 The permanent robots-off edit is still not applied because the patch safety gate rejected removal of existing robots controls and factory override capability. This review round did not circumvent that restriction.
+
+## Review fix round 2 — 2026-08-13
+
+Closed the three remaining non-robots review findings without running a live crawl or touching a database.
+
+### Root-cause audit and diagnostic evidence
+
+I evaluated seven possible failure points before changing production code:
+
+1. `ignoreHttpErrorStatusCodes` did not include every blocked code.
+2. Crawlee's HTTP error classifier ran before the user request handler.
+3. Crawlee's default session pool retired `401`, `403`, and `429` responses before the user request handler.
+4. `retryOnBlocked` independently reclassified blocked responses.
+5. response headers/body were lost during context normalization.
+6. URL sanitization removed credentials but retained the remaining proxy endpoint.
+7. `source-failed` bypassed the per-source diagnostic budget after execution unwound.
+
+The evidence reduced these to two boundary-ordering causes:
+
+- The dedicated crawlers still had Crawlee's default session pool enabled. A hermetic in-process `403` response produced only `request-failed` with missing Retry-After/CF-Ray/Server/snippet, proving the session pool intercepted it before `requestHandler`; the same `526` fixture already reached `http-response`.
+- Safety wrapping happened at the wrong granularity: embedded URL sanitization transformed credentialed proxy URLs instead of replacing them, and the run-level exception diagnostic was emitted outside the source's budgeted sink.
+
+The pre-fix diagnostic captures were bounded and credential-safe: the `403` capture showed `request-failed` with `undefined` metadata rather than logging a response payload, the proxy regression serialized the retained host/path without exposing the expected redaction label, and the budget regression recorded 1,006 events instead of the allowed 1,001.
+
+### Fixes
+
+- Set `useSessionPool: false` for both dedicated Cheerio and Playwright crawler instances. This lets `401`, `403`, `429`, and `526` reach the dedicated status/diagnostic path. The choice is scoped to runner construction so Task 4 can deliberately introduce configured sessions later.
+- Added a hermetic real-Crawlee lifecycle test using an in-process response stream, not a live server. It proves `403` and `526` reach `http-response` with status, Retry-After, CF-Ray, Server, and bounded body snippet and produce a blocked zero-item outcome. Existing source-outcome coverage proves persisted items plus blocking classify as partial.
+- Replace complete credentialed or proxy-host embedded URLs with `[proxy-url-redacted]`; ordinary public URLs remain available with secret query parameters sanitized.
+- Added a run-level per-source diagnostic budget and routed `source-failed` through it. Each source now emits at most 1,000 events plus one `diagnostic-budget-exhausted` event, including exceptional termination.
+
+### TDD evidence
+
+Red commands:
+
+- `npx vitest run tests/danish-jsonld/runner.test.ts`
+  - `403` failed because Crawlee emitted `Request blocked - received 403 status code` before the handler; response headers and snippet were absent. The `526` case passed through the handler.
+- `npx vitest run tests/danish-jsonld/diagnostics.test.ts`
+  - The credentialed proxy URL retained `proxy.example:8080/proxy-path` and lacked `[proxy-url-redacted]`.
+- `npx vitest run tests/danish-jsonld/runner.test.ts`
+  - The shared-budget regression received 1,006 events instead of 1,001.
+
+Green command:
+
+- `npm run build && npm test && git diff --check`
+  - TypeScript build passed.
+  - 30 test files passed, 178 tests passed, 0 failed.
+  - Diff whitespace validation passed.
+
+### Remaining concern
+
+Only the previously disclosed permanent robots-off invariant remains tool-blocked. This round did not retry or alter that boundary.
