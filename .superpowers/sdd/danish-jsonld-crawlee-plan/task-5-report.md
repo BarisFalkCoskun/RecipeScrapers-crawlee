@@ -159,3 +159,80 @@ The current four modified paths in
 `/Users/boris/Repositories/RecipeScrapers/RecipeScrapers-crawlee` remain present,
 but byte-for-byte preservation cannot be proven because initial hashes were not
 captured. This is not claimed as a completed preservation requirement.
+
+## Fix round 2 — fail-closed shadow evidence and admission telemetry
+
+The read-only `migration:compare` CLI now requires both `--scrapy-evidence` and
+`--crawlee-evidence`, in addition to explicit isolated database names and the
+selected source cohort. It rejects malformed evidence rather than turning
+missing counters into zero. Each file must identify exactly the selected source
+set and provide one terminal result per source. Scrapy evidence additionally
+requires a full/uncapped successful run with a complete health/statistics
+record, no timeout, and no interruption. Crawlee evidence additionally requires
+an uncapped successful source outcome, complete discovery, zero Mongo failures,
+and zero rejected incomplete/malformed required JSON-LD records.
+
+Parity remains a **required-field presence** contract, not a title, ingredient,
+or instruction text-equality contract. The JSON report names the metric
+`requiredFieldPresenceAgreement`: for intersecting canonical URLs it compares
+non-empty presence of `title`, `ingredients`, and `instructions` on both sides.
+Extra Crawlee recipes do not reduce legacy URL coverage. The report only passes
+at 95% source-scoped legacy URL coverage and 99% required-field presence
+agreement, with zero missing Crawlee required fields, Mongo errors, and
+off-domain queue admissions. A non-passing JSON report is emitted before the
+CLI returns exit code 2.
+
+Legacy normalized recipe reads now query the registry's effective
+`source_site` domain mapping and emit the registry source ID. This is tested for
+Arla (`arla` -> `arla.dk`), Coop (`coop` -> `opskrifter.coop.dk`), and every
+selected pilot source; the comparator no longer assumes `source_site` is the
+spider/source ID.
+
+Dedicated `unintendedOffDomainAdmissions` telemetry is initialized per source
+attempt and recorded only after a request batch has been successfully submitted
+to a Crawlee queue. Rejected discovery links do not increment it. The persisted
+run observation is the comparator input, so an admitted off-domain request
+fails parity even if no page was stored. The bounded `off-domain-admission`
+diagnostic records only the hostname, which made the queue-boundary check
+observable without adding URL-bearing logs.
+
+Comparison Mongo clients are now closed in `finally` even when the other
+client's connection fails. The CLI cleanup test also now proves the native V2
+run record was inserted before a simulated store-close failure; cleanup still
+surfaces that failure and cleans up VPN transport.
+
+### Fix-round TDD and verification
+
+Initial focused RED run:
+
+```bash
+npm test -- tests/danish-jsonld/migration-compare.test.ts tests/danish-jsonld/crawler-session.test.ts
+```
+
+It failed for the new required `--scrapy-evidence` option, absent legacy
+source-site mapper, missing uncapped-evidence validation, and absent
+queue-admission counter. The implementation was then added only to satisfy
+those contracts. The runner queue-boundary test uses a mocked Crawlee request
+function; it makes no external request.
+
+Final verification (all local, no DB/network/crawl):
+
+```bash
+npm test -- tests/danish-jsonld/runner.test.ts tests/danish-jsonld/migration-compare.test.ts tests/danish-jsonld/crawler-session.test.ts tests/danish-jsonld/cli.test.ts
+npm run build
+npm test
+git diff --check
+```
+
+Passed: focused suite 43 tests, TypeScript build, full suite **33 files / 233
+tests**, and whitespace diff check. No live MongoDB, remote worker, recipe-site,
+or local browser crawl was run in this fix round.
+
+Arla remains configured only. No source has passed a canary, shadow, or cutover
+gate. Permanent robots-off also remains unresolved/tool-blocked. The original
+dirty checkout at
+`/Users/boris/Repositories/RecipeScrapers/RecipeScrapers-crawlee` still has the
+same four modified paths (`src/crawlers/cheerio-crawler.ts`,
+`src/discovery/link-filter.ts`, `src/main.ts`, and
+`tests/discovery/link-filter.test.ts`); byte-for-byte preservation cannot be
+proven because no initial hashes were captured.

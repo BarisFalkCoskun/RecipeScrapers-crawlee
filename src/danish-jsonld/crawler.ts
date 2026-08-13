@@ -84,6 +84,7 @@ export class DanishJsonLdSourceSession {
       rejectedMalformedJsonLd: 0,
       playwrightFailures: 0,
       mongoFailures: 0,
+      unintendedOffDomainAdmissions: 0,
       discoveryComplete: true,
       pageCapReached: false,
     };
@@ -116,6 +117,23 @@ export class DanishJsonLdSourceSession {
 
   isRequestCapReached(): boolean {
     return this.requestBudget.snapshot().capReached;
+  }
+
+  /** Records actual queue admission; rejected discovery candidates never call this. */
+  recordQueueAdmission(url: string): void {
+    let hostname: string;
+    try {
+      hostname = new URL(url).hostname.toLowerCase();
+    } catch {
+      hostname = "invalid-url";
+    }
+    const allowed = this.source.allowedDomains.some((domain) =>
+      hostname === domain || hostname.endsWith(`.${domain}`)
+    );
+    if (allowed) return;
+    this.observation.unintendedOffDomainAdmissions =
+      (this.observation.unintendedOffDomainAdmissions ?? 0) + 1;
+    this.emit("off-domain-admission", { hostname });
   }
 
   private async processResponse(

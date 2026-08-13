@@ -2863,6 +2863,16 @@ export const DANISH_JSONLD_SOURCES: DanishJsonLdSource[] =
     },
   }));
 
+/** Legacy normalized Mongo documents identify their producer by source_site. */
+export const DANISH_JSONLD_LEGACY_SOURCE_SITES: Record<string, string[]> =
+  Object.fromEntries(
+    DANISH_JSONLD_SOURCES.map((source) => [source.id, [source.domain]])
+  );
+
+export function legacySourceSitesFor(sourceId: string): string[] {
+  return DANISH_JSONLD_LEGACY_SOURCE_SITES[sourceId] ?? [];
+}
+
 export function isMigrated(state: MigrationState): boolean {
   return state === "cutover";
 }

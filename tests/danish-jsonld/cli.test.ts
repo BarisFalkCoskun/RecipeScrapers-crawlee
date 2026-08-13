@@ -214,9 +214,11 @@ describe("crawl:danish-jsonld CLI", () => {
 
   it("cleans up VPN even when store cleanup rejects", async () => {
     const vpnCleanup = vi.fn(async () => undefined);
+    const insertDanishJsonLdRun = vi.fn(async () => undefined);
     const store = {
       connect: vi.fn(async () => undefined),
       close: vi.fn(async () => { throw new Error("store close failed"); }),
+      insertDanishJsonLdRun,
     };
 
     await expect(executeDanishJsonLdCli(["--vpn"], {
@@ -233,6 +235,7 @@ describe("crawl:danish-jsonld CLI", () => {
       output: () => undefined,
     })).rejects.toThrow("store close failed");
 
+    expect(insertDanishJsonLdRun).toHaveBeenCalledOnce();
     expect(vpnCleanup).toHaveBeenCalledOnce();
   });
 

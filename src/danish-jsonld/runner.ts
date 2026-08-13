@@ -189,6 +189,7 @@ export async function executeDanishJsonLdSource(
       }),
       { waitForAllRequestsToBeAdded: true }
     );
+    for (const request of requests) session.recordQueueAdmission(request.url);
   };
   const route = async (routes: {
     cheerioRequests: DanishJsonLdRequest[];

@@ -1,11 +1,11 @@
 import { readFile } from "node:fs/promises";
 import { MongoClient } from "mongodb";
 import { canonicalizeUrl } from "../utils/canonicalize.js";
-import { DANISH_JSONLD_SOURCES } from "../danish-jsonld/source-registry.js";
 import {
-  executeMigrationComparison,
+  legacyMongoQueryFor,
+  legacyRecipeSourceId,
   parseMigrationComparisonArgs,
-  type CrawleeAdmission,
+  runMigrationComparisonCli,
   type CrawleeComparisonRecipe,
   type LegacyComparisonRecipe,
 } from "../danish-jsonld/migration-compare.js";
@@ -14,18 +14,21 @@ async function main() {
   const options = parseMigrationComparisonArgs(process.argv.slice(2));
   const legacyClient = new MongoClient(requiredEnv("LEGACY_MONGODB_URI"));
   const crawleeClient = new MongoClient(requiredEnv("CRAWLEE_MONGODB_URI"));
-  await Promise.all([legacyClient.connect(), crawleeClient.connect()]);
-  try {
-    await executeMigrationComparison(options, {
+  await runMigrationComparisonCli({
+    options,
+    clients: [legacyClient, crawleeClient],
+    dependencies: {
       readLegacy: async (database, sourceIds) => {
         const documents = await legacyClient.db(database).collection("recipes")
-          .find({ source_site: { $in: sourceIds } })
+          .find(legacyMongoQueryFor(sourceIds))
           .project({ source_site: 1, url: 1, title: 1, ingredients: 1, instructions: 1 })
           .toArray();
         return documents.flatMap((document): LegacyComparisonRecipe[] => {
           if (typeof document.source_site !== "string" || typeof document.url !== "string") return [];
+          const sourceId = legacyRecipeSourceId(document.source_site);
+          if (!sourceId || !sourceIds.includes(sourceId)) return [];
           return [{
-            sourceId: document.source_site,
+            sourceId,
             canonicalUrl: canonicalizeUrl(document.url),
             title: document.title,
             ingredients: document.ingredients,
@@ -48,29 +51,12 @@ async function main() {
           }];
         });
       },
-      readCrawleeAdmissions: async (database, sourceIds) => {
-        const selected = sourceIds.map((sourceId) => {
-          const source = DANISH_JSONLD_SOURCES.find((candidate) => candidate.id === sourceId);
-          if (!source) throw new Error(`Unknown Danish JSON-LD source: ${sourceId}`);
-          return source;
-        });
-        const domainToSource = new Map(selected.map((source) => [source.domain, source.id]));
-        const documents = await crawleeClient.db(database).collection("pages")
-          .find({ sourceDomain: { $in: selected.map((source) => source.domain) } })
-          .project({ sourceDomain: 1, canonicalUrl: 1 })
-          .toArray();
-        return documents.flatMap((document): CrawleeAdmission[] => {
-          if (typeof document.sourceDomain !== "string" || typeof document.canonicalUrl !== "string") return [];
-          const sourceId = domainToSource.get(document.sourceDomain);
-          return sourceId ? [{ sourceId, canonicalUrl: document.canonicalUrl }] : [];
-        });
-      },
+      readScrapyEvidence: async (path) => JSON.parse(await readFile(path, "utf8")) as Record<string, unknown>,
       readCrawleeEvidence: async (path) => JSON.parse(await readFile(path, "utf8")) as Record<string, unknown>,
       output: console.log,
-    });
-  } finally {
-    await Promise.all([legacyClient.close(), crawleeClient.close()]);
-  }
+    },
+    setExitCode: (code) => { process.exitCode = code; },
+  });
 }
 
 function requiredEnv(name: string): string {

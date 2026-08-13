@@ -63,7 +63,7 @@ Advance one source at a time; do not advance the whole pilot as a group.
 | --- | --- |
 | `not_started` to `configured` | Reviewed registry entry, expected discovery route, request limits, and a documented owner. |
 | `configured` to `canary_passed` | Remote isolated-DB canary JSON with complete discovery, no cap reached, no blocked/failed outcome, and complete JSON-LD recipes persisted. A capped run is not a passing canary. |
-| `canary_passed` to `shadow_passed` | Remote isolated-DB shadow evidence over the agreed window plus source-level parity against the legacy run: canonical URL coverage, accepted recipe count, rejected JSON-LD reasons, and duplicate/content-match rate are within the agreed gate. Investigate drift; do not average it away across sources. |
+| `canary_passed` to `shadow_passed` | Remote isolated-DB shadow evidence over the agreed window plus source-level parity against the legacy run: canonical URL coverage, required-field presence, clean JSON-LD rejection counters, Mongo health, and queue-admission telemetry meet the stated gates. Investigate drift; do not average it away across sources. |
 | `shadow_passed` to `cutover` | Recorded parity approval, verified consumer reads of `RecipeDocumentV2.normalized`, rollback owner, and an individually scheduled source cutover. Keep the legacy source available until the source's rollback window ends. |
 
 Each transition must attach the run ID, timestamp, source ID, comparison scope,
@@ -85,6 +85,7 @@ the normalized `recipes` collection. The command has no page cap.
 export PILOT_SPIDERS='arla coop kitchenaid surdejsentusiasten sundpaabudget klinksgaard madoghave netto madrejsen tv2mad kikkoman gamleopskrifter'
 MONGODB_URL='mongodb://USER:PASSWORD@REMOTE_HOST:27017/?authSource=admin' \
 MONGODB_DATABASE='recipescrapers_danish_jsonld_shadow_YYYYMMDD' \
+RECIPE_STORAGE_BACKEND=mongodb \
 RECIPE_FEED_EXPORT_ENABLED=false \
 uv run python -m tools.run_all_spiders \
   --spiders $PILOT_SPIDERS --processing-mode full --no-state --parallel 2 \
@@ -113,23 +114,34 @@ npm run migration:compare -- \
   --legacy-db recipescrapers_danish_jsonld_shadow_YYYYMMDD \
   --crawlee-db crawlee_danish_jsonld_shadow_YYYYMMDD \
   --sources "$PILOT_SOURCES" \
+  --scrapy-evidence scrapy-shadow.json \
   --crawlee-evidence crawlee-shadow.json > shadow-comparison.json
 ```
 
 The report contains per-source and aggregate legacy/Crawlee URL counts,
-intersection, coverage, required-field checks, Mongo errors, and off-domain
-page-admission counts. It passes only when every source and the aggregate meet all
-of these gates:
+intersection, coverage, required-field **presence** checks, Mongo errors, and
+off-domain queue-admission counts. It passes only when every source and the
+aggregate meet all of these gates:
 
 - Crawlee URL coverage is at least 95% of the source-scoped legacy canonical
   URL set.
-- At least 99% of title, ingredients, and instructions checks agree on URL
-  intersections, with zero missing Crawlee required fields.
-- Evidence reports zero Mongo failures and no admitted page URL is outside the
-  source's registered allowed domains.
+- At least 99% of title, ingredients, and instructions **presence** checks
+  agree on URL intersections, with zero missing Crawlee required fields. This
+  checks non-empty field presence on each side; it does not compare title,
+  ingredient, or instruction text equality.
+- Evidence reports zero Mongo failures, zero rejected incomplete/malformed
+  required JSON-LD records, and no off-domain request that actually entered a
+  source queue. Rejected discovery links are not admissions.
 
-A missing/mismatched Crawlee evidence file, source cohort, or Crawlee database
-fails the comparison rather than producing an unscoped pass.
+A missing/malformed evidence result is fatal. Both evidence files must name the
+exact selected source set and have one completed terminal result per source.
+Scrapy evidence must be full/uncapped with no timeout, interruption, failed
+source, or incomplete health/statistics record. Crawlee evidence must be uncapped with
+complete discovery, no partial/blocked/failed outcome, no Mongo error, and no
+rejected incomplete/malformed required JSON-LD. Extra Crawlee recipes do not
+lower legacy URL coverage; the coverage denominator is the source-scoped legacy
+canonical URL set. Legacy Mongo reads use the registry's effective
+`source_site` domain mapping and emit the registry source ID in the report.
 
 ## Storage and consumer contract
 

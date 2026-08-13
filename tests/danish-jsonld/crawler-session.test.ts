@@ -68,6 +68,20 @@ const completeRecipe = {
 };
 
 describe("Danish JSON-LD source session", () => {
+  it("records an off-domain request only after runner queue admission, without requiring page persistence", () => {
+    const session = new DanishJsonLdSourceSession({
+      source,
+      store: new MemoryV2Store(),
+      crawlRunId: "run-admission",
+      crawlAttemptId: "attempt-admission",
+      maxPages: 5,
+    });
+
+    session.recordQueueAdmission("https://unrelated.example/opskrifter/kage");
+
+    expect(session.observation.unintendedOffDomainAdmissions).toBe(1);
+  });
+
   it("routes incomplete Cheerio evidence to Playwright once and persists only the rendered complete JSON-LD", async () => {
     const store = new MemoryV2Store();
     const diagnostics: DanishJsonLdDiagnostic[] = [];

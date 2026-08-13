@@ -15,6 +15,8 @@ export interface SourceRunObservation {
   rejectedMalformedJsonLd?: number;
   playwrightFailures?: number;
   mongoFailures?: number;
+  /** Requests that reached a queue despite falling outside the source allowlist. */
+  unintendedOffDomainAdmissions?: number;
   pageCapReached?: boolean;
   discoveryComplete: boolean;
 }

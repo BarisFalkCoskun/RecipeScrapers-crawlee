@@ -20,6 +20,44 @@ describe("dedicated Danish JSON-LD runner", () => {
     ]);
   });
 
+  it("counts an off-domain URL only after the runner admits it to a request queue", async () => {
+    const configuration = Configuration.getGlobalConfig();
+    const previousMemoryMbytes = configuration.get("memoryMbytes");
+    configuration.set("memoryMbytes", 1_024);
+    const requestFunction = vi.spyOn(
+      CheerioCrawler.prototype as unknown as { _requestFunction: () => Promise<unknown> },
+      "_requestFunction"
+    ).mockImplementation(async () => Object.assign(Readable.from(["<html></html>"]), {
+      statusCode: 200, statusMessage: "OK", headers: { "content-type": "text/html" },
+      rawHeaders: [], trailers: {}, rawTrailers: {}, httpVersion: "1.1",
+      httpVersionMajor: 1, httpVersionMinor: 1, complete: true,
+      url: "https://outside.example/listing",
+    }));
+    const diagnostics: Array<{ event: string; data: Record<string, unknown> }> = [];
+    const source: DanishJsonLdSource = {
+      id: "admission-fixture", domain: "fixture.invalid", allowedDomains: ["fixture.invalid"],
+      legacySpider: "AdmissionFixtureSpider", legacyFamily: "JsonLdListingSpider",
+      discovery: "listing", sitemapUrls: [], startUrls: ["https://outside.example/listing"],
+      recipeUrlPatterns: ["/opskrifter/"], fetchMode: "cheerio",
+      requestSettings: { delaySeconds: 0, rateLimitPerMinute: null, maxConcurrency: 1, maxRetries: 0 },
+      requireCompleteJsonLd: true, migrationState: "configured", latestScrapyOutcome: "not_audited",
+    };
+    try {
+      const result = await executeDanishJsonLdSource({
+        source, store: {} as CrawlStore & RecipeDocumentV2Store, crawlRunId: "admission-run",
+        crawlAttemptId: `admission-${randomUUID()}`, maxPages: 2,
+        diagnosticSink: (event) => diagnostics.push(event),
+      });
+      expect(result.observation.unintendedOffDomainAdmissions).toBe(1);
+      expect(diagnostics).toContainEqual(expect.objectContaining({
+        event: "off-domain-admission", data: expect.objectContaining({ hostname: "outside.example" }),
+      }));
+    } finally {
+      requestFunction.mockRestore();
+      configuration.set("memoryMbytes", previousMemoryMbytes);
+    }
+  });
+
   it.each([403, 526])(
     "delivers blocked HTTP %i response metadata and body to source diagnostics",
     async (statusCode) => {
