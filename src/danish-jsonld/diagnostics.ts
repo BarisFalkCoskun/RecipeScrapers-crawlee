@@ -137,7 +137,7 @@ function sanitizeValue(value: unknown, depth: number): unknown {
 
 function sanitizeString(value: string): string {
   const embeddedUrlsRedacted = value.replace(
-    /https?:\/\/[^\s"'<>]+/giu,
+    /(?:https?|socks(?:4|5)?):\/\/[^\s"'<>]+/giu,
     (match, offset: number) => sanitizeEmbeddedUrl(
       match,
       hasProxyContext(value, offset)
@@ -168,6 +168,7 @@ function sanitizeEmbeddedUrl(value: string, proxyContext: boolean): string {
   try {
     const url = new URL(value);
     if (
+      /^socks(?:4|5)?:$/iu.test(url.protocol) ||
       proxyContext ||
       url.username ||
       url.password ||

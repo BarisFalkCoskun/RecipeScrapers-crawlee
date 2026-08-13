@@ -71,7 +71,7 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
     expect(document.sourceHash).not.toBe(document.contentHash);
   });
 
-  it("uses source, canonical URL, upstream id, and normalized identity deterministically", () => {
+  it("uses source, canonical URL, and upstream id deterministically", () => {
     const input = {
       sourceId: "example",
       canonicalUrl: "https://example.dk/opskrift/kage",
@@ -107,6 +107,66 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
     expect(reordered.sourceRecipeKey).toBe(first.sourceRecipeKey);
     expect(differentCanonicalUrl.sourceRecipeKey).not.toBe(first.sourceRecipeKey);
     expect(differentSource.sourceRecipeKey).not.toBe(first.sourceRecipeKey);
+  });
+
+  it("keeps upstream-id identity stable when ingredients and instructions change", () => {
+    const input = {
+      sourceId: "example",
+      canonicalUrl: "https://example.dk/opskrift/kage",
+      pageUrl: "https://example.dk/opskrift/kage",
+      crawlRunId: "run-1",
+      crawlAttemptId: "attempt-1",
+      extractedAt: new Date("2026-08-13T08:00:00.000Z"),
+      rawRecipe: completeRecipe,
+      language: "da",
+      languageConfidence: 1,
+      languageSignals: [],
+      extractorVersion: "2.0.0",
+      extractionSignals: [],
+    };
+    const updated = buildRecipeDocumentV2({
+      ...input,
+      rawRecipe: {
+        ...completeRecipe,
+        recipeIngredient: ["3 æg"],
+        recipeInstructions: ["Pisk længe.", "Bag ved 180 grader."],
+      },
+    });
+    expect(updated.sourceRecipeKey).toBe(buildRecipeDocumentV2(input).sourceRecipeKey);
+  });
+
+  it("uses the stable page identity without @id and adds a discriminator only for multiple recipes", () => {
+    const withoutId = { ...completeRecipe } as Record<string, unknown>;
+    delete withoutId["@id"];
+    const input = {
+      sourceId: "example",
+      canonicalUrl: "https://example.dk/opskrift/menu",
+      pageUrl: "https://example.dk/opskrift/menu",
+      crawlRunId: "run-1",
+      crawlAttemptId: "attempt-1",
+      extractedAt: new Date("2026-08-13T08:00:00.000Z"),
+      rawRecipe: withoutId,
+      language: "da",
+      languageConfidence: 1,
+      languageSignals: [],
+      extractorVersion: "2.0.0",
+      extractionSignals: [],
+    };
+    const single = buildRecipeDocumentV2(input);
+    const updatedSingle = buildRecipeDocumentV2({
+      ...input,
+      rawRecipe: {
+        ...withoutId,
+        recipeIngredient: ["4 æg"],
+        recipeInstructions: ["Rør.", "Bag."],
+      },
+    });
+    const first = buildRecipeDocumentV2({ ...input, pageRecipeDiscriminator: "recipe-1" });
+    const second = buildRecipeDocumentV2({ ...input, pageRecipeDiscriminator: "recipe-2" });
+
+    expect(updatedSingle.sourceRecipeKey).toBe(single.sourceRecipeKey);
+    expect(first.sourceRecipeKey).not.toBe(second.sourceRecipeKey);
+    expect(first.sourceRecipeKey).not.toBe(single.sourceRecipeKey);
   });
 
   it("preserves exact script text while rejecting malformed and incomplete JSON-LD", () => {

@@ -144,6 +144,10 @@ export async function executeDanishJsonLdSource(
   });
   const session = new DanishJsonLdSourceSession({ ...input, diagnosticSink });
   const sourceVpnSessions = new Set<string>();
+  const ownedQueues: Array<{
+    kind: "cheerio" | "playwright";
+    queue: RequestQueue;
+  }> = [];
   const releaseVpnRequest = async (
     userData: Record<string, unknown>
   ): Promise<void> => {
@@ -155,10 +159,10 @@ export async function executeDanishJsonLdSource(
   };
   try {
   const queueKey = sanitizeStorageKey(input.crawlAttemptId);
-  const [cheerioQueue, playwrightQueue] = await Promise.all([
-    RequestQueue.open(`danish-jsonld-cheerio-${queueKey}`),
-    RequestQueue.open(`danish-jsonld-playwright-${queueKey}`),
-  ]);
+  const cheerioQueue = await RequestQueue.open(`danish-jsonld-cheerio-${queueKey}`);
+  ownedQueues.push({ kind: "cheerio", queue: cheerioQueue });
+  const playwrightQueue = await RequestQueue.open(`danish-jsonld-playwright-${queueKey}`);
+  ownedQueues.push({ kind: "playwright", queue: playwrightQueue });
 
   const enqueue = async (
     queue: RequestQueue,
@@ -406,6 +410,19 @@ export async function executeDanishJsonLdSource(
   } catch (error) {
     throw new SourceExecutionFailure(error, session.observation);
   } finally {
+    await Promise.all(ownedQueues.map(async ({ kind, queue }) => {
+      try {
+        await queue.drop();
+      } catch (error) {
+        diagnosticSink(createBoundedDiagnostic("queue-cleanup-failed", {
+          sourceId: input.source.id,
+          crawlRunId: input.crawlRunId,
+          crawlAttemptId: input.crawlAttemptId,
+          queue: kind,
+          error: error instanceof Error ? error.message : String(error),
+        }));
+      }
+    }));
     if (input.vpnTransport) {
       await Promise.allSettled(
         [...sourceVpnSessions].map((sessionId) =>

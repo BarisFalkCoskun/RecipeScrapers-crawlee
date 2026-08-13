@@ -106,6 +106,27 @@ describe("Danish JSON-LD diagnostics", () => {
     );
   });
 
+  it.each(["socks://", "socks4://", "socks5://"])(
+    "redacts the full %s URL in arbitrary proxy context and provenance",
+    (scheme) => {
+      const proxyUrl = `${scheme}relay-user:relay-pass@10.64.0.7:1080/path?token=secret`;
+      const diagnostic = createBoundedDiagnostic("proxy-failure", {
+        message: `transport failed through ${proxyUrl} while dialing`,
+        provenance: {
+          transport: "mullvad-wireguard-socks",
+          endpoint: proxyUrl,
+        },
+      });
+      const serialized = JSON.stringify(diagnostic);
+
+      expect(serialized).not.toContain("relay-user");
+      expect(serialized).not.toContain("relay-pass");
+      expect(serialized).not.toContain("10.64.0.7");
+      expect(serialized).not.toContain("token=secret");
+      expect(serialized).toContain("[proxy-url-redacted]");
+    }
+  );
+
   it("summarizes JSON-LD wrappers, node types, fields, and leaves without payload values", () => {
     expect(
       inspectJsonLdShape({

@@ -35,8 +35,13 @@ function completeScrapyEvidence(sourceIds: string[]) {
   };
 }
 
-function completeCrawleeEvidence(sourceIds: string[], database = "crawlee_shadow") {
+function completeCrawleeEvidence(
+  sourceIds: string[],
+  database = "crawlee_shadow",
+  crawlRunId = "run-shadow"
+) {
   return {
+    crawlRunId,
     database,
     selectedSources: sourceIds,
     maxPages: null,
@@ -219,12 +224,15 @@ describe("Danish JSON-LD shadow comparison", () => {
             ...requiredNormalizedRecipe,
           }];
         },
-        readCrawlee: async (database, sourceIds) => {
+        readCrawlee: async (database, sourceIds, crawlRunId) => {
           expect(database).toBe("crawlee_shadow");
           expect(sourceIds).toEqual(["arla"]);
+          expect(crawlRunId).toBe("run-shadow");
           return [{
             sourceId: "arla",
             canonicalUrl: "https://arla.dk/opskrifter/kage",
+            sourceRecipeKey: "arla:kage",
+            crawlRunId,
             normalized: requiredNormalizedRecipe,
           }];
         },
@@ -302,7 +310,7 @@ describe("Danish JSON-LD shadow comparison", () => {
       sourceId: "coop",
       urlCoverage: 1,
       requiredFieldPresenceAgreement: 2 / 3,
-      missingCrawleeRequiredFields: 1,
+      missingCrawleeRequiredFields: 2,
       mongoErrors: 1,
       unintendedOffDomainAdmissions: 1,
       passed: false,
@@ -328,6 +336,86 @@ describe("Danish JSON-LD shadow comparison", () => {
 
     expect(report.sources[0]).toMatchObject({
       unintendedOffDomainAdmissions: 1,
+      passed: false,
+    });
+  });
+
+  it("validates exact run evidence before reading recipes and rejects mixed-run rows", async () => {
+    const options = {
+      legacyDatabase: "scrapy_shadow",
+      crawleeDatabase: "crawlee_shadow",
+      sourceIds: ["arla"],
+      scrapyEvidencePath: "scrapy.json",
+      crawleeEvidencePath: "crawlee.json",
+    };
+    let recipeReads = 0;
+    await expect(executeMigrationComparison(options, {
+      readLegacy: async () => { recipeReads += 1; return []; },
+      readCrawlee: async () => { recipeReads += 1; return []; },
+      readScrapyEvidence: async () => completeScrapyEvidence(["arla"]),
+      readCrawleeEvidence: async () => ({
+        ...completeCrawleeEvidence(["arla"]),
+        crawlRunId: "",
+      }),
+      output: () => undefined,
+    })).rejects.toThrow("Crawlee evidence has missing or malformed crawlRunId");
+    expect(recipeReads).toBe(0);
+
+    await expect(executeMigrationComparison(options, {
+      readLegacy: async () => [],
+      readCrawlee: async (_database, _sourceIds, crawlRunId) => [{
+        sourceId: "arla",
+        canonicalUrl: "https://arla.dk/opskrifter/kage",
+        crawlRunId,
+        normalized: requiredNormalizedRecipe,
+      }],
+      readScrapyEvidence: async () => completeScrapyEvidence(["arla"]),
+      readCrawleeEvidence: async () => completeCrawleeEvidence(["arla"]),
+      output: () => undefined,
+    })).rejects.toThrow("recipes_v2 contains a missing or malformed sourceRecipeKey");
+
+    await expect(executeMigrationComparison(options, {
+      readLegacy: async () => [{
+        sourceId: "arla", canonicalUrl: "https://arla.dk/opskrifter/kage",
+        ...requiredNormalizedRecipe,
+      }],
+      readCrawlee: async (_database, _sourceIds, crawlRunId) => [{
+        sourceId: "arla",
+        canonicalUrl: "https://arla.dk/opskrifter/kage",
+        sourceRecipeKey: "arla:kage",
+        crawlRunId: `${crawlRunId}-other`,
+        normalized: requiredNormalizedRecipe,
+      }],
+      readScrapyEvidence: async () => completeScrapyEvidence(["arla"]),
+      readCrawleeEvidence: async () => completeCrawleeEvidence(["arla"]),
+      output: () => undefined,
+    })).rejects.toThrow("recipes_v2 contains rows outside the selected crawlRunId/source cohort");
+  });
+
+  it("compares multiple recipes on one URL as a multiset instead of collapsing by canonical URL", () => {
+    const url = "https://sundpaabudget.dk/familie-menu";
+    const report = createMigrationComparisonReport({
+      sourceIds: ["sundpaabudget"],
+      legacy: [
+        { sourceId: "sundpaabudget", canonicalUrl: url, ...requiredNormalizedRecipe },
+        { sourceId: "sundpaabudget", canonicalUrl: url, ...requiredNormalizedRecipe },
+      ],
+      crawlee: [{
+        sourceId: "sundpaabudget",
+        canonicalUrl: url,
+        normalized: requiredNormalizedRecipe,
+      }],
+      observations: [{ sourceId: "sundpaabudget", mongoFailures: 0 }],
+    });
+
+    expect(report.sources[0]).toMatchObject({
+      legacyUrlCount: 1,
+      crawleeUrlCount: 1,
+      legacyRecipeCount: 2,
+      crawleeRecipeCount: 1,
+      matchedRecipeCount: 1,
+      recipeCoverage: 0.5,
+      recipeCountMismatches: 1,
       passed: false,
     });
   });

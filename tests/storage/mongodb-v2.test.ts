@@ -226,6 +226,7 @@ describe("RecipeStore V2 persistence", () => {
       { unique: true }
     );
     expect(recipesV2.createIndex).toHaveBeenCalledWith({ contentHash: 1 });
+    expect(recipesV2.createIndex).toHaveBeenCalledWith({ sourceId: 1, crawlRunId: 1 });
     expect(recipesV2.createIndex).not.toHaveBeenCalledWith(
       { contentHash: 1 },
       { unique: true }

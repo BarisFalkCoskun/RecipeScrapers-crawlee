@@ -19,6 +19,7 @@ export interface SourceRunObservation {
   unintendedOffDomainAdmissions?: number;
   pageCapReached?: boolean;
   discoveryComplete: boolean;
+  discoveryFailureReasons?: SourceOutcomeReason[];
 }
 
 export function classifySourceOutcome(
@@ -82,6 +83,7 @@ function outcomeReasons(observation: SourceRunObservation): SourceOutcomeReason[
   if ((observation.mongoFailures ?? 0) > 0) reasons.push("mongo-failure");
   if (observation.pageCapReached === true) reasons.push("max-pages-cap-reached");
   if (!observation.discoveryComplete) reasons.push("discovery-incomplete");
+  reasons.push(...(observation.discoveryFailureReasons ?? []));
   if (reasons.length === 0) reasons.push("no-recipe-candidates");
   return reasons.sort();
 }

@@ -193,6 +193,97 @@ describe("Danish JSON-LD source session", () => {
     expect(routes.playwrightRequests).toEqual([]);
   });
 
+  it.each([
+    ["malformed-listing-payload", "application/json", "{not-json"],
+    ["http-200-block-shell", "text/html", "<html><title>Checking your browser</title><body>Cloudflare challenge</body></html>"],
+  ])("marks HTTP-200 discovery %s as incomplete with a stable reason", async (
+    reason,
+    contentType,
+    body
+  ) => {
+    const session = new DanishJsonLdSourceSession({
+      source: { ...source, discovery: "listing", legacyFamily: "JsonLdListingSpider" },
+      store: new MemoryV2Store(),
+      crawlRunId: "run-discovery-failure",
+      crawlAttemptId: `attempt-${reason}`,
+      maxPages: 5,
+    });
+
+    await session.handleResponse({
+      kind: "listing",
+      fetchMode: "cheerio",
+      url: "https://example.dk/opskrifter/",
+      statusCode: 200,
+      headers: { "content-type": contentType },
+      body,
+    });
+
+    expect(session.observation.discoveryComplete).toBe(false);
+    expect(session.observation.discoveryFailureReasons).toContain(reason);
+    expect(session.outcome()).toMatchObject({
+      outcome: reason === "http-200-block-shell" ? "blocked" : "partial",
+      outcomeReasons: expect.arrayContaining([reason, "discovery-incomplete"]),
+    });
+  });
+
+  it("rejects an off-domain loaded URL before extraction or persistence", async () => {
+    const store = new MemoryV2Store();
+    const diagnostics: DanishJsonLdDiagnostic[] = [];
+    const session = new DanishJsonLdSourceSession({
+      source,
+      store,
+      crawlRunId: "run-redirect",
+      crawlAttemptId: "attempt-redirect",
+      maxPages: 5,
+      diagnosticSink: (event) => diagnostics.push(event),
+    });
+
+    await session.handleResponse({
+      kind: "recipe",
+      fetchMode: "cheerio",
+      url: "https://example.dk/opskrifter/kage",
+      loadedUrl: "https://external.example/harvested",
+      statusCode: 200,
+      headers: {},
+      body: `<script type="application/ld+json">${JSON.stringify(completeRecipe)}</script>`,
+    });
+
+    expect(store.pages.size).toBe(0);
+    expect(store.recipesV2).toEqual([]);
+    expect(session.observation.discoveryComplete).toBe(false);
+    expect(session.outcome().outcomeReasons).toContain("loaded-url-domain-not-allowed");
+    expect(diagnostics).toContainEqual(expect.objectContaining({
+      event: "source-domain-rejected",
+      data: expect.objectContaining({ boundary: "loaded-url", hostname: "external.example" }),
+    }));
+  });
+
+  it("rejects an external canonical before page or recipe persistence", async () => {
+    const store = new MemoryV2Store();
+    const session = new DanishJsonLdSourceSession({
+      source,
+      store,
+      crawlRunId: "run-canonical",
+      crawlAttemptId: "attempt-canonical",
+      maxPages: 5,
+    });
+
+    await session.handleResponse({
+      kind: "recipe",
+      fetchMode: "cheerio",
+      url: "https://example.dk/opskrifter/kage",
+      statusCode: 200,
+      headers: {},
+      body: `<link rel="canonical" href="https://external.example/stolen">
+        <script type="application/ld+json">${JSON.stringify(completeRecipe)}</script>`,
+    });
+
+    expect(store.pages.size).toBe(0);
+    expect(store.recipesV2).toEqual([]);
+    expect(session.observation.discoveryComplete).toBe(false);
+    expect(session.outcome().outcomeReasons).toContain("canonical-domain-not-allowed");
+  });
+
   it.each([401, 403, 429, 526])(
     "rejects blocked HTTP %i before extraction or persistence",
     async (statusCode) => {

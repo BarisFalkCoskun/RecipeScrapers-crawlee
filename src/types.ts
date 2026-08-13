@@ -157,6 +157,11 @@ export type SourceOutcomeReason =
   | "mongo-failure"
   | "max-pages-cap-reached"
   | "discovery-incomplete"
+  | "malformed-listing-payload"
+  | "unexpected-listing-shape"
+  | "http-200-block-shell"
+  | "loaded-url-domain-not-allowed"
+  | "canonical-domain-not-allowed"
   | "no-recipe-candidates";
 
 export interface SourceRunOutcomeSummary {

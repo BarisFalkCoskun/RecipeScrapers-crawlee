@@ -9,7 +9,14 @@ export interface DiscoveryResult {
   acceptedCount: number;
   rejectedByReason: Record<string, number>;
   terminal: boolean;
+  complete: boolean;
+  incompleteReasons: DiscoveryIncompleteReason[];
 }
+
+export type DiscoveryIncompleteReason =
+  | "malformed-listing-payload"
+  | "unexpected-listing-shape"
+  | "http-200-block-shell";
 
 export function discoverSitemapDocument(input: {
   source: DanishJsonLdSource;
@@ -39,7 +46,18 @@ export function discoverSitemapDocument(input: {
         increment(result.rejectedByReason, "domain-not-allowed");
         return;
       }
+      const followPatterns = input.source.sitemapDiscovery?.followPatterns ?? [];
+      if (followPatterns.length > 0 && !matchesAny(candidate, followPatterns)) {
+        increment(result.rejectedByReason, "sitemap-follow-mismatch");
+        return;
+      }
       result.sitemapUrls.push(candidate);
+      return;
+    }
+    if ((input.source.sitemapDiscovery?.skipUrlFragments ?? []).some(
+      (fragment) => candidate.toLowerCase().includes(fragment.toLowerCase())
+    )) {
+      increment(result.rejectedByReason, "sitemap-skip");
       return;
     }
     const reason = recipeRejectionReason(input.source, candidate);
@@ -64,15 +82,62 @@ export function discoverListingPage(input: {
   const result = emptyResult();
   const candidates: Array<{ raw: string; next: boolean }> = [];
 
+  if (looksLikeHttp200BlockShell(input.body)) {
+    result.complete = false;
+    result.incompleteReasons.push("http-200-block-shell");
+    return result;
+  }
+
   if (input.contentType?.toLowerCase().includes("json")) {
+    let parsed: unknown;
     try {
-      collectJsonUrls(JSON.parse(input.body), candidates, 0);
+      parsed = JSON.parse(input.body);
     } catch {
-      increment(result.rejectedByReason, "malformed-listing");
+      increment(result.rejectedByReason, "malformed-listing-payload");
+      result.complete = false;
+      result.incompleteReasons.push("malformed-listing-payload");
+      return result;
+    }
+    const payload = input.source.listingDiscovery?.payload;
+    if (payload) {
+      const rootMatches = payload.expectedRoot === "array"
+        ? Array.isArray(parsed)
+        : parsed !== null && typeof parsed === "object" && !Array.isArray(parsed);
+      const recipeUrls = rootMatches
+        ? payload.recipePaths.flatMap((path) => valuesAtJsonPath(parsed, path))
+        : [];
+      const continuationUrls = rootMatches
+        ? (payload.continuationPaths ?? []).flatMap((path) => valuesAtJsonPath(parsed, path))
+        : [];
+      const expectedEmpty = rootMatches && payload.recipePaths.some(
+        (path) => jsonPathHasExpectedEmptyCollection(parsed, path)
+      );
+      if (!rootMatches || (recipeUrls.length === 0 && !expectedEmpty)) {
+        increment(result.rejectedByReason, "unexpected-listing-shape");
+        result.complete = false;
+        result.incompleteReasons.push("unexpected-listing-shape");
+        return result;
+      }
+      candidates.push(
+        ...recipeUrls.map((raw) => ({ raw, next: false })),
+        ...continuationUrls.map((raw) => ({ raw, next: true }))
+      );
+    } else {
+      collectJsonUrls(parsed, candidates, 0);
     }
   } else {
     const $ = cheerio.load(input.body);
-    $("a[href]").each((_index, element) => {
+    const strategy = input.source.listingDiscovery ?? {
+      recipeLinkSelectors: ["a[href]"],
+      skipPathFragments: [],
+      continuationSelectors: ["a.next[href]", "a.page-numbers.next[href]", 'link[rel~="next"][href]'],
+      continuationUrlPatterns: [],
+    };
+    const candidateSelector = [
+      ...strategy.recipeLinkSelectors,
+      ...strategy.continuationSelectors,
+    ].join(", ");
+    $(candidateSelector).each((_index, element) => {
       const raw = $(element).attr("href");
       if (!raw) return;
       const rel = ($(element).attr("rel") ?? "").toLowerCase();
@@ -80,6 +145,7 @@ export function discoverListingPage(input: {
       candidates.push({
         raw,
         next:
+          strategy.continuationSelectors.some((selector) => $(element).is(selector)) ||
           rel.split(/\s+/u).includes("next") ||
           /^(?:næste|naeste|next|mere|more)(?:\s|$)/iu.test(text),
       });
@@ -102,8 +168,20 @@ export function discoverListingPage(input: {
       increment(result.rejectedByReason, "domain-not-allowed");
       continue;
     }
-    if (next) {
+    const listingStrategy = input.source.listingDiscovery;
+    const pathAndSearch = `${new URL(candidate).pathname}${new URL(candidate).search}`;
+    const recursiveListing = matchesAny(
+      pathAndSearch,
+      listingStrategy?.continuationUrlPatterns ?? []
+    );
+    if (next || recursiveListing) {
       result.nextUrls.push(candidate);
+      continue;
+    }
+    if ((listingStrategy?.skipPathFragments ?? []).some(
+      (fragment) => new URL(candidate).pathname.toLowerCase().includes(fragment.toLowerCase())
+    )) {
+      increment(result.rejectedByReason, "skip-path");
       continue;
     }
     const reason = recipeRejectionReason(input.source, candidate);
@@ -231,5 +309,51 @@ function emptyResult(): DiscoveryResult {
     acceptedCount: 0,
     rejectedByReason: {},
     terminal: true,
+    complete: true,
+    incompleteReasons: [],
   };
+}
+
+function matchesAny(value: string, patterns: string[]): boolean {
+  return patterns.some((pattern) => {
+    try {
+      return new RegExp(pattern, "iu").test(value);
+    } catch {
+      return false;
+    }
+  });
+}
+
+function valuesAtJsonPath(root: unknown, path: string): string[] {
+  let values: unknown[] = [root];
+  for (const segment of path.split(".")) {
+    const expand = segment.endsWith("[]");
+    const key = expand ? segment.slice(0, -2) : segment;
+    const next: unknown[] = [];
+    for (const value of values) {
+      if (value === null || typeof value !== "object" || Array.isArray(value)) continue;
+      const nested = (value as Record<string, unknown>)[key];
+      if (expand && Array.isArray(nested)) next.push(...nested);
+      else if (nested !== undefined) next.push(nested);
+    }
+    values = next;
+  }
+  return values.filter((value): value is string => typeof value === "string");
+}
+
+function jsonPathHasExpectedEmptyCollection(root: unknown, path: string): boolean {
+  let value = root;
+  for (const segment of path.split(".")) {
+    const expand = segment.endsWith("[]");
+    const key = expand ? segment.slice(0, -2) : segment;
+    if (value === null || typeof value !== "object" || Array.isArray(value)) return false;
+    value = (value as Record<string, unknown>)[key];
+    if (expand) return Array.isArray(value) && value.length === 0;
+  }
+  return false;
+}
+
+export function looksLikeHttp200BlockShell(body: string): boolean {
+  return /captcha|access denied|checking your browser|cloudflare challenge|temporarily blocked|unusual traffic/iu
+    .test(body);
 }

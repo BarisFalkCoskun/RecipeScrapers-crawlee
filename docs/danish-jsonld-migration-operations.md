@@ -45,6 +45,13 @@ Keep `pilot-canary.json` with the remote run record. It includes the run ID,
 exact selected sources, cap, database name, source outcomes, and observations.
 Never copy access credentials into the evidence file or a ticket.
 
+The registry also carries the effective legacy discovery contract: listing
+selectors, next-page selectors/patterns, skip paths, JSON payload paths, and
+sitemap follow/skip patterns. Malformed or unexpected JSON listings and HTTP
+200 challenge shells make discovery incomplete with a stable reason; they are
+never reported as `no_data`. Redirect targets and resolved canonical hosts must
+remain within that source's `allowedDomains` before extraction or persistence.
+
 The source registry is the checklist record. Inspect it without contacting any
 site:
 
@@ -117,7 +124,9 @@ npm run crawl:danish-jsonld -- --sources "$PILOT_SOURCES" --force \
 Finally, run the read-only comparison from this checkout. It explicitly names
 both databases and sources, reads legacy normalized `recipes` (`source_site`,
 `url`, title/ingredients/instructions) and Crawlee `recipes_v2`, and writes one
-JSON report to standard output. The credentials stay in environment variables.
+JSON report to standard output. Crawlee evidence is validated first; its exact
+`crawlRunId` and selected source IDs are then used in the `recipes_v2` query.
+The credentials stay in environment variables.
 
 ```bash
 LEGACY_MONGODB_URI='mongodb://USER:PASSWORD@REMOTE_HOST:27017/?authSource=admin' \
@@ -131,13 +140,18 @@ npm run migration:compare -- \
   > "$EVIDENCE_DIR/shadow-comparison.json"
 ```
 
-The report contains per-source and aggregate legacy/Crawlee URL counts,
-intersection, coverage, required-field **presence** checks, Mongo errors, and
-off-domain queue-admission counts. It passes only when every source and the
-aggregate meet all of these gates:
+The report contains per-source and aggregate legacy/Crawlee URL and recipe
+counts, intersection, URL and recipe coverage, per-URL count mismatches,
+required-field **presence** checks, Mongo errors, and off-domain
+queue-admission counts. Recipes sharing one canonical URL are compared as
+multisets; they are not collapsed to one record. It passes only when every
+source and the aggregate meet all of these gates:
 
 - Crawlee URL coverage is at least 95% of the source-scoped legacy canonical
   URL set.
+- Recipe coverage is at least 95%, and every intersecting canonical URL has the
+  same number of legacy and Crawlee recipes. Two legacy recipes versus one
+  Crawlee recipe on the same page is a parity failure.
 - At least 99% of title, ingredients, and instructions **presence** checks
   agree on URL intersections, with zero missing Crawlee required fields. This
   checks non-empty field presence on each side; it does not compare title,
@@ -151,9 +165,11 @@ exact selected source set and have one completed terminal result per source.
 Scrapy evidence must be full/uncapped with no timeout, interruption, failed
 source, or incomplete health/statistics record. Crawlee evidence must be uncapped with
 complete discovery, no partial/blocked/failed outcome, no Mongo error, and no
-rejected incomplete/malformed required JSON-LD. Extra Crawlee recipes do not
-lower legacy URL coverage; the coverage denominator is the source-scoped legacy
-canonical URL set. Legacy Mongo reads use the registry's effective
+rejected incomplete/malformed required JSON-LD. Crawlee evidence must also have
+a non-empty `crawlRunId`; mixed-run or wrong-source recipe rows are rejected.
+Extra Crawlee URLs do not lower legacy URL coverage, but a recipe-count mismatch
+on an intersecting URL fails parity. The URL coverage denominator is the
+source-scoped legacy canonical URL set. Legacy Mongo reads use the registry's effective
 `source_site` domain mapping and emit the registry source ID in the report.
 
 Both summary schemas must include an explicit empty outcome-reasons array for a
@@ -172,7 +188,7 @@ The native MongoDB collections for this path are:
 
 | Collection | Role |
 | --- | --- |
-| `recipes_v2` | Strict JSON-LD `RecipeDocumentV2` records, keyed by `sourceRecipeKey`. |
+| `recipes_v2` | Strict JSON-LD `RecipeDocumentV2` records, keyed by `sourceRecipeKey`; indexed by `(sourceId, crawlRunId)` for exact-run evidence reads. |
 | `pages` | Page provenance; exact `application/ld+json` script bodies are stored in compressed `rawJsonLdScripts`. |
 | `recipe_content_matches` | Cross-source and same-source content-hash match audit records. |
 | `crawl_runs` | Both legacy run summaries and dedicated V2 run records. Danish records have `kind: "danish-jsonld-v2"`, `schemaVersion: 2`, source IDs, source outcomes, and observations; legacy reports exclude those records. Retention is managed by the TTL index. |
@@ -181,6 +197,18 @@ Consumers must read `RecipeDocumentV2.normalized` for the portable recipe
 payload: title, ingredients, ordered instructions, durations, yield, images,
 categories, cuisines, keywords, and optional nutrition. Preserve `rawRecipe`
 for provenance/debugging only; do not make it a downstream parsing contract.
+
+`sourceRecipeKey` is stable across ingredient/instruction updates. With an
+upstream `@id`, it derives from source, canonical URL, and that ID. Without
+`@id`, a single recipe uses source plus canonical URL; multi-recipe pages add a
+deterministic positional discriminator so records on the same page remain
+distinct.
+
+Each dedicated source attempt owns unique Cheerio and Playwright queues. After
+handlers finish and the source result is captured, both queues are dropped in
+`finally`; these attempt queues have no resume contract. A drop failure is
+bounded and visible in `queue-cleanup-failed` diagnostics and does not replace
+the source's already-computed crawl outcome.
 
 Consumer migration is an external-repository task:
 

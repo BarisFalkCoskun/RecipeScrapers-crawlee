@@ -2,7 +2,7 @@ import * as cheerio from "cheerio";
 import { Binary } from "mongodb";
 import { gzipSync } from "node:zlib";
 import type { RecipeDocumentV2Store, CrawlStore } from "../storage/store.js";
-import type { PageDocument, SourceRunOutcomeSummary } from "../types.js";
+import type { PageDocument, SourceOutcomeReason, SourceRunOutcomeSummary } from "../types.js";
 import { EXTRACTOR_VERSION } from "../config.js";
 import { canonicalizeUrl, normalizeDomain } from "../utils/canonicalize.js";
 import { hashHtml } from "../utils/hash.js";
@@ -17,6 +17,7 @@ import type { DanishJsonLdSource } from "./source-registry.js";
 import {
   discoverListingPage,
   discoverSitemapDocument,
+  looksLikeHttp200BlockShell,
 } from "./discovery.js";
 import {
   createBoundedDiagnostic,
@@ -86,6 +87,7 @@ export class DanishJsonLdSourceSession {
       mongoFailures: 0,
       unintendedOffDomainAdmissions: 0,
       discoveryComplete: true,
+      discoveryFailureReasons: [],
       pageCapReached: false,
     };
     this.emit("source-attempt", {
@@ -146,12 +148,27 @@ export class DanishJsonLdSourceSession {
     }
     this.emitHttpDiagnostic(response);
 
+    if (response.loadedUrl && !this.isAllowedSourceUrl(response.loadedUrl)) {
+      this.rejectDomainBoundary("loaded-url", response.loadedUrl, "loaded-url-domain-not-allowed");
+      return emptyRoutes();
+    }
+
     if (response.statusCode < 200 || response.statusCode >= 300) {
       if (!blocked) {
         this.observation.failedRequests =
           (this.observation.failedRequests ?? 0) + 1;
       }
       if (response.kind !== "recipe") this.observation.discoveryComplete = false;
+      return emptyRoutes();
+    }
+
+    if (looksLikeHttp200BlockShell(response.body)) {
+      this.observation.blockedRequests = (this.observation.blockedRequests ?? 0) + 1;
+      this.addDiscoveryFailure("http-200-block-shell");
+      this.emit("discovery-incomplete", {
+        kind: response.kind,
+        reason: "http-200-block-shell",
+      });
       return emptyRoutes();
     }
 
@@ -242,6 +259,7 @@ export class DanishJsonLdSourceSession {
       sitemapUrl: response.url,
       xml: response.body,
     });
+    this.recordDiscoveryCompletion(response.kind, discovery);
     const recipeRequests = this.admitRecipeUrls(discovery.recipeUrls);
     this.emit("discovery", {
       kind: "sitemap",
@@ -270,6 +288,7 @@ export class DanishJsonLdSourceSession {
       body: response.body,
       contentType,
     });
+    this.recordDiscoveryCompletion(response.kind, discovery);
     const recipeRequests = this.admitRecipeUrls(discovery.recipeUrls);
     this.emit("listing-discovery", {
       url: response.url,
@@ -300,6 +319,14 @@ export class DanishJsonLdSourceSession {
     response: DanishJsonLdResponse
   ): Promise<DanishJsonLdRoutingResult> {
     const canonicalUrl = this.resolveCanonicalUrl(response);
+    if (!this.isAllowedSourceUrl(canonicalUrl)) {
+      this.rejectDomainBoundary(
+        "canonical",
+        canonicalUrl,
+        "canonical-domain-not-allowed"
+      );
+      return emptyRoutes();
+    }
     const extraction = extractCompleteJsonLdRecipes(response.body);
     this.observation.rejectedIncompleteJsonLd =
       (this.observation.rejectedIncompleteJsonLd ?? 0) +
@@ -401,7 +428,7 @@ export class DanishJsonLdSourceSession {
       throw new DanishJsonLdStoreFailure("Page upsert failed", error);
     }
 
-    for (const rawRecipe of extraction.recipes) {
+    for (const [recipeIndex, rawRecipe] of extraction.recipes.entries()) {
       const recipeLanguage = detectLanguage({
         recipe: rawRecipe,
         $,
@@ -423,6 +450,9 @@ export class DanishJsonLdSourceSession {
         languageSignals: recipeLanguage.languageSignals,
         extractorVersion: EXTRACTOR_VERSION,
         extractionSignals,
+        ...(extraction.recipes.length > 1 && !firstNonBlankString(rawRecipe["@id"])
+          ? { pageRecipeDiscriminator: `recipe-${recipeIndex + 1}` }
+          : {}),
       });
       try {
         const result = await this.store.upsertRecipeV2(document);
@@ -469,6 +499,51 @@ export class DanishJsonLdSourceSession {
   private markPageCapReached(): void {
     this.observation.pageCapReached = true;
     this.observation.discoveryComplete = false;
+  }
+
+  private recordDiscoveryCompletion(
+    kind: DanishJsonLdRequestKind,
+    discovery: { complete: boolean; incompleteReasons: string[] }
+  ): void {
+    if (discovery.complete) return;
+    for (const reason of discovery.incompleteReasons) {
+      if (isSourceOutcomeReason(reason)) this.addDiscoveryFailure(reason);
+    }
+    this.emit("discovery-incomplete", {
+      kind,
+      reasons: discovery.incompleteReasons,
+    });
+  }
+
+  private addDiscoveryFailure(reason: SourceOutcomeReason): void {
+    this.observation.discoveryComplete = false;
+    const reasons = this.observation.discoveryFailureReasons ?? [];
+    if (!reasons.includes(reason)) reasons.push(reason);
+    this.observation.discoveryFailureReasons = reasons;
+  }
+
+  private rejectDomainBoundary(
+    boundary: "loaded-url" | "canonical",
+    url: string,
+    reason: "loaded-url-domain-not-allowed" | "canonical-domain-not-allowed"
+  ): void {
+    this.addDiscoveryFailure(reason);
+    this.emit("source-domain-rejected", {
+      boundary,
+      hostname: hostnameForDiagnostic(url),
+    });
+  }
+
+  private isAllowedSourceUrl(url: string): boolean {
+    try {
+      const hostname = normalizeDomain(new URL(url).hostname);
+      return this.source.allowedDomains.some((domain) => {
+        const allowed = normalizeDomain(domain);
+        return hostname === allowed || hostname.endsWith(`.${allowed}`);
+      });
+    } catch {
+      return false;
+    }
   }
 
   private playwrightFallbackReason(
@@ -525,6 +600,26 @@ export class DanishJsonLdSourceSession {
       })
     );
   }
+}
+
+function isSourceOutcomeReason(value: string): value is SourceOutcomeReason {
+  return [
+    "malformed-listing-payload",
+    "unexpected-listing-shape",
+    "http-200-block-shell",
+  ].includes(value);
+}
+
+function hostnameForDiagnostic(url: string): string {
+  try {
+    return new URL(url).hostname.toLowerCase();
+  } catch {
+    return "invalid-url";
+  }
+}
+
+function firstNonBlankString(value: unknown): string | undefined {
+  return typeof value === "string" && value.trim() ? value.trim() : undefined;
 }
 
 function firstHeader(

@@ -36,10 +36,10 @@ async function main() {
           }];
         });
       },
-      readCrawlee: async (database, sourceIds) => {
+      readCrawlee: async (database, sourceIds, crawlRunId) => {
         const documents = await crawleeClient.db(database).collection("recipes_v2")
-          .find({ sourceId: { $in: sourceIds } })
-          .project({ sourceId: 1, canonicalUrl: 1, normalized: 1 })
+          .find({ sourceId: { $in: sourceIds }, crawlRunId })
+          .project({ sourceId: 1, sourceRecipeKey: 1, crawlRunId: 1, canonicalUrl: 1, normalized: 1 })
           .toArray();
         return documents.flatMap((document): CrawleeComparisonRecipe[] => {
           if (typeof document.sourceId !== "string" || typeof document.canonicalUrl !== "string" ||
@@ -47,6 +47,8 @@ async function main() {
           return [{
             sourceId: document.sourceId,
             canonicalUrl: document.canonicalUrl,
+            sourceRecipeKey: document.sourceRecipeKey,
+            crawlRunId: document.crawlRunId,
             normalized: document.normalized as Record<string, unknown>,
           }];
         });

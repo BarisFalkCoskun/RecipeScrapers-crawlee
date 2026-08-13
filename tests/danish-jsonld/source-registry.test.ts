@@ -79,4 +79,62 @@ describe("Danish JSON-LD source registry", () => {
       maxRetries: 3,
     });
   });
+
+  it("represents every effective legacy discovery override as typed registry data", () => {
+    const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
+    const listingSources = DANISH_JSONLD_SOURCES.filter(
+      (source) => source.discovery === "listing"
+    );
+
+    for (const listing of listingSources.filter((source) => source.id !== "rema1000")) {
+      expect(listing.listingDiscovery).toMatchObject({
+        recipeLinkSelectors: ["a[href]"],
+        continuationSelectors: [
+          "a.next[href]",
+          "a.page-numbers.next[href]",
+          'link[rel~="next"][href]',
+        ],
+      });
+      expect(listing.listingDiscovery?.skipPathFragments).toEqual(
+        expect.arrayContaining(["/category/", "/tag/", "/page/", "/author/"])
+      );
+    }
+
+    expect(byId.get("rema1000")?.listingDiscovery?.continuationSelectors)
+      .toEqual(["a.sr-only[href]"]);
+    expect(byId.get("kitchenaid")?.listingDiscovery?.continuationUrlPatterns)
+      .toEqual(["^/opskrifter/alle/\\d+/?$"]);
+    expect(byId.get("klank")?.listingDiscovery?.continuationUrlPatterns).toEqual([
+      "^/index\\.php/opskrifter-(?:koekken|kategori)/[a-z0-9æøåé-]+/?$",
+    ]);
+    expect(byId.get("ferrerorocher")?.listingDiscovery?.payload).toEqual({
+      kind: "json-paths",
+      expectedRoot: "object",
+      recipePaths: ["hits.hits[]._source.url[]"],
+    });
+
+    expect(byId.get("glutenfrimagi")?.listingDiscovery?.skipPathFragments)
+      .toContain("/opskrifter/");
+    expect(byId.get("heidiogper")?.listingDiscovery?.skipPathFragments)
+      .toContain("/opskrifter/forside");
+    expect(byId.get("knaehoejkarse")?.listingDiscovery?.skipPathFragments)
+      .toContain("/alle-opskrifter/");
+    expect(byId.get("madrejsen")?.listingDiscovery?.skipPathFragments)
+      .toContain("/opskrifter/");
+    expect(byId.get("recipesairfryer_dk")?.listingDiscovery?.skipPathFragments)
+      .toContain("/da/hjemmeside-da/");
+
+    expect(byId.get("bobedre")?.sitemapDiscovery).toMatchObject({
+      followPatterns: ["contenthub_composite"],
+      skipUrlFragments: expect.arrayContaining(["/opskrifter/hovedret?"]),
+    });
+    expect(byId.get("iform")?.sitemapDiscovery?.followPatterns)
+      .toEqual(["contenthub_composite"]);
+    expect(byId.get("kikkoman")?.sitemapDiscovery?.followPatterns)
+      .toEqual(["sitemap=recipes"]);
+    expect(byId.get("micadeli")?.sitemapDiscovery?.followPatterns)
+      .toEqual(["post-sitemap\\.xml$"]);
+    expect(byId.get("nogetiovnen")?.sitemapDiscovery?.followPatterns)
+      .toEqual(["post-sitemap"]);
+  });
 });

@@ -3,7 +3,10 @@ import {
   discoverListingPage,
   discoverSitemapDocument,
 } from "../../src/danish-jsonld/discovery.js";
-import type { DanishJsonLdSource } from "../../src/danish-jsonld/source-registry.js";
+import {
+  DANISH_JSONLD_SOURCES,
+  type DanishJsonLdSource,
+} from "../../src/danish-jsonld/source-registry.js";
 
 const source: DanishJsonLdSource = {
   id: "fixture",
@@ -118,5 +121,217 @@ describe("Danish JSON-LD discovery", () => {
       "https://example.dk/api/search?page=5",
     ]);
     expect(result.terminal).toBe(false);
+  });
+
+  it("uses typed selectors for rel-next, icon-only next anchors, and REMA pagination", () => {
+    const listingSource = {
+      ...source,
+      discovery: "listing" as const,
+      legacyFamily: "JsonLdListingSpider" as const,
+      listingDiscovery: {
+        recipeLinkSelectors: ["a[href]"],
+        skipPathFragments: [],
+        continuationSelectors: [
+          "a.next[href]",
+          'link[rel~="next"][href]',
+          "a.sr-only[href]",
+        ],
+        continuationUrlPatterns: [],
+      },
+    };
+    const result = discoverListingPage({
+      source: listingSource,
+      pageUrl: "https://example.dk/opskrifter/",
+      body: `<a href="/opskrifter/kage">Kage</a>
+        <a class="next" href="/opskrifter/page/2"><svg/></a>
+        <link rel="next" href="/opskrifter/page/3">
+        <a class="sr-only" href="/opskrifter/page/4"><span aria-hidden="true">›</span></a>`,
+    });
+
+    expect(result.nextUrls).toEqual([
+      "https://example.dk/opskrifter/page/2",
+      "https://example.dk/opskrifter/page/3",
+      "https://example.dk/opskrifter/page/4",
+    ]);
+  });
+
+  it.each([
+    ["kitchenaid", "https://www.kitchenaid.dk/opskrifter/alle", "/opskrifter/alle/12"],
+    ["klank", "https://klank.dk/index.php/opskrifter-koekken/", "/index.php/opskrifter-kategori/desserter/"],
+  ])("follows typed recursive listing URLs for %s", (sourceId, pageUrl, href) => {
+    const exceptional = DANISH_JSONLD_SOURCES.find((entry) => entry.id === sourceId)!;
+    const result = discoverListingPage({
+      source: exceptional,
+      pageUrl,
+      body: `<a href="${href}"><svg/></a>`,
+    });
+    expect(result.nextUrls).toEqual([new URL(href, pageUrl).toString()]);
+  });
+
+  it("applies inherited and source-specific listing skip paths before recipe patterns", () => {
+    const inherited = DANISH_JSONLD_SOURCES.find(
+      (entry) => entry.id === "frokenkraesen_com"
+    )!;
+    const result = discoverListingPage({
+      source: inherited,
+      pageUrl: inherited.startUrls[0],
+      body: `<a href="/om-os">Om os</a><a href="/kage">Kage</a>`,
+    });
+    expect(result.recipeUrls).toEqual([new URL("/kage", inherited.startUrls[0]).toString()]);
+    expect(result.rejectedByReason).toMatchObject({ "skip-path": 1 });
+  });
+
+  it.each([
+    ["glutenfrimagi", "/opskrifter/"],
+    ["heidiogper", "/opskrifter/forside"],
+    ["knaehoejkarse", "/alle-opskrifter/"],
+    ["madrejsen", "/opskrifter/"],
+    ["recipesairfryer_dk", "/da/hjemmeside-da/"],
+  ])("executes the %s source-specific listing skip rule", (sourceId, href) => {
+    const exceptional = DANISH_JSONLD_SOURCES.find((entry) => entry.id === sourceId)!;
+    const result = discoverListingPage({
+      source: exceptional,
+      pageUrl: exceptional.startUrls[0],
+      body: `<a href="${href}">Index</a>`,
+    });
+    expect(result.recipeUrls).toEqual([]);
+    expect(result.rejectedByReason).toMatchObject({ "skip-path": 1 });
+  });
+
+  it("applies typed sitemap follow and skip rules", () => {
+    const bobedre = DANISH_JSONLD_SOURCES.find((entry) => entry.id === "bobedre")!;
+    const nested = discoverSitemapDocument({
+      source: bobedre,
+      sitemapUrl: bobedre.sitemapUrls[0],
+      xml: `<sitemapindex>
+        <sitemap><loc>https://bobedre.dk/contenthub_composite-recipes.xml</loc></sitemap>
+        <sitemap><loc>https://bobedre.dk/news-sitemap.xml</loc></sitemap>
+      </sitemapindex>`,
+    });
+    expect(nested.sitemapUrls).toEqual([
+      "https://bobedre.dk/contenthub_composite-recipes.xml",
+    ]);
+    expect(nested.rejectedByReason).toMatchObject({ "sitemap-follow-mismatch": 1 });
+
+    const entries = discoverSitemapDocument({
+      source: bobedre,
+      sitemapUrl: nested.sitemapUrls[0],
+      xml: `<urlset>
+        <url><loc>https://bobedre.dk/opskrifter/hovedret?view=all</loc></url>
+        <url><loc>https://bobedre.dk/opskrifter/kage</loc></url>
+      </urlset>`,
+    });
+    expect(entries.recipeUrls).toEqual(["https://bobedre.dk/opskrifter/kage"]);
+    expect(entries.rejectedByReason).toMatchObject({ "sitemap-skip": 1 });
+  });
+
+  it.each([
+    ["bobedre", "https://bobedre.dk/contenthub_composite-recipes.xml"],
+    ["iform", "https://iform.dk/contenthub_composite-recipes.xml"],
+    ["kikkoman", "https://www.kikkoman.dk/sitemap.xml?sitemap=recipes"],
+    ["micadeli", "https://micadeli.dk/post-sitemap.xml"],
+    ["nogetiovnen", "https://nogetiovnen.dk/post-sitemap2.xml"],
+  ])("executes the %s source-specific sitemap follow rule", (sourceId, nestedUrl) => {
+    const exceptional = DANISH_JSONLD_SOURCES.find((entry) => entry.id === sourceId)!;
+    const result = discoverSitemapDocument({
+      source: exceptional,
+      sitemapUrl: exceptional.sitemapUrls[0],
+      xml: `<sitemapindex><sitemap><loc>${nestedUrl}</loc></sitemap></sitemapindex>`,
+    });
+    expect(result.sitemapUrls).toEqual([nestedUrl]);
+  });
+
+  it.each([
+    ["bobedre", "/opskrifter/hovedret?view=all"],
+    ["christinaskoekken", "/opskrifter-med/chokolade/"],
+    ["frederikkewaerens", "/opskrifter/kager/"],
+    ["madsvin", "/kategori/desserter/"],
+    ["mariavestergaard", "/opskrifter/"],
+    ["nogetiovnen", "/opskrifter/"],
+    ["sundpaabudget", "/basislager/"],
+  ])("executes the %s source-specific sitemap skip rule", (sourceId, path) => {
+    const exceptional = DANISH_JSONLD_SOURCES.find((entry) => entry.id === sourceId)!;
+    const candidate = new URL(path, exceptional.sitemapUrls[0]).toString();
+    const result = discoverSitemapDocument({
+      source: exceptional,
+      sitemapUrl: exceptional.sitemapUrls[0],
+      xml: `<urlset><url><loc>${candidate.replaceAll("&", "&amp;")}</loc></url></urlset>`,
+    });
+    expect(result.recipeUrls).toEqual([]);
+    expect(result.rejectedByReason).toMatchObject({ "sitemap-skip": 1 });
+  });
+
+  it("fails closed for malformed and unexpected typed JSON listing payloads", () => {
+    const ferrero = DANISH_JSONLD_SOURCES.find(
+      (entry) => entry.id === "ferrerorocher"
+    )!;
+    const malformed = discoverListingPage({
+      source: ferrero,
+      pageUrl: ferrero.startUrls[0],
+      body: "{not-json",
+      contentType: "application/json",
+    });
+    const unexpected = discoverListingPage({
+      source: ferrero,
+      pageUrl: ferrero.startUrls[0],
+      body: JSON.stringify({ url: "/dk/da/tips-og-ideer/opskrifter/kage" }),
+      contentType: "application/json",
+    });
+
+    expect(malformed).toMatchObject({
+      complete: false,
+      incompleteReasons: ["malformed-listing-payload"],
+    });
+    expect(unexpected).toMatchObject({
+      recipeUrls: [],
+      complete: false,
+      incompleteReasons: ["unexpected-listing-shape"],
+    });
+  });
+
+  it("accepts an expected empty typed JSON result as complete no-data discovery", () => {
+    const ferrero = DANISH_JSONLD_SOURCES.find(
+      (entry) => entry.id === "ferrerorocher"
+    )!;
+    const result = discoverListingPage({
+      source: ferrero,
+      pageUrl: ferrero.startUrls[0],
+      body: JSON.stringify({ hits: { hits: [] } }),
+      contentType: "application/json",
+    });
+
+    expect(result).toMatchObject({
+      recipeUrls: [],
+      complete: true,
+      incompleteReasons: [],
+    });
+  });
+
+  it("executes Ferrero's typed JSON path for both legacy string and array URLs", () => {
+    const ferrero = DANISH_JSONLD_SOURCES.find(
+      (entry) => entry.id === "ferrerorocher"
+    )!;
+    const result = discoverListingPage({
+      source: ferrero,
+      pageUrl: ferrero.startUrls[0],
+      body: JSON.stringify({
+        hits: {
+          hits: [
+            { _source: { url: "/dk/da/tips-og-ideer/opskrifter/kage" } },
+            { _source: { url: ["/dk/da/tips-og-ideer/opskrifter/dessert"] } },
+          ],
+        },
+      }),
+      contentType: "application/json",
+    });
+
+    expect(result).toMatchObject({
+      recipeUrls: [
+        "https://www.ferrerorocher.com/dk/da/tips-og-ideer/opskrifter/kage",
+        "https://www.ferrerorocher.com/dk/da/tips-og-ideer/opskrifter/dessert",
+      ],
+      complete: true,
+      incompleteReasons: [],
+    });
   });
 });

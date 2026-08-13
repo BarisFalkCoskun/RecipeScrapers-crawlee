@@ -17,6 +17,8 @@ export interface LegacyComparisonRecipe {
 export interface CrawleeComparisonRecipe {
   sourceId: string;
   canonicalUrl: string;
+  sourceRecipeKey?: string;
+  crawlRunId?: string;
   normalized: Record<string, unknown>;
 }
 
@@ -47,6 +49,11 @@ export interface MigrationComparisonSourceReport {
   missingCrawleeRequiredFields: number;
   mongoErrors: number;
   unintendedOffDomainAdmissions: number;
+  legacyRecipeCount: number;
+  crawleeRecipeCount: number;
+  matchedRecipeCount: number;
+  recipeCoverage: number;
+  recipeCountMismatches: number;
   passed: boolean;
 }
 
@@ -70,7 +77,8 @@ export interface MigrationComparisonDependencies {
   ) => Promise<LegacyComparisonRecipe[]>;
   readCrawlee: (
     database: string,
-    sourceIds: string[]
+    sourceIds: string[],
+    crawlRunId: string
   ) => Promise<CrawleeComparisonRecipe[]>;
   readScrapyEvidence: (path: string) => Promise<unknown>;
   readCrawleeEvidence: (
@@ -130,14 +138,26 @@ export async function executeMigrationComparison(
   options: MigrationComparisonOptions,
   dependencies: MigrationComparisonDependencies
 ): Promise<MigrationComparisonReport> {
-  const [legacy, crawlee, scrapyEvidence, crawleeEvidence] = await Promise.all([
-    dependencies.readLegacy(options.legacyDatabase, options.sourceIds),
-    dependencies.readCrawlee(options.crawleeDatabase, options.sourceIds),
+  const [scrapyEvidence, crawleeEvidence] = await Promise.all([
     dependencies.readScrapyEvidence(options.scrapyEvidencePath),
     dependencies.readCrawleeEvidence(options.crawleeEvidencePath),
   ]);
   assertScrapyEvidence(scrapyEvidence, options);
-  const observations = assertCrawleeEvidence(crawleeEvidence, options);
+  const { observations, crawlRunId } = assertCrawleeEvidence(crawleeEvidence, options);
+  const [legacy, crawlee] = await Promise.all([
+    dependencies.readLegacy(options.legacyDatabase, options.sourceIds),
+    dependencies.readCrawlee(options.crawleeDatabase, options.sourceIds, crawlRunId),
+  ]);
+  if (crawlee.some((recipe) =>
+    typeof recipe.sourceRecipeKey !== "string" || recipe.sourceRecipeKey.trim().length === 0
+  )) {
+    throw new Error("recipes_v2 contains a missing or malformed sourceRecipeKey");
+  }
+  if (crawlee.some((recipe) =>
+    !options.sourceIds.includes(recipe.sourceId) || recipe.crawlRunId !== crawlRunId
+  )) {
+    throw new Error("recipes_v2 contains rows outside the selected crawlRunId/source cohort");
+  }
   const report = createMigrationComparisonReport({
     sourceIds: options.sourceIds,
     legacy,
@@ -148,6 +168,7 @@ export async function executeMigrationComparison(
     legacyDatabase: options.legacyDatabase,
     crawleeDatabase: options.crawleeDatabase,
     sourceIds: options.sourceIds,
+    crawlRunId,
     ...report,
   }, null, 2));
   return report;
@@ -167,6 +188,10 @@ export function createMigrationComparisonReport(
     missingCrawleeRequiredFields: total.missingCrawleeRequiredFields + source.missingCrawleeRequiredFields,
     mongoErrors: total.mongoErrors + source.mongoErrors,
     unintendedOffDomainAdmissions: total.unintendedOffDomainAdmissions + source.unintendedOffDomainAdmissions,
+    legacyRecipeCount: total.legacyRecipeCount + source.legacyRecipeCount,
+    crawleeRecipeCount: total.crawleeRecipeCount + source.crawleeRecipeCount,
+    matchedRecipeCount: total.matchedRecipeCount + source.matchedRecipeCount,
+    recipeCountMismatches: total.recipeCountMismatches + source.recipeCountMismatches,
   }), emptyCounts());
   const aggregate = withGates(aggregateCounts);
 
@@ -183,23 +208,32 @@ function createSourceReport(
   sourceId: string,
   input: MigrationComparisonInput
 ): MigrationComparisonSourceReport {
-  const legacy = new Map(input.legacy
-    .filter((recipe) => recipe.sourceId === sourceId)
-    .map((recipe) => [recipe.canonicalUrl, recipe]));
-  const crawlee = new Map(input.crawlee
-    .filter((recipe) => recipe.sourceId === sourceId)
-    .map((recipe) => [recipe.canonicalUrl, recipe]));
+  const legacyRecipes = input.legacy.filter((recipe) => recipe.sourceId === sourceId);
+  const crawleeRecipes = input.crawlee.filter((recipe) => recipe.sourceId === sourceId);
+  const legacy = groupByCanonicalUrl(legacyRecipes);
+  const crawlee = groupByCanonicalUrl(crawleeRecipes);
   const intersection = [...legacy.keys()].filter((url) => crawlee.has(url));
   let requiredFieldPresenceAgreements = 0;
   let missingCrawleeRequiredFields = 0;
-  for (const url of intersection) {
-    const legacyRecipe = legacy.get(url)!;
-    const crawleeRecipe = crawlee.get(url)!;
+  let matchedRecipeCount = 0;
+  let recipeCountMismatches = 0;
+  for (const recipe of crawleeRecipes) {
     for (const field of REQUIRED_NORMALIZED_FIELDS) {
-      const crawleePresent = fieldPresent(crawleeRecipe.normalized[field]);
-      if (!crawleePresent) missingCrawleeRequiredFields += 1;
-      if (fieldPresent(legacyRecipe[field]) && crawleePresent) {
-        requiredFieldPresenceAgreements += 1;
+      if (!fieldPresent(recipe.normalized[field])) missingCrawleeRequiredFields += 1;
+    }
+  }
+  for (const url of intersection) {
+    const legacyAtUrl = [...legacy.get(url)!].sort(compareRequiredPresence);
+    const crawleeAtUrl = [...crawlee.get(url)!].sort(compareRequiredPresence);
+    if (legacyAtUrl.length !== crawleeAtUrl.length) recipeCountMismatches += 1;
+    const pairCount = Math.min(legacyAtUrl.length, crawleeAtUrl.length);
+    matchedRecipeCount += pairCount;
+    for (let index = 0; index < pairCount; index += 1) {
+      for (const field of REQUIRED_NORMALIZED_FIELDS) {
+        if (fieldPresent(legacyAtUrl[index][field]) ===
+          fieldPresent(crawleeAtUrl[index].normalized[field])) {
+          requiredFieldPresenceAgreements += 1;
+        }
       }
     }
   }
@@ -207,7 +241,7 @@ function createSourceReport(
     legacyUrlCount: legacy.size,
     crawleeUrlCount: crawlee.size,
     intersectionUrlCount: intersection.length,
-    requiredFieldPresenceChecks: intersection.length * REQUIRED_NORMALIZED_FIELDS.length,
+    requiredFieldPresenceChecks: matchedRecipeCount * REQUIRED_NORMALIZED_FIELDS.length,
     requiredFieldPresenceAgreements,
     missingCrawleeRequiredFields,
     mongoErrors: input.observations
@@ -216,6 +250,10 @@ function createSourceReport(
     unintendedOffDomainAdmissions: input.observations
       .filter((observation) => observation.sourceId === sourceId)
       .reduce((total, observation) => total + (observation.unintendedOffDomainAdmissions ?? 0), 0),
+    legacyRecipeCount: legacyRecipes.length,
+    crawleeRecipeCount: crawleeRecipes.length,
+    matchedRecipeCount,
+    recipeCountMismatches,
   };
   return { sourceId, ...withGates(counts) };
 }
@@ -230,6 +268,10 @@ function emptyCounts() {
     missingCrawleeRequiredFields: 0,
     mongoErrors: 0,
     unintendedOffDomainAdmissions: 0,
+    legacyRecipeCount: 0,
+    crawleeRecipeCount: 0,
+    matchedRecipeCount: 0,
+    recipeCountMismatches: 0,
   };
 }
 
@@ -240,17 +282,50 @@ function withGates(counts: ReturnType<typeof emptyCounts>) {
   const requiredFieldPresenceAgreement = counts.requiredFieldPresenceChecks === 0
     ? 0
     : counts.requiredFieldPresenceAgreements / counts.requiredFieldPresenceChecks;
+  const recipeCoverage = counts.legacyRecipeCount === 0
+    ? 0
+    : counts.matchedRecipeCount / counts.legacyRecipeCount;
   return {
     ...counts,
     urlCoverage,
+    recipeCoverage,
     requiredFieldPresenceAgreement,
     passed:
       urlCoverage >= MIN_URL_COVERAGE &&
+      recipeCoverage >= MIN_URL_COVERAGE &&
       requiredFieldPresenceAgreement >= MIN_REQUIRED_FIELD_AGREEMENT &&
       counts.missingCrawleeRequiredFields === 0 &&
       counts.mongoErrors === 0 &&
-      counts.unintendedOffDomainAdmissions === 0,
+      counts.unintendedOffDomainAdmissions === 0 &&
+      counts.recipeCountMismatches === 0,
   };
+}
+
+function groupByCanonicalUrl<T extends { canonicalUrl: string }>(recipes: T[]): Map<string, T[]> {
+  const grouped = new Map<string, T[]>();
+  for (const recipe of recipes) {
+    const atUrl = grouped.get(recipe.canonicalUrl) ?? [];
+    atUrl.push(recipe);
+    grouped.set(recipe.canonicalUrl, atUrl);
+  }
+  return grouped;
+}
+
+function compareRequiredPresence(
+  left: LegacyComparisonRecipe | CrawleeComparisonRecipe,
+  right: LegacyComparisonRecipe | CrawleeComparisonRecipe
+): number {
+  return requiredPresenceSignature(left).localeCompare(requiredPresenceSignature(right));
+}
+
+function requiredPresenceSignature(
+  recipe: LegacyComparisonRecipe | CrawleeComparisonRecipe
+): string {
+  return REQUIRED_NORMALIZED_FIELDS
+    .map((field) => fieldPresent(
+      "normalized" in recipe ? recipe.normalized[field] : recipe[field]
+    ) ? "1" : "0")
+    .join("");
 }
 
 function fieldPresent(value: unknown): boolean {
@@ -340,13 +415,16 @@ function assertScrapyEvidence(evidence: unknown, options: MigrationComparisonOpt
 function assertCrawleeEvidence(
   evidence: unknown,
   options: MigrationComparisonOptions
-): MigrationComparisonObservation[] {
+): { observations: MigrationComparisonObservation[]; crawlRunId: string } {
   const record = asRecord(evidence, "Crawlee evidence");
   if (record.database !== options.crawleeDatabase) {
     throw new Error("Crawlee evidence database does not match --crawlee-db");
   }
   assertExactSourceSet(record.selectedSources, options.sourceIds, "Crawlee evidence sources", "sourceId");
   if (record.maxPages !== null) throw new Error("Crawlee evidence must be uncapped");
+  if (typeof record.crawlRunId !== "string" || record.crawlRunId.trim().length === 0) {
+    throw new Error("Crawlee evidence has missing or malformed crawlRunId");
+  }
 
   const summary = asRecord(record.summary, "Crawlee evidence summary");
   const outcomes = exactResultBySource(summary.sourceOutcomes, options.sourceIds, "Crawlee source outcomes", "sourceId");
@@ -361,7 +439,7 @@ function assertCrawleeEvidence(
   }
 
   const rawObservations = exactResultBySource(record.observations, options.sourceIds, "Crawlee observations", "sourceId");
-  return options.sourceIds.map((sourceId) => {
+  const observations = options.sourceIds.map((sourceId) => {
     const observation = rawObservations.get(sourceId)!;
     if (observation.discoveryComplete !== true || observation.pageCapReached === true) {
       throw new Error(`Crawlee evidence source ${sourceId} has incomplete discovery`);
@@ -382,6 +460,7 @@ function assertCrawleeEvidence(
       unintendedOffDomainAdmissions,
     };
   });
+  return { observations, crawlRunId: record.crawlRunId };
 }
 
 function asRecord(value: unknown, context: string): Record<string, unknown> {

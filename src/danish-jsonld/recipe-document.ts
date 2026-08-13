@@ -29,6 +29,8 @@ export interface BuildRecipeDocumentV2Input {
   languageSignals: string[];
   extractorVersion: string;
   extractionSignals: string[];
+  /** Stable positional identity used only when one page contains multiple Recipes without @id. */
+  pageRecipeDiscriminator?: string;
 }
 
 /**
@@ -90,7 +92,7 @@ export function buildRecipeDocumentV2(
     sourceId: input.sourceId,
     canonicalUrl: input.canonicalUrl,
     upstreamId: firstString(rawRecipe["@id"]),
-    normalized,
+    pageRecipeDiscriminator: input.pageRecipeDiscriminator,
   });
 
   return {
@@ -170,25 +172,18 @@ function createSourceRecipeKey({
   sourceId,
   canonicalUrl,
   upstreamId,
-  normalized,
+  pageRecipeDiscriminator,
 }: {
   sourceId: string;
   canonicalUrl: string;
   upstreamId: string | undefined;
-  normalized: NormalizedRecipeV2;
+  pageRecipeDiscriminator: string | undefined;
 }): string {
-  const stableIdentity = {
-    title: normalized.title,
-    ingredients: normalized.ingredients,
-    instructions: normalized.instructions.map((instruction) => instruction.text),
-    totalMinutes: normalized.totalMinutes,
-    yieldText: normalized.yieldText,
-  };
   const keyHash = hashRecipe({
     sourceId,
     canonicalUrl,
     upstreamId: upstreamId ?? null,
-    stableIdentity,
+    pageRecipeDiscriminator: upstreamId ? null : pageRecipeDiscriminator ?? null,
   });
   return `${sourceId}:${keyHash}`;
 }

@@ -66,6 +66,7 @@ export class RecipeStore implements CrawlStore, RecipeDocumentV2Store {
     await this.recipesV2.createIndex({ sourceRecipeKey: 1 }, { unique: true });
     await this.recipesV2.createIndex({ contentHash: 1 });
     await this.recipesV2.createIndex({ sourceId: 1, contentHash: 1 });
+    await this.recipesV2.createIndex({ sourceId: 1, crawlRunId: 1 });
     await this.recipesV2.createIndex({ canonicalUrl: 1 });
     await this.contentMatchAudits.createIndex(
       { contentHash: 1, sourceRecipeKeyA: 1, sourceRecipeKeyB: 1 },

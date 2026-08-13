@@ -12,6 +12,24 @@ export type MigrationState = (typeof MIGRATION_STATES)[number];
 export type DiscoveryMode = "sitemap" | "listing";
 export type FetchMode = "cheerio" | "playwright";
 
+export interface ListingDiscoveryStrategy {
+  recipeLinkSelectors: string[];
+  skipPathFragments: string[];
+  continuationSelectors: string[];
+  continuationUrlPatterns: string[];
+  payload?: {
+    kind: "json-paths";
+    expectedRoot: "object" | "array";
+    recipePaths: string[];
+    continuationPaths?: string[];
+  };
+}
+
+export interface SitemapDiscoveryStrategy {
+  followPatterns: string[];
+  skipUrlFragments: string[];
+}
+
 export interface DanishJsonLdSource {
   id: string;
   domain: string;
@@ -22,6 +40,8 @@ export interface DanishJsonLdSource {
   sitemapUrls: string[];
   startUrls: string[];
   recipeUrlPatterns: string[];
+  listingDiscovery?: ListingDiscoveryStrategy;
+  sitemapDiscovery?: SitemapDiscoveryStrategy;
   fetchMode: FetchMode;
   requestSettings: {
     delaySeconds: number;
@@ -2799,6 +2819,128 @@ const LEGACY_LISTING_DEFAULT_PATTERNS = [
   "^/(opskrift(?:er)?|recipes?|mad)/[a-z0-9æøå-]+/?$",
 ];
 
+const LEGACY_LISTING_SKIP_PATHS = [
+  "/category/", "/tag/", "/page/", "/author/", "/feed/", "/om-",
+  "/kontakt/", "/privatlivspolitik/", "/wp-content/", "/wp-admin/",
+];
+
+const LEGACY_LISTING_DISCOVERY_DEFAULT: ListingDiscoveryStrategy = {
+  recipeLinkSelectors: ["a[href]"],
+  skipPathFragments: LEGACY_LISTING_SKIP_PATHS,
+  continuationSelectors: [
+    "a.next[href]",
+    "a.page-numbers.next[href]",
+    'link[rel~="next"][href]',
+  ],
+  continuationUrlPatterns: [],
+};
+
+const LEGACY_LISTING_DISCOVERY_OVERRIDES: Record<
+  string,
+  Partial<ListingDiscoveryStrategy>
+> = {
+  ferrerorocher: {
+    payload: {
+      kind: "json-paths",
+      expectedRoot: "object",
+      recipePaths: ["hits.hits[]._source.url[]"],
+    },
+  },
+  glutenfrimagi: {
+    skipPathFragments: [...LEGACY_LISTING_SKIP_PATHS, "/opskrifter/", "/opskrifter", "/om-mig/"],
+  },
+  heidiogper: {
+    skipPathFragments: [...LEGACY_LISTING_SKIP_PATHS, "/opskrifter/forside"],
+  },
+  kitchenaid: {
+    continuationUrlPatterns: ["^/opskrifter/alle/\\d+/?$"],
+  },
+  klank: {
+    continuationUrlPatterns: [
+      "^/index\\.php/opskrifter-(?:koekken|kategori)/[a-z0-9æøåé-]+/?$",
+    ],
+  },
+  knaehoejkarse: {
+    skipPathFragments: [...LEGACY_LISTING_SKIP_PATHS, "/alle-opskrifter/", "/opskrifter/", "/about/"],
+  },
+  madrejsen: {
+    skipPathFragments: [...LEGACY_LISTING_SKIP_PATHS, "/opskrifter/", "/opskrifter", "/om-mig/"],
+  },
+  recipesairfryer_dk: {
+    skipPathFragments: [
+      ...LEGACY_LISTING_SKIP_PATHS,
+      "/da/hjemmeside-da/", "/da/morgenmad-opskrifter/", "/da/snack-opskrifter/",
+      "/da/opskrifter-til-frokost-og-aftensmad/", "/da/dessert-opskrifter/",
+      "/da/om-os/", "/da/kontakt-os/",
+    ],
+  },
+  rema1000: {
+    continuationSelectors: ["a.sr-only[href]"],
+  },
+};
+
+const LEGACY_SITEMAP_DISCOVERY_OVERRIDES: Record<
+  string,
+  SitemapDiscoveryStrategy
+> = {
+  bobedre: {
+    followPatterns: ["contenthub_composite"],
+    skipUrlFragments: [
+      "/opskrifter/hovedret?", "/opskrifter/dessert?", "/opskrifter/forret?",
+      "/opskrifter/julemad?", "/opskrifter/drinks?", "/opskrifter/bagvaerk?",
+      "/opskrifter/tilbehoer?", "/opskrifter/grill?", "/opskrifter/temaer?",
+      "/opskrifter/brunch?",
+    ],
+  },
+  christinaskoekken: {
+    followPatterns: [],
+    skipUrlFragments: [
+      "/opskrifter-med/", "/tag/", "/category/", "/page/", "/kontakt/",
+      "/om-", "/privatlivspolitik/",
+    ],
+  },
+  frederikkewaerens: {
+    followPatterns: [],
+    skipUrlFragments: [
+      "/opskrifter/", "/category/", "/tag/", "/page/", "/kontakt/",
+      "/om-", "/privatlivspolitik/",
+    ],
+  },
+  iform: { followPatterns: ["contenthub_composite"], skipUrlFragments: [] },
+  kikkoman: { followPatterns: ["sitemap=recipes"], skipUrlFragments: [] },
+  madsvin: {
+    followPatterns: [],
+    skipUrlFragments: [
+      "/category/", "/tag/", "/page/", "/author/", "/om-madsvin/",
+      "/kontakt/", "/privatlivspolitik/", "/nyhedsbrev/", "/samarbejde/",
+      "/kogebog/", "/opskrifter/", "/kategori/",
+    ],
+  },
+  mariavestergaard: {
+    followPatterns: [],
+    skipUrlFragments: [
+      "/category/", "/tag/", "/page/", "/author/", "/om-mig/", "/om/",
+      "/kontakt/", "/privatlivspolitik/", "/samarbejde/", "/opskrifter/",
+    ],
+  },
+  micadeli: { followPatterns: ["post-sitemap\\.xml$"], skipUrlFragments: [] },
+  nogetiovnen: {
+    followPatterns: ["post-sitemap"],
+    skipUrlFragments: [
+      "/category/", "/tag/", "/page/", "/author/", "/om-mig/", "/om-os/",
+      "/kontakt/", "/privatlivspolitik/", "/samarbejde/", "/nyhedsbrev/",
+      "/cookie/", "/opskrifter/",
+    ],
+  },
+  sundpaabudget: {
+    followPatterns: [],
+    skipUrlFragments: [
+      "/single-ugeplan-", "/sund-madplan-", "/vegetarisk-madplan-",
+      "/flexitarisk-madplan-", "/basislager/",
+    ],
+  },
+};
+
 const LEGACY_DISCOVERY_OVERRIDES: Partial<
   Record<
     string,
@@ -2861,6 +3003,19 @@ export const DANISH_JSONLD_SOURCES: DanishJsonLdSource[] =
       ...LEGACY_DEFAULT_REQUEST_SETTINGS,
       ...LEGACY_REQUEST_SETTING_OVERRIDES[source.id],
     },
+    ...(source.discovery === "listing"
+      ? {
+          listingDiscovery: {
+            ...LEGACY_LISTING_DISCOVERY_DEFAULT,
+            ...LEGACY_LISTING_DISCOVERY_OVERRIDES[source.id],
+          },
+        }
+      : {
+          sitemapDiscovery: LEGACY_SITEMAP_DISCOVERY_OVERRIDES[source.id] ?? {
+            followPatterns: [],
+            skipUrlFragments: [],
+          },
+        }),
   }));
 
 /** Legacy normalized Mongo documents identify their producer by source_site. */

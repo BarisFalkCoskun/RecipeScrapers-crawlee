@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { randomUUID } from "node:crypto";
 import { Readable } from "node:stream";
-import { CheerioCrawler, Configuration, ProxyConfiguration } from "crawlee";
+import { CheerioCrawler, Configuration, ProxyConfiguration, RequestQueue } from "crawlee";
 import {
   DANISH_JSONLD_OBSERVED_HTTP_ERROR_STATUS_CODES,
   executeDanishJsonLdSource,
@@ -14,6 +14,52 @@ import type { DanishJsonLdSource } from "../../src/danish-jsonld/source-registry
 import type { DanishJsonLdVpnTransport } from "../../src/danish-jsonld/vpn-transport.js";
 
 describe("dedicated Danish JSON-LD runner", () => {
+  it("drops both dedicated attempt queues and reports a drop failure without replacing the source outcome", async () => {
+    const originalDrop = RequestQueue.prototype.drop;
+    let drops = 0;
+    const drop = vi.spyOn(RequestQueue.prototype, "drop").mockImplementation(async function () {
+      const dropNumber = ++drops;
+      await originalDrop.call(this);
+      if (dropNumber === 1) throw new Error("fixture queue drop failed");
+    });
+    const diagnostics: Array<{ event: string; data: Record<string, unknown> }> = [];
+    const source: DanishJsonLdSource = {
+      id: "queue-cleanup-fixture", domain: "fixture.invalid", allowedDomains: ["fixture.invalid"],
+      legacySpider: "QueueCleanupFixtureSpider", legacyFamily: "JsonLdListingSpider",
+      discovery: "listing", sitemapUrls: [], startUrls: [], recipeUrlPatterns: ["/opskrifter/"],
+      fetchMode: "cheerio",
+      requestSettings: { delaySeconds: 0, rateLimitPerMinute: null, maxConcurrency: 1, maxRetries: 0 },
+      requireCompleteJsonLd: true, migrationState: "configured", latestScrapyOutcome: "not_audited",
+    };
+
+    try {
+      const result = await executeDanishJsonLdSource({
+        source,
+        store: {} as CrawlStore & RecipeDocumentV2Store,
+        crawlRunId: "queue-cleanup-run",
+        crawlAttemptId: `queue-cleanup-${randomUUID()}`,
+        maxPages: 5,
+        diagnosticSink: (event) => diagnostics.push(event),
+      });
+
+      expect(drop).toHaveBeenCalledTimes(2);
+      expect(result.outcome).toEqual({
+        sourceId: "queue-cleanup-fixture",
+        outcome: "no_data",
+        outcomeReasons: ["no-recipe-candidates"],
+      });
+      expect(diagnostics).toContainEqual(expect.objectContaining({
+        event: "queue-cleanup-failed",
+        data: expect.objectContaining({
+          queue: "cheerio",
+          error: "fixture queue drop failed",
+        }),
+      }));
+    } finally {
+      drop.mockRestore();
+    }
+  });
+
   it("routes every blocked status through response diagnostics", () => {
     expect(DANISH_JSONLD_OBSERVED_HTTP_ERROR_STATUS_CODES).toEqual([
       401, 403, 429, 526,
