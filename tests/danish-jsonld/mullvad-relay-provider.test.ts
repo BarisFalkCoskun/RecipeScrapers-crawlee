@@ -1,7 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   MullvadRelayProvider,
+  parseMullvadVerification,
   type MullvadRelay,
+  type MullvadVerificationResult,
 } from "../../src/danish-jsonld/mullvad-relay-provider.js";
 
 const RELAYS: MullvadRelay[] = [
@@ -61,12 +63,20 @@ function createProvider(options: {
   relays?: MullvadRelay[];
   country?: string;
   now?: () => number;
-  verifyRelay?: (relay: MullvadRelay) => Promise<boolean>;
+  verifyRelay?: (relay: MullvadRelay) => Promise<MullvadVerificationResult>;
+  openBridge?: (relay: MullvadRelay) => Promise<{
+    proxyUrl: string;
+    close(): Promise<void>;
+  }>;
 }) {
   let bridgeSequence = 0;
   const closed: string[] = [];
   const verifyRelay = vi.fn(
-    options.verifyRelay ?? (async () => true)
+    options.verifyRelay ?? (async (relay) => ({
+      mullvadExitIp: true,
+      countryCode: relay.country_code,
+      hostname: relay.hostname,
+    }))
   );
   const provider = new MullvadRelayProvider({
     country: options.country,
@@ -76,19 +86,40 @@ function createProvider(options: {
     readCache: async () => [],
     writeCache: async () => undefined,
     verifyRelay,
-    openBridge: async (relay) => {
+    openBridge: options.openBridge ?? (async (relay) => {
       bridgeSequence += 1;
       const id = `${relay.hostname}:${bridgeSequence}`;
       return {
         proxyUrl: `http://127.0.0.1:${4100 + bridgeSequence}`,
         close: async () => { closed.push(id); },
       };
-    },
+    }),
   });
   return { provider, verifyRelay, closed };
 }
 
 describe("Mullvad relay provider", () => {
+  it("models authoritative Mullvad exit fields in snake_case and camelCase", () => {
+    expect(parseMullvadVerification({
+      mullvad_exit_ip: true,
+      country_code: "dk",
+      mullvad_exit_ip_hostname: "dk-cph-wg-001",
+    })).toMatchObject({
+      mullvadExitIp: true,
+      countryCode: "dk",
+      hostname: "dk-cph-wg-001",
+    });
+    expect(parseMullvadVerification({
+      mullvadExitIp: true,
+      exitCountryCode: "se",
+      exitHostname: "se-sto-wg-001",
+    })).toMatchObject({
+      mullvadExitIp: true,
+      countryCode: "se",
+      hostname: "se-sto-wg-001",
+    });
+  });
+
   it("filters to active WireGuard SOCKS relays in the requested country and verifies the lease", async () => {
     const { provider, verifyRelay } = createProvider({ country: "DK" });
 
@@ -156,12 +187,114 @@ describe("Mullvad relay provider", () => {
   it("returns no lease when every eligible relay fails verification", async () => {
     const { provider, verifyRelay } = createProvider({
       country: "dk",
-      verifyRelay: async () => false,
+      verifyRelay: async () => ({ mullvadExitIp: false }),
     });
     await provider.initialize();
 
     await expect(provider.acquire("request-a")).resolves.toBeNull();
     expect(verifyRelay).toHaveBeenCalledTimes(3);
+  });
+
+  it("rejects and cools a relay when authoritative exit country and hostname mismatch", async () => {
+    const { provider, verifyRelay } = createProvider({
+      country: "dk",
+      relays: RELAYS.slice(0, 1),
+      verifyRelay: async () => ({
+        mullvadExitIp: true,
+        countryCode: "se",
+        hostname: "se-sto-wg-001",
+      }),
+    });
+    await provider.initialize();
+
+    await expect(provider.acquire("request-a")).resolves.toBeNull();
+    await expect(provider.acquire("request-b")).resolves.toBeNull();
+    expect(verifyRelay).toHaveBeenCalledOnce();
+  });
+
+  it("releases a healthy relay without cooldown for sustained sequential reuse", async () => {
+    const { provider, closed } = createProvider({
+      country: "dk",
+      relays: RELAYS.slice(0, 1),
+    });
+    await provider.initialize();
+
+    for (let index = 0; index < 6; index += 1) {
+      const lease = await provider.acquire(`request-${index}`);
+      expect(lease?.relayLabel).toBe("dk-cph-wg-001");
+      await provider.release(`request-${index}`);
+    }
+
+    expect(closed).toHaveLength(6);
+    expect(new Set(closed).size).toBe(6);
+  });
+
+  it("serializes concurrent rotations without orphaning either replaced bridge", async () => {
+    const opened: string[] = [];
+    const closed: string[] = [];
+    const { provider } = createProvider({
+      country: "dk",
+      openBridge: async (relay) => {
+        const id = `${relay.hostname}:${opened.length + 1}`;
+        opened.push(id);
+        await Promise.resolve();
+        return {
+          proxyUrl: `http://127.0.0.1:${4400 + opened.length}`,
+          close: async () => { closed.push(id); },
+        };
+      },
+    });
+    await provider.initialize();
+    await provider.acquire("request-a");
+
+    const rotations = await Promise.all([
+      provider.rotate("request-a"),
+      provider.rotate("request-a"),
+    ]);
+    await provider.cleanup();
+
+    expect(rotations.map((lease) => lease?.relayLabel)).toEqual([
+      "dk-cph-wg-002",
+      "dk-cph-wg-003",
+    ]);
+    expect(opened).toHaveLength(3);
+    expect(closed.sort()).toEqual(opened.sort());
+  });
+
+  it("waits for an in-flight rotation before cleanup closes its new bridge", async () => {
+    let releaseSecondBridge!: () => void;
+    const secondBridgeGate = new Promise<void>((resolve) => {
+      releaseSecondBridge = resolve;
+    });
+    const opened: string[] = [];
+    const closed: string[] = [];
+    const { provider } = createProvider({
+      country: "dk",
+      relays: RELAYS.slice(0, 2),
+      openBridge: async (relay) => {
+        const id = relay.hostname;
+        opened.push(id);
+        if (opened.length === 2) await secondBridgeGate;
+        return {
+          proxyUrl: `http://127.0.0.1:${4500 + opened.length}`,
+          close: async () => { closed.push(id); },
+        };
+      },
+    });
+    await provider.initialize();
+    await provider.acquire("request-a");
+
+    const rotation = provider.rotate("request-a");
+    await Promise.resolve();
+    const cleanup = provider.cleanup();
+    let cleanupFinished = false;
+    void cleanup.then(() => { cleanupFinished = true; });
+    await Promise.resolve();
+    expect(cleanupFinished).toBe(false);
+
+    releaseSecondBridge();
+    await Promise.all([rotation, cleanup]);
+    expect(closed.sort()).toEqual(opened.sort());
   });
 
   it("falls back to the cached relay document when the API fetch fails", async () => {
@@ -171,7 +304,11 @@ describe("Mullvad relay provider", () => {
       fetchRelays: async () => { throw new Error("fixture API unavailable"); },
       readCache: async () => RELAYS,
       writeCache,
-      verifyRelay: async () => true,
+      verifyRelay: async (relay) => ({
+        mullvadExitIp: true,
+        countryCode: relay.country_code,
+        hostname: relay.hostname,
+      }),
       openBridge: async () => ({
         proxyUrl: "http://127.0.0.1:4200",
         close: async () => undefined,

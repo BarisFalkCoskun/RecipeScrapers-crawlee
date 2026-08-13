@@ -42,6 +42,7 @@ export interface DanishJsonLdVpnTransport {
     sessionId: string;
     error: unknown;
   }): Promise<VpnRotationDecision>;
+  release(sessionId: string): Promise<void>;
   cleanup(): Promise<void>;
 }
 
@@ -51,8 +52,10 @@ export class MullvadVpnTransport implements DanishJsonLdVpnTransport {
   private readonly diagnosticSink?: (event: MullvadRelayDiagnostic) => void;
   private readonly rotations = new Map<string, number>();
   private readonly consecutiveTransportFailures = new Map<string, number>();
+  private readonly sessionOperations = new Map<string, Promise<void>>();
   private initialized = false;
   private preflightAvailable = false;
+  private closing = false;
 
   constructor(options: {
     provider: MullvadRelayProvider;
@@ -66,23 +69,28 @@ export class MullvadVpnTransport implements DanishJsonLdVpnTransport {
           throw new Error("Mullvad VPN transport has not been initialized");
         }
         const sessionId = readRequestSessionId(options?.request);
-        let lease: MullvadRelayLease | null;
-        if (this.preflightAvailable) {
-          this.preflightAvailable = false;
-          lease = await this.provider.rebind(PREFLIGHT_SESSION_ID, sessionId);
-        } else {
-          lease = await this.provider.acquire(sessionId);
-        }
-        if (!lease) {
-          throw new Error("No verified Mullvad relay is available for the request");
-        }
-        return lease.proxyUrl;
+        return this.runSessionOperation(sessionId, async () => {
+          let lease: MullvadRelayLease | null;
+          if (this.preflightAvailable) {
+            this.preflightAvailable = false;
+            lease = await this.provider.rebind(PREFLIGHT_SESSION_ID, sessionId);
+          } else {
+            lease = await this.provider.acquire(sessionId);
+          }
+          if (!lease) {
+            throw new Error(
+              "No verified Mullvad relay is available for the request"
+            );
+          }
+          return lease.proxyUrl;
+        });
       },
     });
   }
 
   async initialize(): Promise<void> {
     try {
+      this.closing = false;
       await this.provider.initialize();
       const preflight = await this.provider.acquire(PREFLIGHT_SESSION_ID);
       if (!preflight) throw new Error("No verified Mullvad relay is available");
@@ -103,16 +111,20 @@ export class MullvadVpnTransport implements DanishJsonLdVpnTransport {
     statusCode: number;
     body: string;
   }): Promise<VpnRotationDecision> {
-    this.consecutiveTransportFailures.delete(input.sessionId);
-    const reason = [403, 429, 526].includes(input.statusCode)
-      ? `http-${input.statusCode}`
-      : input.statusCode >= 200 && input.statusCode < 400 &&
-          EXPLICIT_BLOCK_PATTERN.test(input.body.slice(0, 20_000))
-        ? "explicit-block"
-        : undefined;
-    return reason
-      ? this.rotate(input.sessionId, reason)
-      : noRotation();
+    return this.runSessionOperation(input.sessionId, async () => {
+      this.consecutiveTransportFailures.delete(input.sessionId);
+      const explicitBlock =
+        ![401, 404].includes(input.statusCode) &&
+        EXPLICIT_BLOCK_PATTERN.test(input.body.slice(0, 20_000));
+      const reason = [403, 429, 526].includes(input.statusCode)
+        ? `http-${input.statusCode}`
+        : explicitBlock
+          ? "explicit-block"
+          : undefined;
+      return reason
+        ? this.rotateLocked(input.sessionId, reason)
+        : noRotation();
+    });
   }
 
   async handleFailure(input: {
@@ -120,30 +132,44 @@ export class MullvadVpnTransport implements DanishJsonLdVpnTransport {
     error: unknown;
   }): Promise<VpnRotationDecision> {
     if (input.error instanceof VpnRotationRetryError) return noRotation();
-    if (isApplicationFailure(input.error)) return noRotation();
-    if (isProxyFailure(input.error)) {
-      this.consecutiveTransportFailures.delete(input.sessionId);
-      return this.rotate(input.sessionId, "proxy-failure");
-    }
-    if (!isTransportFailure(input.error)) return noRotation();
+    return this.runSessionOperation(input.sessionId, async () => {
+      if (isApplicationFailure(input.error)) return noRotation();
+      if (isProxyFailure(input.error)) {
+        this.consecutiveTransportFailures.delete(input.sessionId);
+        return this.rotateLocked(input.sessionId, "proxy-failure");
+      }
+      if (!isTransportFailure(input.error)) return noRotation();
 
-    const failures =
-      (this.consecutiveTransportFailures.get(input.sessionId) ?? 0) + 1;
-    this.consecutiveTransportFailures.set(input.sessionId, failures);
-    if (failures < REPEATED_TRANSPORT_FAILURES) return noRotation();
-    this.consecutiveTransportFailures.delete(input.sessionId);
-    return this.rotate(input.sessionId, "repeated-transport-failure");
+      const failures =
+        (this.consecutiveTransportFailures.get(input.sessionId) ?? 0) + 1;
+      this.consecutiveTransportFailures.set(input.sessionId, failures);
+      if (failures < REPEATED_TRANSPORT_FAILURES) return noRotation();
+      this.consecutiveTransportFailures.delete(input.sessionId);
+      return this.rotateLocked(input.sessionId, "repeated-transport-failure");
+    });
+  }
+
+  async release(sessionId: string): Promise<void> {
+    await this.runSessionOperation(sessionId, async () => {
+      await this.provider.release(sessionId);
+      this.rotations.delete(sessionId);
+      this.consecutiveTransportFailures.delete(sessionId);
+      this.emit("vpn-request-lease-released", { reason: "request-terminal" });
+    });
   }
 
   async cleanup(): Promise<void> {
+    this.closing = true;
+    await Promise.allSettled([...this.sessionOperations.values()]);
     this.initialized = false;
     this.preflightAvailable = false;
     this.rotations.clear();
     this.consecutiveTransportFailures.clear();
     await this.provider.cleanup();
+    this.sessionOperations.clear();
   }
 
-  private async rotate(
+  private async rotateLocked(
     sessionId: string,
     reason: string
   ): Promise<VpnRotationDecision> {
@@ -170,6 +196,25 @@ export class MullvadVpnTransport implements DanishJsonLdVpnTransport {
 
   private emit(event: string, data: Record<string, unknown>): void {
     this.diagnosticSink?.({ event, data });
+  }
+
+  private runSessionOperation<T>(
+    sessionId: string,
+    operation: () => Promise<T>
+  ): Promise<T> {
+    if (this.closing) {
+      return Promise.reject(new Error("Mullvad VPN transport is closing"));
+    }
+    const previous = this.sessionOperations.get(sessionId) ?? Promise.resolve();
+    const result = previous.catch(() => undefined).then(operation);
+    const tail = result.then(() => undefined, () => undefined);
+    this.sessionOperations.set(sessionId, tail);
+    void tail.then(() => {
+      if (this.sessionOperations.get(sessionId) === tail) {
+        this.sessionOperations.delete(sessionId);
+      }
+    });
+    return result;
   }
 }
 

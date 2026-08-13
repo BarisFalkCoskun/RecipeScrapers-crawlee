@@ -143,6 +143,16 @@ export async function executeDanishJsonLdSource(
       }),
   });
   const session = new DanishJsonLdSourceSession({ ...input, diagnosticSink });
+  const sourceVpnSessions = new Set<string>();
+  const releaseVpnRequest = async (
+    userData: Record<string, unknown>
+  ): Promise<void> => {
+    if (!input.vpnTransport) return;
+    const sessionId = vpnSessionId(userData);
+    if (!sourceVpnSessions.has(sessionId)) return;
+    await input.vpnTransport.release(sessionId);
+    sourceVpnSessions.delete(sessionId);
+  };
   try {
   const queueKey = sanitizeStorageKey(input.crawlAttemptId);
   const [cheerioQueue, playwrightQueue] = await Promise.all([
@@ -152,28 +162,31 @@ export async function executeDanishJsonLdSource(
 
   const enqueue = async (
     queue: RequestQueue,
-    requests: DanishJsonLdRequest[]
+    requests: DanishJsonLdRequest[],
+    fetchMode: "cheerio" | "playwright"
   ): Promise<void> => {
     if (requests.length === 0) return;
     await queue.addRequestsBatched(
-      requests.map((request) => ({
-        url: request.url,
-        uniqueKey: `${request.kind}:${request.url}`,
-        label: request.kind,
-        userData: {
-          kind: request.kind,
-          sourceId: input.source.id,
-          ...(input.vpnTransport
-            ? {
-                vpnSessionId: requestVpnSessionId(
-                  input.source.id,
-                  request.kind,
-                  request.url
-                ),
-              }
-            : {}),
-        },
-      })),
+      requests.map((request) => {
+        const requestSessionId = input.vpnTransport
+          ? requestVpnSessionId(
+              input.source.id,
+              `${fetchMode}:${request.kind}`,
+              request.url
+            )
+          : undefined;
+        if (requestSessionId) sourceVpnSessions.add(requestSessionId);
+        return {
+          url: request.url,
+          uniqueKey: `${request.kind}:${request.url}`,
+          label: request.kind,
+          userData: {
+            kind: request.kind,
+            sourceId: input.source.id,
+            ...(requestSessionId ? { vpnSessionId: requestSessionId } : {}),
+          },
+        };
+      }),
       { waitForAllRequestsToBeAdded: true }
     );
   };
@@ -182,15 +195,15 @@ export async function executeDanishJsonLdSource(
     playwrightRequests: DanishJsonLdRequest[];
   }) => {
     await Promise.all([
-      enqueue(cheerioQueue, routes.cheerioRequests),
-      enqueue(playwrightQueue, routes.playwrightRequests),
+      enqueue(cheerioQueue, routes.cheerioRequests, "cheerio"),
+      enqueue(playwrightQueue, routes.playwrightRequests, "playwright"),
     ]);
   };
 
   const initial = initialRequests(input.source);
   await Promise.all([
-    enqueue(cheerioQueue, initial.cheerioRequests),
-    enqueue(playwrightQueue, initial.playwrightRequests),
+    enqueue(cheerioQueue, initial.cheerioRequests, "cheerio"),
+    enqueue(playwrightQueue, initial.playwrightRequests, "playwright"),
   ]);
 
   const cheerioCrawler = createDanishJsonLdCheerioCrawler({
@@ -225,6 +238,7 @@ export async function executeDanishJsonLdSource(
         );
       }
       await route(routes);
+      await releaseVpnRequest(context.request.userData);
     },
     crawlerOptions: {
       requestQueue: cheerioQueue,
@@ -253,6 +267,7 @@ export async function executeDanishJsonLdSource(
           error,
         });
         if (!allowRetry) request.noRetry = true;
+        if (request.noRetry) await releaseVpnRequest(request.userData);
       },
       failedRequestHandler: async (
         { request }: CheerioCrawlingContext,
@@ -266,6 +281,7 @@ export async function executeDanishJsonLdSource(
           statusCode: parseHttpStatus(error, request.errorMessages),
           error,
         });
+        await releaseVpnRequest(request.userData);
       },
     },
   });
@@ -302,6 +318,7 @@ export async function executeDanishJsonLdSource(
         );
       }
       await route(routes);
+      await releaseVpnRequest(context.request.userData);
     },
     crawlerOptions: {
       requestQueue: playwrightQueue,
@@ -327,6 +344,7 @@ export async function executeDanishJsonLdSource(
           error,
         });
         if (!allowRetry) request.noRetry = true;
+        if (request.noRetry) await releaseVpnRequest(request.userData);
       },
       failedRequestHandler: async (
         { request }: PlaywrightCrawlingContext,
@@ -340,6 +358,7 @@ export async function executeDanishJsonLdSource(
           statusCode: parseHttpStatus(error, request.errorMessages),
           error,
         });
+        await releaseVpnRequest(request.userData);
       },
       launchContext: { launchOptions: { headless: true } },
     },
@@ -385,6 +404,15 @@ export async function executeDanishJsonLdSource(
   };
   } catch (error) {
     throw new SourceExecutionFailure(error, session.observation);
+  } finally {
+    if (input.vpnTransport) {
+      await Promise.allSettled(
+        [...sourceVpnSessions].map((sessionId) =>
+          input.vpnTransport?.release(sessionId)
+        )
+      );
+      sourceVpnSessions.clear();
+    }
   }
 }
 

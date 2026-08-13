@@ -30,6 +30,13 @@ export interface MullvadRelayLease {
   proxyUrl: string;
 }
 
+export interface MullvadVerificationResult {
+  mullvadExitIp: boolean;
+  countryCode?: string;
+  country?: string;
+  hostname?: string;
+}
+
 export interface MullvadRelayDiagnostic {
   event: string;
   data: Record<string, unknown>;
@@ -47,7 +54,7 @@ export interface MullvadRelayProviderOptions {
   fetchRelays: () => Promise<unknown>;
   readCache: () => Promise<unknown>;
   writeCache: (relays: unknown) => Promise<void>;
-  verifyRelay: (relay: MullvadRelay) => Promise<boolean>;
+  verifyRelay: (relay: MullvadRelay) => Promise<MullvadVerificationResult>;
   openBridge: (relay: MullvadRelay) => Promise<RelayBridge>;
   diagnosticSink?: (event: MullvadRelayDiagnostic) => void;
 }
@@ -60,13 +67,11 @@ export class MullvadRelayProvider {
   private readonly activeBySession = new Map<string, ActiveLease>();
   private readonly activeRelayLabels = new Set<string>();
   private readonly reservedRelayLabels = new Set<string>();
-  private readonly pendingBySession = new Map<
-    string,
-    Promise<MullvadRelayLease | null>
-  >();
+  private readonly sessionOperations = new Map<string, Promise<void>>();
   private readonly cooldownUntil = new Map<string, number>();
   private readonly usedBySession = new Map<string, Set<string>>();
   private relays: MullvadRelay[] = [];
+  private closing = false;
 
   constructor(options: MullvadRelayProviderOptions) {
     this.options = options;
@@ -76,6 +81,7 @@ export class MullvadRelayProvider {
   }
 
   async initialize(): Promise<void> {
+    this.closing = false;
     let document: unknown;
     try {
       document = await this.options.fetchRelays();
@@ -104,15 +110,11 @@ export class MullvadRelayProvider {
   }
 
   async acquire(sessionId: string): Promise<MullvadRelayLease | null> {
-    const existing = this.activeBySession.get(sessionId);
-    if (existing) return publicLease(existing);
-    const pending = this.pendingBySession.get(sessionId);
-    if (pending) return pending;
-    const acquisition = this.acquireFresh(sessionId).finally(() => {
-      this.pendingBySession.delete(sessionId);
+    return this.runSessionOperation(sessionId, async () => {
+      const existing = this.activeBySession.get(sessionId);
+      if (existing) return publicLease(existing);
+      return this.acquireFresh(sessionId);
     });
-    this.pendingBySession.set(sessionId, acquisition);
-    return acquisition;
   }
 
   async rebind(
@@ -120,45 +122,58 @@ export class MullvadRelayProvider {
     toSessionId: string
   ): Promise<MullvadRelayLease | null> {
     if (fromSessionId === toSessionId) return this.acquire(toSessionId);
-    const existing = this.activeBySession.get(toSessionId);
-    if (existing) return publicLease(existing);
-    const lease = this.activeBySession.get(fromSessionId);
-    if (!lease) return this.acquire(toSessionId);
-    this.activeBySession.delete(fromSessionId);
-    this.activeBySession.set(toSessionId, lease);
-    const used = this.usedBySession.get(fromSessionId) ??
-      new Set([lease.relayLabel]);
-    this.usedBySession.delete(fromSessionId);
-    this.usedBySession.set(toSessionId, used);
-    return publicLease(lease);
+    return this.runSessionOperation(toSessionId, async () => {
+      const existing = this.activeBySession.get(toSessionId);
+      if (existing) return publicLease(existing);
+      const lease = this.activeBySession.get(fromSessionId);
+      if (!lease) return this.acquireFresh(toSessionId);
+      this.activeBySession.delete(fromSessionId);
+      this.activeBySession.set(toSessionId, lease);
+      const used = this.usedBySession.get(fromSessionId) ??
+        new Set([lease.relayLabel]);
+      this.usedBySession.delete(fromSessionId);
+      this.usedBySession.set(toSessionId, used);
+      return publicLease(lease);
+    });
   }
 
   async rotate(sessionId: string): Promise<MullvadRelayLease | null> {
-    const current = this.activeBySession.get(sessionId);
-    if (current) {
+    return this.runSessionOperation(sessionId, async () => {
+      const current = this.activeBySession.get(sessionId);
+      if (current) {
+        this.activeBySession.delete(sessionId);
+        this.activeRelayLabels.delete(current.relayLabel);
+        this.cooldownUntil.set(current.relayLabel, this.now() + this.cooldownMs);
+        await this.closeBridge(current);
+      }
+      return this.acquireFresh(sessionId);
+    });
+  }
+
+  async release(sessionId: string): Promise<void> {
+    await this.runSessionOperation(sessionId, async () => {
+      const current = this.activeBySession.get(sessionId);
+      this.usedBySession.delete(sessionId);
+      if (!current) return;
       this.activeBySession.delete(sessionId);
       this.activeRelayLabels.delete(current.relayLabel);
-      this.cooldownUntil.set(current.relayLabel, this.now() + this.cooldownMs);
-      try {
-        await current.bridge.close();
-      } catch {
-        this.emit("vpn-relay-bridge-close-failed", {
-          relayLabel: current.relayLabel,
-          country: current.country,
-        });
-      }
-    }
-    return this.acquireFresh(sessionId);
+      await this.closeBridge(current);
+      this.emit("vpn-relay-released", {
+        relayLabel: current.relayLabel,
+        country: current.country,
+      });
+    });
   }
 
   async cleanup(): Promise<void> {
-    await Promise.allSettled(this.pendingBySession.values());
+    this.closing = true;
+    await Promise.allSettled([...this.sessionOperations.values()]);
     const leases = [...this.activeBySession.values()];
     this.activeBySession.clear();
     this.activeRelayLabels.clear();
     this.reservedRelayLabels.clear();
-    await Promise.allSettled(leases.map((lease) => lease.bridge.close()));
-    this.pendingBySession.clear();
+    await Promise.allSettled(leases.map((lease) => this.closeBridge(lease)));
+    this.sessionOperations.clear();
     this.cooldownUntil.clear();
     this.usedBySession.clear();
     this.relays = [];
@@ -175,18 +190,30 @@ export class MullvadRelayProvider {
       used.add(relayLabel);
       this.reservedRelayLabels.add(relayLabel);
 
-      let verified = false;
+      let verification: MullvadVerificationResult = { mullvadExitIp: false };
       try {
-        verified = await this.options.verifyRelay(relay);
+        verification = await this.options.verifyRelay(relay);
       } catch {
-        verified = false;
+        verification = { mullvadExitIp: false };
       }
+      const verified = verificationMatchesRelay(
+        verification,
+        relay,
+        this.country
+      );
       if (!verified) {
         this.reservedRelayLabels.delete(relayLabel);
         this.cooldownUntil.set(relayLabel, this.now() + this.cooldownMs);
         this.emit("vpn-relay-verification-failed", {
           relayLabel,
           country: relay.country_code.toLowerCase(),
+          reason: verification.mullvadExitIp
+            ? "exit-identity-mismatch"
+            : "not-mullvad-exit",
+          verifiedCountry: boundedValue(
+            verification.countryCode ?? verification.country
+          ),
+          verifiedRelayLabel: boundedValue(verification.hostname),
         });
         continue;
       }
@@ -237,6 +264,36 @@ export class MullvadRelayProvider {
   private emit(event: string, data: Record<string, unknown>): void {
     this.options.diagnosticSink?.({ event, data });
   }
+
+  private async closeBridge(lease: ActiveLease): Promise<void> {
+    try {
+      await lease.bridge.close();
+    } catch {
+      this.emit("vpn-relay-bridge-close-failed", {
+        relayLabel: lease.relayLabel,
+        country: lease.country,
+      });
+    }
+  }
+
+  private runSessionOperation<T>(
+    sessionId: string,
+    operation: () => Promise<T>
+  ): Promise<T> {
+    if (this.closing) {
+      return Promise.reject(new Error("Mullvad relay provider is closing"));
+    }
+    const previous = this.sessionOperations.get(sessionId) ?? Promise.resolve();
+    const result = previous.catch(() => undefined).then(operation);
+    const tail = result.then(() => undefined, () => undefined);
+    this.sessionOperations.set(sessionId, tail);
+    void tail.then(() => {
+      if (this.sessionOperations.get(sessionId) === tail) {
+        this.sessionOperations.delete(sessionId);
+      }
+    });
+    return result;
+  }
 }
 
 export function createDefaultMullvadRelayProvider(options: {
@@ -281,10 +338,10 @@ export function createDefaultMullvadRelayProvider(options: {
 async function verifyMullvadRelay(
   relay: MullvadRelay,
   timeoutMs: number
-): Promise<boolean> {
+): Promise<MullvadVerificationResult> {
   const agent = new SocksProxyAgent(socksUrl(relay), { timeout: timeoutMs });
   try {
-    return await new Promise<boolean>((resolve) => {
+    return await new Promise<MullvadVerificationResult>((resolve) => {
       const request = https.request(
         {
           hostname: "am.i.mullvad.net",
@@ -301,20 +358,24 @@ async function verifyMullvadRelay(
           });
           response.on("end", () => {
             try {
-              const parsed = JSON.parse(body) as { mullvad_exit_ip?: unknown };
-              resolve(
-                response.statusCode === 200 && parsed.mullvad_exit_ip === true
-              );
+              const parsed = JSON.parse(body) as Record<string, unknown>;
+              const verification = parseMullvadVerification(parsed);
+              resolve({
+                ...verification,
+                mullvadExitIp:
+                  response.statusCode === 200 &&
+                  verification.mullvadExitIp,
+              });
             } catch {
-              resolve(false);
+              resolve({ mullvadExitIp: false });
             }
           });
         }
       );
-      request.on("error", () => resolve(false));
+      request.on("error", () => resolve({ mullvadExitIp: false }));
       request.on("timeout", () => {
         request.destroy();
-        resolve(false);
+        resolve({ mullvadExitIp: false });
       });
       request.end();
     });
@@ -368,6 +429,66 @@ function parseRelays(document: unknown): MullvadRelay[] {
   });
 }
 
+export function parseMullvadVerification(
+  document: Record<string, unknown>
+): MullvadVerificationResult {
+  return {
+    mullvadExitIp:
+      document["mullvad_exit_ip"] === true ||
+      document["mullvadExitIp"] === true,
+    countryCode: firstString(document, [
+      "country_code",
+      "countryCode",
+      "exit_country_code",
+      "exitCountryCode",
+    ]),
+    country: firstString(document, ["country", "exit_country", "exitCountry"]),
+    hostname: firstString(document, [
+      "mullvad_exit_ip_hostname",
+      "mullvadExitIpHostname",
+      "exit_hostname",
+      "exitHostname",
+      "hostname",
+    ]),
+  };
+}
+
+function verificationMatchesRelay(
+  verification: MullvadVerificationResult,
+  relay: MullvadRelay,
+  requestedCountry: string | undefined
+): boolean {
+  if (!verification.mullvadExitIp) return false;
+  if (!requestedCountry) return true;
+
+  const signals: boolean[] = [];
+  const countryCode = verification.countryCode?.trim().toLowerCase();
+  if (countryCode) signals.push(countryCode === requestedCountry);
+  const shortCountry = verification.country?.trim().toLowerCase();
+  if (shortCountry && /^[a-z]{2}$/u.test(shortCountry)) {
+    signals.push(shortCountry === requestedCountry);
+  }
+  const hostname = verification.hostname?.trim().toLowerCase();
+  if (hostname) {
+    signals.push(
+      hostname === relay.hostname.toLowerCase() &&
+      hostname.startsWith(`${requestedCountry}-`)
+    );
+  }
+  return signals.length > 0 && signals.every(Boolean);
+}
+
+function firstString(
+  document: Record<string, unknown>,
+  keys: string[]
+): string | undefined {
+  for (const key of keys) {
+    const value = document[key];
+    if (typeof value === "string" && value.trim()) return value;
+  }
+  return undefined;
+}
+
 function publicLease(lease: ActiveLease): MullvadRelayLease {
   return {
     relayLabel: lease.relayLabel,
@@ -382,6 +503,14 @@ function boundedRelayLabel(relay: MullvadRelay): string {
     .replace(/[^a-z0-9._-]+/gu, "-")
     .replace(/^-+|-+$/gu, "");
   return (normalized || "mullvad-relay").slice(0, 64);
+}
+
+function boundedValue(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9._ -]+/gu, "-")
+    .slice(0, 64);
 }
 
 function normalizeCountry(country: string | undefined): string | undefined {

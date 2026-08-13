@@ -149,6 +149,7 @@ describe("dedicated Danish JSON-LD runner", () => {
       eligible: false,
       exhausted: false,
     }));
+    const release = vi.fn(async () => undefined);
     const vpnTransport: DanishJsonLdVpnTransport = {
       proxyConfiguration: new ProxyConfiguration({
         newUrlFunction: async () => "http://127.0.0.1:4311",
@@ -157,6 +158,7 @@ describe("dedicated Danish JSON-LD runner", () => {
       cleanup: async () => undefined,
       handleResponse,
       handleFailure,
+      release,
     };
     const diagnostics: Array<{ event: string; data: Record<string, unknown> }> = [];
     const source: DanishJsonLdSource = {
@@ -198,10 +200,164 @@ describe("dedicated Danish JSON-LD runner", () => {
         handleResponse.mock.calls[1][0].sessionId
       );
       expect(handleFailure).toHaveBeenCalledOnce();
+      expect(release).toHaveBeenCalledOnce();
+      expect(release).toHaveBeenCalledWith(
+        handleResponse.mock.calls[1][0].sessionId
+      );
       expect(diagnostics).toContainEqual(expect.objectContaining({
         event: "http-response",
         data: expect.objectContaining({ statusCode: 403, snippet: "access denied fixture" }),
       }));
+    } finally {
+      requestFunction.mockRestore();
+      configuration.set("memoryMbytes", previousMemoryMbytes);
+    }
+  });
+
+  it("releases both handled and unprocessed request leases when the source cap stops the crawl", async () => {
+    const configuration = Configuration.getGlobalConfig();
+    const previousMemoryMbytes = configuration.get("memoryMbytes");
+    configuration.set("memoryMbytes", 1_024);
+    const requestFunction = vi.spyOn(
+      CheerioCrawler.prototype as unknown as {
+        _requestFunction: () => Promise<unknown>;
+      },
+      "_requestFunction"
+    ).mockImplementation(async () => Object.assign(Readable.from(["<html></html>"]), {
+      statusCode: 200,
+      statusMessage: "OK",
+      headers: { "content-type": "text/html; charset=utf-8" },
+      rawHeaders: [],
+      trailers: {},
+      rawTrailers: [],
+      httpVersion: "1.1",
+      httpVersionMajor: 1,
+      httpVersionMinor: 1,
+      complete: true,
+      url: "https://fixture.invalid/listing-a",
+    }));
+    const release = vi.fn(async () => undefined);
+    const noRotation = async () => ({
+      rotated: false,
+      eligible: false,
+      exhausted: false,
+    });
+    const vpnTransport: DanishJsonLdVpnTransport = {
+      proxyConfiguration: new ProxyConfiguration({
+        newUrlFunction: async () => "http://127.0.0.1:4312",
+      }),
+      initialize: async () => undefined,
+      cleanup: async () => undefined,
+      handleResponse: noRotation,
+      handleFailure: noRotation,
+      release,
+    };
+    const source: DanishJsonLdSource = {
+      id: "cap-release-fixture",
+      domain: "fixture.invalid",
+      allowedDomains: ["fixture.invalid"],
+      legacySpider: "CapReleaseFixtureSpider",
+      legacyFamily: "JsonLdListingSpider",
+      discovery: "listing",
+      sitemapUrls: [],
+      startUrls: [
+        "https://fixture.invalid/listing-a",
+        "https://fixture.invalid/listing-b",
+      ],
+      recipeUrlPatterns: ["/opskrifter/"],
+      fetchMode: "cheerio",
+      requestSettings: {
+        delaySeconds: 0,
+        rateLimitPerMinute: null,
+        maxConcurrency: 1,
+        maxRetries: 0,
+      },
+      requireCompleteJsonLd: true,
+      migrationState: "configured",
+      latestScrapyOutcome: "not_audited",
+    };
+
+    try {
+      await executeDanishJsonLdSource({
+        source,
+        store: {} as CrawlStore & RecipeDocumentV2Store,
+        crawlRunId: "cap-release-run",
+        crawlAttemptId: `cap-release-${randomUUID()}`,
+        maxPages: 1,
+        vpnTransport,
+      });
+
+      expect(requestFunction).toHaveBeenCalledOnce();
+      expect(release).toHaveBeenCalledTimes(2);
+      expect(new Set(release.mock.calls.map(([sessionId]) => sessionId)).size).toBe(2);
+    } finally {
+      requestFunction.mockRestore();
+      configuration.set("memoryMbytes", previousMemoryMbytes);
+    }
+  });
+
+  it("releases the request lease after a terminal transport failure", async () => {
+    const configuration = Configuration.getGlobalConfig();
+    const previousMemoryMbytes = configuration.get("memoryMbytes");
+    configuration.set("memoryMbytes", 1_024);
+    const requestFunction = vi.spyOn(
+      CheerioCrawler.prototype as unknown as {
+        _requestFunction: () => Promise<unknown>;
+      },
+      "_requestFunction"
+    ).mockRejectedValue(Object.assign(new Error("fixture socket failed"), {
+      code: "ECONNRESET",
+    }));
+    const release = vi.fn(async () => undefined);
+    const noRotation = async () => ({
+      rotated: false,
+      eligible: false,
+      exhausted: false,
+    });
+    const vpnTransport: DanishJsonLdVpnTransport = {
+      proxyConfiguration: new ProxyConfiguration({
+        newUrlFunction: async () => "http://127.0.0.1:4313",
+      }),
+      initialize: async () => undefined,
+      cleanup: async () => undefined,
+      handleResponse: noRotation,
+      handleFailure: noRotation,
+      release,
+    };
+    const source: DanishJsonLdSource = {
+      id: "terminal-release-fixture",
+      domain: "fixture.invalid",
+      allowedDomains: ["fixture.invalid"],
+      legacySpider: "TerminalReleaseFixtureSpider",
+      legacyFamily: "JsonLdListingSpider",
+      discovery: "listing",
+      sitemapUrls: [],
+      startUrls: ["https://fixture.invalid/listing"],
+      recipeUrlPatterns: ["/opskrifter/"],
+      fetchMode: "cheerio",
+      requestSettings: {
+        delaySeconds: 0,
+        rateLimitPerMinute: null,
+        maxConcurrency: 1,
+        maxRetries: 0,
+      },
+      requireCompleteJsonLd: true,
+      migrationState: "configured",
+      latestScrapyOutcome: "not_audited",
+    };
+
+    try {
+      await executeDanishJsonLdSource({
+        source,
+        store: {} as CrawlStore & RecipeDocumentV2Store,
+        crawlRunId: "terminal-release-run",
+        crawlAttemptId: `terminal-release-${randomUUID()}`,
+        maxPages: 3,
+        vpnTransport,
+      });
+
+      expect(requestFunction).toHaveBeenCalledOnce();
+      expect(release).toHaveBeenCalledOnce();
     } finally {
       requestFunction.mockRestore();
       configuration.set("memoryMbytes", previousMemoryMbytes);

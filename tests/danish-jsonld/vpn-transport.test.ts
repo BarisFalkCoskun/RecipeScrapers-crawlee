@@ -24,7 +24,11 @@ function createTransport() {
     fetchRelays: async () => RELAYS,
     readCache: async () => [],
     writeCache: async () => undefined,
-    verifyRelay: async () => true,
+    verifyRelay: async (relay) => ({
+      mullvadExitIp: true,
+      countryCode: relay.country_code,
+      hostname: relay.hostname,
+    }),
     openBridge: async () => ({
       proxyUrl: `http://127.0.0.1:${++port}`,
       close: async () => undefined,
@@ -46,7 +50,7 @@ describe("Mullvad VPN transport", () => {
       fetchRelays: async () => RELAYS.slice(0, 1),
       readCache: async () => [],
       writeCache: async () => undefined,
-      verifyRelay: async () => false,
+      verifyRelay: async () => ({ mullvadExitIp: false }),
       openBridge: async () => { throw new Error("bridge must not open"); },
     });
     const transport = new MullvadVpnTransport({ provider });
@@ -108,6 +112,23 @@ describe("Mullvad VPN transport", () => {
 
     expect(blocked).toMatchObject({ rotated: true, reason: "explicit-block" });
     expect(proxyFailure).toMatchObject({ rotated: true, reason: "proxy-failure" });
+  });
+
+  it("rotates for an explicit Cloudflare block signature on HTTP 503", async () => {
+    const { transport } = createTransport();
+    await transport.initialize();
+    await transport.proxyConfiguration.newUrl("ignored", {
+      request: requestWithSession("vpn-503-block"),
+    });
+
+    await expect(transport.handleResponse({
+      sessionId: "vpn-503-block",
+      statusCode: 503,
+      body: "Cloudflare challenge: checking your browser",
+    })).resolves.toMatchObject({
+      rotated: true,
+      reason: "explicit-block",
+    });
   });
 
   it("rotates only after a repeated generic transport failure", async () => {
@@ -177,6 +198,114 @@ describe("Mullvad VPN transport", () => {
       exhausted: true,
       reason: "http-429",
     });
+  });
+
+  it("serializes concurrent rotation accounting at the three-rotation cap", async () => {
+    const { transport, events } = createTransport();
+    await transport.initialize();
+    await transport.proxyConfiguration.newUrl("ignored", {
+      request: requestWithSession("vpn-race-cap"),
+    });
+
+    const decisions = await Promise.all(Array.from({ length: 4 }, () =>
+      transport.handleResponse({
+        sessionId: "vpn-race-cap",
+        statusCode: 429,
+        body: "rate limited",
+      })
+    ));
+
+    expect(decisions.filter((decision) => decision.rotated)).toHaveLength(3);
+    expect(decisions.filter((decision) => decision.exhausted)).toHaveLength(1);
+    expect(events.filter((event) => event.event === "vpn-relay-rotated")
+      .map((event) => event.data.rotationCount)).toEqual([1, 2, 3]);
+  });
+
+  it("releases one-relay leases between sustained sequential requests", async () => {
+    let port = 4600;
+    const closed: number[] = [];
+    const provider = new MullvadRelayProvider({
+      country: "dk",
+      fetchRelays: async () => RELAYS.slice(0, 1),
+      readCache: async () => [],
+      writeCache: async () => undefined,
+      verifyRelay: async (relay) => ({
+        mullvadExitIp: true,
+        countryCode: relay.country_code,
+        hostname: relay.hostname,
+      }),
+      openBridge: async () => {
+        const bridgePort = ++port;
+        return {
+          proxyUrl: `http://127.0.0.1:${bridgePort}`,
+          close: async () => { closed.push(bridgePort); },
+        };
+      },
+    });
+    const transport = new MullvadVpnTransport({ provider });
+    await transport.initialize();
+
+    for (let index = 0; index < 5; index += 1) {
+      const sessionId = `vpn-sequential-${index}`;
+      await expect(transport.proxyConfiguration.newUrl("ignored", {
+        request: requestWithSession(sessionId),
+      })).resolves.toMatch(/^http:\/\/127\.0\.0\.1:/u);
+      await transport.release(sessionId);
+    }
+    await transport.cleanup();
+
+    expect(closed).toHaveLength(5);
+    expect(new Set(closed).size).toBe(5);
+  });
+
+  it("waits for an in-flight transport rotation before cleanup returns", async () => {
+    let releaseRotatedBridge!: () => void;
+    const rotatedBridgeGate = new Promise<void>((resolve) => {
+      releaseRotatedBridge = resolve;
+    });
+    const opened: number[] = [];
+    const closed: number[] = [];
+    const provider = new MullvadRelayProvider({
+      country: "dk",
+      fetchRelays: async () => RELAYS.slice(0, 2),
+      readCache: async () => [],
+      writeCache: async () => undefined,
+      verifyRelay: async (relay) => ({
+        mullvadExitIp: true,
+        countryCode: relay.country_code,
+        hostname: relay.hostname,
+      }),
+      openBridge: async () => {
+        const id = opened.length + 1;
+        opened.push(id);
+        if (id === 2) await rotatedBridgeGate;
+        return {
+          proxyUrl: `http://127.0.0.1:${4700 + id}`,
+          close: async () => { closed.push(id); },
+        };
+      },
+    });
+    const transport = new MullvadVpnTransport({ provider });
+    await transport.initialize();
+    await transport.proxyConfiguration.newUrl("ignored", {
+      request: requestWithSession("vpn-cleanup-race"),
+    });
+
+    const rotation = transport.handleResponse({
+      sessionId: "vpn-cleanup-race",
+      statusCode: 429,
+      body: "rate limited",
+    });
+    await Promise.resolve();
+    const cleanup = transport.cleanup();
+    let cleanupFinished = false;
+    void cleanup.then(() => { cleanupFinished = true; });
+    await Promise.resolve();
+    expect(cleanupFinished).toBe(false);
+
+    releaseRotatedBridge();
+    await Promise.all([rotation, cleanup]);
+    expect(closed.sort()).toEqual(opened.sort());
   });
 
   it("emits bounded relay metadata without proxy endpoints", async () => {
