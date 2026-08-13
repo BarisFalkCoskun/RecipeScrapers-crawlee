@@ -54,7 +54,10 @@ describe("Danish JSON-LD source registry", () => {
     expect(byId.get("sundpaabudget")?.migrationState).toBe("blocked");
     expect(byId.get("klinksgaard")?.migrationState).toBe("blocked");
     expect(byId.get("netto")?.migrationState).toBe("deferred");
-    expect(byId.get("madrejsen")?.migrationState).toBe("deferred");
+    expect(byId.get("madrejsen")?.migrationState).toBe("configured");
+    expect(byId.get("madrejsen")?.deferOrBlockReason).toMatch(
+      /defer no longer holds/u
+    );
     expect(DANISH_JSONLD_SOURCES.filter((source) => source.migrationState === "cutover")).toHaveLength(0);
   });
 

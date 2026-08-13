@@ -3047,9 +3047,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason: "Recipe JSON-LD omits required ingredients and instructions",
   },
   madrejsen: {
-    migrationState: "deferred",
-    latestCanary: PILOT_CANARY_RUN,
-    deferOrBlockReason: "No complete Recipe JSON-LD after Playwright rendering",
+    migrationState: "configured",
+    latestCanary:
+      "2026-08-13T20-29-02.915Z-attempt-d7ffd5a2-91b1-45a2-a24a-66eb6a5ff4b0",
+    deferOrBlockReason:
+      "Uncapped rerun persisted 138 complete Recipe JSON-LD recipes, so the defer no longer holds; access blocks still left discovery incomplete",
   },
 };
 
