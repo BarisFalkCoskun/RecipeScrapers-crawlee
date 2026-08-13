@@ -2,7 +2,7 @@ import * as cheerio from "cheerio";
 import { Binary } from "mongodb";
 import { gzipSync } from "node:zlib";
 import type { RecipeDocumentV2Store, CrawlStore } from "../storage/store.js";
-import type { SourceRunOutcomeSummary } from "../types.js";
+import type { PageDocument, SourceRunOutcomeSummary } from "../types.js";
 import { EXTRACTOR_VERSION } from "../config.js";
 import { canonicalizeUrl, normalizeDomain } from "../utils/canonicalize.js";
 import { hashHtml } from "../utils/hash.js";
@@ -270,7 +270,8 @@ export class DanishJsonLdSourceSession {
       ...(response.fetchMode === "playwright" ? ["playwright-js-rendered"] : []),
     ];
 
-    await this.store.upsertPage({
+    const pageContentHash = hashHtml(response.body);
+    const pageDocument: Omit<PageDocument, "_id"> = {
       canonicalUrl,
       domain,
       language: pageLanguage.language,
@@ -293,14 +294,31 @@ export class DanishJsonLdSourceSession {
           ? new Binary(gzipSync(Buffer.from(response.body)))
           : undefined,
       rawJsonLdScripts: gzipJsonLdScripts(extraction.rawScripts),
-      pageContentHash: hashHtml(response.body),
+      pageContentHash,
       discoverySource:
         response.fetchMode === "playwright" ? "playwright-fallback" : "discovered",
       sourceDomain: this.source.domain,
       admissionSignals: ["registry-url-pattern"],
       playwrightFallbackReason: fallbackReason ?? undefined,
       outboundRecipeLinks: [],
-    });
+    };
+    try {
+      await this.store.upsertPage(pageDocument);
+      this.emit("mongo-page-upsert", {
+        canonicalUrl,
+        pageContentHash,
+        operation: "upserted",
+        rawJsonLdScriptCount: extraction.rawScripts.length,
+      });
+    } catch (error) {
+      this.observation.mongoFailures = (this.observation.mongoFailures ?? 0) + 1;
+      this.emit("mongo-failure", {
+        canonicalUrl,
+        operation: "page-upsert",
+        error: error instanceof Error ? error.message : String(error),
+      });
+      throw error;
+    }
 
     for (const rawRecipe of extraction.recipes) {
       const recipeLanguage = detectLanguage({

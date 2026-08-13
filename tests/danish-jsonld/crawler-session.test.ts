@@ -126,6 +126,7 @@ describe("Danish JSON-LD source session", () => {
       gunzipSync(Buffer.from(page?.rawJsonLdScripts?.[0].buffer ?? [])).toString()
     ).toBe(JSON.stringify(completeRecipe));
     expect(diagnostics.map((event) => event.event)).toContain("playwright-decision");
+    expect(diagnostics.map((event) => event.event)).toContain("mongo-page-upsert");
     expect(diagnostics.map((event) => event.event)).toContain("mongo-upsert");
   });
 
