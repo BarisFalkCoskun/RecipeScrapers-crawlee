@@ -68,6 +68,7 @@ Green evidence:
 - `src/danish-jsonld/diagnostics.ts`
 - `src/danish-jsonld/discovery.ts`
 - `src/danish-jsonld/runner.ts`
+- `src/danish-jsonld/request-cap.ts`
 - `src/danish-jsonld/source-outcome.ts`
 - `src/scripts/crawl-danish-jsonld.ts`
 - `src/types.ts`
@@ -77,19 +78,21 @@ Green evidence:
 - `tests/danish-jsonld/diagnostics.test.ts`
 - `tests/danish-jsonld/discovery.test.ts`
 - `tests/danish-jsonld/runner.test.ts`
+- `tests/danish-jsonld/request-cap.test.ts`
 
 ## Commits
 
 - `2063bb8 feat: run strict Danish JSON-LD crawls`
 - `55f346b fix: audit Danish JSON-LD page upserts`
+- `37cd596 fix: harden Danish JSON-LD crawl lifecycle`
 
 ## Self-review
 
 - The dedicated runner uses separate run/source queue names and deterministic request keys. Render fallback is queued at most once per canonical URL, and V2 source identity remains enforced by `upsertRecipeV2`.
 - Recipe emission is fail-closed: incomplete, malformed, or HTML-only pages persist page evidence but never produce a V2 recipe.
 - Diagnostics never serialize complete response or JSON-LD payloads; exact raw JSON-LD remains in compressed page storage instead.
-- `--max-pages` is enforced at recipe admission and makes discovery incomplete when reached.
-- `--database`, selected sources, maximum pages, and JSON evidence output are active. `--force`, `--vpn`, and `--vpn-country` remain selection/evidence fields; this task did not add queue reset/freshness or VPN transport behavior.
+- `--max-pages` is a hard total handled-request cap across discovery, recipes, retries, and fallback, and makes discovery incomplete when reached.
+- `--database`, selected sources, maximum pages, forced queue freshness, and JSON evidence output are active. VPN flags are rejected until Task 4 provides transport behavior.
 
 ## Blocker / concern
 
@@ -101,3 +104,65 @@ The requested robots invariant is not implemented. The rejected scoped change wo
 - removed `SeedConfig.respectRobotsTxt`, seed values, and `main.ts` runtime aggregation.
 
 Consequently, the existing `npm start` path can still enforce robots from seed settings, and the dedicated factory API can still accept a crawler option override. The dedicated runner itself currently relies on Crawlee's default robots-disabled behavior, but that is not the permanent, tested invariant required by the brief.
+
+## Review fix round 1 — 2026-08-13
+
+Addressed every requested review finding except the separately tool-blocked robots edit.
+
+### Root causes
+
+The review failures reduced to two lifecycle boundaries:
+
+1. Crawlee owned retry/error/cap state while `DanishJsonLdSourceSession` owned evidence and outcomes. Because those states were not shared, non-success HTTP responses, retry attempts, and the global per-source cap could bypass truthful observation.
+2. CLI parsing accepted `--force` and VPN flags before those controls had execution semantics, and `connect()` sat outside cleanup. This made reported controls misleading and made partial connection cleanup unreliable.
+
+### Fixes
+
+- Treat `401`, `403`, `429`, and `526` as observed blocked responses. All four are explicitly delivered to the Cheerio handler instead of being consumed by Crawlee's HTTP-error path. All non-2xx responses stop before discovery/extraction/page/recipe persistence.
+- Preserve terminal failure status parsed from Crawlee errors; blocked terminal failures remain blocked rather than generic failed. Bounded response evidence includes status, retry count, Retry-After, CF-Ray, Server, and snippet when available.
+- Added a shared per-source request budget covering sitemap, listing, recipe, rendered fallback, retries, and terminal failures. Crawlee receives the exact configured cap, never `maxPages + 100`; reaching the cap suppresses further routing and marks discovery incomplete.
+- Hardened string redaction for credentials and secret query parameters inside arbitrary errors/snippets, including full embedded proxy URLs, Authorization/Bearer text, and Cookie/Set-Cookie text.
+- Made `--force` and configured `CRAWL_RUN_ID` produce a fresh attempt identity and fresh queue names. VPN flags now fail before store construction with `--vpn is unsupported until Task 4`.
+- Wrapped connection in cleanup-safe `try/finally`, so `close()` is attempted after partial connection failure.
+- Isolated ordinary per-source exceptions, emitted a bounded `source-failed` event, retained partial observations when available, and continued later sources. Explicit fatal store errors still abort the batch.
+- Restricted Playwright recipe fallback to registry `fetchMode: playwright`, incomplete/malformed JSON-LD scripts, recognized client-render markers, or blocked/client-rendered shell evidence.
+- Added dynamic JSON pagination for `next`, `nextUrl`, `next_url`, `nextPage`, and nested `url`/`href`/`link` forms.
+- Replaced the dedicated run's unconditional robots claim with observed crawler state. If a source fails before crawler construction, the summary reports `robotsEnforced: "unknown"`; otherwise it reports the constructed crawlers' state. The permanent robots-off source/factory edit remains blocked.
+
+### TDD evidence
+
+Red command:
+
+- `npx vitest run tests/danish-jsonld/diagnostics.test.ts tests/danish-jsonld/discovery.test.ts tests/danish-jsonld/crawler-session.test.ts tests/danish-jsonld/runner.test.ts tests/danish-jsonld/cli.test.ts tests/danish-jsonld/request-cap.test.ts`
+  - 6 test files failed: 9 behavior failures plus the intentionally missing request-cap module.
+  - Failures reproduced embedded credential leakage, missing dynamic next links, unconditional Playwright fallback, non-2xx persistence, missing source isolation, unsafe connect cleanup, inactive VPN/force semantics, and absent total cap enforcement.
+- `npx vitest run tests/danish-jsonld/crawler-session.test.ts`
+  - Follow-up red: terminal `429` failure evidence was classified as generic failure rather than blocked.
+- `npx vitest run tests/danish-jsonld/runner.test.ts`
+  - Follow-up red: a fatal store failure was incorrectly isolated and allowed the next source to run.
+- `npx vitest run tests/danish-jsonld/diagnostics.test.ts`
+  - Follow-up red: a bare `token=...` assignment embedded in an arbitrary diagnostic string remained visible.
+- `npx vitest run tests/danish-jsonld/runner.test.ts`
+  - Follow-up red: only `526`, rather than all four blocked statuses, was configured for response-handler diagnostics.
+
+Final green command:
+
+- `npm run build && npm test && git diff --check`
+  - TypeScript build passed.
+  - 30 test files passed, 174 tests passed, 0 failed.
+  - Diff whitespace validation passed.
+
+### Added review coverage
+
+- Literal embedded proxy/auth/cookie/query-secret redaction.
+- All four blocked statuses: `401`, `403`, `429`, `526`.
+- Non-blocking `404` failure and strict no-persistence behavior.
+- Static no-JSON-LD pages do not render without evidence.
+- Ferrero-style dynamic pagination keys.
+- One-request total cap fake and retry-attempt cap behavior.
+- Per-source exception continuation, post-persistence partial outcome, and fatal store abort.
+- VPN rejection, forced/fixed-ID fresh attempts, and partial-connect cleanup.
+
+### Remaining concern
+
+The permanent robots-off edit is still not applied because the patch safety gate rejected removal of existing robots controls and factory override capability. This review round did not circumvent that restriction.
