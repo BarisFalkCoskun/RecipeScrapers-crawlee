@@ -67,8 +67,15 @@ export async function runDanishJsonLdCrawl(input: {
   const outcomes: SourceRunOutcomeSummary[] = [];
   const robotsObservations: Array<boolean | "unknown"> = [];
   const maxPages = input.selection.maxPages ?? Number.MAX_SAFE_INTEGER;
+  const diagnosticOutput = input.diagnosticSink ?? ((event: DanishJsonLdDiagnostic) => {
+    log.info(JSON.stringify(event));
+  });
 
   for (const source of input.selection.sources) {
+    const diagnosticSink = createBudgetedDiagnosticSink({
+      maxEvents: 1_000,
+      sink: diagnosticOutput,
+    });
     try {
       const result = await executeSource({
         source,
@@ -76,7 +83,7 @@ export async function runDanishJsonLdCrawl(input: {
         crawlRunId: input.crawlRunId,
         crawlAttemptId: `${input.crawlRunId}:${source.id}`,
         maxPages,
-        diagnosticSink: input.diagnosticSink,
+        diagnosticSink,
       });
       observations.push(result.observation);
       outcomes.push(result.outcome);
@@ -93,7 +100,7 @@ export async function runDanishJsonLdCrawl(input: {
       observations.push(observation);
       outcomes.push(classifySourceOutcome(observation));
       robotsObservations.push("unknown");
-      input.diagnosticSink?.(
+      diagnosticSink(
         createBoundedDiagnostic("source-failed", {
           sourceId: source.id,
           crawlRunId: input.crawlRunId,
@@ -186,6 +193,7 @@ export async function executeDanishJsonLdSource(
     },
     crawlerOptions: {
       requestQueue: cheerioQueue,
+      useSessionPool: false,
       maxRequestsPerCrawl: input.maxPages,
       ignoreHttpErrorStatusCodes: [
         ...DANISH_JSONLD_OBSERVED_HTTP_ERROR_STATUS_CODES,
@@ -240,6 +248,7 @@ export async function executeDanishJsonLdSource(
     },
     crawlerOptions: {
       requestQueue: playwrightQueue,
+      useSessionPool: false,
       maxRequestsPerCrawl: input.maxPages,
       errorHandler: async (
         { request }: PlaywrightCrawlingContext,

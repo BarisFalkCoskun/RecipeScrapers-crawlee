@@ -53,6 +53,23 @@ describe("Danish JSON-LD diagnostics", () => {
     expect(serialized).toContain("[redacted]");
   });
 
+  it("removes complete embedded proxy endpoints while preserving public URLs", () => {
+    const serialized = JSON.stringify(
+      createBoundedDiagnostic("request-failed", {
+        error:
+          "failed through http://alice:secret@proxy.example:8080/proxy-path?token=abc " +
+          "while fetching https://public.example/visible?safe=1",
+      })
+    );
+
+    expect(serialized).toContain("[proxy-url-redacted]");
+    expect(serialized).not.toContain("alice");
+    expect(serialized).not.toContain("secret");
+    expect(serialized).not.toContain("proxy.example");
+    expect(serialized).not.toContain("proxy-path");
+    expect(serialized).toContain("https://public.example/visible?safe=1");
+  });
+
   it("summarizes JSON-LD wrappers, node types, fields, and leaves without payload values", () => {
     expect(
       inspectJsonLdShape({

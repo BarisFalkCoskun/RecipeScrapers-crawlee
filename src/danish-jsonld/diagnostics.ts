@@ -30,6 +30,7 @@ const MAX_ARRAY_ITEMS = 10;
 const MAX_OBJECT_KEYS = 25;
 const MAX_DEPTH = 4;
 const REDACTED = "[redacted]";
+const PROXY_URL_REDACTED = "[proxy-url-redacted]";
 const SENSITIVE_KEY = /authorization|cookie|credential|password|proxy|secret|token/i;
 
 export function createBoundedDiagnostic(
@@ -135,7 +136,7 @@ function sanitizeValue(value: unknown, depth: number): unknown {
 function sanitizeString(value: string): string {
   const embeddedUrlsRedacted = value.replace(
     /https?:\/\/[^\s"'<>]+/giu,
-    (match) => sanitizeUrl(match)
+    (match) => sanitizeEmbeddedUrl(match)
   );
   const headersRedacted = embeddedUrlsRedacted
     .replace(
@@ -155,6 +156,22 @@ function sanitizeString(value: string): string {
     return boundString(sanitizeUrl(assignmentsRedacted));
   } catch {
     return boundString(assignmentsRedacted);
+  }
+}
+
+function sanitizeEmbeddedUrl(value: string): string {
+  try {
+    const url = new URL(value);
+    if (
+      url.username ||
+      url.password ||
+      /(?:^|\.)proxy(?:\.|$)/iu.test(url.hostname)
+    ) {
+      return PROXY_URL_REDACTED;
+    }
+    return sanitizeUrl(value);
+  } catch {
+    return REDACTED;
   }
 }
 
