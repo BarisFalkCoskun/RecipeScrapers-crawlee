@@ -133,11 +133,27 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
       "incomplete-json-ld",
       "malformed-json-ld",
     ]);
+    expect(result.malformedJsonLdCount).toBe(1);
+    expect(result.incompleteJsonLdCount).toBe(1);
+    expect(result.signals).toContain("malformed-json-ld");
     expect(
       gzipJsonLdScripts(result.rawScripts).map((script) =>
         gunzipSync(script.buffer).toString("utf8")
       )
     ).toEqual(result.rawScripts);
+  });
+
+  it("parses exact JSON-LD script text without decoding HTML entities", () => {
+    const result = extractCompleteJsonLdRecipes(`
+      <script type="application/ld+json">{"@type":"Recipe","name":"Bread &amp; Butter","recipeIngredient":["1 æg"],"recipeInstructions":["Bag."]}</script>
+      <script type="application/ld+json">{"@type":"Recipe","name":"Siger &quot;hej&quot;","recipeIngredient":["2 æg"],"recipeInstructions":["Rør."]}</script>
+    `);
+
+    expect(result.recipes.map((recipe) => recipe["name"])).toEqual([
+      "Bread &amp; Butter",
+      "Siger &quot;hej&quot;",
+    ]);
+    expect(result.malformedJsonLdCount).toBe(0);
   });
 
   it("retains every complete recipe when a page has multiple JSON-LD scripts", () => {

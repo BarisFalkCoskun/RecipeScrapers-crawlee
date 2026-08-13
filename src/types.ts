@@ -98,6 +98,16 @@ export interface RecipeContentMatch {
   sourceRecipeKey: string;
 }
 
+export interface RecipeContentMatchAudit {
+  _id?: ObjectId;
+  contentHash: string;
+  sourceRecipeKeyA: string;
+  sourceRecipeKeyB: string;
+  sourceIdA: string;
+  sourceIdB: string;
+  kind: "same-source" | "cross-source";
+}
+
 /**
  * The migration-only recipe shape. It intentionally coexists with RecipeDocument
  * until the legacy crawler has been cut over.
@@ -142,6 +152,7 @@ export type SourceOutcomeReason =
   | "requests-blocked"
   | "recipe-candidates-discovered"
   | "incomplete-json-ld-rejected"
+  | "malformed-json-ld-rejected"
   | "playwright-failure"
   | "mongo-failure"
   | "discovery-incomplete"

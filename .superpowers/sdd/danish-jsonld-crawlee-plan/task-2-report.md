@@ -80,3 +80,33 @@ V2 therefore uses its own `recipes_v2` migration collection and `upsertRecipeV2`
 - `recipes_v2` is intentionally isolated from the legacy `recipes` collection. The later crawler integration must explicitly call `upsertRecipeV2` and write `rawJsonLdScripts` onto its page document.
 - Outcome classification is pure and typed; crawler counters must be wired into `SourceRunObservation` by the later crawler task.
 - `robotsEnforced: false` is explicit in V2 summary construction; crawler-factory enforcement is intentionally not implemented here.
+
+## Fix round: review findings
+
+### Root-cause diagnostics
+
+The post-review diagnostic identified four concrete sources: JSON-LD was entity-decoded before `JSON.parse`; outcome priority evaluated Mongo failure before checking whether recipes had already persisted; malformed JSON-LD had only a de-duplicated reason and no count observable by source outcomes; and the content-match query occurred before source identity upsert, allowing two concurrent inserts to see an empty set.
+
+### Red/green evidence
+
+`npm test -- tests/danish-jsonld/recipe-document.test.ts tests/danish-jsonld/source-outcome.test.ts tests/storage/mongodb-v2.test.ts`
+
+- Red: 7 failing assertions. Entity parsing changed `&amp;` and made `&quot;` JSON invalid; mixed Mongo/block outcomes became `failed`/`succeeded`; malformed JSON-LD became `no_data`; and a `Promise.all` barrier race produced no content-match audit.
+- Green: 25 tests passed after parsing exact script text, adding malformed/incomplete counts and stable signals, prioritizing persisted work as `partial`, and auditing post-upsert content pairs in a dedicated collection.
+
+### Fix details
+
+- `extractCompleteJsonLdRecipes` now calls `JSON.parse` directly on each exact script body. It exposes `malformedJsonLdCount`, `incompleteJsonLdCount`, and stable `signals`.
+- `rejectedMalformedJsonLd` and `malformed-json-ld-rejected` flow through source outcome classification. A zero-item malformed source is `partial`, never `no_data`.
+- Persisted recipes plus Mongo failure or access blocking are `partial`; zero-item Mongo failure remains `failed`, and zero-item blocked access remains `blocked`.
+- `recipe_content_matches` records canonical source-key pairs with a unique compound index. V2 source identity is written first; all currently matching content is then audited with `$setOnInsert`, making races idempotent. The concurrent `Promise.all` regression test uses a barrier that reproduces the original pre-upsert empty-query race.
+
+### Final verification
+
+- `npm test` — passed: 23 test files / 144 tests.
+- `npm run build` — passed (`tsc`).
+- `git diff --check` — passed.
+
+### Concerns
+
+- The dedicated match audit is the concurrency-safe source of truth. A previously inserted recipe's embedded `contentMatches` is not retroactively updated when a later concurrent peer arrives; consumers needing complete duplicate history should read `recipe_content_matches`.

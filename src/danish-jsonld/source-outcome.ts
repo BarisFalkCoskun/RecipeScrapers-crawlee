@@ -12,6 +12,7 @@ export interface SourceRunObservation {
   blockedRequests?: number;
   discoveredRecipeCandidates?: number;
   rejectedIncompleteJsonLd?: number;
+  rejectedMalformedJsonLd?: number;
   playwrightFailures?: number;
   mongoFailures?: number;
   discoveryComplete: boolean;
@@ -23,6 +24,12 @@ export function classifySourceOutcome(
   const reasons = outcomeReasons(observation);
   const persistedRecipes = observation.persistedRecipes ?? 0;
 
+  if (persistedRecipes > 0 && (hasIncompleteWork(observation) || (observation.blockedRequests ?? 0) > 0)) {
+    return { sourceId: observation.sourceId, outcome: "partial", outcomeReasons: reasons };
+  }
+  if (persistedRecipes > 0) {
+    return { sourceId: observation.sourceId, outcome: "succeeded", outcomeReasons: reasons };
+  }
   if ((observation.mongoFailures ?? 0) > 0) {
     return { sourceId: observation.sourceId, outcome: "failed", outcomeReasons: reasons };
   }
@@ -34,12 +41,6 @@ export function classifySourceOutcome(
   }
   if (persistedRecipes === 0 && (observation.blockedRequests ?? 0) > 0) {
     return { sourceId: observation.sourceId, outcome: "blocked", outcomeReasons: reasons };
-  }
-  if (persistedRecipes > 0 && hasIncompleteWork(observation)) {
-    return { sourceId: observation.sourceId, outcome: "partial", outcomeReasons: reasons };
-  }
-  if (persistedRecipes > 0) {
-    return { sourceId: observation.sourceId, outcome: "succeeded", outcomeReasons: reasons };
   }
   if (hasIncompleteWork(observation) || (observation.discoveredRecipeCandidates ?? 0) > 0) {
     return { sourceId: observation.sourceId, outcome: "partial", outcomeReasons: reasons };
@@ -57,6 +58,7 @@ function hasIncompleteWork(observation: SourceRunObservation): boolean {
   return (
     (observation.failedRequests ?? 0) > 0 ||
     (observation.rejectedIncompleteJsonLd ?? 0) > 0 ||
+    (observation.rejectedMalformedJsonLd ?? 0) > 0 ||
     (observation.playwrightFailures ?? 0) > 0 ||
     (observation.mongoFailures ?? 0) > 0 ||
     !observation.discoveryComplete
@@ -70,6 +72,7 @@ function outcomeReasons(observation: SourceRunObservation): SourceOutcomeReason[
   if ((observation.blockedRequests ?? 0) > 0) reasons.push("requests-blocked");
   if ((observation.discoveredRecipeCandidates ?? 0) > 0) reasons.push("recipe-candidates-discovered");
   if ((observation.rejectedIncompleteJsonLd ?? 0) > 0) reasons.push("incomplete-json-ld-rejected");
+  if ((observation.rejectedMalformedJsonLd ?? 0) > 0) reasons.push("malformed-json-ld-rejected");
   if ((observation.playwrightFailures ?? 0) > 0) reasons.push("playwright-failure");
   if ((observation.mongoFailures ?? 0) > 0) reasons.push("mongo-failure");
   if (!observation.discoveryComplete) reasons.push("discovery-incomplete");

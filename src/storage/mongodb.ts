@@ -5,6 +5,7 @@ import type {
   RecipeDocument,
   RecipeDocumentV2,
   RecipeContentMatch,
+  RecipeContentMatchAudit,
 } from "../types.js";
 import { MONGODB_CONFIG, STORAGE } from "../config.js";
 import type { CrawlStore, RecipeDocumentV2Store } from "./store.js";
@@ -16,6 +17,7 @@ export class RecipeStore implements CrawlStore, RecipeDocumentV2Store {
   private pages!: Collection<PageDocument>;
   private recipes!: Collection<RecipeDocument>;
   private recipesV2!: Collection<RecipeDocumentV2>;
+  private contentMatchAudits!: Collection<RecipeContentMatchAudit>;
   private crawlRuns!: Collection<CrawlRunDocument>;
 
   constructor(uri: string, dbName: string) {
@@ -34,6 +36,9 @@ export class RecipeStore implements CrawlStore, RecipeDocumentV2Store {
     );
     this.recipesV2 = this.db.collection<RecipeDocumentV2>(
       MONGODB_CONFIG.collections.recipesV2
+    );
+    this.contentMatchAudits = this.db.collection<RecipeContentMatchAudit>(
+      MONGODB_CONFIG.collections.recipeContentMatches
     );
     this.crawlRuns = this.db.collection<CrawlRunDocument>(
       MONGODB_CONFIG.collections.crawlRuns
@@ -61,6 +66,10 @@ export class RecipeStore implements CrawlStore, RecipeDocumentV2Store {
     await this.recipesV2.createIndex({ contentHash: 1 });
     await this.recipesV2.createIndex({ sourceId: 1, contentHash: 1 });
     await this.recipesV2.createIndex({ canonicalUrl: 1 });
+    await this.contentMatchAudits.createIndex(
+      { contentHash: 1, sourceRecipeKeyA: 1, sourceRecipeKeyB: 1 },
+      { unique: true }
+    );
 
     await this.crawlRuns.createIndex({ startedAt: -1 });
     await this.crawlRuns.createIndex(
@@ -109,9 +118,39 @@ export class RecipeStore implements CrawlStore, RecipeDocumentV2Store {
     const existing = await this.recipesV2.findOne({
       sourceRecipeKey: recipe.sourceRecipeKey,
     });
-    const contentMatches: RecipeContentMatch[] = (
+    await this.recipesV2.updateOne(
+      { sourceRecipeKey: recipe.sourceRecipeKey },
+      {
+        $set: {
+          ...recipe,
+          createdAt: existing?.createdAt ?? recipe.createdAt,
+          contentMatches: recipe.contentMatches,
+        },
+      },
+      { upsert: true }
+    );
+
+    const contentMatches = this.buildContentMatches(
+      recipe,
       await this.recipesV2.find({ contentHash: recipe.contentHash }).toArray()
-    )
+    );
+    await this.recordContentMatchAudits(recipe, contentMatches);
+    await this.recipesV2.updateOne(
+      { sourceRecipeKey: recipe.sourceRecipeKey },
+      { $set: { contentMatches } }
+    );
+
+    return {
+      operation: existing ? "updated" : "inserted",
+      contentMatches,
+    };
+  }
+
+  private buildContentMatches(
+    recipe: Omit<RecipeDocumentV2, "_id">,
+    matches: RecipeDocumentV2[]
+  ): RecipeContentMatch[] {
+    return matches
       .filter((match) => match.sourceRecipeKey !== recipe.sourceRecipeKey)
       .map((match): RecipeContentMatch => ({
         kind:
@@ -124,23 +163,35 @@ export class RecipeStore implements CrawlStore, RecipeDocumentV2Store {
           `${right.sourceId}:${right.sourceRecipeKey}`
         )
       );
+  }
 
-    await this.recipesV2.updateOne(
-      { sourceRecipeKey: recipe.sourceRecipeKey },
-      {
-        $set: {
-          ...recipe,
-          createdAt: existing?.createdAt ?? recipe.createdAt,
-          contentMatches,
-        },
-      },
-      { upsert: true }
+  private async recordContentMatchAudits(
+    recipe: Omit<RecipeDocumentV2, "_id">,
+    contentMatches: RecipeContentMatch[]
+  ): Promise<void> {
+    await Promise.all(
+      contentMatches.map(async (match) => {
+        const [sourceRecipeKeyA, sourceRecipeKeyB] = [
+          recipe.sourceRecipeKey,
+          match.sourceRecipeKey,
+        ].sort();
+        const isIncomingA = sourceRecipeKeyA === recipe.sourceRecipeKey;
+        await this.contentMatchAudits.updateOne(
+          { contentHash: recipe.contentHash, sourceRecipeKeyA, sourceRecipeKeyB },
+          {
+            $setOnInsert: {
+              contentHash: recipe.contentHash,
+              sourceRecipeKeyA,
+              sourceRecipeKeyB,
+              sourceIdA: isIncomingA ? recipe.sourceId : match.sourceId,
+              sourceIdB: isIncomingA ? match.sourceId : recipe.sourceId,
+              kind: match.kind,
+            },
+          },
+          { upsert: true }
+        );
+      })
     );
-
-    return {
-      operation: existing ? "updated" : "inserted",
-      contentMatches,
-    };
   }
 
   async findPageByUrl(canonicalUrl: string): Promise<PageDocument | null> {

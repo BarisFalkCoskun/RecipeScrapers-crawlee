@@ -11,6 +11,9 @@ export interface CompleteJsonLdExtraction {
   rawScripts: string[];
   recipes: Record<string, unknown>[];
   rejectedReasons: Array<"incomplete-json-ld" | "malformed-json-ld">;
+  incompleteJsonLdCount: number;
+  malformedJsonLdCount: number;
+  signals: Array<"incomplete-json-ld" | "malformed-json-ld">;
 }
 
 export interface BuildRecipeDocumentV2Input {
@@ -38,13 +41,16 @@ export function extractCompleteJsonLdRecipes(
   const rawScripts = extractJsonLdScriptBodies(html);
   const recipes: Record<string, unknown>[] = [];
   const rejectedReasons: CompleteJsonLdExtraction["rejectedReasons"] = [];
+  let incompleteJsonLdCount = 0;
+  let malformedJsonLdCount = 0;
 
   for (const rawScript of rawScripts) {
     let parsed: unknown;
     try {
-      parsed = JSON.parse(decodeJsonEntities(rawScript));
+      parsed = JSON.parse(rawScript);
     } catch {
       rejectedReasons.push("malformed-json-ld");
+      malformedJsonLdCount += 1;
       continue;
     }
 
@@ -53,6 +59,7 @@ export function extractCompleteJsonLdRecipes(
         recipes.push(recipe);
       } else {
         rejectedReasons.push("incomplete-json-ld");
+        incompleteJsonLdCount += 1;
       }
     }
   }
@@ -61,6 +68,9 @@ export function extractCompleteJsonLdRecipes(
     rawScripts,
     recipes,
     rejectedReasons: Array.from(new Set(rejectedReasons)),
+    incompleteJsonLdCount,
+    malformedJsonLdCount,
+    signals: Array.from(new Set(rejectedReasons)),
   };
 }
 
@@ -313,13 +323,4 @@ function firstString(...values: unknown[]): string | undefined {
 
 function cleanText(value: string): string {
   return value.replace(/\s+/gu, " ").trim();
-}
-
-function decodeJsonEntities(raw: string): string {
-  return raw
-    .replace(/&amp;/gu, "&")
-    .replace(/&lt;/gu, "<")
-    .replace(/&gt;/gu, ">")
-    .replace(/&quot;/gu, '"')
-    .replace(/&#39;/gu, "'");
 }
