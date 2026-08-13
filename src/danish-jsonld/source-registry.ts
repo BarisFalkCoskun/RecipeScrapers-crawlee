@@ -3033,8 +3033,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   },
   sundpaabudget: {
     migrationState: "blocked",
-    latestCanary: PILOT_CANARY_RUN,
-    deferOrBlockReason: "HTTP 455 WAF denial on configured sitemaps",
+    latestCanary:
+      "2026-08-13T20-16-36.402Z-attempt-a4793b1a-fbd7-41ba-8841-2aa15bfb0b1d",
+    deferOrBlockReason:
+      "Sitemaps now resolve and recipes persist, but recurring HTTP 454 browser checks put relays into cooldown often enough that an uncapped crawl cannot finish",
   },
   klinksgaard: {
     migrationState: "blocked",
