@@ -158,11 +158,13 @@ canonical URL set. Legacy Mongo reads use the registry's effective
 
 Both summary schemas must include an explicit empty outcome-reasons array for a
 successful source: Scrapy `outcome_reasons: []`, Crawlee `outcomeReasons: []`.
-Missing, non-array, non-string, or non-empty reasons are fatal. The inspected
-current Scrapy `SpiderRunResult.to_dict()` summary does **not** emit
-`outcome_reasons`; update that upstream summary schema before treating a Scrapy
-shadow run as comparable. The comparator deliberately does not infer an empty
-array from `outcome`, `blocked_reason`, or `error_message`.
+Missing, non-array, non-string, or non-empty reasons are fatal. Current Scrapy
+`SpiderRunResult.to_dict()` emits `outcome_reasons`, and `run_all_spiders`
+serializes each result through that method, so a fresh summary from the command
+above supplies the required field. Older saved summaries may predate that
+schema; regenerate them rather than using them as shadow evidence. The
+comparator deliberately does not infer an empty array from `outcome`,
+`blocked_reason`, or `error_message`.
 
 ## Storage and consumer contract
 

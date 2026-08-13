@@ -275,3 +275,22 @@ npm test -- tests/danish-jsonld/migration-compare.test.ts tests/danish-jsonld/so
 passed with 49 tests. Final verification passed: `npm run build`, `npm test`
 (**33 files / 234 tests**), and `git diff --check`. No DB, network, or crawl
 action was run.
+
+## Fix round 4 — correct current Scrapy summary contract
+
+Corrected the operations guide and this report after verifying the current
+Scrapy checkout at commit `b51018d`. Six possible explanations for the reported
+schema mismatch were checked: a missing `to_dict()` field, runner serialization
+bypassing `to_dict()`, post-serialization field removal, a different command
+path, an outdated checkout inspection, and an older saved summary. The current
+source rules out the first four: `SpiderRunResult.to_dict()` emits
+`outcome_reasons`, and `run_all_spiders` writes each result via `to_dict()`.
+
+The most likely source of the obsolete blocker was an outdated source snapshot
+or saved evidence generated before the field existed. A fresh summary produced
+by the documented shadow command includes the required field; older summaries
+must be regenerated. The comparator remains intentionally fail-closed and does
+not infer missing outcome reasons from other fields.
+
+This round changes documentation only. No code, tests, DB, network, or crawl
+action was run.
