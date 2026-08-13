@@ -41,6 +41,8 @@ export interface PageDocument {
   extractionSignals: string[];
   recipeCount: number;
   rawHtml?: Binary;
+  /** Exact application/ld+json script bodies, each compressed independently. */
+  rawJsonLdScripts?: Binary[];
   pageContentHash: string;
   discoverySource: DiscoverySource;
   sourceDomain?: string;
@@ -67,6 +69,94 @@ export interface RecipeDocument {
   extractionSignals: string[];
   contentHash: string;
   sourceHash: string;
+}
+
+export interface NormalizedRecipeInstruction {
+  position: number;
+  text: string;
+}
+
+export interface NormalizedRecipeV2 {
+  title: string;
+  description?: string;
+  ingredients: string[];
+  instructions: NormalizedRecipeInstruction[];
+  prepMinutes?: number;
+  cookMinutes?: number;
+  totalMinutes?: number;
+  yieldText?: string;
+  imageUrls: string[];
+  categories: string[];
+  cuisines: string[];
+  keywords: string[];
+  nutrition?: Record<string, unknown>;
+}
+
+export interface RecipeContentMatch {
+  kind: "same-source" | "cross-source";
+  sourceId: string;
+  sourceRecipeKey: string;
+}
+
+/**
+ * The migration-only recipe shape. It intentionally coexists with RecipeDocument
+ * until the legacy crawler has been cut over.
+ */
+export interface RecipeDocumentV2 {
+  _id?: ObjectId;
+  schemaVersion: 2;
+  sourceId: string;
+  sourceRecipeKey: string;
+  canonicalUrl: string;
+  pageUrl: string;
+  crawlRunId: string;
+  crawlAttemptId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  extractedAt: Date;
+  language: string;
+  languageConfidence: number;
+  languageSignals: string[];
+  extractionMethod: "json-ld";
+  extractorVersion: string;
+  extractionConfidence: number;
+  extractionSignals: string[];
+  /** The exact JSON.parse result, never the normalized copy. */
+  rawRecipe: Record<string, unknown>;
+  normalized: NormalizedRecipeV2;
+  sourceHash: string;
+  contentHash: string;
+  contentMatches: RecipeContentMatch[];
+}
+
+export type SourceRunOutcome =
+  | "succeeded"
+  | "partial"
+  | "blocked"
+  | "no_data"
+  | "failed";
+
+export type SourceOutcomeReason =
+  | "recipes-persisted"
+  | "failed-requests"
+  | "requests-blocked"
+  | "recipe-candidates-discovered"
+  | "incomplete-json-ld-rejected"
+  | "playwright-failure"
+  | "mongo-failure"
+  | "discovery-incomplete"
+  | "no-recipe-candidates";
+
+export interface SourceRunOutcomeSummary {
+  sourceId: string;
+  outcome: SourceRunOutcome;
+  outcomeReasons: SourceOutcomeReason[];
+}
+
+export interface DanishJsonLdRunSummary {
+  /** Deliberately explicit until crawler-factory enforcement is added. */
+  robotsEnforced: false;
+  sourceOutcomes: SourceRunOutcomeSummary[];
 }
 
 export interface ExtractionResult {

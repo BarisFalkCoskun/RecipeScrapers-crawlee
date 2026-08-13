@@ -84,6 +84,7 @@ describe("RecipeStore", () => {
   let crawlRuns: StoredRun[];
   let pagesCollection: FakeCollection<StoredPage>;
   let recipesCollection: FakeCollection<StoredRecipe>;
+  let recipesV2Collection: FakeCollection<StoredRecipe>;
   let crawlRunsCollection: FakeCollection<StoredRun>;
   let fakeDb: { dropDatabase: ReturnType<typeof vi.fn> };
   let fakeClient: { close: ReturnType<typeof vi.fn> };
@@ -114,6 +115,7 @@ describe("RecipeStore", () => {
 
     pagesCollection = new FakeCollection(pages, (doc) => doc.canonicalUrl);
     recipesCollection = new FakeCollection(recipes, (doc) => doc.contentHash);
+    recipesV2Collection = new FakeCollection([], (doc) => doc.contentHash);
     crawlRunsCollection = new FakeCollection(
       crawlRuns,
       (doc) => doc.startedAt.toISOString()
@@ -124,6 +126,7 @@ describe("RecipeStore", () => {
       client: typeof fakeClient;
       pages: FakeCollection<StoredPage>;
       recipes: FakeCollection<StoredRecipe>;
+      recipesV2: FakeCollection<StoredRecipe>;
       crawlRuns: FakeCollection<StoredRun>;
     }).pages = pagesCollection;
 
@@ -134,6 +137,15 @@ describe("RecipeStore", () => {
       recipes: FakeCollection<StoredRecipe>;
       crawlRuns: FakeCollection<StoredRun>;
     }).recipes = recipesCollection;
+
+    (store as never as {
+      db: typeof fakeDb;
+      client: typeof fakeClient;
+      pages: FakeCollection<StoredPage>;
+      recipes: FakeCollection<StoredRecipe>;
+      recipesV2: FakeCollection<StoredRecipe>;
+      crawlRuns: FakeCollection<StoredRun>;
+    }).recipesV2 = recipesV2Collection;
 
     (store as never as {
       db: typeof fakeDb;

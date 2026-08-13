@@ -126,6 +126,7 @@ export const MONGODB_CONFIG = {
   collections: {
     pages: "pages",
     recipes: "recipes",
+    recipesV2: "recipes_v2",
     crawlRuns: "crawl_runs",
   },
 } as const;

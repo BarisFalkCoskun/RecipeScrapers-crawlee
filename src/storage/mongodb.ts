@@ -3,16 +3,19 @@ import type {
   CrawlRunDocument,
   PageDocument,
   RecipeDocument,
+  RecipeDocumentV2,
+  RecipeContentMatch,
 } from "../types.js";
 import { MONGODB_CONFIG, STORAGE } from "../config.js";
-import type { CrawlStore } from "./store.js";
+import type { CrawlStore, RecipeDocumentV2Store } from "./store.js";
 
-export class RecipeStore implements CrawlStore {
+export class RecipeStore implements CrawlStore, RecipeDocumentV2Store {
   private client: MongoClient;
   private dbName: string;
   private db!: Db;
   private pages!: Collection<PageDocument>;
   private recipes!: Collection<RecipeDocument>;
+  private recipesV2!: Collection<RecipeDocumentV2>;
   private crawlRuns!: Collection<CrawlRunDocument>;
 
   constructor(uri: string, dbName: string) {
@@ -28,6 +31,9 @@ export class RecipeStore implements CrawlStore {
     );
     this.recipes = this.db.collection<RecipeDocument>(
       MONGODB_CONFIG.collections.recipes
+    );
+    this.recipesV2 = this.db.collection<RecipeDocumentV2>(
+      MONGODB_CONFIG.collections.recipesV2
     );
     this.crawlRuns = this.db.collection<CrawlRunDocument>(
       MONGODB_CONFIG.collections.crawlRuns
@@ -50,6 +56,11 @@ export class RecipeStore implements CrawlStore {
     await this.recipes.createIndex({ language: 1, domain: 1 });
     await this.recipes.createIndex({ language: 1, extractedAt: -1 });
     await this.recipes.createIndex({ pageUrl: 1 });
+
+    await this.recipesV2.createIndex({ sourceRecipeKey: 1 }, { unique: true });
+    await this.recipesV2.createIndex({ contentHash: 1 });
+    await this.recipesV2.createIndex({ sourceId: 1, contentHash: 1 });
+    await this.recipesV2.createIndex({ canonicalUrl: 1 });
 
     await this.crawlRuns.createIndex({ startedAt: -1 });
     await this.crawlRuns.createIndex(
@@ -87,6 +98,49 @@ export class RecipeStore implements CrawlStore {
       }
       throw err;
     }
+  }
+
+  async upsertRecipeV2(
+    recipe: Omit<RecipeDocumentV2, "_id">
+  ): Promise<{
+    operation: "inserted" | "updated";
+    contentMatches: RecipeContentMatch[];
+  }> {
+    const existing = await this.recipesV2.findOne({
+      sourceRecipeKey: recipe.sourceRecipeKey,
+    });
+    const contentMatches: RecipeContentMatch[] = (
+      await this.recipesV2.find({ contentHash: recipe.contentHash }).toArray()
+    )
+      .filter((match) => match.sourceRecipeKey !== recipe.sourceRecipeKey)
+      .map((match): RecipeContentMatch => ({
+        kind:
+          match.sourceId === recipe.sourceId ? "same-source" : "cross-source",
+        sourceId: match.sourceId,
+        sourceRecipeKey: match.sourceRecipeKey,
+      }))
+      .sort((left, right) =>
+        `${left.sourceId}:${left.sourceRecipeKey}`.localeCompare(
+          `${right.sourceId}:${right.sourceRecipeKey}`
+        )
+      );
+
+    await this.recipesV2.updateOne(
+      { sourceRecipeKey: recipe.sourceRecipeKey },
+      {
+        $set: {
+          ...recipe,
+          createdAt: existing?.createdAt ?? recipe.createdAt,
+          contentMatches,
+        },
+      },
+      { upsert: true }
+    );
+
+    return {
+      operation: existing ? "updated" : "inserted",
+      contentMatches,
+    };
   }
 
   async findPageByUrl(canonicalUrl: string): Promise<PageDocument | null> {
