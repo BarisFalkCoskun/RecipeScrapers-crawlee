@@ -128,7 +128,9 @@ function sanitizeValue(value: unknown, depth: number): unknown {
     return bounded;
   }
   if (value !== null && typeof value === "object") {
-    return sanitizeRecord(value as Record<string, unknown>, depth);
+    const record = value as Record<string, unknown>;
+    if (isProxyProvenanceRecord(record)) return PROXY_URL_REDACTED;
+    return sanitizeRecord(record, depth);
   }
   return boundString(String(value));
 }
@@ -136,7 +138,10 @@ function sanitizeValue(value: unknown, depth: number): unknown {
 function sanitizeString(value: string): string {
   const embeddedUrlsRedacted = value.replace(
     /https?:\/\/[^\s"'<>]+/giu,
-    (match) => sanitizeEmbeddedUrl(match)
+    (match, offset: number) => sanitizeEmbeddedUrl(
+      match,
+      hasProxyContext(value, offset)
+    )
   );
   const headersRedacted = embeddedUrlsRedacted
     .replace(
@@ -159,10 +164,11 @@ function sanitizeString(value: string): string {
   }
 }
 
-function sanitizeEmbeddedUrl(value: string): string {
+function sanitizeEmbeddedUrl(value: string, proxyContext: boolean): string {
   try {
     const url = new URL(value);
     if (
+      proxyContext ||
       url.username ||
       url.password ||
       /(?:^|\.)proxy(?:\.|$)/iu.test(url.hostname)
@@ -173,6 +179,24 @@ function sanitizeEmbeddedUrl(value: string): string {
   } catch {
     return REDACTED;
   }
+}
+
+function hasProxyContext(value: string, urlOffset: number): boolean {
+  const prefix = value.slice(Math.max(0, urlOffset - 96), urlOffset);
+  return (
+    /\bproxy(?:\s+(?:url|endpoint|server|via|at|through|using))*\s*[:=]?\s*$/iu
+      .test(prefix) ||
+    /\bconnect\s+(?:E[A-Z0-9_]*|connection\s+refused)\s*$/iu.test(prefix)
+  );
+}
+
+function isProxyProvenanceRecord(value: Record<string, unknown>): boolean {
+  return Object.entries(value).some(
+    ([key, nested]) =>
+      /provenance|transport|kind|type|source/iu.test(key) &&
+      typeof nested === "string" &&
+      /\bproxy\b/iu.test(nested)
+  );
 }
 
 function sanitizeUrl(value: string): string {

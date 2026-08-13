@@ -70,6 +70,42 @@ describe("Danish JSON-LD diagnostics", () => {
     expect(serialized).toContain("https://public.example/visible?safe=1");
   });
 
+  it("whole-redacts neutral-host URLs in proxy and refused-connect context", () => {
+    const serialized = JSON.stringify(
+      createBoundedDiagnostic("request-failed", {
+        error:
+          "proxy http://gateway.example:8080/proxy-path failed; " +
+          "connect ECONNREFUSED http://edge.vendor.example:3128/; " +
+          "response https://public.example/visible?safe=1",
+      })
+    );
+
+    expect(serialized.match(/\[proxy-url-redacted\]/gu)).toHaveLength(2);
+    expect(serialized).not.toContain("gateway.example");
+    expect(serialized).not.toContain("edge.vendor.example");
+    expect(serialized).not.toContain("proxy-path");
+    expect(serialized).toContain("https://public.example/visible?safe=1");
+  });
+
+  it("whole-redacts structured records declared as proxy provenance", () => {
+    const diagnostic = createBoundedDiagnostic("request-failed", {
+      transport: {
+        provenance: "proxy",
+        endpoint: "http://gateway.example:8080/proxy-path",
+        provider: "vendor-name",
+      },
+      responseUrl: "https://public.example/visible?safe=1",
+    });
+    const serialized = JSON.stringify(diagnostic);
+
+    expect(diagnostic.data.transport).toBe("[proxy-url-redacted]");
+    expect(serialized).not.toContain("gateway.example");
+    expect(serialized).not.toContain("vendor-name");
+    expect(diagnostic.data.responseUrl).toBe(
+      "https://public.example/visible?safe=1"
+    );
+  });
+
   it("summarizes JSON-LD wrappers, node types, fields, and leaves without payload values", () => {
     expect(
       inspectJsonLdShape({
