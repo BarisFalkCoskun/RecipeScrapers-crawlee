@@ -1,8 +1,44 @@
+import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import { executeDanishJsonLdCli } from "../../src/danish-jsonld/cli.js";
 import type { DanishJsonLdRunSummary } from "../../src/types.js";
 
 describe("crawl:danish-jsonld CLI", () => {
+  it("creates missing parent directories before writing JSON evidence", async () => {
+    const temporaryRoot = await mkdtemp(join(tmpdir(), "danish-jsonld-cli-"));
+    const jsonOut = join(temporaryRoot, "nested", "logs", "run.json");
+    const store = {
+      connect: async () => undefined,
+      close: async () => undefined,
+      insertDanishJsonLdRun: async () => undefined,
+    };
+
+    try {
+      await executeDanishJsonLdCli(
+        ["--sources", "arla", "--json-out", jsonOut],
+        {
+          env: {},
+          now: () => new Date("2026-08-13T10:00:00.000Z"),
+          createStore: () => store as never,
+          runCrawl: async () => ({
+            summary: { robotsEnforced: false, sourceOutcomes: [] },
+            observations: [],
+          }),
+          output: () => undefined,
+        }
+      );
+
+      expect(JSON.parse(await readFile(jsonOut, "utf8"))).toMatchObject({
+        selectedSources: ["arla"],
+        summary: { robotsEnforced: false, sourceOutcomes: [] },
+      });
+    } finally {
+      await rm(temporaryRoot, { recursive: true, force: true });
+    }
+  });
+
   it("connects, executes selected sources, writes run evidence, and closes the store", async () => {
     const connect = vi.fn(async () => undefined);
     const close = vi.fn(async () => undefined);

@@ -3,7 +3,8 @@ import type { DanishJsonLdRunSummary } from "../types.js";
 import { RecipeStore } from "../storage/mongodb.js";
 import { MONGODB_CONFIG } from "../config.js";
 import { resolveCrawlRunId } from "../crawl-run.js";
-import { writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
+import { dirname } from "node:path";
 import { randomUUID } from "node:crypto";
 import {
   runDanishJsonLdCrawl,
@@ -35,6 +36,7 @@ export interface DanishJsonLdCliDependencies {
     vpnTransport?: DanishJsonLdVpnTransport;
   }) => Promise<{ summary: DanishJsonLdRunSummary; observations: unknown[] }>;
   createVpnTransport: (country?: string) => DanishJsonLdVpnTransport;
+  mkdir: (path: string, options: { recursive: true }) => Promise<unknown>;
   writeFile: (path: string, data: string, encoding: "utf8") => Promise<unknown>;
   output: (line: string) => void;
 }
@@ -55,6 +57,7 @@ export async function executeDanishJsonLdCli(
         logVpnDiagnostic(event);
       },
     }),
+    mkdir,
     writeFile,
     output: console.log,
     ...dependencies,
@@ -107,6 +110,7 @@ export async function executeDanishJsonLdCli(
     };
     const output = JSON.stringify(evidence, null, 2);
     if (options.jsonOut) {
+      await resolved.mkdir(dirname(options.jsonOut), { recursive: true });
       await resolved.writeFile(options.jsonOut, `${output}\n`, "utf8");
     }
     resolved.output(output);
