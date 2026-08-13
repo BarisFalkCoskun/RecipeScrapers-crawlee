@@ -155,6 +155,7 @@ export type SourceOutcomeReason =
   | "malformed-json-ld-rejected"
   | "playwright-failure"
   | "mongo-failure"
+  | "max-pages-cap-reached"
   | "discovery-incomplete"
   | "no-recipe-candidates";
 

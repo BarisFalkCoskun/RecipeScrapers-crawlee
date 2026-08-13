@@ -1,0 +1,447 @@
+import * as cheerio from "cheerio";
+import { Binary } from "mongodb";
+import { gzipSync } from "node:zlib";
+import type { RecipeDocumentV2Store, CrawlStore } from "../storage/store.js";
+import type { SourceRunOutcomeSummary } from "../types.js";
+import { EXTRACTOR_VERSION } from "../config.js";
+import { canonicalizeUrl, normalizeDomain } from "../utils/canonicalize.js";
+import { hashHtml } from "../utils/hash.js";
+import { detectLanguage } from "../utils/language.js";
+import {
+  buildRecipeDocumentV2,
+  extractCompleteJsonLdRecipes,
+  gzipJsonLdScripts,
+} from "./recipe-document.js";
+import { classifySourceOutcome, type SourceRunObservation } from "./source-outcome.js";
+import type { DanishJsonLdSource } from "./source-registry.js";
+import {
+  discoverListingPage,
+  discoverSitemapDocument,
+} from "./discovery.js";
+import {
+  createBoundedDiagnostic,
+  inspectJsonLdShape,
+} from "./diagnostics.js";
+
+export type DanishJsonLdRequestKind = "sitemap" | "listing" | "recipe";
+export interface DanishJsonLdRequest {
+  kind: DanishJsonLdRequestKind;
+  url: string;
+}
+export interface DanishJsonLdResponse extends DanishJsonLdRequest {
+  fetchMode: "cheerio" | "playwright";
+  loadedUrl?: string;
+  statusCode: number;
+  headers: Record<string, string | string[] | undefined>;
+  body: string;
+}
+export interface DanishJsonLdDiagnostic {
+  event: string;
+  data: Record<string, unknown>;
+}
+export interface DanishJsonLdRoutingResult {
+  cheerioRequests: DanishJsonLdRequest[];
+  playwrightRequests: DanishJsonLdRequest[];
+}
+
+type DanishJsonLdStore = CrawlStore & RecipeDocumentV2Store;
+type SessionObservation = SourceRunObservation & { pageCapReached: boolean };
+
+export class DanishJsonLdSourceSession {
+  readonly observation: SessionObservation;
+  private readonly source: DanishJsonLdSource;
+  private readonly store: DanishJsonLdStore;
+  private readonly crawlRunId: string;
+  private readonly crawlAttemptId: string;
+  private readonly maxPages: number;
+  private readonly diagnosticSink: (event: DanishJsonLdDiagnostic) => void;
+  private readonly admittedRecipeUrls = new Set<string>();
+  private readonly playwrightFallbackUrls = new Set<string>();
+
+  constructor(options: {
+    source: DanishJsonLdSource;
+    store: DanishJsonLdStore;
+    crawlRunId: string;
+    crawlAttemptId: string;
+    maxPages: number;
+    diagnosticSink?: (event: DanishJsonLdDiagnostic) => void;
+  }) {
+    this.source = options.source;
+    this.store = options.store;
+    this.crawlRunId = options.crawlRunId;
+    this.crawlAttemptId = options.crawlAttemptId;
+    this.maxPages = options.maxPages;
+    this.diagnosticSink = options.diagnosticSink ?? (() => undefined);
+    this.observation = {
+      sourceId: options.source.id,
+      persistedRecipes: 0,
+      completedRequests: 0,
+      failedRequests: 0,
+      blockedRequests: 0,
+      discoveredRecipeCandidates: 0,
+      rejectedIncompleteJsonLd: 0,
+      rejectedMalformedJsonLd: 0,
+      playwrightFailures: 0,
+      mongoFailures: 0,
+      discoveryComplete: true,
+      pageCapReached: false,
+    };
+    this.emit("source-attempt", {
+      discovery: options.source.discovery,
+      fetchMode: options.source.fetchMode,
+      maxPages: options.maxPages,
+      settings: options.source.requestSettings,
+      robotsEnforced: false,
+    });
+  }
+
+  async handleResponse(
+    response: DanishJsonLdResponse
+  ): Promise<DanishJsonLdRoutingResult> {
+    this.observation.completedRequests = (this.observation.completedRequests ?? 0) + 1;
+    if ([401, 403, 429].includes(response.statusCode)) {
+      this.observation.blockedRequests = (this.observation.blockedRequests ?? 0) + 1;
+    }
+    this.emitHttpDiagnostic(response);
+
+    if (response.kind === "sitemap") {
+      return this.handleSitemap(response);
+    }
+    if (response.kind === "listing") {
+      return this.handleListing(response);
+    }
+    return this.handleRecipe(response);
+  }
+
+  recordFailedRequest(input: {
+    fetchMode: "cheerio" | "playwright";
+    kind: DanishJsonLdRequestKind;
+    url: string;
+    retryCount: number;
+    error: unknown;
+  }): void {
+    this.observation.failedRequests = (this.observation.failedRequests ?? 0) + 1;
+    if (input.fetchMode === "playwright") {
+      this.observation.playwrightFailures =
+        (this.observation.playwrightFailures ?? 0) + 1;
+    }
+    this.observation.discoveryComplete = false;
+    this.emit("request-failed", {
+      fetchMode: input.fetchMode,
+      kind: input.kind,
+      url: input.url,
+      retryCount: input.retryCount,
+      error: input.error instanceof Error ? input.error.message : String(input.error),
+    });
+  }
+
+  recordRetry(input: {
+    fetchMode: "cheerio" | "playwright";
+    kind: DanishJsonLdRequestKind;
+    url: string;
+    retryCount: number;
+    error: unknown;
+  }): void {
+    this.emit("request-retry", {
+      fetchMode: input.fetchMode,
+      kind: input.kind,
+      url: input.url,
+      retryCount: input.retryCount,
+      error: input.error instanceof Error ? input.error.message : String(input.error),
+    });
+  }
+
+  outcome(): SourceRunOutcomeSummary {
+    return classifySourceOutcome(this.observation);
+  }
+
+  private handleSitemap(response: DanishJsonLdResponse): DanishJsonLdRoutingResult {
+    const discovery = discoverSitemapDocument({
+      source: this.source,
+      sitemapUrl: response.url,
+      xml: response.body,
+    });
+    const recipeRequests = this.admitRecipeUrls(discovery.recipeUrls);
+    this.emit("discovery", {
+      kind: "sitemap",
+      url: response.url,
+      acceptedCount: discovery.acceptedCount,
+      rejectedCount: sumCounts(discovery.rejectedByReason),
+      rejectedByReason: discovery.rejectedByReason,
+      recipeUrlCount: discovery.recipeUrls.length,
+      sitemapUrlCount: discovery.sitemapUrls.length,
+      terminal: discovery.terminal,
+    });
+    return {
+      cheerioRequests: [
+        ...discovery.sitemapUrls.map((url) => ({ kind: "sitemap" as const, url })),
+        ...recipeRequests,
+      ],
+      playwrightRequests: [],
+    };
+  }
+
+  private handleListing(response: DanishJsonLdResponse): DanishJsonLdRoutingResult {
+    const contentType = firstHeader(response.headers, "content-type");
+    const discovery = discoverListingPage({
+      source: this.source,
+      pageUrl: response.loadedUrl ?? response.url,
+      body: response.body,
+      contentType,
+    });
+    const recipeRequests = this.admitRecipeUrls(discovery.recipeUrls);
+    this.emit("listing-discovery", {
+      url: response.url,
+      fetchMode: response.fetchMode,
+      acceptedCount: discovery.acceptedCount,
+      rejectedCount: sumCounts(discovery.rejectedByReason),
+      rejectedByReason: discovery.rejectedByReason,
+      linkCount: discovery.recipeUrls.length,
+      nextCount: discovery.nextUrls.length,
+      terminal: discovery.terminal,
+    });
+    const nextRequests = discovery.nextUrls.map((url) => ({
+      kind: "listing" as const,
+      url,
+    }));
+    return response.fetchMode === "playwright"
+      ? {
+          cheerioRequests: recipeRequests,
+          playwrightRequests: nextRequests,
+        }
+      : {
+          cheerioRequests: [...recipeRequests, ...nextRequests],
+          playwrightRequests: [],
+        };
+  }
+
+  private async handleRecipe(
+    response: DanishJsonLdResponse
+  ): Promise<DanishJsonLdRoutingResult> {
+    const canonicalUrl = this.resolveCanonicalUrl(response);
+    const extraction = extractCompleteJsonLdRecipes(response.body);
+    this.observation.rejectedIncompleteJsonLd =
+      (this.observation.rejectedIncompleteJsonLd ?? 0) +
+      extraction.incompleteJsonLdCount;
+    this.observation.rejectedMalformedJsonLd =
+      (this.observation.rejectedMalformedJsonLd ?? 0) +
+      extraction.malformedJsonLdCount;
+
+    for (const rawScript of extraction.rawScripts.slice(0, 25)) {
+      try {
+        this.emit("json-ld-shape", inspectJsonLdShape(JSON.parse(rawScript)));
+      } catch {
+        this.emit("json-ld-shape", {
+          malformed: true,
+          bytes: Buffer.byteLength(rawScript),
+        });
+      }
+    }
+
+    const fallbackReason =
+      response.fetchMode === "cheerio" && extraction.recipes.length === 0
+        ? this.playwrightFallbackReason(response, extraction.rawScripts.length)
+        : null;
+    const playwrightRequests: DanishJsonLdRequest[] = [];
+    if (fallbackReason && !this.playwrightFallbackUrls.has(canonicalUrl)) {
+      this.playwrightFallbackUrls.add(canonicalUrl);
+      playwrightRequests.push({ kind: "recipe", url: response.url });
+    }
+    this.emit("playwright-decision", {
+      url: response.url,
+      from: response.fetchMode,
+      queued: playwrightRequests.length === 1,
+      reason: fallbackReason ?? "complete-json-ld-or-rendered-final",
+    });
+
+    const $ = cheerio.load(response.body);
+    const bodyText = $("body").text();
+    const domain = normalizeDomain(new URL(canonicalUrl).hostname);
+    const pageLanguage = detectLanguage({
+      $,
+      html: response.body,
+      bodyText,
+      domain,
+      recipe: extraction.recipes[0],
+    });
+    const extractionSignals = [
+      "strict-json-ld-only",
+      ...extraction.signals,
+      ...(response.fetchMode === "playwright" ? ["playwright-js-rendered"] : []),
+    ];
+
+    await this.store.upsertPage({
+      canonicalUrl,
+      domain,
+      language: pageLanguage.language,
+      languageConfidence: pageLanguage.languageConfidence,
+      languageSignals: pageLanguage.languageSignals,
+      fetchedAt: new Date(),
+      httpStatus: response.statusCode,
+      fetchMode: response.fetchMode,
+      redirectChain:
+        response.loadedUrl && response.loadedUrl !== response.url
+          ? [response.url, response.loadedUrl]
+          : undefined,
+      extractionMethod: extraction.recipes.length > 0 ? "json-ld" : "partial",
+      extractorVersion: EXTRACTOR_VERSION,
+      extractionConfidence: extraction.recipes.length > 0 ? 1 : 0,
+      extractionSignals,
+      recipeCount: extraction.recipes.length,
+      rawHtml:
+        extraction.recipes.length === 0 || response.fetchMode === "playwright"
+          ? new Binary(gzipSync(Buffer.from(response.body)))
+          : undefined,
+      rawJsonLdScripts: gzipJsonLdScripts(extraction.rawScripts),
+      pageContentHash: hashHtml(response.body),
+      discoverySource:
+        response.fetchMode === "playwright" ? "playwright-fallback" : "discovered",
+      sourceDomain: this.source.domain,
+      admissionSignals: ["registry-url-pattern"],
+      playwrightFallbackReason: fallbackReason ?? undefined,
+      outboundRecipeLinks: [],
+    });
+
+    for (const rawRecipe of extraction.recipes) {
+      const recipeLanguage = detectLanguage({
+        recipe: rawRecipe,
+        $,
+        html: response.body,
+        bodyText,
+        domain,
+      });
+      const now = new Date();
+      const document = buildRecipeDocumentV2({
+        sourceId: this.source.id,
+        canonicalUrl,
+        pageUrl: response.loadedUrl ?? response.url,
+        crawlRunId: this.crawlRunId,
+        crawlAttemptId: this.crawlAttemptId,
+        extractedAt: now,
+        rawRecipe,
+        language: recipeLanguage.language,
+        languageConfidence: recipeLanguage.languageConfidence,
+        languageSignals: recipeLanguage.languageSignals,
+        extractorVersion: EXTRACTOR_VERSION,
+        extractionSignals,
+      });
+      try {
+        const result = await this.store.upsertRecipeV2(document);
+        this.observation.persistedRecipes =
+          (this.observation.persistedRecipes ?? 0) + 1;
+        this.emit("mongo-upsert", {
+          canonicalUrl,
+          sourceRecipeKey: document.sourceRecipeKey,
+          sourceHash: document.sourceHash,
+          contentHash: document.contentHash,
+          operation: result.operation,
+          duplicateDecision:
+            result.contentMatches.length === 0
+              ? "unique-content"
+              : "content-match-audited",
+          contentMatchCount: result.contentMatches.length,
+        });
+      } catch (error) {
+        this.observation.mongoFailures = (this.observation.mongoFailures ?? 0) + 1;
+        this.emit("mongo-failure", {
+          canonicalUrl,
+          sourceRecipeKey: document.sourceRecipeKey,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
+    return { cheerioRequests: [], playwrightRequests };
+  }
+
+  private admitRecipeUrls(urls: string[]): DanishJsonLdRequest[] {
+    this.observation.discoveredRecipeCandidates =
+      (this.observation.discoveredRecipeCandidates ?? 0) + urls.length;
+    const requests: DanishJsonLdRequest[] = [];
+    for (const url of urls) {
+      const canonicalUrl = canonicalizeUrl(url);
+      if (this.admittedRecipeUrls.has(canonicalUrl)) continue;
+      if (this.admittedRecipeUrls.size >= this.maxPages) {
+        this.markPageCapReached();
+        continue;
+      }
+      this.admittedRecipeUrls.add(canonicalUrl);
+      requests.push({ kind: "recipe", url });
+    }
+    if (urls.length > 0 && this.admittedRecipeUrls.size >= this.maxPages) {
+      this.markPageCapReached();
+    }
+    return requests;
+  }
+
+  private markPageCapReached(): void {
+    this.observation.pageCapReached = true;
+    this.observation.discoveryComplete = false;
+  }
+
+  private playwrightFallbackReason(
+    response: DanishJsonLdResponse,
+    scriptCount: number
+  ): string | null {
+    if (response.statusCode < 200 || response.statusCode >= 400) return null;
+    if (this.source.fetchMode === "playwright") return "registry-playwright-source";
+    if (scriptCount > 0) return "incomplete-or-malformed-json-ld";
+    if (/__NEXT_DATA__|__NUXT__|window\.__INITIAL_STATE__/u.test(response.body)) {
+      return "client-rendering-marker";
+    }
+    return "registry-recipe-url-without-complete-json-ld";
+  }
+
+  private resolveCanonicalUrl(response: DanishJsonLdResponse): string {
+    const $ = cheerio.load(response.body);
+    const canonical = $('link[rel="canonical"]').first().attr("href");
+    if (canonical) {
+      try {
+        return canonicalizeUrl(canonical, response.loadedUrl ?? response.url);
+      } catch {
+        // Fall through to the registry-discovered request URL.
+      }
+    }
+    return canonicalizeUrl(response.url);
+  }
+
+  private emitHttpDiagnostic(response: DanishJsonLdResponse): void {
+    this.emit("http-response", {
+      kind: response.kind,
+      fetchMode: response.fetchMode,
+      url: response.url,
+      loadedUrl: response.loadedUrl,
+      statusCode: response.statusCode,
+      redirected: Boolean(response.loadedUrl && response.loadedUrl !== response.url),
+      retryAfter: firstHeader(response.headers, "retry-after"),
+      cfRay: firstHeader(response.headers, "cf-ray"),
+      server: firstHeader(response.headers, "server"),
+      snippet: response.body.replace(/\s+/gu, " ").trim().slice(0, 1_000),
+    });
+  }
+
+  private emit(event: string, data: Record<string, unknown>): void {
+    this.diagnosticSink(
+      createBoundedDiagnostic(event, {
+        sourceId: this.source.id,
+        crawlRunId: this.crawlRunId,
+        crawlAttemptId: this.crawlAttemptId,
+        ...data,
+      })
+    );
+  }
+}
+
+function firstHeader(
+  headers: Record<string, string | string[] | undefined>,
+  wanted: string
+): string | undefined {
+  const entry = Object.entries(headers).find(
+    ([key]) => key.toLowerCase() === wanted.toLowerCase()
+  )?.[1];
+  return Array.isArray(entry) ? entry[0] : entry;
+}
+
+function sumCounts(counts: Record<string, number>): number {
+  return Object.values(counts).reduce((sum, count) => sum + count, 0);
+}

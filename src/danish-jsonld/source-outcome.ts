@@ -15,6 +15,7 @@ export interface SourceRunObservation {
   rejectedMalformedJsonLd?: number;
   playwrightFailures?: number;
   mongoFailures?: number;
+  pageCapReached?: boolean;
   discoveryComplete: boolean;
 }
 
@@ -61,6 +62,7 @@ function hasIncompleteWork(observation: SourceRunObservation): boolean {
     (observation.rejectedMalformedJsonLd ?? 0) > 0 ||
     (observation.playwrightFailures ?? 0) > 0 ||
     (observation.mongoFailures ?? 0) > 0 ||
+    observation.pageCapReached === true ||
     !observation.discoveryComplete
   );
 }
@@ -75,6 +77,7 @@ function outcomeReasons(observation: SourceRunObservation): SourceOutcomeReason[
   if ((observation.rejectedMalformedJsonLd ?? 0) > 0) reasons.push("malformed-json-ld-rejected");
   if ((observation.playwrightFailures ?? 0) > 0) reasons.push("playwright-failure");
   if ((observation.mongoFailures ?? 0) > 0) reasons.push("mongo-failure");
+  if (observation.pageCapReached === true) reasons.push("max-pages-cap-reached");
   if (!observation.discoveryComplete) reasons.push("discovery-incomplete");
   if (reasons.length === 0) reasons.push("no-recipe-candidates");
   return reasons.sort();
