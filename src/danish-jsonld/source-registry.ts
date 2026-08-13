@@ -42,7 +42,7 @@ export interface DanishJsonLdSource {
  * Read-only migration inventory generated from legacy spider class attributes.
  * It deliberately does not reuse `SEEDS`: those pre-phase seeds are unverified.
  */
-export const DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
+const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
   {
     "id": "amo",
     "domain": "amo.dk",
@@ -2793,6 +2793,75 @@ export const DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
     "latestScrapyOutcome": "not_audited"
   }
 ] as DanishJsonLdSource[];
+
+const LEGACY_LISTING_DEFAULT_PATTERNS = [
+  "^/[a-z0-9æøå-]+/?$",
+  "^/(opskrift(?:er)?|recipes?|mad)/[a-z0-9æøå-]+/?$",
+];
+
+const LEGACY_DISCOVERY_OVERRIDES: Partial<
+  Record<
+    string,
+    Partial<Pick<DanishJsonLdSource, "startUrls" | "recipeUrlPatterns">>
+  >
+> = {
+  ferrerorocher: {
+    startUrls: [
+      "https://www.ferrerorocher.com/api/dk/search/_search?size=200",
+    ],
+    recipeUrlPatterns: ["^/dk/da/tips-og-ideer/opskrifter/[^/?#]+/?$"],
+  },
+  frokenkraesen_com: { recipeUrlPatterns: LEGACY_LISTING_DEFAULT_PATTERNS },
+  madenimitliv: { recipeUrlPatterns: LEGACY_LISTING_DEFAULT_PATTERNS },
+  madformadelskere: { recipeUrlPatterns: LEGACY_LISTING_DEFAULT_PATTERNS },
+  plantepusherne: { recipeUrlPatterns: LEGACY_LISTING_DEFAULT_PATTERNS },
+  stinna: { recipeUrlPatterns: LEGACY_LISTING_DEFAULT_PATTERNS },
+  sydhavnsbloggen: { recipeUrlPatterns: LEGACY_LISTING_DEFAULT_PATTERNS },
+};
+
+const LEGACY_DEFAULT_REQUEST_SETTINGS = {
+  delaySeconds: 2,
+  rateLimitPerMinute: null,
+  maxConcurrency: 2,
+  maxRetries: 3,
+} as const;
+
+const LEGACY_REQUEST_SETTING_OVERRIDES: Record<
+  string,
+  Partial<DanishJsonLdSource["requestSettings"]>
+> = {
+  bareencocktail: { maxConcurrency: 1 },
+  bornholms: { maxConcurrency: 1 },
+  coop: { delaySeconds: 3, maxConcurrency: 1 },
+  glutenfrimagi: { maxConcurrency: 1 },
+  glyngoere: { maxConcurrency: 1 },
+  kenwoodworld: { maxConcurrency: 1 },
+  kitchenaid: { maxConcurrency: 1 },
+  klank: { maxConcurrency: 1 },
+  knaehoejkarse: { maxConcurrency: 1 },
+  madrejsen: { maxConcurrency: 1 },
+  madsvin: { delaySeconds: 3, maxConcurrency: 1 },
+  mariavestergaard: { delaySeconds: 3, maxConcurrency: 1 },
+  nogetiovnen: { delaySeconds: 3, maxConcurrency: 1 },
+  spicytwist: { maxConcurrency: 1 },
+  spisekunst: { maxConcurrency: 1 },
+  surdejsentusiasten: { maxConcurrency: 1 },
+};
+
+/**
+ * Effective values from the legacy project defaults plus spider-level overrides.
+ * The raw class declarations are intentionally kept separate because several
+ * listing spiders inherit their recipe patterns and request settings.
+ */
+export const DANISH_JSONLD_SOURCES: DanishJsonLdSource[] =
+  RAW_DANISH_JSONLD_SOURCES.map((source) => ({
+    ...source,
+    ...LEGACY_DISCOVERY_OVERRIDES[source.id],
+    requestSettings: {
+      ...LEGACY_DEFAULT_REQUEST_SETTINGS,
+      ...LEGACY_REQUEST_SETTING_OVERRIDES[source.id],
+    },
+  }));
 
 export function isMigrated(state: MigrationState): boolean {
   return state === "cutover";

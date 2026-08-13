@@ -43,6 +43,19 @@ describe("Danish JSON-LD source selection", () => {
     expect(() => parseDanishJsonLdCrawlArgs(["--vpn-country", "dk"])).toThrow(
       "--vpn-country requires --vpn"
     );
+    expect(() => parseDanishJsonLdCrawlArgs(["--sources", ","])).toThrow(
+      "--sources requires at least one source id"
+    );
+    expect(() => parseDanishJsonLdCrawlArgs(["--database", "--force"])).toThrow(
+      "--database requires a value"
+    );
+  });
+
+  it("deduplicates valid sources in first-seen order", () => {
+    expect(
+      parseDanishJsonLdCrawlArgs(["--sources", "arla,kenwoodworld,arla"])
+        .sourceIds
+    ).toEqual(["arla", "kenwoodworld"]);
   });
 
   it("defaults to Arla rather than running every unverified source", () => {

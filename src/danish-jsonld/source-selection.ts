@@ -18,22 +18,28 @@ export function parseDanishJsonLdCrawlArgs(
   for (let index = 0; index < args.length; index += 1) {
     const argument = args[index];
     const value = args[index + 1];
+    const requiresValue = () => value !== undefined && !value.startsWith("--");
 
     switch (argument) {
       case "--sources":
-        if (!value) throw new Error("--sources requires a comma-separated value");
-        options.sourceIds = value.split(",").map((id) => id.trim()).filter(Boolean);
+        if (!requiresValue()) {
+          throw new Error("--sources requires a comma-separated value");
+        }
+        options.sourceIds = [...new Set(value.split(",").map((id) => id.trim()).filter(Boolean))];
+        if (options.sourceIds.length === 0) {
+          throw new Error("--sources requires at least one source id");
+        }
         index += 1;
         break;
       case "--max-pages":
-        if (!value || !/^\d+$/.test(value) || Number(value) < 1) {
+        if (!requiresValue() || !/^\d+$/.test(value) || Number(value) < 1) {
           throw new Error("--max-pages must be a positive integer");
         }
         options.maxPages = Number(value);
         index += 1;
         break;
       case "--database":
-        if (!value) throw new Error("--database requires a value");
+        if (!requiresValue()) throw new Error("--database requires a value");
         options.database = value;
         index += 1;
         break;
@@ -44,12 +50,12 @@ export function parseDanishJsonLdCrawlArgs(
         options.vpn = true;
         break;
       case "--vpn-country":
-        if (!value) throw new Error("--vpn-country requires a value");
+        if (!requiresValue()) throw new Error("--vpn-country requires a value");
         options.vpnCountry = value;
         index += 1;
         break;
       case "--json-out":
-        if (!value) throw new Error("--json-out requires a path");
+        if (!requiresValue()) throw new Error("--json-out requires a path");
         options.jsonOut = value;
         index += 1;
         break;
