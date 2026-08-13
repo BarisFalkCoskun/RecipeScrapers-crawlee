@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   discoverListingPage,
   discoverSitemapDocument,
+  looksLikeHttp200BlockShell,
 } from "../../src/danish-jsonld/discovery.js";
 import {
   DANISH_JSONLD_SOURCES,
@@ -333,5 +334,50 @@ describe("Danish JSON-LD discovery", () => {
       complete: true,
       incompleteReasons: [],
     });
+  });
+
+  it("uses the configured Ferrero JSON payload strategy when Content-Type is absent", () => {
+    const ferrero = DANISH_JSONLD_SOURCES.find(
+      (entry) => entry.id === "ferrerorocher"
+    )!;
+    const result = discoverListingPage({
+      source: ferrero,
+      pageUrl: ferrero.startUrls[0],
+      body: JSON.stringify({
+        hits: {
+          hits: [{ _source: { url: "/dk/da/tips-og-ideer/opskrifter/kage" } }],
+        },
+      }),
+    });
+
+    expect(result.recipeUrls).toEqual([
+      "https://www.ferrerorocher.com/dk/da/tips-og-ideer/opskrifter/kage",
+    ]);
+    expect(result.complete).toBe(true);
+  });
+
+  it.each([
+    ["kitchenaid", "https://www.kitchenaid.dk/opskrifter/alle", "/opskrifter/alle/12?campaign=summer"],
+    ["klank", "https://klank.dk/index.php/opskrifter-koekken/", "/index.php/opskrifter-kategori/desserter/?ref=menu"],
+  ])("matches %s continuation rules against pathname when query parameters exist", (sourceId, pageUrl, href) => {
+    const exceptional = DANISH_JSONLD_SOURCES.find((entry) => entry.id === sourceId)!;
+    const result = discoverListingPage({
+      source: exceptional,
+      pageUrl,
+      body: `<a href="${href}"><svg/></a>`,
+    });
+
+    expect(result.nextUrls).toEqual([new URL(href, pageUrl).toString()]);
+  });
+
+  it("does not classify an ordinary reCAPTCHA script as an HTTP-200 block shell", () => {
+    expect(looksLikeHttp200BlockShell(`
+      <html><head><title>Opskrifter</title>
+      <script src="https://www.google.com/recaptcha/api.js"></script></head>
+      <body><main><h1>Opskrifter</h1><a href="/opskrifter/kage">Kage</a></main></body></html>
+    `)).toBe(false);
+    expect(looksLikeHttp200BlockShell(
+      "<html><title>Checking your browser</title><body>Cloudflare challenge</body></html>"
+    )).toBe(true);
   });
 });

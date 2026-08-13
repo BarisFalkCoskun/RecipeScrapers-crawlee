@@ -4,9 +4,9 @@ import { canonicalizeUrl } from "../utils/canonicalize.js";
 import {
   legacyMongoQueryFor,
   legacyRecipeSourceId,
+  mapCrawleeComparisonDocuments,
   parseMigrationComparisonArgs,
   runMigrationComparisonCli,
-  type CrawleeComparisonRecipe,
   type LegacyComparisonRecipe,
 } from "../danish-jsonld/migration-compare.js";
 
@@ -41,17 +41,7 @@ async function main() {
           .find({ sourceId: { $in: sourceIds }, crawlRunId })
           .project({ sourceId: 1, sourceRecipeKey: 1, crawlRunId: 1, canonicalUrl: 1, normalized: 1 })
           .toArray();
-        return documents.flatMap((document): CrawleeComparisonRecipe[] => {
-          if (typeof document.sourceId !== "string" || typeof document.canonicalUrl !== "string" ||
-            !document.normalized || typeof document.normalized !== "object") return [];
-          return [{
-            sourceId: document.sourceId,
-            canonicalUrl: document.canonicalUrl,
-            sourceRecipeKey: document.sourceRecipeKey,
-            crawlRunId: document.crawlRunId,
-            normalized: document.normalized as Record<string, unknown>,
-          }];
-        });
+        return mapCrawleeComparisonDocuments(documents);
       },
       readScrapyEvidence: async (path) => JSON.parse(await readFile(path, "utf8")) as Record<string, unknown>,
       readCrawleeEvidence: async (path) => JSON.parse(await readFile(path, "utf8")) as Record<string, unknown>,

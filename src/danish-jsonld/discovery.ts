@@ -88,7 +88,8 @@ export function discoverListingPage(input: {
     return result;
   }
 
-  if (input.contentType?.toLowerCase().includes("json")) {
+  const payload = input.source.listingDiscovery?.payload;
+  if (payload || input.contentType?.toLowerCase().includes("json")) {
     let parsed: unknown;
     try {
       parsed = JSON.parse(input.body);
@@ -98,7 +99,6 @@ export function discoverListingPage(input: {
       result.incompleteReasons.push("malformed-listing-payload");
       return result;
     }
-    const payload = input.source.listingDiscovery?.payload;
     if (payload) {
       const rootMatches = payload.expectedRoot === "array"
         ? Array.isArray(parsed)
@@ -169,9 +169,9 @@ export function discoverListingPage(input: {
       continue;
     }
     const listingStrategy = input.source.listingDiscovery;
-    const pathAndSearch = `${new URL(candidate).pathname}${new URL(candidate).search}`;
+    const candidatePath = new URL(candidate).pathname;
     const recursiveListing = matchesAny(
-      pathAndSearch,
+      candidatePath,
       listingStrategy?.continuationUrlPatterns ?? []
     );
     if (next || recursiveListing) {
@@ -354,6 +354,12 @@ function jsonPathHasExpectedEmptyCollection(root: unknown, path: string): boolea
 }
 
 export function looksLikeHttp200BlockShell(body: string): boolean {
-  return /captcha|access denied|checking your browser|cloudflare challenge|temporarily blocked|unusual traffic/iu
-    .test(body);
+  const $ = cheerio.load(body);
+  $("script, style, noscript, template").remove();
+  const title = $("title").first().text().trim();
+  const visibleBody = $("body").text().replace(/\s+/gu, " ").trim();
+  const shellText = `${title} ${visibleBody}`.trim();
+  if (shellText.length > 4_000 || $("a[href]").length > 20) return false;
+  return /\bcaptcha\b|access denied|checking your browser|cloudflare challenge|temporarily blocked|unusual traffic/iu
+    .test(shellText);
 }

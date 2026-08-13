@@ -4,6 +4,7 @@ import {
   executeMigrationComparison,
   legacyMongoQueryFor,
   legacyRecipeSourceId,
+  mapCrawleeComparisonDocuments,
   migrationComparisonExitCode,
   parseMigrationComparisonArgs,
   runMigrationComparisonCli,
@@ -65,6 +66,24 @@ function completeCrawleeEvidence(
 }
 
 describe("Danish JSON-LD shadow comparison", () => {
+  it("fails closed when a queried recipes_v2 row has malformed comparison fields", () => {
+    const valid = {
+      sourceId: "arla",
+      sourceRecipeKey: "arla:kage",
+      crawlRunId: "run-shadow",
+      canonicalUrl: "https://arla.dk/opskrifter/kage",
+      normalized: requiredNormalizedRecipe,
+    };
+
+    expect(() => mapCrawleeComparisonDocuments([
+      valid,
+      { ...valid, canonicalUrl: null },
+    ])).toThrow("recipes_v2 row 1 has missing or malformed canonicalUrl");
+    expect(() => mapCrawleeComparisonDocuments([
+      { ...valid, normalized: [] },
+    ])).toThrow("recipes_v2 row 0 has missing or malformed normalized");
+  });
+
   it("requires both isolated database names and an explicit source cohort", () => {
     expect(
       parseMigrationComparisonArgs([

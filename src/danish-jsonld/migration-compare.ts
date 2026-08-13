@@ -22,6 +22,30 @@ export interface CrawleeComparisonRecipe {
   normalized: Record<string, unknown>;
 }
 
+export function mapCrawleeComparisonDocuments(
+  documents: unknown[]
+): CrawleeComparisonRecipe[] {
+  return documents.map((value, index) => {
+    if (!isRecord(value)) {
+      throw new Error(`recipes_v2 row ${index} is malformed`);
+    }
+    const sourceId = comparisonStringField(value, "sourceId", index);
+    const sourceRecipeKey = comparisonStringField(value, "sourceRecipeKey", index);
+    const crawlRunId = comparisonStringField(value, "crawlRunId", index);
+    const canonicalUrl = comparisonStringField(value, "canonicalUrl", index);
+    if (!isRecord(value.normalized)) {
+      throw new Error(`recipes_v2 row ${index} has missing or malformed normalized`);
+    }
+    return {
+      sourceId,
+      sourceRecipeKey,
+      crawlRunId,
+      canonicalUrl,
+      normalized: value.normalized,
+    };
+  });
+}
+
 export interface MigrationComparisonObservation {
   sourceId: string;
   mongoFailures?: number;
@@ -468,6 +492,22 @@ function asRecord(value: unknown, context: string): Record<string, unknown> {
     throw new Error(`${context} is malformed`);
   }
   return value as Record<string, unknown>;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function comparisonStringField(
+  value: Record<string, unknown>,
+  field: string,
+  index: number
+): string {
+  const candidate = value[field];
+  if (typeof candidate !== "string" || candidate.trim().length === 0) {
+    throw new Error(`recipes_v2 row ${index} has missing or malformed ${field}`);
+  }
+  return candidate;
 }
 
 function assertExactSourceSet(

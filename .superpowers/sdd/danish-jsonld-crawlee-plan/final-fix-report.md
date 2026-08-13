@@ -70,3 +70,23 @@ remaining operational checks are the separately safety-blocked robots invariant
 and a future authorized shadow/canary run against real sources and MongoDB.
 For multi-recipe pages without upstream IDs, positional identity assumes the
 page keeps a deterministic JSON-LD recipe ordering.
+
+## Scoped review follow-up
+
+The scoped review reproduced three residual boundary defects. Regression tests
+were observed failing before each repair:
+
+- typed JSON listing parsing depended on the response `Content-Type`, and
+  continuation patterns were matched against pathname plus query rather than
+  the legacy pathname-only contract;
+- HTTP-200 block detection scanned script contents, so an ordinary reCAPTCHA
+  include could be classified as a block shell;
+- the production Mongo comparison adapter silently discarded malformed
+  current-run rows instead of failing the shadow gate closed.
+
+The runtime now selects typed parsing from the registry payload strategy,
+matches continuation patterns against pathname, detects challenge text only in
+small visible shell content, and validates every queried `recipes_v2` row. The
+fresh post-repair verification is `npm run build` passed, `npm test` passed (33
+files, 277 tests), and `git diff --check` passed. The robots invariant remains
+the only known unimplemented plan requirement.
