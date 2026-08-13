@@ -10,6 +10,10 @@ Recipe crawling pipeline built on Crawlee, with Cheerio-first crawling, lazy Pla
 - `npm run report:runs`: print recent `crawl_runs` summaries from Mongo.
 - `npm start`: run the real crawler against the configured seeds.
 
+For the strict Danish JSON-LD migration pilot, consumer contract, and
+remote-only canary/shadow/cutover workflow, read
+[docs/danish-jsonld-migration-operations.md](docs/danish-jsonld-migration-operations.md).
+
 ## Runtime Notes
 
 - `npm start` expects MongoDB via `MONGODB_URI` and `DB_NAME`. Defaults are `mongodb://localhost:27017` and `crawlee`.

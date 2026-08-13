@@ -1,5 +1,24 @@
 import { DANISH_JSONLD_SOURCES } from "./source-registry.js";
 
+/**
+ * Deliberately small, source-by-source migration cohort. Selecting this list
+ * does not assert canary, shadow, or cutover readiness for any source.
+ */
+export const DANISH_JSONLD_PILOT_SOURCE_IDS = [
+  "arla",
+  "coop",
+  "kitchenaid",
+  "surdejsentusiasten",
+  "sundpaabudget",
+  "klinksgaard",
+  "madoghave",
+  "netto",
+  "madrejsen",
+  "tv2mad",
+  "kikkoman",
+  "gamleopskrifter",
+] as const;
+
 export interface DanishJsonLdCrawlOptions {
   sourceIds?: string[];
   maxPages?: number;
@@ -91,6 +110,8 @@ export function createDanishJsonLdCrawlSelection(
   return {
     ...options,
     sourceIds,
-    sources: DANISH_JSONLD_SOURCES.filter((source) => sourceIds.includes(source.id)),
+    sources: sourceIds.flatMap((sourceId) =>
+      DANISH_JSONLD_SOURCES.filter((source) => source.id === sourceId)
+    ),
   };
 }

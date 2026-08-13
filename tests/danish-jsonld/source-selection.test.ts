@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   createDanishJsonLdCrawlSelection,
+  DANISH_JSONLD_PILOT_SOURCE_IDS,
   parseDanishJsonLdCrawlArgs,
   selectDanishJsonLdSources,
 } from "../../src/danish-jsonld/source-selection.js";
@@ -73,5 +74,30 @@ describe("Danish JSON-LD source selection", () => {
       maxPages: 5,
       sources: [{ id: "arla", requireCompleteJsonLd: true }],
     });
+  });
+
+  it("exposes the exact twelve-source Danish JSON-LD pilot as a registered selection", () => {
+    expect(DANISH_JSONLD_PILOT_SOURCE_IDS).toEqual([
+      "arla",
+      "coop",
+      "kitchenaid",
+      "surdejsentusiasten",
+      "sundpaabudget",
+      "klinksgaard",
+      "madoghave",
+      "netto",
+      "madrejsen",
+      "tv2mad",
+      "kikkoman",
+      "gamleopskrifter",
+    ]);
+
+    expect(
+      createDanishJsonLdCrawlSelection({
+        sourceIds: DANISH_JSONLD_PILOT_SOURCE_IDS,
+        force: false,
+        vpn: false,
+      }).sources.map((source) => source.id)
+    ).toEqual(DANISH_JSONLD_PILOT_SOURCE_IDS);
   });
 });
