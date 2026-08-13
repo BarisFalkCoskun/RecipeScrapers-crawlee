@@ -94,16 +94,102 @@ describe("crawl:danish-jsonld CLI", () => {
     expect(close).toHaveBeenCalledOnce();
   });
 
-  it("rejects VPN controls until Task 4 and does not create a store", async () => {
+  it("fails closed before store creation when VPN startup has no verified relay", async () => {
     const createStore = vi.fn();
+    const cleanup = vi.fn(async () => undefined);
     await expect(
       executeDanishJsonLdCli(["--sources", "arla", "--vpn"], {
         env: {},
         createStore,
+        createVpnTransport: () => ({
+          cleanup,
+          initialize: async () => { throw new Error("No verified Mullvad relay is available"); },
+        }) as never,
         output: () => undefined,
       })
-    ).rejects.toThrow("--vpn is unsupported until Task 4");
+    ).rejects.toThrow("No verified Mullvad relay is available");
     expect(createStore).not.toHaveBeenCalled();
+    expect(cleanup).toHaveBeenCalledOnce();
+  });
+
+  it("keeps direct mode as the default and never constructs VPN transport", async () => {
+    const createVpnTransport = vi.fn();
+    const store = {
+      connect: vi.fn(async () => undefined),
+      close: vi.fn(async () => undefined),
+    };
+
+    await executeDanishJsonLdCli(["--sources", "arla"], {
+      env: {},
+      createStore: () => store as never,
+      createVpnTransport,
+      runCrawl: async () => ({
+        summary: { robotsEnforced: false, sourceOutcomes: [] },
+        observations: [],
+      }),
+      output: () => undefined,
+    });
+
+    expect(createVpnTransport).not.toHaveBeenCalled();
+  });
+
+  it("initializes VPN before the store, passes it to the crawl, and cleans it up", async () => {
+    const order: string[] = [];
+    const vpnTransport = {
+      initialize: vi.fn(async () => { order.push("vpn-initialize"); }),
+      cleanup: vi.fn(async () => { order.push("vpn-cleanup"); }),
+    };
+    const store = {
+      connect: vi.fn(async () => { order.push("store-connect"); }),
+      close: vi.fn(async () => { order.push("store-close"); }),
+    };
+    const runCrawl = vi.fn(async () => ({
+      summary: { robotsEnforced: false as const, sourceOutcomes: [] },
+      observations: [],
+    }));
+
+    await executeDanishJsonLdCli(["--sources", "arla", "--vpn", "--vpn-country", "dk"], {
+      env: {},
+      createStore: () => store as never,
+      createVpnTransport: (country) => {
+        expect(country).toBe("dk");
+        return vpnTransport as never;
+      },
+      runCrawl,
+      output: () => undefined,
+    });
+
+    expect(order).toEqual([
+      "vpn-initialize",
+      "store-connect",
+      "store-close",
+      "vpn-cleanup",
+    ]);
+    expect(runCrawl.mock.calls[0][0]).toMatchObject({ vpnTransport });
+  });
+
+  it("cleans up VPN even when store cleanup rejects", async () => {
+    const vpnCleanup = vi.fn(async () => undefined);
+    const store = {
+      connect: vi.fn(async () => undefined),
+      close: vi.fn(async () => { throw new Error("store close failed"); }),
+    };
+
+    await expect(executeDanishJsonLdCli(["--vpn"], {
+      env: {},
+      createStore: () => store as never,
+      createVpnTransport: () => ({
+        initialize: async () => undefined,
+        cleanup: vpnCleanup,
+      }) as never,
+      runCrawl: async () => ({
+        summary: { robotsEnforced: false, sourceOutcomes: [] },
+        observations: [],
+      }),
+      output: () => undefined,
+    })).rejects.toThrow("store close failed");
+
+    expect(vpnCleanup).toHaveBeenCalledOnce();
   });
 
   it("makes forced runs use fresh queue attempt identity when CRAWL_RUN_ID is reused", async () => {

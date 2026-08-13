@@ -3,4 +3,5 @@ dist/
 /storage/
 .env
 *.log
+vpn/mullvad.json
 .DS_Store

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { randomUUID } from "node:crypto";
 import { Readable } from "node:stream";
-import { CheerioCrawler, Configuration } from "crawlee";
+import { CheerioCrawler, Configuration, ProxyConfiguration } from "crawlee";
 import {
   DANISH_JSONLD_OBSERVED_HTTP_ERROR_STATUS_CODES,
   executeDanishJsonLdSource,
@@ -11,6 +11,7 @@ import {
 import { createDanishJsonLdCrawlSelection } from "../../src/danish-jsonld/source-selection.js";
 import type { CrawlStore, RecipeDocumentV2Store } from "../../src/storage/store.js";
 import type { DanishJsonLdSource } from "../../src/danish-jsonld/source-registry.js";
+import type { DanishJsonLdVpnTransport } from "../../src/danish-jsonld/vpn-transport.js";
 
 describe("dedicated Danish JSON-LD runner", () => {
   it("routes every blocked status through response diagnostics", () => {
@@ -111,6 +112,102 @@ describe("dedicated Danish JSON-LD runner", () => {
     }
   );
 
+  it("preserves blocked response diagnostics before retrying on a rotated relay", async () => {
+    const configuration = Configuration.getGlobalConfig();
+    const previousMemoryMbytes = configuration.get("memoryMbytes");
+    configuration.set("memoryMbytes", 1_024);
+    const statuses = [403, 200];
+    const requestFunction = vi.spyOn(
+      CheerioCrawler.prototype as unknown as {
+        _requestFunction: () => Promise<unknown>;
+      },
+      "_requestFunction"
+    ).mockImplementation(async () => {
+      const statusCode = statuses.shift() ?? 200;
+      const body = statusCode === 403 ? "access denied fixture" : "<html></html>";
+      return Object.assign(Readable.from([body]), {
+        statusCode,
+        statusMessage: "Fixture",
+        headers: { "content-type": "text/html; charset=utf-8" },
+        rawHeaders: [],
+        trailers: {},
+        rawTrailers: [],
+        httpVersion: "1.1",
+        httpVersionMajor: 1,
+        httpVersionMinor: 1,
+        complete: true,
+        url: "https://fixture.invalid/listing",
+      });
+    });
+    const handleResponse = vi.fn(async (input: { statusCode: number }) =>
+      input.statusCode === 403
+        ? { rotated: true, eligible: true, exhausted: false, reason: "http-403" }
+        : { rotated: false, eligible: false, exhausted: false }
+    );
+    const handleFailure = vi.fn(async () => ({
+      rotated: false,
+      eligible: false,
+      exhausted: false,
+    }));
+    const vpnTransport: DanishJsonLdVpnTransport = {
+      proxyConfiguration: new ProxyConfiguration({
+        newUrlFunction: async () => "http://127.0.0.1:4311",
+      }),
+      initialize: async () => undefined,
+      cleanup: async () => undefined,
+      handleResponse,
+      handleFailure,
+    };
+    const diagnostics: Array<{ event: string; data: Record<string, unknown> }> = [];
+    const source: DanishJsonLdSource = {
+      id: "rotation-fixture",
+      domain: "fixture.invalid",
+      allowedDomains: ["fixture.invalid"],
+      legacySpider: "RotationFixtureSpider",
+      legacyFamily: "JsonLdListingSpider",
+      discovery: "listing",
+      sitemapUrls: [],
+      startUrls: ["https://fixture.invalid/listing"],
+      recipeUrlPatterns: ["/opskrifter/"],
+      fetchMode: "cheerio",
+      requestSettings: {
+        delaySeconds: 0,
+        rateLimitPerMinute: null,
+        maxConcurrency: 1,
+        maxRetries: 1,
+      },
+      requireCompleteJsonLd: true,
+      migrationState: "configured",
+      latestScrapyOutcome: "not_audited",
+    };
+
+    try {
+      await executeDanishJsonLdSource({
+        source,
+        store: {} as CrawlStore & RecipeDocumentV2Store,
+        crawlRunId: "rotation-run",
+        crawlAttemptId: `rotation-${randomUUID()}`,
+        maxPages: 5,
+        vpnTransport,
+        diagnosticSink: (event) => diagnostics.push(event),
+      });
+
+      expect(requestFunction).toHaveBeenCalledTimes(2);
+      expect(handleResponse.mock.calls.map(([input]) => input.statusCode)).toEqual([403, 200]);
+      expect(handleResponse.mock.calls[0][0].sessionId).toBe(
+        handleResponse.mock.calls[1][0].sessionId
+      );
+      expect(handleFailure).toHaveBeenCalledOnce();
+      expect(diagnostics).toContainEqual(expect.objectContaining({
+        event: "http-response",
+        data: expect.objectContaining({ statusCode: 403, snippet: "access denied fixture" }),
+      }));
+    } finally {
+      requestFunction.mockRestore();
+      configuration.set("memoryMbytes", previousMemoryMbytes);
+    }
+  });
+
   it("executes every selected registry source and returns truthful source outcomes", async () => {
     const selection = createDanishJsonLdCrawlSelection({
       sourceIds: ["arla", "coop"],
@@ -166,6 +263,41 @@ describe("dedicated Danish JSON-LD runner", () => {
         },
       ],
     });
+  });
+
+  it("passes one initialized VPN transport through every selected source", async () => {
+    const selection = createDanishJsonLdCrawlSelection({
+      sourceIds: ["arla", "coop"],
+      maxPages: 1,
+      force: false,
+      vpn: true,
+    });
+    const vpnTransport = { marker: "fixture-vpn" } as unknown as DanishJsonLdVpnTransport;
+    const observedTransports: unknown[] = [];
+
+    await runDanishJsonLdCrawl({
+      selection,
+      store: {} as CrawlStore & RecipeDocumentV2Store,
+      crawlRunId: "vpn-run",
+      vpnTransport,
+      executeSource: async (input) => {
+        observedTransports.push(input.vpnTransport);
+        return {
+          observation: {
+            sourceId: input.source.id,
+            completedRequests: 1,
+            discoveryComplete: true,
+          },
+          outcome: {
+            sourceId: input.source.id,
+            outcome: "no_data",
+            outcomeReasons: ["no-recipe-candidates"],
+          },
+        };
+      },
+    });
+
+    expect(observedTransports).toEqual([vpnTransport, vpnTransport]);
   });
 
   it("isolates a source exception and continues later selected sources", async () => {

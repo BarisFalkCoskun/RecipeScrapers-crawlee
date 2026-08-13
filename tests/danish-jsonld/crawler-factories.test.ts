@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { ProxyConfiguration } from "crawlee";
 import {
   createDanishJsonLdCheerioCrawler,
   createDanishJsonLdPlaywrightCrawler,
@@ -43,5 +44,30 @@ describe("Danish JSON-LD crawler factories", () => {
       maxRequestRetries: 3,
       sameDomainDelaySecs: 2,
     });
+  });
+
+  it("accepts the same dynamic proxy configuration for Cheerio and Playwright", () => {
+    const arla = DANISH_JSONLD_SOURCES.find((source) => source.id === "arla");
+    if (!arla) throw new Error("Arla registry fixture missing");
+    const proxyConfiguration = new ProxyConfiguration({
+      newUrlFunction: async () => "http://127.0.0.1:4310",
+    });
+    const cheerio = createDanishJsonLdCheerioCrawler({
+      source: arla,
+      requestHandler,
+      proxyConfiguration,
+    }) as unknown as { proxyConfiguration: ProxyConfiguration };
+    const playwright = createDanishJsonLdPlaywrightCrawler({
+      source: arla,
+      requestHandler,
+      proxyConfiguration,
+    }) as unknown as {
+      proxyConfiguration: ProxyConfiguration;
+      launchContext: { browserPerProxy: boolean };
+    };
+
+    expect(cheerio.proxyConfiguration).toBe(proxyConfiguration);
+    expect(playwright.proxyConfiguration).toBe(proxyConfiguration);
+    expect(playwright.launchContext.browserPerProxy).toBe(true);
   });
 });
