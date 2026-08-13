@@ -86,6 +86,7 @@ Green evidence:
 - `55f346b fix: audit Danish JSON-LD page upserts`
 - `37cd596 fix: harden Danish JSON-LD crawl lifecycle`
 - `c15bf43 fix: preserve blocked crawl diagnostics`
+- `d11bc29 fix: redact proxy-context URLs`
 
 ## Self-review
 
@@ -214,6 +215,42 @@ Green command:
 - `npm run build && npm test && git diff --check`
   - TypeScript build passed.
   - 30 test files passed, 178 tests passed, 0 failed.
+  - Diff whitespace validation passed.
+
+### Remaining concern
+
+Only the previously disclosed permanent robots-off invariant remains tool-blocked. This round did not retry or alter that boundary.
+
+## Review fix round 3 — 2026-08-13
+
+Closed the remaining proxy-context redaction finding without retrying the robots edit.
+
+### Root cause and fix
+
+I checked six possible sources: URL userinfo detection, proxy-hostname matching, query-secret handling, surrounding error-text context, sensitive object-key matching, and nested provenance propagation. The focused red diagnostics reduced the problem to two causes: URL-local proxy heuristics and missing proxy provenance propagation. Query sanitization and direct proxy-key redaction were already working.
+
+The prior sanitizer decided whether to whole-redact an embedded URL using only URL-local signals: credentials or a hostname containing `proxy`. Neutral gateway hosts therefore remained visible even when the surrounding diagnostic explicitly identified them as proxy endpoints. Nested transport records with `provenance: "proxy"` likewise did not propagate that provenance to their endpoint/provider values.
+
+- Added immediate contextual detection for `proxy <URL>` and `connect ECONNREFUSED <URL>` forms. The full URL is replaced with `[proxy-url-redacted]` regardless of hostname, port, path, query, or credentials.
+- Kept context narrowly anchored immediately before the URL so a later ordinary public response URL remains visible and independently secret-sanitized.
+- Whole-redact nested records that declare proxy provenance. Existing proxy-related object keys remain unconditionally redacted by the sensitive-key boundary.
+
+### TDD evidence
+
+Red command:
+
+- `npx vitest run tests/danish-jsonld/diagnostics.test.ts`
+  - 2 failures: both neutral-host proxy URLs remained visible, and the structured proxy-provenance record retained its endpoint/provider.
+
+Refinement evidence:
+
+- The first context matcher carried `proxy` too far across a sentence and redacted a later public URL. The focused test caught this; anchoring the marker immediately before the URL fixed the over-redaction.
+
+Green command:
+
+- `npm run build && npm test && git diff --check`
+  - TypeScript build passed.
+  - 30 test files passed, 180 tests passed, 0 failed.
   - Diff whitespace validation passed.
 
 ### Remaining concern
