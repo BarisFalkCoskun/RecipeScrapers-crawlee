@@ -106,3 +106,56 @@ The local fixture smoke needs a functioning Playwright Chromium launch on the
 target host. Also, no remote canary/shadow evidence exists yet, no external
 consumer repository is claimed migrated, and permanent robots-off remains
 unresolved/tool-blocked.
+
+## Fix round 1 — actionable shadow comparison and V2 run records
+
+Added a tested, read-only `migration:compare` path that requires explicit
+legacy/Crawlee database names, source IDs, and Crawlee run evidence. It compares
+source-scoped canonical URL sets from legacy normalized `recipes` with
+`recipes_v2`; it reports source and aggregate coverage, required-field
+agreement, observed Mongo failures, and off-domain page admissions. A report
+passes only when every source and the aggregate have at least 95% URL coverage,
+at least 99% required-field agreement, zero missing Crawlee required fields,
+zero Mongo failures, and zero unintended off-domain admissions.
+
+Dedicated CLI runs now persist a `kind: "danish-jsonld-v2"`, `schemaVersion: 2`
+record in native `crawl_runs` after every completed run, including partial
+outcomes. Persistence failures surface to the CLI while its existing cleanup
+still closes the store. Legacy `report:runs` ignores the discriminated V2
+records, avoiding the structural collision with legacy metric summaries.
+
+The operations guide now supplies exact remote-only full/uncapped Scrapy and
+Crawlee commands plus the read-only comparison command. It also explicitly says
+Arla is configured only; no source has passed a canary, shadow, or cutover.
+
+### Fix-round TDD evidence
+
+Red command:
+
+```bash
+npm test -- tests/danish-jsonld/migration-compare.test.ts tests/danish-jsonld/cli.test.ts tests/storage/mongodb.test.ts
+```
+
+The new comparator suite could not import the missing module; dedicated run
+tests then showed zero persistence calls, a persistence failure incorrectly
+resolved, and no store method. After the minimal implementation, a stale fake
+store contract and legacy-run filtering were updated to reflect the V2 method
+and discriminator.
+
+Green focused verification:
+
+```bash
+npm test -- tests/danish-jsonld/migration-compare.test.ts tests/danish-jsonld/cli.test.ts tests/storage/mongodb.test.ts
+npm run build
+```
+
+The focused suite passed 23 tests and TypeScript compilation passed. Full-suite
+verification passed: `npm run build`, `npm test` (33 files, 226 tests), and
+`git diff --check` all completed with zero failures.
+
+### Original checkout limitation
+
+The current four modified paths in
+`/Users/boris/Repositories/RecipeScrapers/RecipeScrapers-crawlee` remain present,
+but byte-for-byte preservation cannot be proven because initial hashes were not
+captured. This is not claimed as a completed preservation requirement.

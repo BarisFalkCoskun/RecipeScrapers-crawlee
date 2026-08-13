@@ -1,6 +1,7 @@
 import { MongoClient, type Db, type Collection } from "mongodb";
 import type {
   CrawlRunDocument,
+  DanishJsonLdCrawlRunDocument,
   PageDocument,
   RecipeDocument,
   RecipeDocumentV2,
@@ -18,7 +19,7 @@ export class RecipeStore implements CrawlStore, RecipeDocumentV2Store {
   private recipes!: Collection<RecipeDocument>;
   private recipesV2!: Collection<RecipeDocumentV2>;
   private contentMatchAudits!: Collection<RecipeContentMatchAudit>;
-  private crawlRuns!: Collection<CrawlRunDocument>;
+  private crawlRuns!: Collection<CrawlRunDocument | DanishJsonLdCrawlRunDocument>;
 
   constructor(uri: string, dbName: string) {
     this.client = new MongoClient(uri);
@@ -40,7 +41,7 @@ export class RecipeStore implements CrawlStore, RecipeDocumentV2Store {
     this.contentMatchAudits = this.db.collection<RecipeContentMatchAudit>(
       MONGODB_CONFIG.collections.recipeContentMatches
     );
-    this.crawlRuns = this.db.collection<CrawlRunDocument>(
+    this.crawlRuns = this.db.collection<CrawlRunDocument | DanishJsonLdCrawlRunDocument>(
       MONGODB_CONFIG.collections.crawlRuns
     );
     await this.ensureIndexes();
@@ -250,8 +251,17 @@ export class RecipeStore implements CrawlStore, RecipeDocumentV2Store {
     await this.crawlRuns.insertOne(run as CrawlRunDocument);
   }
 
+  async insertDanishJsonLdRun(
+    run: Omit<DanishJsonLdCrawlRunDocument, "_id">
+  ): Promise<void> {
+    await this.crawlRuns.insertOne(run as DanishJsonLdCrawlRunDocument);
+  }
+
   async listCrawlRuns(): Promise<CrawlRunDocument[]> {
-    return this.crawlRuns.find({}).toArray();
+    const runs = await this.crawlRuns.find({}).toArray();
+    return runs.filter(
+      (run) => !("kind" in run && run.kind === "danish-jsonld-v2")
+    ) as CrawlRunDocument[];
   }
 
   async dropDatabase(): Promise<void> {

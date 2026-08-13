@@ -171,6 +171,23 @@ export interface DanishJsonLdRunSummary {
   sourceOutcomes: SourceRunOutcomeSummary[];
 }
 
+/**
+ * Dedicated-run record sharing the native crawl_runs collection with the
+ * legacy crawler. The discriminator prevents consumers from treating this as
+ * a legacy metrics summary.
+ */
+export interface DanishJsonLdCrawlRunDocument {
+  _id?: ObjectId;
+  kind: "danish-jsonld-v2";
+  schemaVersion: 2;
+  crawlRunId: string;
+  startedAt: Date;
+  finishedAt: Date;
+  sourceIds: string[];
+  summary: DanishJsonLdRunSummary;
+  observations: unknown[];
+}
+
 export interface ExtractionResult {
   recipes: Record<string, unknown>[];
   method: "json-ld" | "html-parsing" | "partial";

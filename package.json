@@ -7,6 +7,7 @@
     "start": "tsx src/main.ts",
     "crawl:danish-jsonld": "tsx src/scripts/crawl-danish-jsonld.ts",
     "migration:status": "tsx src/scripts/migration-status.ts",
+    "migration:compare": "tsx src/scripts/migration-compare.ts",
     "build": "tsc",
     "test": "vitest run",
     "test:all": "bash scripts/run_logged.sh test-run \"npm run build\" \"npm test\" \"npm run smoke:crawl\"",

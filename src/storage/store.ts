@@ -1,5 +1,6 @@
 import type {
   CrawlRunDocument,
+  DanishJsonLdCrawlRunDocument,
   PageDocument,
   RecipeDocument,
   RecipeDocumentV2,
@@ -24,4 +25,7 @@ export interface RecipeDocumentV2Store {
     operation: "inserted" | "updated";
     contentMatches: RecipeContentMatch[];
   }>;
+  insertDanishJsonLdRun(
+    run: Omit<DanishJsonLdCrawlRunDocument, "_id">
+  ): Promise<void>;
 }

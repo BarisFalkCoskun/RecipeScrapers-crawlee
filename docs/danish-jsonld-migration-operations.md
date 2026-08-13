@@ -68,7 +68,68 @@ Advance one source at a time; do not advance the whole pilot as a group.
 
 Each transition must attach the run ID, timestamp, source ID, comparison scope,
 and the reviewed evidence to the migration record. No currently registered
-source is represented here as having passed any of these gates.
+source is represented here as having passed any of these gates. Arla is
+`configured`; it has not passed a canary, shadow, or cutover gate.
+
+## Remote-only full shadow and comparison
+
+Run the same pilot as two separate, full, uncapped remote jobs. Do not use a
+page cap for either job. Both databases must be fresh isolated databases, and
+the commands must run from their respective checkouts.
+
+First, in the Scrapy checkout, produce normalized legacy recipes and a JSON
+summary. `--no-state` prevents a previous cycle from hiding URLs; `full` writes
+the normalized `recipes` collection. The command has no page cap.
+
+```bash
+export PILOT_SPIDERS='arla coop kitchenaid surdejsentusiasten sundpaabudget klinksgaard madoghave netto madrejsen tv2mad kikkoman gamleopskrifter'
+MONGODB_URL='mongodb://USER:PASSWORD@REMOTE_HOST:27017/?authSource=admin' \
+MONGODB_DATABASE='recipescrapers_danish_jsonld_shadow_YYYYMMDD' \
+RECIPE_FEED_EXPORT_ENABLED=false \
+uv run python -m tools.run_all_spiders \
+  --spiders $PILOT_SPIDERS --processing-mode full --no-state --parallel 2 \
+  --summary-file scrapy-shadow.json
+```
+
+Next, in this Crawlee checkout, crawl that same ordered cohort to a different
+isolated database. Omitting `--max-pages` makes this a full, uncapped run.
+
+```bash
+export PILOT_SOURCES='arla,coop,kitchenaid,surdejsentusiasten,sundpaabudget,klinksgaard,madoghave,netto,madrejsen,tv2mad,kikkoman,gamleopskrifter'
+MONGODB_URI='mongodb://USER:PASSWORD@REMOTE_HOST:27017/?authSource=admin' \
+DB_NAME='crawlee_danish_jsonld_shadow_YYYYMMDD' \
+npm run crawl:danish-jsonld -- --sources "$PILOT_SOURCES" --force --json-out crawlee-shadow.json
+```
+
+Finally, run the read-only comparison from this checkout. It explicitly names
+both databases and sources, reads legacy normalized `recipes` (`source_site`,
+`url`, title/ingredients/instructions) and Crawlee `recipes_v2`, and writes one
+JSON report to standard output. The credentials stay in environment variables.
+
+```bash
+LEGACY_MONGODB_URI='mongodb://USER:PASSWORD@REMOTE_HOST:27017/?authSource=admin' \
+CRAWLEE_MONGODB_URI='mongodb://USER:PASSWORD@REMOTE_HOST:27017/?authSource=admin' \
+npm run migration:compare -- \
+  --legacy-db recipescrapers_danish_jsonld_shadow_YYYYMMDD \
+  --crawlee-db crawlee_danish_jsonld_shadow_YYYYMMDD \
+  --sources "$PILOT_SOURCES" \
+  --crawlee-evidence crawlee-shadow.json > shadow-comparison.json
+```
+
+The report contains per-source and aggregate legacy/Crawlee URL counts,
+intersection, coverage, required-field checks, Mongo errors, and off-domain
+page-admission counts. It passes only when every source and the aggregate meet all
+of these gates:
+
+- Crawlee URL coverage is at least 95% of the source-scoped legacy canonical
+  URL set.
+- At least 99% of title, ingredients, and instructions checks agree on URL
+  intersections, with zero missing Crawlee required fields.
+- Evidence reports zero Mongo failures and no admitted page URL is outside the
+  source's registered allowed domains.
+
+A missing/mismatched Crawlee evidence file, source cohort, or Crawlee database
+fails the comparison rather than producing an unscoped pass.
 
 ## Storage and consumer contract
 
@@ -79,7 +140,7 @@ The native MongoDB collections for this path are:
 | `recipes_v2` | Strict JSON-LD `RecipeDocumentV2` records, keyed by `sourceRecipeKey`. |
 | `pages` | Page provenance; exact `application/ld+json` script bodies are stored in compressed `rawJsonLdScripts`. |
 | `recipe_content_matches` | Cross-source and same-source content-hash match audit records. |
-| `crawl_runs` | Run summaries and lifecycle telemetry; retention is managed by its TTL index. |
+| `crawl_runs` | Both legacy run summaries and dedicated V2 run records. Danish records have `kind: "danish-jsonld-v2"`, `schemaVersion: 2`, source IDs, source outcomes, and observations; legacy reports exclude those records. Retention is managed by the TTL index. |
 
 Consumers must read `RecipeDocumentV2.normalized` for the portable recipe
 payload: title, ingredients, ordered instructions, durations, yield, images,

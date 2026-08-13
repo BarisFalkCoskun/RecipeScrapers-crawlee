@@ -85,6 +85,16 @@ export async function executeDanishJsonLdCli(
       crawlRunId,
       ...(vpnTransport ? { vpnTransport } : {}),
     });
+    await store.insertDanishJsonLdRun({
+      kind: "danish-jsonld-v2",
+      schemaVersion: 2,
+      crawlRunId,
+      startedAt,
+      finishedAt: resolved.now(),
+      sourceIds: selection.sourceIds,
+      summary: result.summary,
+      observations: result.observations,
+    });
     const evidence = {
       crawlRunId,
       selectedSources: selection.sourceIds,

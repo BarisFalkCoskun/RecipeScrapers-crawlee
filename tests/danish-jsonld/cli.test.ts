@@ -6,7 +6,8 @@ describe("crawl:danish-jsonld CLI", () => {
   it("connects, executes selected sources, writes run evidence, and closes the store", async () => {
     const connect = vi.fn(async () => undefined);
     const close = vi.fn(async () => undefined);
-    const store = { connect, close };
+    const insertDanishJsonLdRun = vi.fn(async () => undefined);
+    const store = { connect, close, insertDanishJsonLdRun };
     const summary: DanishJsonLdRunSummary = {
       robotsEnforced: false,
       sourceOutcomes: [
@@ -40,6 +41,15 @@ describe("crawl:danish-jsonld CLI", () => {
     expect(connect).toHaveBeenCalledOnce();
     expect(close).toHaveBeenCalledOnce();
     expect(runCrawl).toHaveBeenCalledOnce();
+    expect(insertDanishJsonLdRun).toHaveBeenCalledWith(
+      expect.objectContaining({
+        kind: "danish-jsonld-v2",
+        schemaVersion: 2,
+        crawlRunId: "2026-08-13T10-00-00.000Z",
+        sourceIds: ["arla"],
+        summary,
+      })
+    );
     expect(runCrawl.mock.calls[0][0]).toMatchObject({
       crawlRunId: "2026-08-13T10-00-00.000Z",
       selection: { sourceIds: ["arla"], maxPages: 2 },
@@ -55,6 +65,38 @@ describe("crawl:danish-jsonld CLI", () => {
       summary,
     });
     expect(result.summary).toEqual(summary);
+  });
+
+  it("fails visibly and still closes the store when dedicated run persistence fails", async () => {
+    const close = vi.fn(async () => undefined);
+    const store = {
+      connect: vi.fn(async () => undefined),
+      close,
+      insertDanishJsonLdRun: vi.fn(async () => {
+        throw new Error("run persistence failed");
+      }),
+    };
+
+    await expect(
+      executeDanishJsonLdCli(["--sources", "arla"], {
+        env: {},
+        createStore: () => store as never,
+        runCrawl: async () => ({
+          summary: {
+            robotsEnforced: false as const,
+            sourceOutcomes: [{
+              sourceId: "arla",
+              outcome: "partial" as const,
+              outcomeReasons: ["max-pages-cap-reached" as const],
+            }],
+          },
+          observations: [{ sourceId: "arla", discoveryComplete: false }],
+        }),
+        output: () => undefined,
+      })
+    ).rejects.toThrow("run persistence failed");
+
+    expect(close).toHaveBeenCalledOnce();
   });
 
   it("closes the store when source execution fails", async () => {
@@ -117,6 +159,7 @@ describe("crawl:danish-jsonld CLI", () => {
     const store = {
       connect: vi.fn(async () => undefined),
       close: vi.fn(async () => undefined),
+      insertDanishJsonLdRun: vi.fn(async () => undefined),
     };
 
     await executeDanishJsonLdCli(["--sources", "arla"], {
@@ -142,6 +185,7 @@ describe("crawl:danish-jsonld CLI", () => {
     const store = {
       connect: vi.fn(async () => { order.push("store-connect"); }),
       close: vi.fn(async () => { order.push("store-close"); }),
+      insertDanishJsonLdRun: vi.fn(async () => undefined),
     };
     const runCrawl = vi.fn(async () => ({
       summary: { robotsEnforced: false as const, sourceOutcomes: [] },
@@ -197,6 +241,7 @@ describe("crawl:danish-jsonld CLI", () => {
     const store = {
       connect: async () => undefined,
       close: async () => undefined,
+      insertDanishJsonLdRun: async () => undefined,
     };
     const dependencies = {
       env: { CRAWL_RUN_ID: "fixed-run" },

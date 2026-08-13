@@ -196,6 +196,27 @@ describe("RecipeStore", () => {
     });
   });
 
+  it("stores dedicated Danish JSON-LD runs with an explicit V2 discriminator", async () => {
+    const run = {
+      kind: "danish-jsonld-v2" as const,
+      schemaVersion: 2 as const,
+      crawlRunId: "run-1",
+      startedAt: new Date("2026-08-13T10:00:00.000Z"),
+      finishedAt: new Date("2026-08-13T10:01:00.000Z"),
+      sourceIds: ["arla"],
+      summary: { robotsEnforced: false as const, sourceOutcomes: [] },
+      observations: [],
+    };
+
+    await expect(
+      (store as unknown as {
+        insertDanishJsonLdRun: (value: typeof run) => Promise<void>;
+      }).insertDanishJsonLdRun(run)
+    ).resolves.toBeUndefined();
+
+    expect(crawlRuns).toEqual([run]);
+  });
+
   it("upserts a page document", async () => {
     const page: StoredPage = {
       canonicalUrl: "https://example.dk/opskrift/kage",
