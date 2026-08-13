@@ -96,6 +96,23 @@ describe("LinkFilter", () => {
     expect(smallFilter.shouldEnqueue("https://example.dk/page2")).toBe(false);
   });
 
+  it("reports per-domain crawl capacity diagnostics", () => {
+    const smallFilter = new LinkFilter(3);
+    smallFilter.recordPageCrawled("example.dk");
+    smallFilter.recordEnqueued([
+      "https://example.dk/page1",
+      "https://example.dk/page2",
+    ]);
+
+    expect(smallFilter.getDomainCapacitySnapshot("example.dk")).toEqual({
+      domain: "example.dk",
+      crawledPages: 1,
+      admittedPages: 3,
+      maxPages: 3,
+      remainingAdmissionCapacity: 0,
+    });
+  });
+
   it("shouldFollowLink allows recipe URLs always", () => {
     expect(filter.shouldFollowLink("https://a.dk/opskrift/kage", false, true, 5)).toBe(true);
   });

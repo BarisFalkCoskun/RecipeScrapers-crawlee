@@ -36,6 +36,14 @@ export interface QueueEligibilityOptions {
   allowSoftDiscovery?: boolean;
 }
 
+export interface LinkFilterDomainCapacitySnapshot {
+  domain: string;
+  crawledPages: number;
+  admittedPages: number;
+  maxPages: number;
+  remainingAdmissionCapacity: number;
+}
+
 export class LinkFilter {
   private domainPageCounts = new Map<string, number>();
   private domainAdmissionCounts = new Map<string, number>();
@@ -192,6 +200,20 @@ export class LinkFilter {
 
   getDomainAdmissionCount(domain: string): number {
     return this.domainAdmissionCounts.get(normalizeDomain(domain)) ?? 0;
+  }
+
+  getDomainCapacitySnapshot(domain: string): LinkFilterDomainCapacitySnapshot {
+    const normalizedDomain = normalizeDomain(domain);
+    const admittedPages = this.getDomainAdmissionCount(normalizedDomain);
+    const maxPages = this.getMaxPagesForDomain(normalizedDomain);
+
+    return {
+      domain: normalizedDomain,
+      crawledPages: this.getDomainCount(normalizedDomain),
+      admittedPages,
+      maxPages,
+      remainingAdmissionCapacity: Math.max(0, maxPages - admittedPages),
+    };
   }
 
   recordEnqueued(items: number | string | string[] = 1): void {

@@ -45,6 +45,7 @@ async function main() {
   log.info(
     `Recrawl TTL enabled: skipping pages fetched since ${recrawlCutoff.toISOString()}`
   );
+  log.info(`Process diagnostics: ${formatProcessDiagnostics(startedAt)}`);
   log.info(
     `Crawl settings: profile=${CRAWL_PROFILE} ` +
       `cheerio={maxConcurrency:${CHEERIO_CONFIG.maxConcurrency},maxRequestsPerMinute:${CHEERIO_CONFIG.maxRequestsPerMinute},sameDomainDelaySecs:${CHEERIO_CONFIG.sameDomainDelaySecs},maxRetries:${CHEERIO_CONFIG.maxRequestRetries}} ` +
@@ -352,6 +353,7 @@ async function logSignalDiagnostics({
   log.warning(
     `Received ${signal}; crawl diagnostics before exit: ` +
       `runId=${crawlRunId} elapsedMillis=${elapsedMillis} ` +
+      `process=${formatProcessDiagnostics(startedAt)} ` +
       `processed=${summary.processedPages} ` +
       `cheerioProcessed=${summary.processedByMode.cheerio} ` +
       `playwrightProcessed=${summary.processedByMode.playwright} ` +
@@ -381,6 +383,9 @@ async function logSignalDiagnostics({
     log.warning(
       `Signal domain snapshot ${domain.domain}: processed=${domain.processedPages} ` +
         `recipes=${domain.extractedRecipes} fallbacks=${domain.fallbacksEnqueued} ` +
+        `capacity=${formatDomainCapacity(
+          linkFilter.getDomainCapacitySnapshot(domain.domain)
+        )} ` +
         `blockedUrls=${sumRecord(domain.blockedUrlReasons)}`
     );
   }
@@ -427,6 +432,31 @@ function formatRecord(record: Record<string, number>): string {
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([key, value]) => `${key}=${value}`)
     .join(",");
+}
+
+function formatDomainCapacity(
+  capacity: ReturnType<LinkFilter["getDomainCapacitySnapshot"]>
+): string {
+  return (
+    `crawled=${capacity.crawledPages}|admitted=${capacity.admittedPages}|` +
+    `max=${capacity.maxPages}|remaining=${capacity.remainingAdmissionCapacity}`
+  );
+}
+
+function formatProcessDiagnostics(startedAt: Date): string {
+  const memoryUsage = process.memoryUsage();
+  return (
+    `{pid:${process.pid},ppid:${process.ppid},uptimeSecs:${Math.round(
+      process.uptime()
+    )},elapsedSecs:${Math.round((Date.now() - startedAt.getTime()) / 1000)},` +
+    `rssMiB:${bytesToMiB(memoryUsage.rss)},heapUsedMiB:${bytesToMiB(
+      memoryUsage.heapUsed
+    )},argv:${process.argv.join(" ")}}`
+  );
+}
+
+function bytesToMiB(bytes: number): number {
+  return Math.round((bytes / 1024 / 1024) * 10) / 10;
 }
 
 function sumRecord(record: Record<string, number>): number {

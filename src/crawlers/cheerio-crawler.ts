@@ -26,7 +26,10 @@ import {
   classifyCheerioRequest,
   type RequestLabel,
 } from "./request-routing.js";
-import { LinkFilter } from "../discovery/link-filter.js";
+import {
+  LinkFilter,
+  type LinkFilterDomainCapacitySnapshot,
+} from "../discovery/link-filter.js";
 import type { CrawlStore } from "../storage/store.js";
 import {
   CHEERIO_CONFIG,
@@ -661,7 +664,8 @@ class CheerioCrawlerDiagnostics {
     log.info(
       `Cheerio diagnostics: trigger=${trigger} totalFinished=${this.totalFinished} ` +
         `currentDomain=${domain} current=${formatDomainDiagnostics(
-          currentDomainStats
+          currentDomainStats,
+          this.options.linkFilter.getDomainCapacitySnapshot(domain)
         )} ` +
         `cheerioQueue=${formatQueueInfo(cheerioInfo)} ` +
         `playwrightQueue=${formatQueueInfo(playwrightInfo)} ` +
@@ -670,7 +674,12 @@ class CheerioCrawlerDiagnostics {
     );
 
     for (const stats of topDomains) {
-      log.info(`Cheerio domain diagnostics: ${formatDomainDiagnostics(stats)}`);
+      log.info(
+        `Cheerio domain diagnostics: ${formatDomainDiagnostics(
+          stats,
+          this.options.linkFilter.getDomainCapacitySnapshot(stats.domain)
+        )}`
+      );
     }
   }
 
@@ -747,7 +756,8 @@ function formatQueueInfo(
 }
 
 function formatDomainDiagnostics(
-  stats: CheerioDomainDiagnostics | undefined
+  stats: CheerioDomainDiagnostics | undefined,
+  capacity?: LinkFilterDomainCapacitySnapshot
 ): string {
   if (!stats) {
     return "unavailable";
@@ -762,13 +772,28 @@ function formatDomainDiagnostics(
 
   return (
     `{domain:${stats.domain},started:${stats.started},finished:${stats.finished},` +
+    `unfinished:${Math.max(0, stats.started - stats.finished)},` +
     `recipes:${stats.recipes},fallbackQueued:${stats.fallbackQueued},` +
     `fallbackReasons:${formatMap(stats.fallbackReasons)},` +
+    `capacity:${formatDomainCapacity(capacity)},` +
     `discovered:${stats.discoveredCandidates},fresh:${stats.freshCandidates},` +
     `queuedCheerio:${stats.queuedCheerio},queuedPlaywright:${stats.queuedPlaywright},` +
     `retries:${stats.retries},failures:${stats.failures},` +
     `avgStartGapMs:${avgStartGapMillis.toFixed(0)},maxStartGapMs:${stats.maxStartGapMillis},` +
     `avgDurationMs:${avgDurationMillis.toFixed(0)},maxDurationMs:${stats.maxDurationMillis}}`
+  );
+}
+
+function formatDomainCapacity(
+  capacity: LinkFilterDomainCapacitySnapshot | undefined
+): string {
+  if (!capacity) {
+    return "unavailable";
+  }
+
+  return (
+    `crawled=${capacity.crawledPages}|admitted=${capacity.admittedPages}|` +
+    `max=${capacity.maxPages}|remaining=${capacity.remainingAdmissionCapacity}`
   );
 }
 
