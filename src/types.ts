@@ -159,6 +159,7 @@ export type SourceOutcomeReason =
   | "malformed-listing-payload"
   | "unexpected-listing-shape"
   | "http-200-block-shell"
+  | "vpn-relay-pool-exhausted"
   | "loaded-url-domain-not-allowed"
   | "canonical-domain-not-allowed"
   | "structured-extraction-empty"

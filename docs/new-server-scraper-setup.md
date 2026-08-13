@@ -160,7 +160,11 @@ MONGODB_URI=mongodb://localhost:27017
 DB_NAME=crawlee
 ```
 
-For the first run on the new server, leave `CRAWLEE_MEMORY_MBYTES` unset. We want Crawlee and the diagnostic logs to show the natural memory behavior on the new machine.
+For the first run on the new server, leave `CRAWLEE_MEMORY_MBYTES` unset. The
+dedicated Danish JSON-LD command uses 75% of host RAM by default (about 6 GB on
+an 8 GB server) and logs the effective `runtime-resource-budget`. Set
+`CRAWLEE_MEMORY_MBYTES` or `CRAWLEE_AVAILABLE_MEMORY_RATIO` only when an
+explicit override is needed.
 
 ## 8. Build And Test
 

@@ -186,7 +186,6 @@ describe("Danish JSON-LD discovery", () => {
     ["glutenfrimagi", "/opskrifter/"],
     ["heidiogper", "/opskrifter/forside"],
     ["knaehoejkarse", "/alle-opskrifter/"],
-    ["madrejsen", "/opskrifter/"],
     ["recipesairfryer_dk", "/da/hjemmeside-da/"],
   ])("executes the %s source-specific listing skip rule", (sourceId, href) => {
     const exceptional = DANISH_JSONLD_SOURCES.find((entry) => entry.id === sourceId)!;
@@ -197,6 +196,35 @@ describe("Danish JSON-LD discovery", () => {
     });
     expect(result.recipeUrls).toEqual([]);
     expect(result.rejectedByReason).toMatchObject({ "skip-path": 1 });
+  });
+
+  it("discovers Madrejsen recipes from category cards without admitting navigation links", () => {
+    const source = DANISH_JSONLD_SOURCES.find((entry) => entry.id === "madrejsen")!;
+    const result = discoverListingPage({
+      source,
+      pageUrl: "https://madrejsen.dk/aftensmad/",
+      body: `
+        <nav><a href="/sous-vide/">Sous Vide</a></nav>
+        <article class="entry">
+          <h2><a class="entry-title-link" href="/malaysisk-kyllingekarry/">Recipe</a></h2>
+        </article>
+        <span class="pagination-next"><a href="/aftensmad/page/2/">Next Page »</a></span>
+      `,
+    });
+
+    expect(source.startUrls).toEqual([
+      "https://madrejsen.dk/sous-vide/",
+      "https://madrejsen.dk/morgenmad/",
+      "https://madrejsen.dk/frokost/",
+      "https://madrejsen.dk/aftensmad/",
+      "https://madrejsen.dk/tilbehor/",
+    ]);
+    expect(result.recipeUrls).toEqual([
+      "https://madrejsen.dk/malaysisk-kyllingekarry/",
+    ]);
+    expect(result.nextUrls).toEqual([
+      "https://madrejsen.dk/aftensmad/page/2/",
+    ]);
   });
 
   it("applies typed sitemap follow and skip rules", () => {

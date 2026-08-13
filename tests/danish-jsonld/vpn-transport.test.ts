@@ -3,6 +3,7 @@ import type { Request } from "crawlee";
 import { MullvadRelayProvider, type MullvadRelay } from "../../src/danish-jsonld/mullvad-relay-provider.js";
 import {
   MullvadVpnTransport,
+  VpnRelayPoolExhaustedError,
   requestVpnSessionId,
 } from "../../src/danish-jsonld/vpn-transport.js";
 
@@ -16,12 +17,12 @@ const RELAYS: MullvadRelay[] = Array.from({ length: 5 }, (_, index) => ({
   socks_port: 1080,
 }));
 
-function createTransport() {
+function createTransport(relays: MullvadRelay[] = RELAYS) {
   let port = 4300;
   const events: Array<{ event: string; data: Record<string, unknown> }> = [];
   const provider = new MullvadRelayProvider({
     country: "dk",
-    fetchRelays: async () => RELAYS,
+    fetchRelays: async () => relays,
     readCache: async () => [],
     writeCache: async () => undefined,
     verifyRelay: async (relay) => ({
@@ -40,8 +41,8 @@ function createTransport() {
   };
 }
 
-function requestWithSession(vpnSessionId: string): Request {
-  return { userData: { vpnSessionId } } as Request;
+function requestWithSession(vpnSessionId: string, url = "https://arla.dk/opskrifter/a"): Request {
+  return { url, userData: { vpnSessionId } } as Request;
 }
 
 describe("Mullvad VPN transport", () => {
@@ -146,6 +147,48 @@ describe("Mullvad VPN transport", () => {
       rotated: true,
       reason: "explicit-block",
     });
+  });
+
+  it("rotates for HTTP 454 and a 401 Security Verification shell", async () => {
+    const { transport } = createTransport();
+    await transport.initialize();
+    await transport.proxyConfiguration.newUrl("ignored", {
+      request: requestWithSession("vpn-454", "https://madrejsen.dk/aftensmad/"),
+    });
+    await transport.proxyConfiguration.newUrl("ignored", {
+      request: requestWithSession("vpn-401-waf", "https://klinksgaard.dk/opskrifter/"),
+    });
+
+    await expect(transport.handleResponse({
+      sessionId: "vpn-454",
+      statusCode: 454,
+      body: "Checking your browser before accessing this site",
+    })).resolves.toMatchObject({ rotated: true, reason: "explicit-block" });
+    await expect(transport.handleResponse({
+      sessionId: "vpn-401-waf",
+      statusCode: 401,
+      body: "Security Verification",
+    })).resolves.toMatchObject({ rotated: true, reason: "explicit-block" });
+  });
+
+  it("throws a typed pool-exhaustion error after all relays are blocked for one hostname", async () => {
+    const { transport } = createTransport(RELAYS.slice(0, 4));
+    await transport.initialize();
+    const sessionId = "vpn-exhausted";
+    await transport.proxyConfiguration.newUrl("ignored", {
+      request: requestWithSession(sessionId, "https://madrejsen.dk/aftensmad/"),
+    });
+    for (let index = 0; index < 4; index += 1) {
+      await transport.handleResponse({ sessionId, statusCode: 454, body: "Checking your browser" });
+    }
+    await transport.release(sessionId);
+
+    await expect(transport.proxyConfiguration.newUrl("ignored", {
+      request: requestWithSession("vpn-new", "https://madrejsen.dk/frokost/"),
+    })).rejects.toBeInstanceOf(VpnRelayPoolExhaustedError);
+    await expect(transport.proxyConfiguration.newUrl("ignored", {
+      request: requestWithSession("vpn-other", "https://sundpaabudget.dk/sitemap.xml"),
+    })).resolves.toMatch(/^http:\/\/127\.0\.0\.1:/u);
   });
 
   it("rotates only after a repeated generic transport failure", async () => {

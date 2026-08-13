@@ -109,7 +109,9 @@ describe("Danish JSON-LD source registry", () => {
       (source) => source.discovery === "listing"
     );
 
-    for (const listing of listingSources.filter((source) => source.id !== "rema1000")) {
+    for (const listing of listingSources.filter(
+      (source) => !["madrejsen", "rema1000"].includes(source.id)
+    )) {
       expect(listing.listingDiscovery).toMatchObject({
         recipeLinkSelectors: ["a[href]"],
         continuationSelectors: [
@@ -125,6 +127,10 @@ describe("Danish JSON-LD source registry", () => {
 
     expect(byId.get("rema1000")?.listingDiscovery?.continuationSelectors)
       .toEqual(["a.sr-only[href]"]);
+    expect(byId.get("madrejsen")?.listingDiscovery).toMatchObject({
+      recipeLinkSelectors: ["article.entry a.entry-title-link[href]"],
+      continuationSelectors: [".pagination-next a[href]"],
+    });
     expect(byId.get("kitchenaid")?.listingDiscovery?.continuationUrlPatterns)
       .toEqual(["^/opskrifter/alle/\\d+/?$"]);
     expect(byId.get("klank")?.listingDiscovery?.continuationUrlPatterns).toEqual([

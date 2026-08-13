@@ -70,6 +70,7 @@ export class MullvadRelayProvider {
   private readonly reservedRelayLabels = new Set<string>();
   private readonly sessionOperations = new Map<string, Promise<void>>();
   private readonly cooldownUntil = new Map<string, number>();
+  private readonly scopedCooldownUntil = new Map<string, Map<string, number>>();
   private readonly usedBySession = new Map<string, Set<string>>();
   private relays: MullvadRelay[] = [];
   private closing = false;
@@ -110,24 +111,25 @@ export class MullvadRelayProvider {
     });
   }
 
-  async acquire(sessionId: string): Promise<MullvadRelayLease | null> {
+  async acquire(sessionId: string, targetScope?: string): Promise<MullvadRelayLease | null> {
     return this.runSessionOperation(sessionId, async () => {
       const existing = this.activeBySession.get(sessionId);
       if (existing) return publicLease(existing);
-      return this.acquireFresh(sessionId);
+      return this.acquireFresh(sessionId, targetScope);
     });
   }
 
   async rebind(
     fromSessionId: string,
-    toSessionId: string
+    toSessionId: string,
+    targetScope?: string
   ): Promise<MullvadRelayLease | null> {
-    if (fromSessionId === toSessionId) return this.acquire(toSessionId);
+    if (fromSessionId === toSessionId) return this.acquire(toSessionId, targetScope);
     return this.runSessionOperation(toSessionId, async () => {
       const existing = this.activeBySession.get(toSessionId);
       if (existing) return publicLease(existing);
       const lease = this.activeBySession.get(fromSessionId);
-      if (!lease) return this.acquireFresh(toSessionId);
+      if (!lease) return this.acquireFresh(toSessionId, targetScope);
       this.activeBySession.delete(fromSessionId);
       this.activeBySession.set(toSessionId, lease);
       const used = this.usedBySession.get(fromSessionId) ??
@@ -138,16 +140,26 @@ export class MullvadRelayProvider {
     });
   }
 
-  async rotate(sessionId: string): Promise<MullvadRelayLease | null> {
+  async rotate(
+    sessionId: string,
+    targetScope?: string,
+    cooldownMode: "global" | "scope" = "global"
+  ): Promise<MullvadRelayLease | null> {
     return this.runSessionOperation(sessionId, async () => {
       const current = this.activeBySession.get(sessionId);
       if (current) {
         this.activeBySession.delete(sessionId);
         this.activeRelayLabels.delete(current.relayLabel);
-        this.cooldownUntil.set(current.relayLabel, this.now() + this.cooldownMs);
+        if (cooldownMode === "scope" && targetScope) {
+          const scoped = this.scopedCooldownUntil.get(targetScope) ?? new Map<string, number>();
+          scoped.set(current.relayLabel, this.now() + this.cooldownMs);
+          this.scopedCooldownUntil.set(targetScope, scoped);
+        } else {
+          this.cooldownUntil.set(current.relayLabel, this.now() + this.cooldownMs);
+        }
         await this.closeBridge(current);
       }
-      return this.acquireFresh(sessionId);
+      return this.acquireFresh(sessionId, targetScope);
     });
   }
 
@@ -166,6 +178,27 @@ export class MullvadRelayProvider {
     });
   }
 
+  async invalidate(
+    sessionId: string,
+    targetScope?: string,
+    cooldownMode: "global" | "scope" = "global"
+  ): Promise<void> {
+    await this.runSessionOperation(sessionId, async () => {
+      const current = this.activeBySession.get(sessionId);
+      if (!current) return;
+      this.activeBySession.delete(sessionId);
+      this.activeRelayLabels.delete(current.relayLabel);
+      if (cooldownMode === "scope" && targetScope) {
+        const scoped = this.scopedCooldownUntil.get(targetScope) ?? new Map<string, number>();
+        scoped.set(current.relayLabel, this.now() + this.cooldownMs);
+        this.scopedCooldownUntil.set(targetScope, scoped);
+      } else {
+        this.cooldownUntil.set(current.relayLabel, this.now() + this.cooldownMs);
+      }
+      await this.closeBridge(current);
+    });
+  }
+
   async cleanup(): Promise<void> {
     this.closing = true;
     await Promise.allSettled([...this.sessionOperations.values()]);
@@ -176,17 +209,24 @@ export class MullvadRelayProvider {
     await Promise.allSettled(leases.map((lease) => this.closeBridge(lease)));
     this.sessionOperations.clear();
     this.cooldownUntil.clear();
+    this.scopedCooldownUntil.clear();
     this.usedBySession.clear();
     this.relays = [];
   }
 
-  private async acquireFresh(sessionId: string): Promise<MullvadRelayLease | null> {
+  private async acquireFresh(
+    sessionId: string,
+    targetScope?: string
+  ): Promise<MullvadRelayLease | null> {
     const used = this.usedBySession.get(sessionId) ?? new Set<string>();
     this.usedBySession.set(sessionId, used);
 
     while (true) {
-      const relay = this.nextCandidate(used);
-      if (!relay) return null;
+      const relay = this.nextCandidate(used, targetScope);
+      if (!relay) {
+        this.emitPoolExhausted(targetScope, used);
+        return null;
+      }
       const relayLabel = boundedRelayLabel(relay);
       used.add(relayLabel);
       this.reservedRelayLabels.add(relayLabel);
@@ -247,18 +287,47 @@ export class MullvadRelayProvider {
     }
   }
 
-  private nextCandidate(used: Set<string>): MullvadRelay | undefined {
+  private nextCandidate(
+    used: Set<string>,
+    targetScope?: string
+  ): MullvadRelay | undefined {
     const now = this.now();
+    const scopedCooldown = targetScope
+      ? this.scopedCooldownUntil.get(targetScope)
+      : undefined;
     return this.relays.find((relay) => {
       const label = boundedRelayLabel(relay);
       const cooldown = this.cooldownUntil.get(label);
       if (cooldown !== undefined && cooldown <= now) {
         this.cooldownUntil.delete(label);
       }
+      const scopedUntil = scopedCooldown?.get(label);
+      if (scopedUntil !== undefined && scopedUntil <= now) {
+        scopedCooldown?.delete(label);
+      }
       return !used.has(label) &&
         !this.activeRelayLabels.has(label) &&
         !this.reservedRelayLabels.has(label) &&
-        !this.cooldownUntil.has(label);
+        !this.cooldownUntil.has(label) &&
+        !scopedCooldown?.has(label);
+    });
+  }
+
+  private emitPoolExhausted(
+    targetScope: string | undefined,
+    used: Set<string>
+  ): void {
+    const scoped = targetScope
+      ? this.scopedCooldownUntil.get(targetScope)
+      : undefined;
+    this.emit("vpn-relay-pool-exhausted", {
+      targetScope: targetScope ?? "global",
+      eligibleRelayCount: this.relays.length,
+      activeRelayCount: this.activeRelayLabels.size,
+      reservedRelayCount: this.reservedRelayLabels.size,
+      globalCoolingRelayCount: this.cooldownUntil.size,
+      scopedCoolingRelayCount: scoped?.size ?? 0,
+      requestUsedRelayCount: used.size,
     });
   }
 

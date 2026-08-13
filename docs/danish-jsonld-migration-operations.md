@@ -86,8 +86,11 @@ The strict JSON-LD runtime preserves each exact source script. When an otherwise
 valid script contains illegal literal JSON control characters inside a quoted
 value, the parser may escape only those characters for the parsed recipe node
 and records `json-ld-control-character-repaired`. Other malformed JSON remains
-rejected. HTTP 455 WAF responses are treated as blocked; with `--vpn`, an
-explicit 455 block body is eligible for reactive Mullvad relay rotation.
+rejected. HTTP 454 and 455 WAF responses are treated as blocked; with `--vpn`,
+an explicit WAF block body is eligible for reactive Mullvad relay rotation.
+Access-block relay cooldown is scoped to the target hostname, so one blocked
+source does not exhaust relays for unrelated sources. Playwright retires
+inactive proxy-specific browsers after five seconds and closes them after ten.
 
 ## Remote-only full shadow and comparison
 

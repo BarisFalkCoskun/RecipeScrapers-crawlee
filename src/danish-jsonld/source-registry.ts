@@ -1715,7 +1715,11 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
     "discovery": "listing",
     "sitemapUrls": [],
     "startUrls": [
-      "https://madrejsen.dk/opskrifter/"
+      "https://madrejsen.dk/sous-vide/",
+      "https://madrejsen.dk/morgenmad/",
+      "https://madrejsen.dk/frokost/",
+      "https://madrejsen.dk/aftensmad/",
+      "https://madrejsen.dk/tilbehor/"
     ],
     "recipeUrlPatterns": [
       "^/[a-z0-9æøå-]+/?$"
@@ -2864,6 +2868,9 @@ const LEGACY_LISTING_DISCOVERY_OVERRIDES: Record<
     skipPathFragments: [...LEGACY_LISTING_SKIP_PATHS, "/alle-opskrifter/", "/opskrifter/", "/about/"],
   },
   madrejsen: {
+    recipeLinkSelectors: ["article.entry a.entry-title-link[href]"],
+    continuationSelectors: [".pagination-next a[href]"],
+    continuationUrlPatterns: ["^/(?:sous-vide|morgenmad|frokost|aftensmad|tilbehor)/page/\\d+/?$"],
     skipPathFragments: [...LEGACY_LISTING_SKIP_PATHS, "/opskrifter/", "/opskrifter", "/om-mig/"],
   },
   recipesairfryer_dk: {

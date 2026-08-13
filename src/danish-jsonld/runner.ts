@@ -29,6 +29,7 @@ import {
 } from "./diagnostics.js";
 import {
   VpnRotationRetryError,
+  isVpnRelayPoolExhaustedError,
   requestVpnSessionId,
   type DanishJsonLdVpnTransport,
 } from "./vpn-transport.js";
@@ -39,7 +40,7 @@ export interface DanishJsonLdCrawlSelection extends DanishJsonLdCrawlOptions {
 }
 
 export const DANISH_JSONLD_OBSERVED_HTTP_ERROR_STATUS_CODES = [
-  401, 403, 429, 455, 526,
+  401, 403, 429, 454, 455, 526,
 ] as const;
 const QUEUE_RECLAIM_GRACE_BUFFER_MS = 100;
 
@@ -295,13 +296,17 @@ export async function executeDanishJsonLdSource(
         { request }: CheerioCrawlingContext,
         error: Error
       ) => {
+        const relayPoolExhausted = isVpnRelayPoolExhaustion(
+          error,
+          request.errorMessages
+        );
         const rotation = input.vpnTransport
           ? await input.vpnTransport.handleFailure({
               sessionId: vpnSessionId(request.userData),
               error,
             })
           : undefined;
-        if (rotation?.exhausted) request.noRetry = true;
+        if (rotation?.exhausted || relayPoolExhausted) request.noRetry = true;
         const allowRetry = await session.recordRetry({
           fetchMode: "cheerio",
           kind: requestKind(request.label, request.userData),
@@ -317,12 +322,19 @@ export async function executeDanishJsonLdSource(
         { request }: CheerioCrawlingContext,
         error: Error
       ) => {
+        const relayPoolExhausted = isVpnRelayPoolExhaustion(
+          error,
+          request.errorMessages
+        );
         await session.recordFailedRequest({
           fetchMode: "cheerio",
           kind: requestKind(request.label, request.userData),
           url: request.url,
           retryCount: request.retryCount,
           statusCode: parseHttpStatus(error, request.errorMessages),
+          ...(relayPoolExhausted
+            ? { blockedReason: "vpn-relay-pool-exhausted" as const }
+            : {}),
           error,
         });
         await releaseVpnRequest(request.userData);
@@ -372,13 +384,17 @@ export async function executeDanishJsonLdSource(
         { request }: PlaywrightCrawlingContext,
         error: Error
       ) => {
+        const relayPoolExhausted = isVpnRelayPoolExhaustion(
+          error,
+          request.errorMessages
+        );
         const rotation = input.vpnTransport
           ? await input.vpnTransport.handleFailure({
               sessionId: vpnSessionId(request.userData),
               error,
             })
           : undefined;
-        if (rotation?.exhausted) request.noRetry = true;
+        if (rotation?.exhausted || relayPoolExhausted) request.noRetry = true;
         const allowRetry = await session.recordRetry({
           fetchMode: "playwright",
           kind: requestKind(request.label, request.userData),
@@ -394,12 +410,19 @@ export async function executeDanishJsonLdSource(
         { request }: PlaywrightCrawlingContext,
         error: Error
       ) => {
+        const relayPoolExhausted = isVpnRelayPoolExhaustion(
+          error,
+          request.errorMessages
+        );
         await session.recordFailedRequest({
           fetchMode: "playwright",
           kind: requestKind(request.label, request.userData),
           url: request.url,
           retryCount: request.retryCount,
           statusCode: parseHttpStatus(error, request.errorMessages),
+          ...(relayPoolExhausted
+            ? { blockedReason: "vpn-relay-pool-exhausted" as const }
+            : {}),
           error,
         });
         await releaseVpnRequest(request.userData);
@@ -523,6 +546,16 @@ function parseHttpStatus(error: unknown, errorMessages: string[]): number | unde
     .join(" ");
   const match = text.match(/(?:^|\D)([1-5]\d{2})(?:\D|$)/u);
   return match ? Number(match[1]) : undefined;
+}
+
+function isVpnRelayPoolExhaustion(
+  error: unknown,
+  errorMessages: string[]
+): boolean {
+  return isVpnRelayPoolExhaustedError(error) ||
+    errorMessages.some((message) =>
+      message.startsWith("No verified Mullvad relay is available for ")
+    );
 }
 
 class SourceExecutionFailure extends Error {

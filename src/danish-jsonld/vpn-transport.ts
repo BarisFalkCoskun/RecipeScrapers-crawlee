@@ -12,7 +12,7 @@ const PREFLIGHT_SESSION_ID = "vpn-preflight";
 const MAX_ROTATIONS_PER_REQUEST = 3;
 const REPEATED_TRANSPORT_FAILURES = 2;
 const EXPLICIT_BLOCK_PATTERN =
-  /captcha|access denied|checking your browser|cloudflare challenge|temporarily blocked|request (?:was )?blocked|security incident detected|unusual traffic/iu;
+  /captcha|access denied|checking your browser|cloudflare challenge|temporarily blocked|request (?:was )?blocked|security incident detected|security verification|unusual traffic/iu;
 const TRANSPORT_ERROR_CODES = new Set([
   "ECONNRESET",
   "ETIMEDOUT",
@@ -53,6 +53,7 @@ export class MullvadVpnTransport implements DanishJsonLdVpnTransport {
   private readonly rotations = new Map<string, number>();
   private readonly consecutiveTransportFailures = new Map<string, number>();
   private readonly sessionOperations = new Map<string, Promise<void>>();
+  private readonly targetScopeBySession = new Map<string, string>();
   private initialized = false;
   private preflightAvailable = false;
   private closing = false;
@@ -69,18 +70,18 @@ export class MullvadVpnTransport implements DanishJsonLdVpnTransport {
           throw new Error("Mullvad VPN transport has not been initialized");
         }
         const sessionId = readRequestSessionId(options?.request);
+        const targetScope = requestTargetScope(options?.request);
+        this.targetScopeBySession.set(sessionId, targetScope);
         return this.runSessionOperation(sessionId, async () => {
           let lease: MullvadRelayLease | null;
           if (this.preflightAvailable) {
             this.preflightAvailable = false;
-            lease = await this.provider.rebind(PREFLIGHT_SESSION_ID, sessionId);
+            lease = await this.provider.rebind(PREFLIGHT_SESSION_ID, sessionId, targetScope);
           } else {
-            lease = await this.provider.acquire(sessionId);
+            lease = await this.provider.acquire(sessionId, targetScope);
           }
           if (!lease) {
-            throw new Error(
-              "No verified Mullvad relay is available for the request"
-            );
+            throw new VpnRelayPoolExhaustedError(targetScope);
           }
           return lease.proxyUrl;
         });
@@ -114,7 +115,7 @@ export class MullvadVpnTransport implements DanishJsonLdVpnTransport {
     return this.runSessionOperation(input.sessionId, async () => {
       this.consecutiveTransportFailures.delete(input.sessionId);
       const explicitBlock =
-        ![401, 404].includes(input.statusCode) &&
+        input.statusCode !== 404 &&
         EXPLICIT_BLOCK_PATTERN.test(input.body.slice(0, 20_000));
       const reason = [403, 429, 526].includes(input.statusCode)
         ? `http-${input.statusCode}`
@@ -145,6 +146,7 @@ export class MullvadVpnTransport implements DanishJsonLdVpnTransport {
       this.consecutiveTransportFailures.set(input.sessionId, failures);
       if (failures < REPEATED_TRANSPORT_FAILURES) return noRotation();
       this.consecutiveTransportFailures.delete(input.sessionId);
+      this.targetScopeBySession.delete(input.sessionId);
       return this.rotateLocked(input.sessionId, "repeated-transport-failure");
     });
   }
@@ -165,6 +167,7 @@ export class MullvadVpnTransport implements DanishJsonLdVpnTransport {
     this.preflightAvailable = false;
     this.rotations.clear();
     this.consecutiveTransportFailures.clear();
+    this.targetScopeBySession.clear();
     await this.provider.cleanup();
     this.sessionOperations.clear();
   }
@@ -175,10 +178,25 @@ export class MullvadVpnTransport implements DanishJsonLdVpnTransport {
   ): Promise<VpnRotationDecision> {
     const count = this.rotations.get(sessionId) ?? 0;
     if (count >= MAX_ROTATIONS_PER_REQUEST) {
+      const targetScope = this.targetScopeBySession.get(sessionId);
+      const scopedAccessCooldown = ["http-403", "http-429", "http-526", "explicit-block"]
+        .includes(reason);
+      await this.provider.invalidate(
+        sessionId,
+        targetScope,
+        scopedAccessCooldown ? "scope" : "global"
+      );
       this.emit("vpn-rotation-exhausted", { reason, rotationCount: count });
       return { rotated: false, eligible: true, exhausted: true, reason };
     }
-    const lease = await this.provider.rotate(sessionId);
+    const targetScope = this.targetScopeBySession.get(sessionId);
+    const scopedAccessCooldown = ["http-403", "http-429", "http-526", "explicit-block"]
+      .includes(reason);
+    const lease = await this.provider.rotate(
+      sessionId,
+      targetScope,
+      scopedAccessCooldown ? "scope" : "global"
+    );
     if (!lease) {
       this.emit("vpn-rotation-exhausted", { reason, rotationCount: count });
       return { rotated: false, eligible: true, exhausted: true, reason };
@@ -225,6 +243,31 @@ export class VpnRotationRetryError extends Error {
   }
 }
 
+export class VpnRelayPoolExhaustedError extends Error {
+  readonly targetScope: string;
+
+  constructor(targetScope: string) {
+    super(`No verified Mullvad relay is available for ${targetScope}`);
+    this.name = "VpnRelayPoolExhaustedError";
+    this.targetScope = targetScope;
+  }
+}
+
+export function isVpnRelayPoolExhaustedError(error: unknown): boolean {
+  let current: unknown = error;
+  for (let depth = 0; depth < 4 && current; depth += 1) {
+    if (current instanceof VpnRelayPoolExhaustedError) return true;
+    if (current instanceof Error && (
+      current.name === "VpnRelayPoolExhaustedError" ||
+      current.message.startsWith("No verified Mullvad relay is available for ")
+    )) return true;
+    current = current instanceof Error
+      ? (current as Error & { cause?: unknown }).cause
+      : undefined;
+  }
+  return false;
+}
+
 export function requestVpnSessionId(
   sourceId: string,
   kind: string,
@@ -235,6 +278,14 @@ export function requestVpnSessionId(
     .digest("hex")
     .slice(0, 24);
   return `vpn-${digest}`;
+}
+
+function requestTargetScope(request: Request | undefined): string {
+  try {
+    return new URL(request?.url ?? "").hostname.toLowerCase() || "unknown-target";
+  } catch {
+    return "unknown-target";
+  }
 }
 
 export function createDefaultMullvadVpnTransport(options: {

@@ -191,6 +191,7 @@ export class DanishJsonLdSourceSession {
     statusCode?: number;
     headers?: Record<string, string | string[] | undefined>;
     snippet?: string;
+    blockedReason?: SourceOutcomeReason;
     error: unknown;
   }): Promise<void> {
     const budgeted = await this.requestBudget.handle(
@@ -198,9 +199,10 @@ export class DanishJsonLdSourceSession {
       async () => undefined
     );
     if (!budgeted.handled || budgeted.capReached) this.markPageCapReached();
-    const blocked =
+    const blocked = Boolean(input.blockedReason) || (
       input.statusCode !== undefined &&
-      [401, 403, 429, 455, 526].includes(input.statusCode);
+      [401, 403, 429, 454, 455, 526].includes(input.statusCode)
+    );
     if (blocked) {
       this.observation.blockedRequests =
         (this.observation.blockedRequests ?? 0) + 1;
@@ -212,6 +214,7 @@ export class DanishJsonLdSourceSession {
       this.observation.playwrightFailures =
         (this.observation.playwrightFailures ?? 0) + 1;
     }
+    if (input.blockedReason) this.addDiscoveryFailure(input.blockedReason);
     if (input.kind !== "recipe") this.observation.discoveryComplete = false;
     this.emit("request-failed", {
       fetchMode: input.fetchMode,
@@ -623,6 +626,7 @@ function isSourceOutcomeReason(value: string): value is SourceOutcomeReason {
     "malformed-listing-payload",
     "unexpected-listing-shape",
     "http-200-block-shell",
+    "vpn-relay-pool-exhausted",
   ].includes(value);
 }
 

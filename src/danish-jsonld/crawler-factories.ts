@@ -19,6 +19,12 @@ export interface DanishJsonLdCrawlerSettings {
   sameDomainDelaySecs: number;
 }
 
+export const DANISH_JSONLD_PLAYWRIGHT_BROWSER_POOL_OPTIONS = {
+  maxOpenPagesPerBrowser: 1,
+  retireInactiveBrowserAfterSecs: 5,
+  closeInactiveBrowserAfterSecs: 10,
+} as const;
+
 export function resolveDanishJsonLdCrawlerSettings(
   source: DanishJsonLdSource
 ): DanishJsonLdCrawlerSettings {
@@ -56,6 +62,7 @@ export function createDanishJsonLdPlaywrightCrawler(options: {
   crawlerOptions?: Omit<PlaywrightOptions, "requestHandler">;
 }) {
   const launchContext = options.crawlerOptions?.launchContext;
+  const browserPoolOptions = options.crawlerOptions?.browserPoolOptions;
   return new PlaywrightCrawler({
     ...options.crawlerOptions,
     ...(options.proxyConfiguration
@@ -68,6 +75,13 @@ export function createDanishJsonLdPlaywrightCrawler(options: {
         }
       : {}),
     ...resolveDanishJsonLdCrawlerSettings(options.source),
+    browserPoolOptions: {
+      ...browserPoolOptions,
+      // A VPN rotation produces a new local bridge URL and therefore a new
+      // proxy-specific Chromium. Retire old proxy browsers promptly instead
+      // of retaining Crawlee's five-minute default pool.
+      ...DANISH_JSONLD_PLAYWRIGHT_BROWSER_POOL_OPTIONS,
+    },
     respectRobotsTxtFile: false,
     requestHandler: options.requestHandler,
   });

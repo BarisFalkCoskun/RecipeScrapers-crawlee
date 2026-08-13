@@ -68,6 +68,7 @@ function createProvider(options: {
     proxyUrl: string;
     close(): Promise<void>;
   }>;
+  diagnosticSink?: (event: { event: string; data: Record<string, unknown> }) => void;
 }) {
   let bridgeSequence = 0;
   const closed: string[] = [];
@@ -94,6 +95,7 @@ function createProvider(options: {
         close: async () => { closed.push(id); },
       };
     }),
+    diagnosticSink: options.diagnosticSink,
   });
   return { provider, verifyRelay, closed };
 }
@@ -236,6 +238,32 @@ describe("Mullvad relay provider", () => {
     now += 60_001;
     const recycled = await provider.rotate("request-b");
     expect(recycled?.relayLabel).toBe("dk-cph-wg-001");
+  });
+
+  it("scopes access-block cooldown to the target hostname and diagnoses exhaustion", async () => {
+    const events: Array<{ event: string; data: Record<string, unknown> }> = [];
+    const { provider } = createProvider({
+      country: "dk",
+      relays: RELAYS.slice(0, 2),
+      diagnosticSink: (event) => events.push(event),
+    });
+    await provider.initialize();
+    await provider.acquire("madrejsen-a", "madrejsen.dk");
+    await provider.rotate("madrejsen-a", "madrejsen.dk", "scope");
+    await provider.rotate("madrejsen-a", "madrejsen.dk", "scope");
+
+    await expect(provider.acquire("madrejsen-b", "madrejsen.dk"))
+      .resolves.toBeNull();
+    await expect(provider.acquire("sundpaabudget", "sundpaabudget.dk"))
+      .resolves.toMatchObject({ relayLabel: "dk-cph-wg-001" });
+    expect(events).toContainEqual(expect.objectContaining({
+      event: "vpn-relay-pool-exhausted",
+      data: expect.objectContaining({
+        targetScope: "madrejsen.dk",
+        eligibleRelayCount: 2,
+        scopedCoolingRelayCount: 2,
+      }),
+    }));
   });
 
   it("returns no lease when every eligible relay fails verification", async () => {

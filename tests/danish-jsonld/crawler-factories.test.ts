@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { ProxyConfiguration } from "crawlee";
 import {
+  DANISH_JSONLD_PLAYWRIGHT_BROWSER_POOL_OPTIONS,
   createDanishJsonLdCheerioCrawler,
   createDanishJsonLdPlaywrightCrawler,
   resolveDanishJsonLdCrawlerSettings,
@@ -69,6 +70,17 @@ describe("Danish JSON-LD crawler factories", () => {
     expect(cheerio.proxyConfiguration).toBe(proxyConfiguration);
     expect(playwright.proxyConfiguration).toBe(proxyConfiguration);
     expect(playwright.launchContext.browserPerProxy).toBe(true);
+    expect(DANISH_JSONLD_PLAYWRIGHT_BROWSER_POOL_OPTIONS).toEqual({
+      retireInactiveBrowserAfterSecs: 5,
+      closeInactiveBrowserAfterSecs: 10,
+      maxOpenPagesPerBrowser: 1,
+    });
+    expect((playwright as unknown as {
+      browserPool: { maxOpenPagesPerBrowser: number; closeInactiveBrowserAfterMillis: number };
+    }).browserPool).toMatchObject({
+      maxOpenPagesPerBrowser: 1,
+      closeInactiveBrowserAfterMillis: 10_000,
+    });
   });
 
   it("cannot re-enable robots.txt through dedicated crawler option overrides", () => {

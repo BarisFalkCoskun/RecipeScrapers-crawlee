@@ -432,6 +432,36 @@ describe("Danish JSON-LD source session", () => {
     );
   });
 
+  it("classifies relay-pool exhaustion as an explicit blocked outcome", async () => {
+    const session = new DanishJsonLdSourceSession({
+      source,
+      store: new MemoryV2Store(),
+      crawlRunId: "run-1",
+      crawlAttemptId: "attempt-vpn-exhausted",
+      maxPages: 5,
+      diagnosticSink: () => undefined,
+    });
+
+    await session.recordFailedRequest({
+      fetchMode: "playwright",
+      kind: "listing",
+      url: "https://example.dk/opskrifter/",
+      retryCount: 0,
+      blockedReason: "vpn-relay-pool-exhausted",
+      error: new Error("No verified Mullvad relay is available for example.dk"),
+    });
+
+    expect(session.outcome()).toEqual({
+      sourceId: "fixture",
+      outcome: "blocked",
+      outcomeReasons: [
+        "discovery-incomplete",
+        "requests-blocked",
+        "vpn-relay-pool-exhausted",
+      ],
+    });
+  });
+
   it("marks a hard per-source canary cap as incomplete run evidence", async () => {
     const session = new DanishJsonLdSourceSession({
       source,
