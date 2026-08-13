@@ -205,10 +205,13 @@ deterministic positional discriminator so records on the same page remain
 distinct.
 
 Each dedicated source attempt owns unique Cheerio and Playwright queues. After
-handlers finish and the source result is captured, both queues are dropped in
-`finally`; these attempt queues have no resume contract. A drop failure is
-bounded and visible in `queue-cleanup-failed` diagnostics and does not replace
-the source's already-computed crawl outcome.
+handlers finish and the source result is captured, cleanup waits for the
+configured same-domain delay plus a bounded grace buffer before both queues are
+dropped in `finally`. This lets Crawlee's delayed request-reclaim callbacks
+finish before their queue is deleted. The wait is visible as
+`queue-cleanup-grace`; a drop failure is bounded and visible as
+`queue-cleanup-failed` and does not replace the source's already-computed crawl
+outcome. These attempt queues have no resume contract.
 
 Consumer migration is an external-repository task:
 

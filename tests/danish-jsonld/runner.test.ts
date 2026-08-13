@@ -4,6 +4,7 @@ import { Readable } from "node:stream";
 import { CheerioCrawler, Configuration, ProxyConfiguration, RequestQueue } from "crawlee";
 import {
   DANISH_JSONLD_OBSERVED_HTTP_ERROR_STATUS_CODES,
+  cleanupDanishJsonLdAttemptQueues,
   executeDanishJsonLdSource,
   runDanishJsonLdCrawl,
   type ExecuteDanishJsonLdSource,
@@ -14,6 +15,48 @@ import type { DanishJsonLdSource } from "../../src/danish-jsonld/source-registry
 import type { DanishJsonLdVpnTransport } from "../../src/danish-jsonld/vpn-transport.js";
 
 describe("dedicated Danish JSON-LD runner", () => {
+  it("waits out Crawlee's same-domain reclaim window before dropping attempt queues", async () => {
+    let releaseGracePeriod: (() => void) | undefined;
+    const sleep = vi.fn(() => new Promise<void>((resolve) => {
+      releaseGracePeriod = resolve;
+    }));
+    const cheerioDrop = vi.fn(async () => undefined);
+    const playwrightDrop = vi.fn(async () => undefined);
+    const diagnostics: Array<{ event: string; data: Record<string, unknown> }> = [];
+
+    const cleanup = cleanupDanishJsonLdAttemptQueues({
+      queues: [
+        { kind: "cheerio", queue: { drop: cheerioDrop } },
+        { kind: "playwright", queue: { drop: playwrightDrop } },
+      ],
+      sameDomainDelaySecs: 3,
+      sourceId: "queue-race-fixture",
+      crawlRunId: "queue-race-run",
+      crawlAttemptId: "queue-race-attempt",
+      diagnosticSink: (event) => diagnostics.push(event),
+      sleep,
+    });
+
+    await vi.waitFor(() => expect(sleep).toHaveBeenCalledWith(3_100));
+    expect(cheerioDrop).not.toHaveBeenCalled();
+    expect(playwrightDrop).not.toHaveBeenCalled();
+
+    releaseGracePeriod?.();
+    await cleanup;
+
+    expect(cheerioDrop).toHaveBeenCalledOnce();
+    expect(playwrightDrop).toHaveBeenCalledOnce();
+    expect(diagnostics).toContainEqual({
+      event: "queue-cleanup-grace",
+      data: {
+        sourceId: "queue-race-fixture",
+        crawlRunId: "queue-race-run",
+        crawlAttemptId: "queue-race-attempt",
+        reclaimGraceMillis: 3_100,
+      },
+    });
+  });
+
   it("drops both dedicated attempt queues and reports a drop failure without replacing the source outcome", async () => {
     const originalDrop = RequestQueue.prototype.drop;
     let drops = 0;

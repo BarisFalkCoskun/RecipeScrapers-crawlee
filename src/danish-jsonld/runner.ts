@@ -41,6 +41,54 @@ export interface DanishJsonLdCrawlSelection extends DanishJsonLdCrawlOptions {
 export const DANISH_JSONLD_OBSERVED_HTTP_ERROR_STATUS_CODES = [
   401, 403, 429, 526,
 ] as const;
+const QUEUE_RECLAIM_GRACE_BUFFER_MS = 100;
+
+interface DanishJsonLdAttemptQueue {
+  kind: "cheerio" | "playwright";
+  queue: Pick<RequestQueue, "drop">;
+}
+
+export async function cleanupDanishJsonLdAttemptQueues(input: {
+  queues: DanishJsonLdAttemptQueue[];
+  sameDomainDelaySecs: number;
+  sourceId: string;
+  crawlRunId: string;
+  crawlAttemptId: string;
+  diagnosticSink: (event: DanishJsonLdDiagnostic) => void;
+  sleep?: (milliseconds: number) => Promise<void>;
+}): Promise<void> {
+  const reclaimGraceMillis = input.sameDomainDelaySecs > 0
+    ? Math.ceil(input.sameDomainDelaySecs * 1_000) + QUEUE_RECLAIM_GRACE_BUFFER_MS
+    : 0;
+  if (reclaimGraceMillis > 0) {
+    input.diagnosticSink(createBoundedDiagnostic("queue-cleanup-grace", {
+      sourceId: input.sourceId,
+      crawlRunId: input.crawlRunId,
+      crawlAttemptId: input.crawlAttemptId,
+      reclaimGraceMillis,
+    }));
+    await (input.sleep ?? waitForMilliseconds)(reclaimGraceMillis);
+  }
+
+  await Promise.all(input.queues.map(async ({ kind, queue }) => {
+    try {
+      await queue.drop();
+    } catch (error) {
+      input.diagnosticSink(createBoundedDiagnostic("queue-cleanup-failed", {
+        sourceId: input.sourceId,
+        crawlRunId: input.crawlRunId,
+        crawlAttemptId: input.crawlAttemptId,
+        queue: kind,
+        error: error instanceof Error ? error.message : String(error),
+      }));
+    }
+  }));
+}
+
+function waitForMilliseconds(milliseconds: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
 export interface ExecuteSourceInput {
   source: DanishJsonLdSource;
   store: CrawlStore & RecipeDocumentV2Store;
@@ -138,10 +186,7 @@ export async function executeDanishJsonLdSource(
   });
   const session = new DanishJsonLdSourceSession({ ...input, diagnosticSink });
   const sourceVpnSessions = new Set<string>();
-  const ownedQueues: Array<{
-    kind: "cheerio" | "playwright";
-    queue: RequestQueue;
-  }> = [];
+  const ownedQueues: DanishJsonLdAttemptQueue[] = [];
   const releaseVpnRequest = async (
     userData: Record<string, unknown>
   ): Promise<void> => {
@@ -404,19 +449,14 @@ export async function executeDanishJsonLdSource(
   } catch (error) {
     throw new SourceExecutionFailure(error, session.observation);
   } finally {
-    await Promise.all(ownedQueues.map(async ({ kind, queue }) => {
-      try {
-        await queue.drop();
-      } catch (error) {
-        diagnosticSink(createBoundedDiagnostic("queue-cleanup-failed", {
-          sourceId: input.source.id,
-          crawlRunId: input.crawlRunId,
-          crawlAttemptId: input.crawlAttemptId,
-          queue: kind,
-          error: error instanceof Error ? error.message : String(error),
-        }));
-      }
-    }));
+    await cleanupDanishJsonLdAttemptQueues({
+      queues: ownedQueues,
+      sameDomainDelaySecs: input.source.requestSettings.delaySeconds,
+      sourceId: input.source.id,
+      crawlRunId: input.crawlRunId,
+      crawlAttemptId: input.crawlAttemptId,
+      diagnosticSink,
+    });
     if (input.vpnTransport) {
       await Promise.allSettled(
         [...sourceVpnSessions].map((sessionId) =>
