@@ -95,7 +95,7 @@ export class DanishJsonLdSourceSession {
       fetchMode: options.source.fetchMode,
       maxPages: options.maxPages,
       settings: options.source.requestSettings,
-      robotsEnforced: "unknown-until-crawler-construction",
+      robotsEnforced: false,
     });
   }
 

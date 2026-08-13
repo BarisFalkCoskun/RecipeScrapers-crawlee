@@ -55,7 +55,7 @@ export type ExecuteDanishJsonLdSource = (
 ) => Promise<{
   observation: SourceRunObservation;
   outcome: SourceRunOutcomeSummary;
-  robotsEnforced?: boolean | "unknown";
+  robotsEnforced?: false;
 }>;
 
 export async function runDanishJsonLdCrawl(input: {
@@ -72,7 +72,6 @@ export async function runDanishJsonLdCrawl(input: {
   const executeSource = input.executeSource ?? executeDanishJsonLdSource;
   const observations: SourceRunObservation[] = [];
   const outcomes: SourceRunOutcomeSummary[] = [];
-  const robotsObservations: Array<boolean | "unknown"> = [];
   const maxPages = input.selection.maxPages ?? Number.MAX_SAFE_INTEGER;
   const diagnosticOutput = input.diagnosticSink ?? ((event: DanishJsonLdDiagnostic) => {
     log.info(JSON.stringify(event));
@@ -95,7 +94,6 @@ export async function runDanishJsonLdCrawl(input: {
       });
       observations.push(result.observation);
       outcomes.push(result.outcome);
-      robotsObservations.push(result.robotsEnforced ?? "unknown");
     } catch (error) {
       if (isFatalBatchError(error)) throw error;
       const observed = readFailureObservation(error, source.id);
@@ -107,7 +105,6 @@ export async function runDanishJsonLdCrawl(input: {
       };
       observations.push(observation);
       outcomes.push(classifySourceOutcome(observation));
-      robotsObservations.push("unknown");
       diagnosticSink(
         createBoundedDiagnostic("source-failed", {
           sourceId: source.id,
@@ -119,10 +116,7 @@ export async function runDanishJsonLdCrawl(input: {
   }
 
   return {
-    summary: createDanishJsonLdRunSummary(
-      outcomes,
-      summarizeRobotsEnforcement(robotsObservations)
-    ),
+    summary: createDanishJsonLdRunSummary(outcomes),
     observations,
   };
 }
@@ -132,7 +126,7 @@ export async function executeDanishJsonLdSource(
 ): Promise<{
   observation: SourceRunObservation;
   outcome: SourceRunOutcomeSummary;
-  robotsEnforced: boolean | "unknown";
+  robotsEnforced: false;
 }> {
   const diagnosticSink = createBudgetedDiagnosticSink({
     maxEvents: 1_000,
@@ -375,7 +369,7 @@ export async function executeDanishJsonLdSource(
       return {
         observation: session.observation,
         outcome: session.outcome(),
-        robotsEnforced: observeRobotsEnforcement(cheerioCrawler, playwrightCrawler),
+        robotsEnforced: false,
       };
     }
     if (!(await playwrightQueue.isEmpty())) await playwrightCrawler.run();
@@ -383,14 +377,14 @@ export async function executeDanishJsonLdSource(
       return {
         observation: session.observation,
         outcome: session.outcome(),
-        robotsEnforced: observeRobotsEnforcement(cheerioCrawler, playwrightCrawler),
+        robotsEnforced: false,
       };
     }
     if ((await cheerioQueue.isEmpty()) && (await playwrightQueue.isEmpty())) {
       return {
         observation: session.observation,
         outcome: session.outcome(),
-        robotsEnforced: observeRobotsEnforcement(cheerioCrawler, playwrightCrawler),
+        robotsEnforced: false,
       };
     }
   }
@@ -405,7 +399,7 @@ export async function executeDanishJsonLdSource(
   return {
     observation: session.observation,
     outcome: session.outcome(),
-    robotsEnforced: observeRobotsEnforcement(cheerioCrawler, playwrightCrawler),
+    robotsEnforced: false,
   };
   } catch (error) {
     throw new SourceExecutionFailure(error, session.observation);
@@ -516,25 +510,6 @@ function readFailureObservation(
     }
   }
   return { sourceId, discoveryComplete: false };
-}
-
-function observeRobotsEnforcement(...crawlers: unknown[]): boolean | "unknown" {
-  const values = crawlers.map((crawler) =>
-    (crawler as { respectRobotsTxtFile?: unknown }).respectRobotsTxtFile
-  );
-  if (values.some((value) => value === true || typeof value === "object")) return true;
-  if (values.every((value) => value === false)) return false;
-  return "unknown";
-}
-
-function summarizeRobotsEnforcement(
-  observations: Array<boolean | "unknown">
-): boolean | "unknown" {
-  if (observations.some((value) => value === true)) return true;
-  if (observations.length > 0 && observations.every((value) => value === false)) {
-    return false;
-  }
-  return "unknown";
 }
 
 function isFatalBatchError(error: unknown): boolean {

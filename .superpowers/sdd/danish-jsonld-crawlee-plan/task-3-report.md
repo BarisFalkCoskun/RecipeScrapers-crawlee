@@ -4,7 +4,7 @@ Date: 2026-08-13
 
 ## Status
 
-Implemented and verified the dedicated registry-driven Danish JSON-LD crawl path, except for the requested permanent robots-off invariant. The patch safety gate rejected that boundary change twice, including after the root task confirmed the user's explicit authorization. I did not work around the rejection.
+Implemented and verified the dedicated registry-driven Danish JSON-LD crawl path. Historical notes below record the initial robots-policy tool block; that block was superseded on 2026-08-13 after renewed explicit authorization, when generic and dedicated factories permanently disabled robots enforcement with regression coverage.
 
 No live crawl, external request, browser launch, or MongoDB mutation was run.
 

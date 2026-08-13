@@ -7,7 +7,6 @@ describe("resolveSeedSitemapUrls", () => {
     domain: "example.dk",
     sitemapUrl: "https://example.dk/configured-sitemap.xml",
     requiresJs: false,
-    respectRobotsTxt: true,
     maxPages: 10,
     admissionRole: "trusted",
   };

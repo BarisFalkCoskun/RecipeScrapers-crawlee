@@ -53,7 +53,6 @@ interface CreatePlaywrightCrawlerOptions {
   linkFilter: LinkFilter;
   trustedSeedDomains: Set<string>;
   maxRequestsPerCrawl: number;
-  respectRobotsTxtFile: boolean;
   recrawlCutoff: Date;
   metrics: CrawlMetrics;
   waitForLoadState?: "load" | "domcontentloaded" | "networkidle";
@@ -69,7 +68,6 @@ export function createPlaywrightCrawlerInstance(
     linkFilter,
     trustedSeedDomains,
     maxRequestsPerCrawl,
-    respectRobotsTxtFile,
     recrawlCutoff,
     metrics,
     waitForLoadState = PLAYWRIGHT_CONFIG.waitForLoadState,
@@ -85,14 +83,14 @@ export function createPlaywrightCrawlerInstance(
     maxRequestsPerCrawl,
     waitForLoadState,
     waitForLoadStateTimeoutMs,
-    respectRobotsTxtFile,
+    respectRobotsTxtFile: false,
   });
 
   const handlePageRequest = async (
     routeLabel: RequestLabel,
     context: Parameters<Parameters<typeof router.addDefaultHandler>[0]>[0]
   ) => {
-    const { request, page, response, robotsTxtFile } = context;
+    const { request, page, response } = context;
     const requestUrl = request.loadedUrl ?? request.url;
     const domain = normalizeDomain(new URL(requestUrl).hostname);
     const sourceDiscoverySource =
@@ -107,8 +105,6 @@ export function createPlaywrightCrawlerInstance(
       normalizeDomain(
         (request.userData?.["seedDomain"] as string | undefined) ?? domain
       );
-    const robotsTxt =
-      robotsTxtFile as { isAllowed(url: string): boolean } | undefined;
 
     await page
       .waitForLoadState(waitForLoadState, {
@@ -330,15 +326,6 @@ export function createPlaywrightCrawlerInstance(
         continue;
       }
 
-      if (robotsTxt && !robotsTxt.isAllowed(candidate.canonicalUrl)) {
-        metrics.recordBlockedUrl({
-          domain: candidate.domain,
-          reasons: ["robotsTxt"],
-        });
-        logSkippedRequest({ url: candidate.canonicalUrl, reason: "robotsTxt" });
-        continue;
-      }
-
       requestsToQueue.push({
         url: candidate.canonicalUrl,
         uniqueKey: candidate.canonicalUrl,
@@ -419,7 +406,7 @@ export function createPlaywrightCrawlerInstance(
     sameDomainDelaySecs: PLAYWRIGHT_CONFIG.sameDomainDelaySecs,
     maxRequestsPerCrawl,
     maxSessionRotations: PLAYWRIGHT_CONFIG.maxSessionRotations,
-    respectRobotsTxtFile,
+    respectRobotsTxtFile: false,
     onSkippedRequest: logSkippedRequest,
     statusMessageLoggingInterval:
       PLAYWRIGHT_CONFIG.statusMessageLoggingIntervalSecs,
@@ -517,11 +504,6 @@ function recordOffDomainAdmissions(
 
 function createSkippedRequestLogger(crawlerName: string) {
   return ({ url, reason }: { url: string; reason: string }) => {
-    if (reason === "robotsTxt") {
-      log.warning(`${crawlerName} skipped ${url} (${reason})`);
-      return;
-    }
-
     log.debug(`${crawlerName} skipped ${url} (${reason})`);
   };
 }

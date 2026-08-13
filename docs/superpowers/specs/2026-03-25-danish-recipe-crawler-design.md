@@ -228,7 +228,7 @@ Queue and recrawl metadata keyed by canonical URL.
 - **Rate limiting:** Use Crawlee's global settings, but also add per-domain budgets and denylist rules to prevent runaway exploration.
   - CheerioCrawler: `maxConcurrency: 10`, `maxRequestsPerMinute: 60`
   - PlaywrightCrawler: `maxConcurrency: 3`, `maxRequestsPerMinute: 20`
-- **robots.txt:** Not respected by default. `respectRobotsTxt` is disabled unless explicitly enabled per run or per target set.
+- **robots.txt:** Never enforced. Crawler factories hard-code `respectRobotsTxtFile: false`; run, seed, and source configuration cannot re-enable it.
 - **Depth:** No hard global depth limit, but exploration should still be constrained with:
   - max non-recipe hops from a confirmed recipe page,
   - per-domain crawl caps,

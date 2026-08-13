@@ -489,7 +489,7 @@ describe("dedicated Danish JSON-LD runner", () => {
       { id: "coop", maxPages: 3, attempt: "run-1:coop" },
     ]);
     expect(result.summary).toEqual({
-      robotsEnforced: "unknown",
+      robotsEnforced: false,
       sourceOutcomes: [
         {
           sourceId: "arla",

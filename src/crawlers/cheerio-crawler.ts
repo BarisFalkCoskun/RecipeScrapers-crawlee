@@ -45,7 +45,6 @@ interface CreateCheerioCrawlerOptions {
   seedDomains: Map<string, SeedConfig>;
   trustedSeedDomains: Set<string>;
   maxRequestsPerCrawl: number;
-  respectRobotsTxtFile: boolean;
   recrawlCutoff: Date;
   metrics: CrawlMetrics;
 }
@@ -61,7 +60,6 @@ export function createCheerioCrawlerInstance(
     seedDomains,
     trustedSeedDomains,
     maxRequestsPerCrawl,
-    respectRobotsTxtFile,
     recrawlCutoff,
     metrics,
   } = options;
@@ -77,7 +75,7 @@ export function createCheerioCrawlerInstance(
     routeLabel: RequestLabel,
     context: Parameters<Parameters<typeof router.addDefaultHandler>[0]>[0]
   ) => {
-      const { request, $, body, response, robotsTxtFile } = context;
+      const { request, $, body, response } = context;
       const html = typeof body === "string" ? body : body.toString();
       const requestUrl = request.loadedUrl ?? request.url;
       const domain = normalizeDomain(new URL(requestUrl).hostname);
@@ -100,8 +98,6 @@ export function createCheerioCrawlerInstance(
         normalizeDomain(
           (request.userData?.["seedDomain"] as string | undefined) ?? domain
         );
-      const robotsTxt =
-        robotsTxtFile as { isAllowed(url: string): boolean } | undefined;
 
       // Dynamic canonicalization — handle relative canonical tags
       const canonicalTag = $('link[rel="canonical"]').attr("href");
@@ -354,15 +350,6 @@ export function createCheerioCrawlerInstance(
           continue;
         }
 
-        if (robotsTxt && !robotsTxt.isAllowed(canonical)) {
-          metrics.recordBlockedUrl({
-            domain: candidate.domain,
-            reasons: ["robotsTxt"],
-          });
-          logSkippedRequest({ url: canonical, reason: "robotsTxt" });
-          continue;
-        }
-
         const linkDomain = normalizeDomain(new URL(canonical).hostname);
         const seedConfig = seedDomains.get(linkDomain);
         const userData = {
@@ -476,7 +463,7 @@ export function createCheerioCrawlerInstance(
     maxRequestRetries: CHEERIO_CONFIG.maxRequestRetries,
     sameDomainDelaySecs: CHEERIO_CONFIG.sameDomainDelaySecs,
     maxRequestsPerCrawl,
-    respectRobotsTxtFile,
+    respectRobotsTxtFile: false,
     onSkippedRequest: logSkippedRequest,
     statusMessageLoggingInterval: CHEERIO_CONFIG.statusMessageLoggingIntervalSecs,
     async errorHandler({ request }, error) {
@@ -867,11 +854,6 @@ function recordOffDomainAdmissions(
 
 function createSkippedRequestLogger(crawlerName: string) {
   return ({ url, reason }: { url: string; reason: string }) => {
-    if (reason === "robotsTxt") {
-      log.warning(`${crawlerName} skipped ${url} (${reason})`);
-      return;
-    }
-
     log.debug(`${crawlerName} skipped ${url} (${reason})`);
   };
 }

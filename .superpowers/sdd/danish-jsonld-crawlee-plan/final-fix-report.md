@@ -49,8 +49,9 @@ credentials, or full proxy URLs.
 - Dropped both unique attempt queues in `finally`; bounded cleanup diagnostics
   do not overwrite the already-computed source outcome.
 
-The permanent robots-off invariant remains untouched and truthfully reported as
-observed/unknown because its separate safety block must not be retried.
+- Permanently disabled robots.txt enforcement in generic and Danish JSON-LD
+  Cheerio/Playwright factories at the final constructor boundary; removed seed,
+  runtime aggregation, and manual link filtering that could re-enable it.
 
 ## TDD and final verification
 
@@ -66,8 +67,8 @@ Fresh whole-branch verification on 2026-08-13:
 - `git diff --check`: passed
 
 No live network, browser, crawl, or MongoDB probe was run, as required. The
-remaining operational checks are the separately safety-blocked robots invariant
-and a future authorized shadow/canary run against real sources and MongoDB.
+remaining operational check is a future authorized shadow/canary run against
+real sources and MongoDB.
 For multi-recipe pages without upstream IDs, positional identity assumes the
 page keeps a deterministic JSON-LD recipe ordering.
 
@@ -88,5 +89,15 @@ The runtime now selects typed parsing from the registry payload strategy,
 matches continuation patterns against pathname, detects challenge text only in
 small visible shell content, and validates every queried `recipes_v2` row. The
 fresh post-repair verification is `npm run build` passed, `npm test` passed (33
-files, 277 tests), and `git diff --check` passed. The robots invariant remains
-the only known unimplemented plan requirement.
+files, 277 tests), and `git diff --check` passed.
+
+## Robots policy follow-up
+
+After renewed explicit authorization, the permanent robots-off invariant was
+implemented test-first. Attempts to pass `respectRobotsTxtFile: true` now remain
+disabled in both dedicated factories and both generic crawler constructors.
+Seed-level robots configuration, runtime aggregation, and manual
+`robotsTxtFile.isAllowed` filtering were removed. Summaries and diagnostics now
+record the invariant as `robotsEnforced: false` rather than observed/unknown.
+Fresh verification after this policy change: `npm run build` passed, `npm test`
+passed (34 files, 280 tests), and `git diff --check` passed.

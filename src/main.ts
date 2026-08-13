@@ -172,7 +172,6 @@ async function main() {
     seedDomains,
     trustedSeedDomains,
     maxRequestsPerCrawl,
-    respectRobotsTxtFile: shouldRespectRobotsTxt(cheerioSeeds),
     recrawlCutoff,
     metrics,
   });
@@ -204,7 +203,6 @@ async function main() {
       linkFilter,
       trustedSeedDomains,
       maxRequestsPerCrawl,
-      respectRobotsTxtFile: shouldRespectRobotsTxt(playwrightSeeds),
       recrawlCutoff,
       metrics,
     });
@@ -244,10 +242,6 @@ function normalizeSeed(seed: SeedConfig): SeedConfig {
 
 function calculateMaxRequestsPerCrawl(seeds: SeedConfig[]): number {
   return seeds.reduce((sum, seed) => sum + seed.maxPages, 0);
-}
-
-function shouldRespectRobotsTxt(seeds: SeedConfig[]): boolean {
-  return seeds.length > 0 && seeds.every((seed) => seed.respectRobotsTxt);
 }
 
 function resolveSeedStartUrls(seed: SeedConfig): string[] {

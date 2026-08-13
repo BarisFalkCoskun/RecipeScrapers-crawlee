@@ -53,10 +53,9 @@ export function classifySourceOutcome(
 }
 
 export function createDanishJsonLdRunSummary(
-  sourceOutcomes: SourceRunOutcomeSummary[],
-  robotsEnforced: boolean | "unknown" = false
+  sourceOutcomes: SourceRunOutcomeSummary[]
 ): DanishJsonLdRunSummary {
-  return { robotsEnforced, sourceOutcomes };
+  return { robotsEnforced: false, sourceOutcomes };
 }
 
 function hasIncompleteWork(observation: SourceRunObservation): boolean {

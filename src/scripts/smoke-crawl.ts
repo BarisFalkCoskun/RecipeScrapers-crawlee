@@ -65,7 +65,6 @@ async function main() {
     domain,
     sitemapUrl: `${baseUrl}/missing-sitemap.xml`,
     requiresJs: false,
-    respectRobotsTxt: true,
     maxPages: 20,
     admissionRole: "trusted",
   };
@@ -121,7 +120,6 @@ async function main() {
       seedDomains,
       trustedSeedDomains,
       maxRequestsPerCrawl,
-      respectRobotsTxtFile: true,
       recrawlCutoff,
       metrics,
     });
@@ -138,7 +136,6 @@ async function main() {
       linkFilter,
       trustedSeedDomains,
       maxRequestsPerCrawl,
-      respectRobotsTxtFile: true,
       recrawlCutoff,
       metrics,
       waitForLoadState: "load",

@@ -70,4 +70,22 @@ describe("Danish JSON-LD crawler factories", () => {
     expect(playwright.proxyConfiguration).toBe(proxyConfiguration);
     expect(playwright.launchContext.browserPerProxy).toBe(true);
   });
+
+  it("cannot re-enable robots.txt through dedicated crawler option overrides", () => {
+    const arla = DANISH_JSONLD_SOURCES.find((source) => source.id === "arla");
+    if (!arla) throw new Error("Arla registry fixture missing");
+    const cheerio = crawlerInternal(createDanishJsonLdCheerioCrawler({
+      source: arla,
+      requestHandler,
+      crawlerOptions: { respectRobotsTxtFile: true },
+    }));
+    const playwright = crawlerInternal(createDanishJsonLdPlaywrightCrawler({
+      source: arla,
+      requestHandler,
+      crawlerOptions: { respectRobotsTxtFile: true },
+    }));
+
+    expect(cheerio.respectRobotsTxtFile).toBe(false);
+    expect(playwright.respectRobotsTxtFile).toBe(false);
+  });
 });

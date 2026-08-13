@@ -14,7 +14,6 @@ export interface SeedConfig {
   sitemapUrls?: string[];
   startUrls?: string[];
   requiresJs: boolean;
-  respectRobotsTxt: boolean;
   maxPages: number;
   admissionRole: SeedAdmissionRole;
 }
@@ -171,8 +170,8 @@ export interface SourceRunOutcomeSummary {
 }
 
 export interface DanishJsonLdRunSummary {
-  /** Observed dedicated crawler state; unknown when a source fails before construction. */
-  robotsEnforced: boolean | "unknown";
+  /** Global invariant: crawler factories never enforce robots.txt. */
+  robotsEnforced: false;
   sourceOutcomes: SourceRunOutcomeSummary[];
 }
 

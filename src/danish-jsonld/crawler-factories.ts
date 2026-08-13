@@ -44,6 +44,7 @@ export function createDanishJsonLdCheerioCrawler(options: {
       ? { proxyConfiguration: options.proxyConfiguration }
       : {}),
     ...resolveDanishJsonLdCrawlerSettings(options.source),
+    respectRobotsTxtFile: false,
     requestHandler: options.requestHandler,
   });
 }
@@ -67,6 +68,7 @@ export function createDanishJsonLdPlaywrightCrawler(options: {
         }
       : {}),
     ...resolveDanishJsonLdCrawlerSettings(options.source),
+    respectRobotsTxtFile: false,
     requestHandler: options.requestHandler,
   });
 }

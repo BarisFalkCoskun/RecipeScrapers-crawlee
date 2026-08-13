@@ -21,7 +21,7 @@ passed a canary, shadow, or cutover gate.
   It provides short local checks, the remote-only isolated-DB pilot command,
   evidence-backed transition gates, source-by-source cutover, native MongoDB
   collection roles, and the `RecipeDocumentV2.normalized` consumer contract.
-- Documented the permanent robots-off requirement as unresolved/tool-blocked;
+- Documented the robots-off requirement; the historical tool block was superseded on 2026-08-13 by the permanent factory invariant and regression tests;
   it is explicitly not represented as complete.
 
 ## TDD evidence

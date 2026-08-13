@@ -220,10 +220,9 @@ Consumer migration is an external-repository task:
 
 This repository does not assert that any external consumer has been migrated.
 
-## Open constraint
+## Robots policy
 
-The requested permanent robots-off behavior remains unresolved and tool-blocked.
-The dedicated runner observes the crawler's current state, but no permanent
-source/factory invariant was applied. Do not treat a run as evidence that this
-requirement has been completed; resolve it before declaring the migration fully
-ready.
+Robots.txt enforcement is permanently disabled. Both generic and Danish JSON-LD
+Cheerio/Playwright factories set `respectRobotsTxtFile: false` at the final
+constructor boundary. Seed and source configuration cannot re-enable it, and
+run summaries always record `robotsEnforced: false`.
