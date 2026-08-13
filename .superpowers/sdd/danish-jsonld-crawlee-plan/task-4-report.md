@@ -88,3 +88,38 @@ Green verification:
 - Per the task boundary, Mullvad relay discovery, exit verification, and an end-to-end request through the HTTP-to-SOCKS bridge were not exercised against the live network. Those boundaries are covered with injected relay/verifier/bridge fakes and the installed dependency APIs compile successfully.
 - The repository's Chromium binary is currently unavailable, so the existing local fixture smoke crawl cannot complete its Playwright phase until Playwright Chromium is installed.
 - `npm install` reports 22 dependency advisories in the existing dependency tree (1 low, 13 moderate, 8 high). No audit remediation was attempted because it is outside Task 4 and could cause unrelated dependency changes.
+
+## Review fix round 1 — 2026-08-13
+
+Commit: `9c8bf3b fix: harden Mullvad lease lifecycle`
+
+Addressed all four findings without live network or crawl activity.
+
+### Root causes and fixes
+
+1. Active request leases only had rotation and whole-transport cleanup paths. Successful and terminal requests therefore retained bridges and active relay ownership until CLI shutdown. Added serialized healthy `release()` to the provider and transport. The dedicated runner releases after successful handling, terminal failure, `noRetry`/cap exhaustion, and source shutdown. It does not release when a retry or rotation remains active. Healthy release closes the bridge and clears session history without cooldown, so finite inventories are reusable.
+2. Relay verification collapsed the Mullvad response to a boolean. The verifier now models snake_case and camelCase exit identity fields. With `--vpn-country`, at least one authoritative country or hostname signal is required, every supplied signal must match, and hostname must match both the selected relay and requested country prefix. Mismatches are rejected and cooled with bounded diagnostics.
+3. Explicit block signatures were checked only for responses below HTTP 400. Block detection now applies to every status except the explicit non-trigger statuses `401` and `404`; a Cloudflare signature on `503` rotates.
+4. Provider rotation bypassed pending acquisition tracking, while transport rotation count was read and written outside a lock. Both layers now serialize acquire/rebind/rotate/release by request session. Cleanup rejects new work, awaits in-flight session operations, then closes every resulting bridge. Concurrent rotations therefore produce one active lease at a time, monotonic rotation counts, and a strict three-rotation cap.
+
+The runner now includes fetch mode in the hashed lease session identity so Cheerio and Playwright fallback requests own distinct releasable leases even when URL and request kind match.
+
+### TDD evidence
+
+Red command:
+
+- `npx vitest run tests/danish-jsonld/mullvad-relay-provider.test.ts tests/danish-jsonld/vpn-transport.test.ts tests/danish-jsonld/runner.test.ts`
+  - 9 failures reproduced boolean-only verification, missing release methods/hooks, one-relay exhaustion, concurrent rotation ordering/orphan bridges, cleanup returning before rotation finished, `503` block non-rotation, and four concurrent rotations bypassing the cap.
+
+Green verification:
+
+- `npm run build && npm test && git diff --check`
+  - TypeScript build passed.
+  - 32 test files passed, 218 tests passed, 0 failed.
+  - Diff whitespace validation passed.
+
+Added coverage includes sustained sequential reuse with one relay, flexible real-response field parsing, authoritative country/hostname mismatch cooldown, healthy bridge closure, concurrent provider and transport rotations, strict concurrent rotation cap, cleanup during rotation at both layers, release after recovered success, terminal failure, cap/noRetry, and source shutdown.
+
+### Remaining concerns
+
+The original non-live concerns remain unchanged: live Mullvad endpoint/bridge behavior is intentionally untested, Chromium is absent for the repository smoke crawl, and dependency advisories were not remediated within this task.
