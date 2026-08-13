@@ -11,6 +11,7 @@ const DEFAULT_COOLDOWN_MS = 5 * 60 * 1_000;
 export interface MullvadRelay {
   hostname: string;
   country_code: string;
+  country_name?: string;
   city_name?: string;
   active: boolean;
   type: string;
@@ -417,6 +418,10 @@ function parseRelays(document: unknown): MullvadRelay[] {
     return [{
       hostname: relay["hostname"],
       country_code: relay["country_code"],
+      country_name:
+        typeof relay["country_name"] === "string"
+          ? relay["country_name"]
+          : undefined,
       city_name:
         typeof relay["city_name"] === "string" ? relay["city_name"] : undefined,
       active: relay["active"],
@@ -464,18 +469,37 @@ function verificationMatchesRelay(
   const signals: boolean[] = [];
   const countryCode = verification.countryCode?.trim().toLowerCase();
   if (countryCode) signals.push(countryCode === requestedCountry);
-  const shortCountry = verification.country?.trim().toLowerCase();
-  if (shortCountry && /^[a-z]{2}$/u.test(shortCountry)) {
-    signals.push(shortCountry === requestedCountry);
-  }
-  const hostname = verification.hostname?.trim().toLowerCase();
-  if (hostname) {
+  const country = normalizeIdentity(verification.country);
+  if (country) {
+    const expectedCountry = normalizeIdentity(relay.country_name);
     signals.push(
-      hostname === relay.hostname.toLowerCase() &&
+      /^[a-z]{2}$/u.test(country)
+        ? country === requestedCountry
+        : Boolean(expectedCountry && country === expectedCountry)
+    );
+  }
+  const hostname = normalizeRelayHostname(verification.hostname);
+  if (hostname) {
+    const expectedHostnames = [relay.hostname, relay.socks_name]
+      .map(normalizeRelayHostname)
+      .filter((value): value is string => Boolean(value));
+    signals.push(
+      expectedHostnames.includes(hostname) &&
       hostname.startsWith(`${requestedCountry}-`)
     );
   }
   return signals.length > 0 && signals.every(Boolean);
+}
+
+function normalizeIdentity(value: string | undefined): string | undefined {
+  const normalized = value?.trim().toLowerCase();
+  return normalized || undefined;
+}
+
+function normalizeRelayHostname(value: string | undefined): string | undefined {
+  return normalizeIdentity(value)
+    ?.replace(/\.$/u, "")
+    .replace(/\.relays\.mullvad\.net$/u, "");
 }
 
 function firstString(

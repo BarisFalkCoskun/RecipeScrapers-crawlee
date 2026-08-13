@@ -136,6 +136,60 @@ describe("Mullvad relay provider", () => {
     ]);
   });
 
+  it("accepts the live Mullvad country name and SOCKS5 exit hostname for the selected relay", async () => {
+    const { provider } = createProvider({
+      country: "dk",
+      relays: [{
+        ...RELAYS[0],
+        country_name: "Denmark",
+        socks_name: "dk-cph-wg-socks5-001.relays.mullvad.net",
+      }],
+      verifyRelay: async () => ({
+        mullvadExitIp: true,
+        country: "Denmark",
+        hostname: "dk-cph-wg-socks5-001",
+      }),
+    });
+    await provider.initialize();
+
+    await expect(provider.acquire("request-a")).resolves.toMatchObject({
+      relayLabel: "dk-cph-wg-001",
+      country: "dk",
+    });
+  });
+
+  it.each([
+    {
+      label: "country",
+      verification: {
+        mullvadExitIp: true,
+        country: "Sweden",
+        hostname: "dk-cph-wg-socks5-001",
+      },
+    },
+    {
+      label: "SOCKS5 hostname",
+      verification: {
+        mullvadExitIp: true,
+        country: "Denmark",
+        hostname: "dk-cph-wg-socks5-102",
+      },
+    },
+  ])("rejects a live-shaped identity with a mismatched $label", async ({ verification }) => {
+    const { provider } = createProvider({
+      country: "dk",
+      relays: [{
+        ...RELAYS[0],
+        country_name: "Denmark",
+        socks_name: "dk-cph-wg-socks5-001.relays.mullvad.net",
+      }],
+      verifyRelay: async () => verification,
+    });
+    await provider.initialize();
+
+    await expect(provider.acquire("request-a")).resolves.toBeNull();
+  });
+
   it("keeps one verified relay bound to the same request session", async () => {
     const { provider, verifyRelay } = createProvider({ country: "dk" });
     await provider.initialize();
