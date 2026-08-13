@@ -236,3 +236,42 @@ same four modified paths (`src/crawlers/cheerio-crawler.ts`,
 `src/discovery/link-filter.ts`, `src/main.ts`, and
 `tests/discovery/link-filter.test.ts`); byte-for-byte preservation cannot be
 proven because no initial hashes were captured.
+
+## Fix round 3 — portable evidence paths and terminal-reason contract
+
+The remote-only Scrapy, Crawlee, and comparison snippets now share one explicit
+absolute evidence directory, created once with
+`EVIDENCE_DIR="/var/tmp/recipescrapers-danish-jsonld-shadow-$(date -u +%Y%m%dT%H%M%SZ)"`.
+All three evidence paths and the JSON comparison output use
+that directory. The guide says to retain the exported value while changing
+checkout directories, or re-export that exact printed path in a new shell.
+
+The comparator now fails closed on terminal outcome reasons. Every Scrapy result
+must provide `outcome_reasons` as an array of strings; every successful Crawlee
+source outcome must provide `outcomeReasons` as an array of strings. In either
+case a non-empty array fails comparison. Successful Crawlee source outcomes are
+now emitted with an empty reasons array, while partial/blocked/failed outcomes
+retain diagnostic reasons.
+
+Read-only source inspection found that the current legacy Scrapy
+`SpiderRunResult.to_dict()` summary emits no `outcome_reasons` field. The
+comparator intentionally does not infer an empty array from `outcome`,
+`blocked_reason`, or `error_message`; the upstream summary schema must add the
+explicit field before a Scrapy shadow can pass. This is documented as an
+unresolved cross-repository prerequisite, not hidden by a compatibility
+fallback.
+
+### Fix-round TDD and verification
+
+The new focused reason-contract test first failed because missing
+`outcome_reasons` was accepted, and the existing successful-source outcome test
+first failed because Crawlee emitted `recipes-persisted` as a successful reason.
+After the minimal validation and success-outcome changes:
+
+```bash
+npm test -- tests/danish-jsonld/migration-compare.test.ts tests/danish-jsonld/source-outcome.test.ts tests/danish-jsonld/runner.test.ts tests/danish-jsonld/cli.test.ts
+```
+
+passed with 49 tests. Final verification passed: `npm run build`, `npm test`
+(**33 files / 234 tests**), and `git diff --check`. No DB, network, or crawl
+action was run.

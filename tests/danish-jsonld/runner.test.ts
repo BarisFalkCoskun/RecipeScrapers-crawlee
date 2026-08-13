@@ -421,7 +421,7 @@ describe("dedicated Danish JSON-LD runner", () => {
         outcome: input.source.id === "arla" ? "succeeded" : "no_data",
         outcomeReasons:
           input.source.id === "arla"
-            ? ["recipes-persisted"]
+            ? []
             : ["no-recipe-candidates"],
       },
     }));
@@ -448,7 +448,7 @@ describe("dedicated Danish JSON-LD runner", () => {
         {
           sourceId: "arla",
           outcome: "succeeded",
-          outcomeReasons: ["recipes-persisted"],
+          outcomeReasons: [],
         },
         {
           sourceId: "coop",

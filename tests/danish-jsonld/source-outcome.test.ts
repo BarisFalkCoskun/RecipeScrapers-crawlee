@@ -10,7 +10,7 @@ describe("Danish JSON-LD source outcomes", () => {
       "succeeded",
       { persistedRecipes: 1, completedRequests: 1, discoveryComplete: true },
       "succeeded",
-      ["recipes-persisted"],
+      [],
     ],
     [
       "partial",

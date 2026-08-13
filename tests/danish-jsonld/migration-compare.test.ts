@@ -30,6 +30,7 @@ function completeScrapyEvidence(sourceIds: string[]) {
       crawl_healthy: true,
       stats_dump_observed: true,
       stats: { "finish_reason": "finished" },
+      outcome_reasons: [],
     })),
   };
 }
@@ -43,7 +44,7 @@ function completeCrawleeEvidence(sourceIds: string[], database = "crawlee_shadow
       sourceOutcomes: sourceIds.map((sourceId) => ({
         sourceId,
         outcome: "succeeded",
-        outcomeReasons: ["recipes-persisted"],
+        outcomeReasons: [],
       })),
     },
     observations: sourceIds.map((sourceId) => ({
@@ -153,6 +154,49 @@ describe("Danish JSON-LD shadow comparison", () => {
         rejectedIncompleteJsonLd: 0, rejectedMalformedJsonLd: 0,
       }] }),
     })).rejects.toThrow("missing or malformed unintendedOffDomainAdmissions");
+  });
+
+  it("fails closed on missing, malformed, or non-empty terminal outcome reasons", async () => {
+    const options = {
+      legacyDatabase: "scrapy_shadow", crawleeDatabase: "crawlee_shadow", sourceIds: ["arla"],
+      scrapyEvidencePath: "scrapy.json", crawleeEvidencePath: "crawlee.json",
+    };
+    const base = {
+      readLegacy: async () => [], readCrawlee: async () => [], output: () => undefined,
+      readScrapyEvidence: async () => completeScrapyEvidence(["arla"]),
+      readCrawleeEvidence: async () => completeCrawleeEvidence(["arla"]),
+    };
+    const scrapyMissing = completeScrapyEvidence(["arla"]);
+    delete (scrapyMissing.results[0] as Record<string, unknown>).outcome_reasons;
+    await expect(executeMigrationComparison(options, {
+      ...base, readScrapyEvidence: async () => scrapyMissing,
+    })).rejects.toThrow("missing or malformed outcome_reasons");
+    const scrapyWrongType = completeScrapyEvidence(["arla"]);
+    (scrapyWrongType.results[0] as Record<string, unknown>).outcome_reasons = "none";
+    await expect(executeMigrationComparison(options, {
+      ...base, readScrapyEvidence: async () => scrapyWrongType,
+    })).rejects.toThrow("missing or malformed outcome_reasons");
+    const scrapyNonEmpty = completeScrapyEvidence(["arla"]);
+    (scrapyNonEmpty.results[0] as Record<string, unknown>).outcome_reasons = ["recoverable-error"];
+    await expect(executeMigrationComparison(options, {
+      ...base, readScrapyEvidence: async () => scrapyNonEmpty,
+    })).rejects.toThrow("has outcome reasons");
+
+    const crawleeMissing = completeCrawleeEvidence(["arla"]);
+    delete (crawleeMissing.summary.sourceOutcomes[0] as Record<string, unknown>).outcomeReasons;
+    await expect(executeMigrationComparison(options, {
+      ...base, readCrawleeEvidence: async () => crawleeMissing,
+    })).rejects.toThrow("missing or malformed outcomeReasons");
+    const crawleeWrongType = completeCrawleeEvidence(["arla"]);
+    (crawleeWrongType.summary.sourceOutcomes[0] as Record<string, unknown>).outcomeReasons = "none";
+    await expect(executeMigrationComparison(options, {
+      ...base, readCrawleeEvidence: async () => crawleeWrongType,
+    })).rejects.toThrow("missing or malformed outcomeReasons");
+    const crawleeNonEmpty = completeCrawleeEvidence(["arla"]);
+    (crawleeNonEmpty.summary.sourceOutcomes[0] as Record<string, unknown>).outcomeReasons = ["recipes-persisted"];
+    await expect(executeMigrationComparison(options, {
+      ...base, readCrawleeEvidence: async () => crawleeNonEmpty,
+    })).rejects.toThrow("has outcome reasons");
   });
 
   it("returns machine-readable comparison evidence from injected read-only inputs", async () => {

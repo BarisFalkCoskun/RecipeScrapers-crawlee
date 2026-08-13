@@ -331,6 +331,9 @@ function assertScrapyEvidence(evidence: unknown, options: MigrationComparisonOpt
     if (Object.keys(stats).length === 0) {
       throw new Error(`Scrapy evidence source ${sourceId} has incomplete stats`);
     }
+    if (stringArrayField(result, "outcome_reasons", `Scrapy evidence source ${sourceId}`).length > 0) {
+      throw new Error(`Scrapy evidence source ${sourceId} has outcome reasons`);
+    }
   }
 }
 
@@ -352,10 +355,8 @@ function assertCrawleeEvidence(
     if (outcome.outcome !== "succeeded") {
       throw new Error(`Crawlee evidence source ${sourceId} did not succeed`);
     }
-    if (Array.isArray(outcome.outcomeReasons) && outcome.outcomeReasons.some((reason) =>
-      typeof reason === "string" && /incomplete|failed|blocked|cap/.test(reason)
-    )) {
-      throw new Error(`Crawlee evidence source ${sourceId} is incomplete`);
+    if (stringArrayField(outcome, "outcomeReasons", `Crawlee evidence source ${sourceId}`).length > 0) {
+      throw new Error(`Crawlee evidence source ${sourceId} has outcome reasons`);
     }
   }
 
@@ -430,6 +431,14 @@ function exactResultBySource(
 function numberField(record: Record<string, unknown>, field: string, context: string): number {
   const value = record[field];
   if (typeof value !== "number" || !Number.isFinite(value) || value < 0) {
+    throw new Error(`${context} has missing or malformed ${field}`);
+  }
+  return value;
+}
+
+function stringArrayField(record: Record<string, unknown>, field: string, context: string): string[] {
+  const value = record[field];
+  if (!Array.isArray(value) || !value.every((item) => typeof item === "string")) {
     throw new Error(`${context} has missing or malformed ${field}`);
   }
   return value;

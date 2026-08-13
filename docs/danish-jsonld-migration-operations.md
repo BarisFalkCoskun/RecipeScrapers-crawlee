@@ -69,13 +69,24 @@ Advance one source at a time; do not advance the whole pilot as a group.
 Each transition must attach the run ID, timestamp, source ID, comparison scope,
 and the reviewed evidence to the migration record. No currently registered
 source is represented here as having passed any of these gates. Arla is
-`configured`; it has not passed a canary, shadow, or cutover gate.
+`configured`; **no source is `canary_passed`, `shadow_passed`, or `cutover`.**
 
 ## Remote-only full shadow and comparison
 
 Run the same pilot as two separate, full, uncapped remote jobs. Do not use a
 page cap for either job. Both databases must be fresh isolated databases, and
-the commands must run from their respective checkouts.
+the commands must run from their respective checkouts on the same remote worker
+or a worker that shares the same absolute evidence directory. Set this once,
+then retain the exported value while changing checkout directories:
+
+```bash
+export EVIDENCE_DIR="/var/tmp/recipescrapers-danish-jsonld-shadow-$(date -u +%Y%m%dT%H%M%SZ)"
+mkdir -p "$EVIDENCE_DIR"
+printf 'Evidence directory: %s\n' "$EVIDENCE_DIR"
+```
+
+If using a new remote shell for the other checkout, re-export the printed
+absolute path exactly; do not create a second timestamped directory.
 
 First, in the Scrapy checkout, produce normalized legacy recipes and a JSON
 summary. `--no-state` prevents a previous cycle from hiding URLs; `full` writes
@@ -89,7 +100,7 @@ RECIPE_STORAGE_BACKEND=mongodb \
 RECIPE_FEED_EXPORT_ENABLED=false \
 uv run python -m tools.run_all_spiders \
   --spiders $PILOT_SPIDERS --processing-mode full --no-state --parallel 2 \
-  --summary-file scrapy-shadow.json
+  --summary-file "$EVIDENCE_DIR/scrapy-shadow.json"
 ```
 
 Next, in this Crawlee checkout, crawl that same ordered cohort to a different
@@ -99,7 +110,8 @@ isolated database. Omitting `--max-pages` makes this a full, uncapped run.
 export PILOT_SOURCES='arla,coop,kitchenaid,surdejsentusiasten,sundpaabudget,klinksgaard,madoghave,netto,madrejsen,tv2mad,kikkoman,gamleopskrifter'
 MONGODB_URI='mongodb://USER:PASSWORD@REMOTE_HOST:27017/?authSource=admin' \
 DB_NAME='crawlee_danish_jsonld_shadow_YYYYMMDD' \
-npm run crawl:danish-jsonld -- --sources "$PILOT_SOURCES" --force --json-out crawlee-shadow.json
+npm run crawl:danish-jsonld -- --sources "$PILOT_SOURCES" --force \
+  --json-out "$EVIDENCE_DIR/crawlee-shadow.json"
 ```
 
 Finally, run the read-only comparison from this checkout. It explicitly names
@@ -114,8 +126,9 @@ npm run migration:compare -- \
   --legacy-db recipescrapers_danish_jsonld_shadow_YYYYMMDD \
   --crawlee-db crawlee_danish_jsonld_shadow_YYYYMMDD \
   --sources "$PILOT_SOURCES" \
-  --scrapy-evidence scrapy-shadow.json \
-  --crawlee-evidence crawlee-shadow.json > shadow-comparison.json
+  --scrapy-evidence "$EVIDENCE_DIR/scrapy-shadow.json" \
+  --crawlee-evidence "$EVIDENCE_DIR/crawlee-shadow.json" \
+  > "$EVIDENCE_DIR/shadow-comparison.json"
 ```
 
 The report contains per-source and aggregate legacy/Crawlee URL counts,
@@ -142,6 +155,14 @@ rejected incomplete/malformed required JSON-LD. Extra Crawlee recipes do not
 lower legacy URL coverage; the coverage denominator is the source-scoped legacy
 canonical URL set. Legacy Mongo reads use the registry's effective
 `source_site` domain mapping and emit the registry source ID in the report.
+
+Both summary schemas must include an explicit empty outcome-reasons array for a
+successful source: Scrapy `outcome_reasons: []`, Crawlee `outcomeReasons: []`.
+Missing, non-array, non-string, or non-empty reasons are fatal. The inspected
+current Scrapy `SpiderRunResult.to_dict()` summary does **not** emit
+`outcome_reasons`; update that upstream summary schema before treating a Scrapy
+shadow run as comparable. The comparator deliberately does not infer an empty
+array from `outcome`, `blocked_reason`, or `error_message`.
 
 ## Storage and consumer contract
 

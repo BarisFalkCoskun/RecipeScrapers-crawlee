@@ -24,14 +24,14 @@ export interface SourceRunObservation {
 export function classifySourceOutcome(
   observation: SourceRunObservation
 ): SourceRunOutcomeSummary {
-  const reasons = outcomeReasons(observation);
   const persistedRecipes = observation.persistedRecipes ?? 0;
 
+  if (persistedRecipes > 0 && !hasIncompleteWork(observation) && (observation.blockedRequests ?? 0) === 0) {
+    return { sourceId: observation.sourceId, outcome: "succeeded", outcomeReasons: [] };
+  }
+  const reasons = outcomeReasons(observation);
   if (persistedRecipes > 0 && (hasIncompleteWork(observation) || (observation.blockedRequests ?? 0) > 0)) {
     return { sourceId: observation.sourceId, outcome: "partial", outcomeReasons: reasons };
-  }
-  if (persistedRecipes > 0) {
-    return { sourceId: observation.sourceId, outcome: "succeeded", outcomeReasons: reasons };
   }
   if ((observation.mongoFailures ?? 0) > 0) {
     return { sourceId: observation.sourceId, outcome: "failed", outcomeReasons: reasons };

@@ -14,7 +14,7 @@ describe("crawl:danish-jsonld CLI", () => {
         {
           sourceId: "arla",
           outcome: "succeeded",
-          outcomeReasons: ["recipes-persisted"],
+          outcomeReasons: [],
         },
       ],
     };
