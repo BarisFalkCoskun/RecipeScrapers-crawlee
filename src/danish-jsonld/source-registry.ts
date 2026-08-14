@@ -3791,6 +3791,60 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "not_started",
     deferOrBlockReason: "Sitemap request timed out during the route audit; route unverified",
   },
+  aperol: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-14T20-03-09.220Z-attempt-4abcc7ae-5fcc-4119-9b75-44036466910b",
+    deferOrBlockReason:
+      "Uncapped run persisted 1 recipes with complete discovery and no blocked or failed request",
+  },
+  ferrerorocher: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-14T20-03-32.139Z-attempt-f3b7a390-cb11-42ae-9782-728099d8e443",
+    deferOrBlockReason:
+      "Uncapped run persisted 3 recipes with complete discovery and no blocked or failed request",
+  },
+  friluftslageret: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-14T20-08-35.579Z-attempt-53fdc75c-e4dd-4a03-bc06-000512c6b8c2",
+    deferOrBlockReason:
+      "Uncapped run persisted 1 recipes with complete discovery and no blocked or failed request",
+  },
+  glutenfrimagi: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-14T20-07-53.129Z-attempt-25799574-7bc4-42c5-820a-09518a4eda5c",
+    deferOrBlockReason:
+      "Uncapped run persisted 8 recipes with complete discovery and no blocked or failed request",
+  },
+  knaehoejkarse: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-14T20-07-13.596Z-attempt-bf40d0e4-7bed-4947-90c6-45049106452d",
+    deferOrBlockReason:
+      "Uncapped run persisted 12 recipes with complete discovery and no blocked or failed request",
+  },
+  madrejsen: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-14T19-38-50.433Z-attempt-1f798f5f-9220-44bf-93af-19824fa1e326",
+    deferOrBlockReason:
+      "Uncapped run persisted 149 recipes with complete discovery and no blocked or failed request",
+  },
+  parcelhuslykke: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-14T20-06-39.804Z-attempt-7f38470e-f0f5-422d-a434-ff152b40e681",
+    deferOrBlockReason:
+      "Uncapped run persisted 11 recipes with complete discovery and no blocked or failed request",
+  },
+  recipesairfryer_dk: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-14T20-04-00.259Z-attempt-a7db1f8a-4133-459e-b30a-448c35056fdb",
+    deferOrBlockReason:
+      "Uncapped run persisted 47 recipes with complete discovery and no blocked or failed request",
+  },
+  rema1000: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-14T20-11-01.445Z-attempt-828a9ea6-ce87-48af-a902-ae534a4956fd",
+    deferOrBlockReason:
+      "Uncapped run persisted 671 recipes with complete discovery and no blocked or failed request",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
@@ -3834,13 +3888,6 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "deferred",
     latestCanary: PILOT_CANARY_RUN,
     deferOrBlockReason: "Recipe JSON-LD omits required ingredients and instructions",
-  },
-  madrejsen: {
-    migrationState: "configured",
-    latestCanary:
-      "2026-08-13T20-29-02.915Z-attempt-d7ffd5a2-91b1-45a2-a24a-66eb6a5ff4b0",
-    deferOrBlockReason:
-      "Uncapped rerun persisted 138 complete Recipe JSON-LD recipes, so the defer no longer holds; access blocks still left discovery incomplete",
   },
 };
 

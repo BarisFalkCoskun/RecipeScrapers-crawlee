@@ -60,9 +60,9 @@ describe("Danish JSON-LD source registry", () => {
     );
     expect(byId.get("klinksgaard")?.migrationState).toBe("blocked");
     expect(byId.get("netto")?.migrationState).toBe("deferred");
-    expect(byId.get("madrejsen")?.migrationState).toBe("configured");
+    expect(byId.get("madrejsen")?.migrationState).toBe("canary_passed");
     expect(byId.get("madrejsen")?.deferOrBlockReason).toMatch(
-      /defer no longer holds/u
+      /no blocked or failed request/u
     );
     expect(DANISH_JSONLD_SOURCES.filter((source) => source.migrationState === "cutover")).toHaveLength(0);
   });
