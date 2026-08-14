@@ -3770,9 +3770,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   tv2mad: {
     startUrls: ["https://recipe-front.services.tv2.dk/search/%20?from=0"],
     migrationState: "configured",
-    latestCanary: PILOT_CANARY_RUN,
+    latestCanary:
+      "2026-08-14T13-06-56.114Z-attempt-6720a4f2-98d6-4f61-a5df-76987ce01c9c",
     deferOrBlockReason:
-      "Listing now reads the offset-paged recipe service behind the load-more control; awaits uncapped validation",
+      "Service route persisted 9999 recipes against 20 before, but its result window stops at 10000, so discovery stays incomplete until the catalogue is partitioned",
   },
   surdejsentusiasten: {
     migrationState: "shadow_passed",

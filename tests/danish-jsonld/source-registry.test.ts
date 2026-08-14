@@ -46,7 +46,7 @@ describe("Danish JSON-LD source registry", () => {
     ]);
     expect(byId.get("madoghave")?.shadowParity).toBe("legacy-unhealthy");
     expect(byId.get("tv2mad")?.deferOrBlockReason).toMatch(
-      /offset-paged recipe service/u
+      /result window stops at 10000/u
     );
     expect(byId.get("surdejsentusiasten")?.migrationState).toBe("shadow_passed");
     expect(byId.get("kikkoman")?.migrationState).toBe("configured");
