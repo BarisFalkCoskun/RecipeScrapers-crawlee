@@ -107,6 +107,20 @@ relay-exhaustion errors and 276 blocked requests; the same source without the
 VPN cleared every challenge in session and reported zero blocked requests. This
 is currently an operating rule, not something the registry enforces.
 
+What actually triggers that check is Chromium's automation markers, not the
+user agent and not the address. Crawlee injects a browser fingerprint on both
+fetch paths, so the user agent already reads as Chrome with no headless marker;
+the giveaway was `--enable-automation` and `navigator.webdriver`. The Playwright
+factory now launches with `--disable-blink-features=AutomationControlled`,
+ignores the default `--enable-automation`, and clears `navigator.webdriver`
+through an init script. On an identical 40-page capped run against Sund på
+Budget this took browser checks from ten to zero and raised processed recipe
+pages from 31 to 38.
+
+Before blaming an address or a user agent for a block, check the markers. A
+plain HTTP client with perfect browser headers still fails these checks because
+its TLS fingerprint gives it away, which is why the rendered path exists.
+
 ## Evidence-backed source-by-source transition
 
 Advance one source at a time; do not advance the whole pilot as a group.
