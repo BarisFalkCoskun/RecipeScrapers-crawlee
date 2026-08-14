@@ -87,11 +87,25 @@ not count as off-domain admissions; recipes and canonical URLs stay bound to
 `recipe-front.services.tv2.dk/search/%20?from=0`, pages by `from` in steps of
 50 up to 9950, and still admits recipes only on `livsstil.tv2.dk`.
 
+Run one crawl at a time per checkout, or give each concurrent crawl its own
+`CRAWLEE_STORAGE_DIR`. Crawlee purges its storage directory on start, so a
+second crawl launched from the same checkout deletes the request queue the
+first one is still using; the first then dies on a missing lock file with
+`ECOMPROMISED` and writes no evidence JSON.
+
 Some sources answer plain HTTP clients with an HTTP 454 or 455 browser check
 that a real browser clears once and then keeps clearing for the rest of its
 session. Configure those sources with `fetchMode: "playwright"`; the rendered
 path re-requests a browser check while retries remain instead of recording it
 as a terminal block. Sund på Budget is the known instance.
+
+Such a source must not be crawled behind `--vpn`. The transport leases a relay
+per request, so each request arrives from a new address and earns a new
+challenge, and rotating on a challenge discards the very session that would
+have cleared it. An uncapped Sund på Budget run with `--vpn` produced 801
+relay-exhaustion errors and 276 blocked requests; the same source without the
+VPN cleared every challenge in session and reported zero blocked requests. This
+is currently an operating rule, not something the registry enforces.
 
 ## Evidence-backed source-by-source transition
 
