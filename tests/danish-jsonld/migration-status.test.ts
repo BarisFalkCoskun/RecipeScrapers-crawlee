@@ -8,7 +8,7 @@ describe("Danish JSON-LD migration status", () => {
   it("reports all required checklist fields in JSON", () => {
     const report = createMigrationStatusReport();
 
-    expect(report.sources).toHaveLength(99);
+    expect(report.sources).toHaveLength(123);
     expect(report.sources[0]).toMatchObject({
       source: expect.any(String),
       domain: expect.any(String),

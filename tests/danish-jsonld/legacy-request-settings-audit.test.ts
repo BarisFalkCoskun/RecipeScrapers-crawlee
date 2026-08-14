@@ -497,11 +497,131 @@ const expectedSettings = {
     "delaySeconds": 2,
     "maxConcurrency": 2,
     "maxRetries": 3
+  },
+  "allrecipes": {
+    "delaySeconds": 3,
+    "maxConcurrency": 1,
+    "maxRetries": 3
+  },
+  "avocadosfrommexico": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "bbcgoodfood": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "bertolli": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "bettycrocker": {
+    "delaySeconds": 3,
+    "maxConcurrency": 1,
+    "maxRetries": 3
+  },
+  "bobsredmill": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "canadianliving": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "chelsea_nz": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "delmonte": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "edmonds_nz": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "foodnetwork_uk": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "greatbritishchefs": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "jamieoliver": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "landolakes": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "nordicfoodliving": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "olivemagazine": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "pillsbury": {
+    "delaySeconds": 3,
+    "maxConcurrency": 1,
+    "maxRetries": 3
+  },
+  "progresso": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "ricardocuisine": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "spam": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "sunset": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "tasteofhome": {
+    "delaySeconds": 3,
+    "maxConcurrency": 1,
+    "maxRetries": 3
+  },
+  "tesco_recipes": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "tillamook": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
   }
 } as const;
 
 describe("legacy request-settings audit", () => {
-  it("matches every Danish JSON-LD spider's effective delay, concurrency, and retries", () => {
+  it("matches every legacy JSON-LD spider's effective delay, concurrency, and retries", () => {
     expect(Object.fromEntries(DANISH_JSONLD_SOURCES.map((source) => [
       source.id,
       {

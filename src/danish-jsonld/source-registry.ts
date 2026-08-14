@@ -2831,6 +2831,677 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
     "requireCompleteJsonLd": true,
     "migrationState": "not_started",
     "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "allrecipes",
+    "domain": "allrecipes.com",
+    "allowedDomains": [
+      "allrecipes.com",
+      "www.allrecipes.com"
+    ],
+    "legacySpider": "AllRecipesSpider",
+    "legacyFamily": "JsonLdSitemapRecipeSpider",
+    "discovery": "sitemap",
+    "sitemapUrls": [
+      "https://www.allrecipes.com/sitemap.xml"
+    ],
+    "startUrls": [],
+    "recipeUrlPatterns": [
+      "/recipe/"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 2,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "avocadosfrommexico",
+    "domain": "avocadosfrommexico.com",
+    "allowedDomains": [
+      "avocadosfrommexico.com",
+      "www.avocadosfrommexico.com"
+    ],
+    "legacySpider": "AvocadosfrommexicoSpider",
+    "legacyFamily": "JsonLdSitemapRecipeSpider",
+    "discovery": "sitemap",
+    "sitemapUrls": [
+      "https://www.avocadosfrommexico.com/sitemap.xml"
+    ],
+    "startUrls": [],
+    "recipeUrlPatterns": [
+      "/recipe/"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 2,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "bbcgoodfood",
+    "domain": "bbcgoodfood.com",
+    "allowedDomains": [
+      "bbcgoodfood.com",
+      "www.bbcgoodfood.com"
+    ],
+    "legacySpider": "BBCGoodFoodSpider",
+    "legacyFamily": "JsonLdSitemapRecipeSpider",
+    "discovery": "sitemap",
+    "sitemapUrls": [
+      "https://www.bbcgoodfood.com/sitemap.xml"
+    ],
+    "startUrls": [],
+    "recipeUrlPatterns": [
+      "/recipes/"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 2,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "bertolli",
+    "domain": "bertolli.com",
+    "allowedDomains": [
+      "bertolli.com",
+      "www.bertolli.com"
+    ],
+    "legacySpider": "BertolliSpider",
+    "legacyFamily": "JsonLdSitemapRecipeSpider",
+    "discovery": "sitemap",
+    "sitemapUrls": [
+      "https://bertolli.com/sitemap.xml"
+    ],
+    "startUrls": [],
+    "recipeUrlPatterns": [
+      "/recipes/"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 2,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "bettycrocker",
+    "domain": "bettycrocker.com",
+    "allowedDomains": [
+      "bettycrocker.com",
+      "www.bettycrocker.com"
+    ],
+    "legacySpider": "BettycrockerSpider",
+    "legacyFamily": "JsonLdSitemapRecipeSpider",
+    "discovery": "sitemap",
+    "sitemapUrls": [
+      "https://www.bettycrocker.com/sitemap.xml"
+    ],
+    "startUrls": [],
+    "recipeUrlPatterns": [
+      "/recipes/"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 2,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "bobsredmill",
+    "domain": "bobsredmill.com",
+    "allowedDomains": [
+      "bobsredmill.com",
+      "www.bobsredmill.com"
+    ],
+    "legacySpider": "BobsredmillSpider",
+    "legacyFamily": "JsonLdSitemapRecipeSpider",
+    "discovery": "sitemap",
+    "sitemapUrls": [
+      "https://www.bobsredmill.com/sitemap.xml"
+    ],
+    "startUrls": [],
+    "recipeUrlPatterns": [
+      "/recipes/"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 2,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "canadianliving",
+    "domain": "canadianliving.com",
+    "allowedDomains": [
+      "canadianliving.com",
+      "www.canadianliving.com"
+    ],
+    "legacySpider": "CanadianLivingSpider",
+    "legacyFamily": "JsonLdSitemapRecipeSpider",
+    "discovery": "sitemap",
+    "sitemapUrls": [
+      "https://www.canadianliving.com/sitemap.xml"
+    ],
+    "startUrls": [],
+    "recipeUrlPatterns": [
+      "/food/recipe/"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 2,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "chelsea_nz",
+    "domain": "chelsea.co.nz",
+    "allowedDomains": [
+      "chelsea.co.nz",
+      "www.chelsea.co.nz"
+    ],
+    "legacySpider": "ChelseaNzSpider",
+    "legacyFamily": "JsonLdSitemapRecipeSpider",
+    "discovery": "sitemap",
+    "sitemapUrls": [
+      "https://www.chelsea.co.nz/sitemap.xml"
+    ],
+    "startUrls": [],
+    "recipeUrlPatterns": [
+      "/browse-recipes/"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 2,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "delmonte",
+    "domain": "delmonte.com",
+    "allowedDomains": [
+      "delmonte.com",
+      "www.delmonte.com"
+    ],
+    "legacySpider": "DelmonteSpider",
+    "legacyFamily": "JsonLdSitemapRecipeSpider",
+    "discovery": "sitemap",
+    "sitemapUrls": [
+      "https://www.delmonte.com/sitemap.xml"
+    ],
+    "startUrls": [],
+    "recipeUrlPatterns": [
+      "/recipes/"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 2,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "edmonds_nz",
+    "domain": "edmondscooking.co.nz",
+    "allowedDomains": [
+      "edmondscooking.co.nz",
+      "www.edmondscooking.co.nz"
+    ],
+    "legacySpider": "EdmondsNzSpider",
+    "legacyFamily": "JsonLdSitemapRecipeSpider",
+    "discovery": "sitemap",
+    "sitemapUrls": [
+      "https://www.edmondscooking.co.nz/sitemap.xml"
+    ],
+    "startUrls": [],
+    "recipeUrlPatterns": [
+      "/recipes/"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 2,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "foodnetwork_uk",
+    "domain": "foodnetwork.co.uk",
+    "allowedDomains": [
+      "foodnetwork.co.uk",
+      "www.foodnetwork.co.uk"
+    ],
+    "legacySpider": "FoodnetworkUkSpider",
+    "legacyFamily": "JsonLdSitemapRecipeSpider",
+    "discovery": "sitemap",
+    "sitemapUrls": [
+      "https://foodnetwork.co.uk/sitemap.xml"
+    ],
+    "startUrls": [],
+    "recipeUrlPatterns": [
+      "/recipes/"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 2,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "greatbritishchefs",
+    "domain": "greatbritishchefs.com",
+    "allowedDomains": [
+      "greatbritishchefs.com",
+      "www.greatbritishchefs.com"
+    ],
+    "legacySpider": "GreatBritishChefsSpider",
+    "legacyFamily": "JsonLdSitemapRecipeSpider",
+    "discovery": "sitemap",
+    "sitemapUrls": [
+      "https://www.greatbritishchefs.com/sitemap.xml"
+    ],
+    "startUrls": [],
+    "recipeUrlPatterns": [
+      "/recipes/"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 2,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "jamieoliver",
+    "domain": "jamieoliver.com",
+    "allowedDomains": [
+      "jamieoliver.com",
+      "www.jamieoliver.com"
+    ],
+    "legacySpider": "JamieOliverSpider",
+    "legacyFamily": "JsonLdSitemapRecipeSpider",
+    "discovery": "sitemap",
+    "sitemapUrls": [
+      "https://www.jamieoliver.com/sitemap.xml"
+    ],
+    "startUrls": [],
+    "recipeUrlPatterns": [
+      "/recipes/"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 2,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "landolakes",
+    "domain": "landolakes.com",
+    "allowedDomains": [
+      "landolakes.com",
+      "www.landolakes.com"
+    ],
+    "legacySpider": "LandolakesSpider",
+    "legacyFamily": "JsonLdSitemapRecipeSpider",
+    "discovery": "sitemap",
+    "sitemapUrls": [
+      "https://www.landolakes.com/sitemap.xml"
+    ],
+    "startUrls": [],
+    "recipeUrlPatterns": [
+      "/recipe/"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 2,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "nordicfoodliving",
+    "domain": "nordicfoodliving.com",
+    "allowedDomains": [
+      "nordicfoodliving.com"
+    ],
+    "legacySpider": "NordicFoodLivingSpider",
+    "legacyFamily": "JsonLdSitemapRecipeSpider",
+    "discovery": "sitemap",
+    "sitemapUrls": [
+      "https://nordicfoodliving.com/post-sitemap.xml"
+    ],
+    "startUrls": [],
+    "recipeUrlPatterns": [
+      "nordicfoodliving\\.com/[a-z0-9-]+/?$"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 2,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "olivemagazine",
+    "domain": "olivemagazine.com",
+    "allowedDomains": [
+      "olivemagazine.com",
+      "www.olivemagazine.com"
+    ],
+    "legacySpider": "OliveMagazineSpider",
+    "legacyFamily": "JsonLdSitemapRecipeSpider",
+    "discovery": "sitemap",
+    "sitemapUrls": [
+      "https://www.olivemagazine.com/sitemap.xml"
+    ],
+    "startUrls": [],
+    "recipeUrlPatterns": [
+      "/recipes/"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 2,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "pillsbury",
+    "domain": "pillsbury.com",
+    "allowedDomains": [
+      "pillsbury.com",
+      "www.pillsbury.com"
+    ],
+    "legacySpider": "PillsburySpider",
+    "legacyFamily": "JsonLdSitemapRecipeSpider",
+    "discovery": "sitemap",
+    "sitemapUrls": [
+      "https://www.pillsbury.com/sitemap.xml"
+    ],
+    "startUrls": [],
+    "recipeUrlPatterns": [
+      "/recipes/"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 2,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "progresso",
+    "domain": "progresso.com",
+    "allowedDomains": [
+      "progresso.com",
+      "www.progresso.com"
+    ],
+    "legacySpider": "ProgressoSpider",
+    "legacyFamily": "JsonLdSitemapRecipeSpider",
+    "discovery": "sitemap",
+    "sitemapUrls": [
+      "https://www.progresso.com/sitemap.xml"
+    ],
+    "startUrls": [],
+    "recipeUrlPatterns": [
+      "/recipes/"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 2,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "ricardocuisine",
+    "domain": "ricardocuisine.com",
+    "allowedDomains": [
+      "ricardocuisine.com",
+      "www.ricardocuisine.com"
+    ],
+    "legacySpider": "RicardoCuisineSpider",
+    "legacyFamily": "JsonLdSitemapRecipeSpider",
+    "discovery": "sitemap",
+    "sitemapUrls": [
+      "https://www.ricardocuisine.com/sitemap.xml"
+    ],
+    "startUrls": [],
+    "recipeUrlPatterns": [
+      "/en/recipes/"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 2,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "spam",
+    "domain": "spam.com",
+    "allowedDomains": [
+      "spam.com",
+      "www.spam.com"
+    ],
+    "legacySpider": "SpamSpider",
+    "legacyFamily": "JsonLdSitemapRecipeSpider",
+    "discovery": "sitemap",
+    "sitemapUrls": [
+      "https://www.spam.com/sitemap.xml"
+    ],
+    "startUrls": [],
+    "recipeUrlPatterns": [
+      "/recipes/"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 2,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "sunset",
+    "domain": "sunset.com",
+    "allowedDomains": [
+      "sunset.com",
+      "www.sunset.com"
+    ],
+    "legacySpider": "SunsetSpider",
+    "legacyFamily": "JsonLdSitemapRecipeSpider",
+    "discovery": "sitemap",
+    "sitemapUrls": [
+      "https://sunset.com/sitemap.xml"
+    ],
+    "startUrls": [],
+    "recipeUrlPatterns": [
+      "/recipe/"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 2,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "tasteofhome",
+    "domain": "tasteofhome.com",
+    "allowedDomains": [
+      "tasteofhome.com",
+      "www.tasteofhome.com"
+    ],
+    "legacySpider": "TasteofhomeSpider",
+    "legacyFamily": "JsonLdSitemapRecipeSpider",
+    "discovery": "sitemap",
+    "sitemapUrls": [
+      "https://www.tasteofhome.com/sitemap.xml"
+    ],
+    "startUrls": [],
+    "recipeUrlPatterns": [
+      "/recipes/"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 2,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "tesco_recipes",
+    "domain": "tesco.com",
+    "allowedDomains": [
+      "tesco.com",
+      "realfood.tesco.com"
+    ],
+    "legacySpider": "TescoRecipesSpider",
+    "legacyFamily": "JsonLdSitemapRecipeSpider",
+    "discovery": "sitemap",
+    "sitemapUrls": [
+      "https://realfood.tesco.com/sitemap.xml"
+    ],
+    "startUrls": [],
+    "recipeUrlPatterns": [
+      "/recipes/"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 2,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "tillamook",
+    "domain": "tillamook.com",
+    "allowedDomains": [
+      "tillamook.com",
+      "www.tillamook.com"
+    ],
+    "legacySpider": "TillamookSpider",
+    "legacyFamily": "JsonLdSitemapRecipeSpider",
+    "discovery": "sitemap",
+    "sitemapUrls": [
+      "https://www.tillamook.com/sitemap.xml"
+    ],
+    "startUrls": [],
+    "recipeUrlPatterns": [
+      "/recipes/"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 2,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
   }
 ] as DanishJsonLdSource[];
 
@@ -2979,6 +3650,30 @@ const LEGACY_SITEMAP_DISCOVERY_OVERRIDES: Record<
       "/flexitarisk-madplan-", "/basislager/",
     ],
   },
+  allrecipes: { followPatterns: [], skipUrlFragments: ["/recipe/collection/", "/gallery/", "/article/"] },
+  avocadosfrommexico: { followPatterns: [], skipUrlFragments: ["/recipe/collection/", "/recipe/category/"] },
+  bbcgoodfood: { followPatterns: [], skipUrlFragments: ["/recipes/collection/", "/recipes/category/"] },
+  bertolli: { followPatterns: [], skipUrlFragments: ["/recipes/collection/", "/recipes/category/"] },
+  bettycrocker: { followPatterns: [], skipUrlFragments: ["/recipes/meal-type/", "/recipes/cuisine/", "/recipes/ingredient/"] },
+  bobsredmill: { followPatterns: [], skipUrlFragments: ["/recipes/collection/", "/recipes/category/"] },
+  canadianliving: { followPatterns: [], skipUrlFragments: ["/food/recipe/collection/"] },
+  chelsea_nz: { followPatterns: [], skipUrlFragments: ["/browse-recipes/category/"] },
+  delmonte: { followPatterns: [], skipUrlFragments: ["/recipes/collections/"] },
+  edmonds_nz: { followPatterns: [], skipUrlFragments: ["/recipes/category/"] },
+  foodnetwork_uk: { followPatterns: [], skipUrlFragments: ["/recipes/collection/"] },
+  greatbritishchefs: { followPatterns: [], skipUrlFragments: ["/recipes/collections/"] },
+  jamieoliver: { followPatterns: [], skipUrlFragments: ["/recipes/category/", "/recipes/meal-type/", "/recipes/cuisine/"] },
+  landolakes: { followPatterns: [], skipUrlFragments: ["/recipe/category/"] },
+  nordicfoodliving: { followPatterns: [], skipUrlFragments: ["/category/", "/tag/", "/page/", "/about/", "/contact/", "/privacy-policy/", "/recipes/"] },
+  olivemagazine: { followPatterns: [], skipUrlFragments: ["/recipes/collection/", "/recipes/category/"] },
+  pillsbury: { followPatterns: [], skipUrlFragments: ["/recipes/meal-type/", "/recipes/cuisine/"] },
+  progresso: { followPatterns: [], skipUrlFragments: ["/recipes/collection/", "/recipes/category/"] },
+  ricardocuisine: { followPatterns: [], skipUrlFragments: ["/en/recipes/collection/", "/fr/"] },
+  spam: { followPatterns: [], skipUrlFragments: ["/recipes/collection/", "/recipes/category/"] },
+  sunset: { followPatterns: [], skipUrlFragments: ["/recipe/collection/"] },
+  tasteofhome: { followPatterns: [], skipUrlFragments: ["/recipes/cuisine/", "/recipes/dishes/", "/recipes/ingredients/"] },
+  tesco_recipes: { followPatterns: [], skipUrlFragments: ["/recipes/collections/", "/recipes/meal-planners/"] },
+  tillamook: { followPatterns: [], skipUrlFragments: ["/recipes/collection/", "/recipes/category/"] },
 };
 
 const LEGACY_DISCOVERY_OVERRIDES: Partial<
@@ -3029,7 +3724,13 @@ const ROUTE_AUDITED_SOURCE_IDS = new Set([
   "rosekylling", "santamariaworld", "schulstad", "semper",
   "skalvibage", "skolemaelk", "slagterlampe", "spicytwist",
   "spisekunst", "starbucksathome", "stinna", "sydhavnsbloggen",
-  "udeoghjemme", "violife"
+  "udeoghjemme", "violife",
+  "allrecipes", "avocadosfrommexico", "bbcgoodfood", "bertolli",
+  "bettycrocker", "bobsredmill", "canadianliving", "chelsea_nz",
+  "delmonte", "edmonds_nz", "foodnetwork_uk", "greatbritishchefs",
+  "jamieoliver", "landolakes", "nordicfoodliving", "olivemagazine",
+  "pillsbury", "progresso", "spam", "sunset",
+  "tasteofhome", "tesco_recipes", "tillamook"
 ]);
 
 const PILOT_CANARY_RUN =
@@ -3084,6 +3785,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
    * The listing renders twelve recipes and continues through a script-only
    * control, so a canary here would report partial discovery as complete.
    */
+  /** Sitemap did not answer within the audit timeout; route unverified. */
+  ricardocuisine: {
+    migrationState: "not_started",
+    deferOrBlockReason: "Sitemap request timed out during the route audit; route unverified",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
@@ -3164,6 +3870,10 @@ const LEGACY_REQUEST_SETTING_OVERRIDES: Record<
   spicytwist: { maxConcurrency: 1 },
   spisekunst: { maxConcurrency: 1 },
   surdejsentusiasten: { maxConcurrency: 1 },
+  allrecipes: { delaySeconds: 3, maxConcurrency: 1 },
+  bettycrocker: { delaySeconds: 3, maxConcurrency: 1 },
+  pillsbury: { delaySeconds: 3, maxConcurrency: 1 },
+  tasteofhome: { delaySeconds: 3, maxConcurrency: 1 },
 };
 
 /**

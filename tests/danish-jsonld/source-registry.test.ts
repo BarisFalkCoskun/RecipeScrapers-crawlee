@@ -5,13 +5,13 @@ import {
 } from "../../src/danish-jsonld/source-registry.js";
 
 describe("Danish JSON-LD source registry", () => {
-  const expectedLegacySourceIds = ["amo", "aperol", "arla", "aurion", "bareencocktail", "beauvais", "becel", "bedstedrinks", "blenderopskrifter", "bobedre", "bodylab", "bornemenuen", "bornholms", "campari", "castello", "christinaskoekken", "cocktaily", "coop", "copenhagendistillery_da", "danishcrown", "diabetesopskrifter", "evatrio", "familiejournal", "ferrerorocher", "fevertree", "foodnotes", "frederikkewaerens", "friluftslageret", "frokenkraesen_com", "gamleopskrifter", "gastrologik", "gastrotools", "gigtforeningen", "glutenfrimagi", "glyngoere", "hannerobinson", "heidiogper", "heinz", "hverdagskoekken", "iform", "imerco", "ingridhornshoj", "jonsmadklub", "kenwoodworld", "ketomums", "kikkoman", "kitchenaid", "klank", "klinksgaard", "knaehoejkarse", "kokke", "kornkammeret", "kystfisken", "lurpak", "madenimitliv", "madfolket", "madformadelskere", "madogdrikke", "madoghave", "madrejsen", "madsvin", "maduniverset", "mambeno", "mariavestergaard", "micadeli", "mutti", "nescafe", "netto", "nogetiovnen", "nordmad", "nutella", "oatly", "odensemarcipan", "oetker", "opskrifterdk", "parcelhuslykke", "planetariskkogebog", "plantepusherne", "puredansk", "recipesairfryer_dk", "rema1000", "revivafit", "rosekylling", "santamariaworld", "schulstad", "semper", "skalvibage", "skolemaelk", "slagterlampe", "spicytwist", "spisekunst", "starbucksathome", "stinna", "sundpaabudget", "surdejsentusiasten", "sydhavnsbloggen", "tv2mad", "udeoghjemme", "violife"];
+  const expectedLegacySourceIds = ["allrecipes", "amo", "aperol", "arla", "aurion", "avocadosfrommexico", "bareencocktail", "bbcgoodfood", "beauvais", "becel", "bedstedrinks", "bertolli", "bettycrocker", "blenderopskrifter", "bobedre", "bobsredmill", "bodylab", "bornemenuen", "bornholms", "campari", "canadianliving", "castello", "chelsea_nz", "christinaskoekken", "cocktaily", "coop", "copenhagendistillery_da", "danishcrown", "delmonte", "diabetesopskrifter", "edmonds_nz", "evatrio", "familiejournal", "ferrerorocher", "fevertree", "foodnetwork_uk", "foodnotes", "frederikkewaerens", "friluftslageret", "frokenkraesen_com", "gamleopskrifter", "gastrologik", "gastrotools", "gigtforeningen", "glutenfrimagi", "glyngoere", "greatbritishchefs", "hannerobinson", "heidiogper", "heinz", "hverdagskoekken", "iform", "imerco", "ingridhornshoj", "jamieoliver", "jonsmadklub", "kenwoodworld", "ketomums", "kikkoman", "kitchenaid", "klank", "klinksgaard", "knaehoejkarse", "kokke", "kornkammeret", "kystfisken", "landolakes", "lurpak", "madenimitliv", "madfolket", "madformadelskere", "madogdrikke", "madoghave", "madrejsen", "madsvin", "maduniverset", "mambeno", "mariavestergaard", "micadeli", "mutti", "nescafe", "netto", "nogetiovnen", "nordicfoodliving", "nordmad", "nutella", "oatly", "odensemarcipan", "oetker", "olivemagazine", "opskrifterdk", "parcelhuslykke", "pillsbury", "planetariskkogebog", "plantepusherne", "progresso", "puredansk", "recipesairfryer_dk", "rema1000", "revivafit", "ricardocuisine", "rosekylling", "santamariaworld", "schulstad", "semper", "skalvibage", "skolemaelk", "slagterlampe", "spam", "spicytwist", "spisekunst", "starbucksathome", "stinna", "sundpaabudget", "sunset", "surdejsentusiasten", "sydhavnsbloggen", "tasteofhome", "tesco_recipes", "tillamook", "tv2mad", "udeoghjemme", "violife"];
 
-  it("contains exactly the 99 Danish legacy JSON-LD sources", () => {
-    expect(DANISH_JSONLD_SOURCES).toHaveLength(99);
+  it("contains exactly the 123 legacy JSON-LD sources", () => {
+    expect(DANISH_JSONLD_SOURCES).toHaveLength(123);
     expect(DANISH_JSONLD_SOURCES.filter(
       (source) => source.legacyFamily === "JsonLdSitemapRecipeSpider"
-    )).toHaveLength(65);
+    )).toHaveLength(89);
     expect(DANISH_JSONLD_SOURCES.filter(
       (source) => source.legacyFamily === "JsonLdListingSpider"
     )).toHaveLength(34);
@@ -78,9 +78,29 @@ describe("Danish JSON-LD source registry", () => {
       expect(source?.latestCanary).toBeUndefined();
       expect(source?.shadowParity).toBeUndefined();
     }
+    // Only a source whose route the audit could not reach stays not_started.
     expect(
       DANISH_JSONLD_SOURCES.filter((source) => source.migrationState === "not_started")
-    ).toHaveLength(0);
+        .map((source) => source.id)
+    ).toEqual(["ricardocuisine"]);
+  });
+
+  it("carries the international JSON-LD sources on the same strict contract", () => {
+    const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
+
+    for (const sourceId of ["allrecipes", "bbcgoodfood", "jamieoliver", "tesco_recipes"]) {
+      expect(byId.get(sourceId)).toMatchObject({
+        discovery: "sitemap",
+        fetchMode: "cheerio",
+        requireCompleteJsonLd: true,
+        migrationState: "configured",
+      });
+      expect(byId.get(sourceId)?.latestCanary).toBeUndefined();
+    }
+    expect(byId.get("allrecipes")?.requestSettings).toMatchObject({
+      delaySeconds: 3,
+      maxConcurrency: 1,
+    });
   });
 
   it("records Kenwood's script-gated listing rather than calling it ready", () => {
