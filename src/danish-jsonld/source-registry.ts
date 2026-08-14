@@ -3818,11 +3818,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
    */
   sundpaabudget: {
     fetchMode: "playwright",
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary:
-      "2026-08-13T20-16-36.402Z-attempt-a4793b1a-fbd7-41ba-8841-2aa15bfb0b1d",
+      "2026-08-14T13-52-17.878Z-attempt-2ffecbef-29ff-49fe-a03d-1f755641f881",
     deferOrBlockReason:
-      "HTTP 454 browser check cleared by Playwright rendering; awaits uncapped validation",
+      "Uncapped run processed all 517 discovered pages with no blocked or failed request; five pages carry Recipe JSON-LD without required fields and stay rejected",
   },
   klinksgaard: {
     migrationState: "blocked",

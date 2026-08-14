@@ -52,11 +52,11 @@ describe("Danish JSON-LD source registry", () => {
     expect(byId.get("kikkoman")?.migrationState).toBe("configured");
     expect(byId.get("gamleopskrifter")?.migrationState).toBe("configured");
     expect(byId.get("sundpaabudget")).toMatchObject({
-      migrationState: "configured",
+      migrationState: "canary_passed",
       fetchMode: "playwright",
     });
     expect(byId.get("sundpaabudget")?.deferOrBlockReason).toMatch(
-      /HTTP 454 browser check cleared by Playwright/u
+      /no blocked or failed request/u
     );
     expect(byId.get("klinksgaard")?.migrationState).toBe("blocked");
     expect(byId.get("netto")?.migrationState).toBe("deferred");
