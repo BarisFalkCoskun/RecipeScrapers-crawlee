@@ -120,8 +120,15 @@ export function discoverListingPage(input: {
       const continuationUrls = rootMatches
         ? (payload.continuationPaths ?? []).flatMap((path) => valuesAtJsonPath(parsed, path))
         : [];
-      const expectedEmpty = rootMatches && payload.recipePaths.some(
-        (path) => jsonPathHasExpectedEmptyCollection(parsed, path)
+      // An offset listing ends by serving an empty page; that is the contract
+      // working, not an unexpected shape.
+      const emptyRootArray =
+        payload.expectedRoot === "array" && Array.isArray(parsed) && parsed.length === 0;
+      const expectedEmpty = rootMatches && (
+        emptyRootArray ||
+        payload.recipePaths.some(
+          (path) => jsonPathHasExpectedEmptyCollection(parsed, path)
+        )
       );
       if (!rootMatches || (recipeUrls.length === 0 && !expectedEmpty)) {
         increment(result.rejectedByReason, "unexpected-listing-shape");

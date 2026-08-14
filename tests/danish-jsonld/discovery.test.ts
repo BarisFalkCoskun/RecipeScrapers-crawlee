@@ -215,6 +215,21 @@ describe("Danish JSON-LD discovery", () => {
     expect(result.incompleteReasons).toEqual(["listing-window-exhausted"]);
   });
 
+  it("treats an empty root-array page as a clean end of the listing", () => {
+    const result = discoverListingPage({
+      source: offsetSource(),
+      pageUrl: "https://listing-api.test/search?from=4",
+      body: "[]",
+      contentType: "application/json",
+    });
+
+    expect(result.recipeUrls).toEqual([]);
+    expect(result.nextUrls).toEqual([]);
+    expect(result.terminal).toBe(true);
+    expect(result.complete).toBe(true);
+    expect(result.incompleteReasons).toEqual([]);
+  });
+
   it("keeps recipe URLs off the listing host even when the payload offers them", () => {
     const result = discoverListingPage({
       source: offsetSource(),
