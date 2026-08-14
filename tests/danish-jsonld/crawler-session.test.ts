@@ -281,6 +281,59 @@ describe("Danish JSON-LD source session", () => {
     expect(session.outcome().outcome).not.toBe("succeeded");
   });
 
+  it("admits a configured listing host without counting it off-domain", async () => {
+    const listingSource = {
+      ...source,
+      discovery: "listing" as const,
+      legacyFamily: "JsonLdListingSpider" as const,
+      listingDiscovery: {
+        recipeLinkSelectors: [],
+        skipPathFragments: [],
+        continuationSelectors: [],
+        continuationUrlPatterns: [],
+        listingHosts: ["listing-api.test"],
+        payload: {
+          kind: "json-paths" as const,
+          expectedRoot: "array" as const,
+          recipePaths: ["[].url"],
+          continuationOffset: { parameter: "from", step: 2, maxOffset: 10 },
+        },
+      },
+    };
+    const session = new DanishJsonLdSourceSession({
+      source: listingSource,
+      store: new MemoryV2Store(),
+      crawlRunId: "run-listing-host",
+      crawlAttemptId: "attempt-listing-host",
+      maxPages: 10,
+    });
+
+    const routes = await session.handleResponse({
+      kind: "listing",
+      fetchMode: "cheerio",
+      url: "https://listing-api.test/search?from=0",
+      loadedUrl: "https://listing-api.test/search?from=0",
+      statusCode: 200,
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify([
+        { url: "https://example.dk/opskrifter/kage" },
+        { url: "https://example.dk/opskrifter/boller" },
+      ]),
+    });
+
+    for (const request of [...routes.cheerioRequests, ...routes.playwrightRequests]) {
+      session.recordQueueAdmission(request.url);
+    }
+
+    expect(routes.cheerioRequests).toEqual([
+      { kind: "recipe", url: "https://example.dk/opskrifter/kage" },
+      { kind: "recipe", url: "https://example.dk/opskrifter/boller" },
+      { kind: "listing", url: "https://listing-api.test/search?from=2" },
+    ]);
+    expect(session.observation.unintendedOffDomainAdmissions).toBe(0);
+    expect(session.observation.discoveryComplete).toBe(true);
+  });
+
   it("rejects an off-domain loaded URL before extraction or persistence", async () => {
     const store = new MemoryV2Store();
     const diagnostics: DanishJsonLdDiagnostic[] = [];

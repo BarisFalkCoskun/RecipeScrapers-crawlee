@@ -7,6 +7,7 @@ import {
   cleanupDanishJsonLdAttemptQueues,
   executeDanishJsonLdSource,
   parseHttpStatusForDiagnostics,
+  shouldRetryBrowserCheck,
   runDanishJsonLdCrawl,
   type ExecuteDanishJsonLdSource,
 } from "../../src/danish-jsonld/runner.js";
@@ -27,6 +28,24 @@ describe("dedicated Danish JSON-LD runner", () => {
       }),
       []
     )).toBeUndefined();
+  });
+
+  it("retries a rendered browser check while retries remain, then accepts it", () => {
+    // A real browser clears the challenge for the rest of the session, so the
+    // first challenged page is worth re-requesting rather than losing.
+    expect(shouldRetryBrowserCheck({ statusCode: 454, retryCount: 0, maxRetries: 3 }))
+      .toBe(true);
+    expect(shouldRetryBrowserCheck({ statusCode: 455, retryCount: 2, maxRetries: 3 }))
+      .toBe(true);
+    expect(shouldRetryBrowserCheck({ statusCode: 454, retryCount: 3, maxRetries: 3 }))
+      .toBe(false);
+  });
+
+  it("never retries a non-browser-check status as a browser check", () => {
+    for (const statusCode of [200, 401, 403, 429, 500, 526]) {
+      expect(shouldRetryBrowserCheck({ statusCode, retryCount: 0, maxRetries: 3 }))
+        .toBe(false);
+    }
   });
 
   it("waits out Crawlee's same-domain reclaim window before dropping attempt queues", async () => {

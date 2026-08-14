@@ -18,6 +18,7 @@ import type { DanishJsonLdSource } from "./source-registry.js";
 import {
   discoverListingPage,
   discoverSitemapDocument,
+  isListingHost,
   looksLikeHttp200BlockShell,
 } from "./discovery.js";
 import {
@@ -139,7 +140,7 @@ export class DanishJsonLdSourceSession {
     const allowed = this.source.allowedDomains.some((domain) =>
       hostname === domain || hostname.endsWith(`.${domain}`)
     );
-    if (allowed) return;
+    if (allowed || isListingHost(this.source, url)) return;
     this.observation.unintendedOffDomainAdmissions =
       (this.observation.unintendedOffDomainAdmissions ?? 0) + 1;
     this.emit("off-domain-admission", { hostname });
@@ -155,7 +156,11 @@ export class DanishJsonLdSourceSession {
     }
     this.emitHttpDiagnostic(response);
 
-    if (response.loadedUrl && !this.isAllowedSourceUrl(response.loadedUrl)) {
+    if (
+      response.loadedUrl &&
+      !this.isAllowedSourceUrl(response.loadedUrl) &&
+      !(response.kind === "listing" && isListingHost(this.source, response.loadedUrl))
+    ) {
       this.rejectDomainBoundary("loaded-url", response.loadedUrl, "loaded-url-domain-not-allowed");
       return emptyRoutes();
     }
@@ -638,6 +643,7 @@ function isSourceOutcomeReason(value: string): value is SourceOutcomeReason {
     "unexpected-listing-shape",
     "http-200-block-shell",
     "script-gated-continuation",
+    "listing-window-exhausted",
     "vpn-relay-pool-exhausted",
   ].includes(value);
 }

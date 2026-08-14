@@ -140,6 +140,96 @@ describe("Danish JSON-LD discovery", () => {
     expect(result.incompleteReasons).toEqual([]);
   });
 
+  const offsetSource = (): DanishJsonLdSource => ({
+    ...source,
+    discovery: "listing",
+    legacyFamily: "JsonLdListingSpider",
+    listingDiscovery: {
+      recipeLinkSelectors: [],
+      skipPathFragments: [],
+      continuationSelectors: [],
+      continuationUrlPatterns: [],
+      listingHosts: ["listing-api.test"],
+      payload: {
+        kind: "json-paths",
+        expectedRoot: "array",
+        recipePaths: ["[].url"],
+        continuationOffset: { parameter: "from", step: 2, maxOffset: 4 },
+      },
+    },
+  });
+
+  const offsetBody = (slugs: string[]) =>
+    JSON.stringify(slugs.map((slug) => ({ url: `https://example.dk/opskrifter/${slug}` })));
+
+  it("reads recipe URLs from a root-array listing payload", () => {
+    const result = discoverListingPage({
+      source: offsetSource(),
+      pageUrl: "https://listing-api.test/search?from=0",
+      body: offsetBody(["kage", "boller"]),
+      contentType: "application/json",
+    });
+
+    expect(result.recipeUrls).toEqual([
+      "https://example.dk/opskrifter/kage",
+      "https://example.dk/opskrifter/boller",
+    ]);
+    expect(result.complete).toBe(true);
+  });
+
+  it("advances a full offset page to the next offset on the listing host", () => {
+    const result = discoverListingPage({
+      source: offsetSource(),
+      pageUrl: "https://listing-api.test/search?from=0",
+      body: offsetBody(["kage", "boller"]),
+      contentType: "application/json",
+    });
+
+    expect(result.nextUrls).toEqual(["https://listing-api.test/search?from=2"]);
+    expect(result.terminal).toBe(false);
+  });
+
+  it("stops offset pagination on a short page without reporting it incomplete", () => {
+    const result = discoverListingPage({
+      source: offsetSource(),
+      pageUrl: "https://listing-api.test/search?from=2",
+      body: offsetBody(["kage"]),
+      contentType: "application/json",
+    });
+
+    expect(result.nextUrls).toEqual([]);
+    expect(result.terminal).toBe(true);
+    expect(result.complete).toBe(true);
+  });
+
+  it("reports the service result window as incomplete when a full page hits maxOffset", () => {
+    const result = discoverListingPage({
+      source: offsetSource(),
+      pageUrl: "https://listing-api.test/search?from=4",
+      body: offsetBody(["kage", "boller"]),
+      contentType: "application/json",
+    });
+
+    expect(result.nextUrls).toEqual([]);
+    expect(result.complete).toBe(false);
+    expect(result.incompleteReasons).toEqual(["listing-window-exhausted"]);
+  });
+
+  it("keeps recipe URLs off the listing host even when the payload offers them", () => {
+    const result = discoverListingPage({
+      source: offsetSource(),
+      pageUrl: "https://listing-api.test/search?from=0",
+      body: JSON.stringify([
+        { url: "https://listing-api.test/opskrifter/kage" },
+        { url: "https://example.dk/opskrifter/boller" },
+      ]),
+      contentType: "application/json",
+    });
+
+    expect(result.recipeUrls).toEqual(["https://example.dk/opskrifter/boller"]);
+    expect(result.rejectedByReason).toMatchObject({ "domain-not-allowed": 1 });
+  });
+
   it("extracts dynamic listing URLs from bounded JSON responses", () => {
     const result = discoverListingPage({
       source: { ...source, discovery: "listing", legacyFamily: "JsonLdListingSpider" },

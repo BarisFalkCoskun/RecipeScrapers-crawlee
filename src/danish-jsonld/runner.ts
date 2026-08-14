@@ -44,6 +44,32 @@ export const DANISH_JSONLD_OBSERVED_HTTP_ERROR_STATUS_CODES = [
 ] as const;
 const QUEUE_RECLAIM_GRACE_BUFFER_MS = 100;
 
+/** WAF interstitials a real browser clears for the rest of its session. */
+const BROWSER_CHECK_STATUS_CODES = [454, 455];
+
+/**
+ * A rendered browser check is worth re-requesting: the browser clears the
+ * challenge once, so the retry lands on the real page. Only the rendered path
+ * qualifies, because a plain HTTP client never clears it.
+ */
+export function shouldRetryBrowserCheck(input: {
+  statusCode: number;
+  retryCount: number;
+  maxRetries: number;
+}): boolean {
+  return (
+    BROWSER_CHECK_STATUS_CODES.includes(input.statusCode) &&
+    input.retryCount < input.maxRetries
+  );
+}
+
+class BrowserCheckRetryError extends Error {
+  constructor(statusCode: number) {
+    super(`Rendered browser check HTTP ${statusCode}; retrying in session`);
+    this.name = "BrowserCheckRetryError";
+  }
+}
+
 interface DanishJsonLdAttemptQueue {
   kind: "cheerio" | "playwright";
   queue: Pick<RequestQueue, "drop">;
@@ -378,6 +404,16 @@ export async function executeDanishJsonLdSource(
         throw new VpnRotationRetryError(
           rotation.reason ?? "eligible-response"
         );
+      }
+      if (
+        shouldRetryBrowserCheck({
+          statusCode: response.statusCode,
+          retryCount: context.request.retryCount,
+          maxRetries: input.source.requestSettings.maxRetries,
+        })
+      ) {
+        session.recordRetriedResponseDiagnostic(response);
+        throw new BrowserCheckRetryError(response.statusCode);
       }
       const routes = await session.handleResponse(response);
       await route(routes);

@@ -17,11 +17,27 @@ export interface ListingDiscoveryStrategy {
   skipPathFragments: string[];
   continuationSelectors: string[];
   continuationUrlPatterns: string[];
+  /**
+   * Hosts that serve this source's listing route without serving its recipes.
+   * They are admitted for listing and continuation requests only; recipes and
+   * canonical URLs stay bound to `allowedDomains`.
+   */
+  listingHosts?: string[];
   payload?: {
     kind: "json-paths";
     expectedRoot: "object" | "array";
     recipePaths: string[];
     continuationPaths?: string[];
+    /**
+     * Offset pagination for services that expose no continuation URL. Paging
+     * stops on a short page; a full page at `maxOffset` means the service
+     * result window truncated discovery.
+     */
+    continuationOffset?: {
+      parameter: string;
+      step: number;
+      maxOffset: number;
+    };
   };
 }
 
@@ -2884,6 +2900,23 @@ const LEGACY_LISTING_DISCOVERY_OVERRIDES: Record<
   rema1000: {
     continuationSelectors: ["a.sr-only[href]"],
   },
+  /**
+   * The HTML listing only renders the first 20 recipes and continues through a
+   * script-only "Vis flere" control, so discovery reads the same service the
+   * control calls. It pages by a `from` offset and rejects offsets past 9950,
+   * which is the service result window rather than the end of the catalogue.
+   */
+  tv2mad: {
+    recipeLinkSelectors: [],
+    continuationSelectors: [],
+    listingHosts: ["recipe-front.services.tv2.dk"],
+    payload: {
+      kind: "json-paths",
+      expectedRoot: "array",
+      recipePaths: ["[].url"],
+      continuationOffset: { parameter: "from", step: 50, maxOffset: 9_950 },
+    },
+  },
 };
 
 const LEGACY_SITEMAP_DISCOVERY_OVERRIDES: Record<
@@ -3003,10 +3036,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Legacy spider emits zero recipes, so acceptance rests on complete discovery, two clean uncapped runs, and a reviewed record sample",
   },
   tv2mad: {
+    startUrls: ["https://recipe-front.services.tv2.dk/search/%20?from=0"],
     migrationState: "configured",
     latestCanary: PILOT_CANARY_RUN,
     deferOrBlockReason:
-      "Listing continues through a script-only load-more control, so the canary discovered 20 of the catalog",
+      "Listing now reads the offset-paged recipe service behind the load-more control; awaits uncapped validation",
   },
   surdejsentusiasten: {
     migrationState: "shadow_passed",
@@ -3031,12 +3065,18 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     latestCanary: PILOT_CANARY_RUN,
     deferOrBlockReason: "Current sitemap discovery repair awaits canary validation",
   },
+  /**
+   * Recipe pages answer plain HTTP clients with an HTTP 454 browser check that
+   * a real browser clears once per session, so the source is fetched with
+   * Playwright rather than Cheerio.
+   */
   sundpaabudget: {
-    migrationState: "blocked",
+    fetchMode: "playwright",
+    migrationState: "configured",
     latestCanary:
       "2026-08-13T20-16-36.402Z-attempt-a4793b1a-fbd7-41ba-8841-2aa15bfb0b1d",
     deferOrBlockReason:
-      "Sitemaps now resolve and recipes persist, but recurring HTTP 454 browser checks put relays into cooldown often enough that an uncapped crawl cannot finish",
+      "HTTP 454 browser check cleared by Playwright rendering; awaits uncapped validation",
   },
   klinksgaard: {
     migrationState: "blocked",

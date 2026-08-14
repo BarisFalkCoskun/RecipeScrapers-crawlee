@@ -46,14 +46,17 @@ describe("Danish JSON-LD source registry", () => {
     ]);
     expect(byId.get("madoghave")?.shadowParity).toBe("legacy-unhealthy");
     expect(byId.get("tv2mad")?.deferOrBlockReason).toMatch(
-      /script-only load-more control/u
+      /offset-paged recipe service/u
     );
     expect(byId.get("surdejsentusiasten")?.migrationState).toBe("shadow_passed");
     expect(byId.get("kikkoman")?.migrationState).toBe("configured");
     expect(byId.get("gamleopskrifter")?.migrationState).toBe("configured");
-    expect(byId.get("sundpaabudget")?.migrationState).toBe("blocked");
+    expect(byId.get("sundpaabudget")).toMatchObject({
+      migrationState: "configured",
+      fetchMode: "playwright",
+    });
     expect(byId.get("sundpaabudget")?.deferOrBlockReason).toMatch(
-      /HTTP 454 browser checks/u
+      /HTTP 454 browser check cleared by Playwright/u
     );
     expect(byId.get("klinksgaard")?.migrationState).toBe("blocked");
     expect(byId.get("netto")?.migrationState).toBe("deferred");
@@ -120,7 +123,7 @@ describe("Danish JSON-LD source registry", () => {
     );
 
     for (const listing of listingSources.filter(
-      (source) => !["madrejsen", "rema1000"].includes(source.id)
+      (source) => !["madrejsen", "rema1000", "tv2mad"].includes(source.id)
     )) {
       expect(listing.listingDiscovery).toMatchObject({
         recipeLinkSelectors: ["a[href]"],
@@ -137,6 +140,18 @@ describe("Danish JSON-LD source registry", () => {
 
     expect(byId.get("rema1000")?.listingDiscovery?.continuationSelectors)
       .toEqual(["a.sr-only[href]"]);
+    expect(byId.get("tv2mad")).toMatchObject({
+      startUrls: ["https://recipe-front.services.tv2.dk/search/%20?from=0"],
+      listingDiscovery: {
+        listingHosts: ["recipe-front.services.tv2.dk"],
+        payload: {
+          expectedRoot: "array",
+          recipePaths: ["[].url"],
+          continuationOffset: { parameter: "from", step: 50, maxOffset: 9_950 },
+        },
+      },
+    });
+    expect(byId.get("tv2mad")?.allowedDomains).toEqual(["livsstil.tv2.dk"]);
     expect(byId.get("madrejsen")?.listingDiscovery).toMatchObject({
       recipeLinkSelectors: ["article.entry a.entry-title-link[href]"],
       continuationSelectors: [".pagination-next a[href]"],

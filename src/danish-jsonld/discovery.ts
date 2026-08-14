@@ -17,7 +17,8 @@ export type DiscoveryIncompleteReason =
   | "malformed-listing-payload"
   | "unexpected-listing-shape"
   | "http-200-block-shell"
-  | "script-gated-continuation";
+  | "script-gated-continuation"
+  | "listing-window-exhausted";
 
 /**
  * Load-more wording used by the Danish listings. A control carrying this text
@@ -132,6 +133,18 @@ export function discoverListingPage(input: {
         ...recipeUrls.map((raw) => ({ raw, next: false })),
         ...continuationUrls.map((raw) => ({ raw, next: true }))
       );
+      const offset = payload.continuationOffset;
+      if (offset && recipeUrls.length >= offset.step) {
+        const nextOffset = currentOffset(input.pageUrl, offset.parameter) + offset.step;
+        if (nextOffset > offset.maxOffset) {
+          result.complete = false;
+          result.incompleteReasons.push("listing-window-exhausted");
+        } else {
+          const nextUrl = new URL(input.pageUrl);
+          nextUrl.searchParams.set(offset.parameter, String(nextOffset));
+          candidates.push({ raw: nextUrl.toString(), next: true });
+        }
+      }
     } else {
       collectJsonUrls(parsed, candidates, 0);
     }
@@ -182,17 +195,21 @@ export function discoverListingPage(input: {
   }
 
   for (const { candidate, next } of uniqueCandidates) {
-    if (!isAllowedDomain(input.source, candidate)) {
-      increment(result.rejectedByReason, "domain-not-allowed");
-      continue;
-    }
     const listingStrategy = input.source.listingDiscovery;
     const candidatePath = new URL(candidate).pathname;
     const recursiveListing = matchesAny(
       candidatePath,
       listingStrategy?.continuationUrlPatterns ?? []
     );
-    if (next || recursiveListing) {
+    const continuation = next || recursiveListing;
+    if (
+      !isAllowedDomain(input.source, candidate) &&
+      !(continuation && isListingHost(input.source, candidate))
+    ) {
+      increment(result.rejectedByReason, "domain-not-allowed");
+      continue;
+    }
+    if (continuation) {
       result.nextUrls.push(candidate);
       continue;
     }
@@ -271,6 +288,33 @@ function isAllowedDomain(source: DanishJsonLdSource, candidateUrl: string): bool
   return source.allowedDomains.some(
     (allowed) => normalizeDomain(allowed) === domain
   );
+}
+
+/** Listing-only hosts never qualify a URL for recipe extraction. */
+export function isListingHost(
+  source: DanishJsonLdSource,
+  candidateUrl: string
+): boolean {
+  let domain: string;
+  try {
+    domain = normalizeDomain(new URL(candidateUrl).hostname);
+  } catch {
+    return false;
+  }
+  return (source.listingDiscovery?.listingHosts ?? []).some(
+    (allowed) => normalizeDomain(allowed) === domain
+  );
+}
+
+/** Current value of an offset query parameter, defaulting to the first page. */
+function currentOffset(pageUrl: string, parameter: string): number {
+  try {
+    const raw = new URL(pageUrl).searchParams.get(parameter);
+    const parsed = Number(raw);
+    return raw !== null && Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
+  } catch {
+    return 0;
+  }
 }
 
 function normalizeAbsoluteHttpUrl(raw: string): string | null {
@@ -365,8 +409,10 @@ function matchesAny(value: string, patterns: string[]): boolean {
 }
 
 function valuesAtJsonPath(root: unknown, path: string): string[] {
-  let values: unknown[] = [root];
-  for (const segment of path.split(".")) {
+  // A leading "[]" expands a root array, so "[].url" reads each element's url.
+  const rootExpanded = path.startsWith("[].");
+  let values: unknown[] = rootExpanded && Array.isArray(root) ? [...root] : [root];
+  for (const segment of (rootExpanded ? path.slice(3) : path).split(".")) {
     const expand = segment.endsWith("[]");
     const key = expand ? segment.slice(0, -2) : segment;
     const next: unknown[] = [];

@@ -69,11 +69,29 @@ A listing that continues through a script-only load-more control exposes no
 continuation URL, so link-based discovery stops on the first page while looking
 terminal. Discovery now reports that page as incomplete with the stable reason
 `script-gated-continuation`, which keeps the source out of a `succeeded`
-outcome. TV2 Mad is the known instance: its `Vis flere` control calls an
+outcome. TV2 Mad was the known instance: its `Vis flere` control calls an
 offset-paginated JSON service, so the pilot canary saw only the first 20 recipes
-of a much larger catalog and was **demoted from `canary_passed` to
-`configured`**. Reaching the rest of that catalog needs an explicit registry
-discovery contract for the service route; it is not a canary rerun.
+of a much larger catalogue and was demoted from `canary_passed` to `configured`.
+
+Such a source is reached by giving the registry the service route directly.
+`listingDiscovery.payload.continuationOffset` pages a JSON listing by a query
+offset when the service exposes no continuation URL: paging stops on a short
+page, and a full page at `maxOffset` records `listing-window-exhausted` because
+the service result window, not the catalogue, ended discovery. A root array is
+read with a leading `[]` path segment, as in `[].url`.
+
+`listingDiscovery.listingHosts` names hosts that serve the listing route but not
+the recipes. They are admitted for listing and continuation requests only and do
+not count as off-domain admissions; recipes and canonical URLs stay bound to
+`allowedDomains`. TV2 Mad uses both: it starts at
+`recipe-front.services.tv2.dk/search/%20?from=0`, pages by `from` in steps of
+50 up to 9950, and still admits recipes only on `livsstil.tv2.dk`.
+
+Some sources answer plain HTTP clients with an HTTP 454 or 455 browser check
+that a real browser clears once and then keeps clearing for the rest of its
+session. Configure those sources with `fetchMode: "playwright"`; the rendered
+path re-requests a browser check while retries remain instead of recording it
+as a terminal block. Sund på Budget is the known instance.
 
 ## Evidence-backed source-by-source transition
 
