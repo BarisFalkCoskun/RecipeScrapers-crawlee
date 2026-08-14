@@ -63,11 +63,20 @@ export function shouldRetryBrowserCheck(input: {
   );
 }
 
-class BrowserCheckRetryError extends Error {
+export class BrowserCheckRetryError extends Error {
   constructor(statusCode: number) {
     super(`Rendered browser check HTTP ${statusCode}; retrying in session`);
     this.name = "BrowserCheckRetryError";
   }
+}
+
+/**
+ * A browser check is cleared by the browser session that met it, so the retry
+ * must keep the same relay. Rotating would throw that cleared session away and
+ * spend one relay per challenge until the pool is exhausted.
+ */
+export function shouldRotateRelayOnFailure(error: unknown): boolean {
+  return !(error instanceof BrowserCheckRetryError);
 }
 
 interface DanishJsonLdAttemptQueue {
@@ -391,6 +400,18 @@ export async function executeDanishJsonLdSource(
         headers,
         body,
       };
+      // A browser check is cleared by this browser session, so it is retried
+      // before the relay logic sees it; rotating would discard that session.
+      if (
+        shouldRetryBrowserCheck({
+          statusCode: response.statusCode,
+          retryCount: context.request.retryCount,
+          maxRetries: input.source.requestSettings.maxRetries,
+        })
+      ) {
+        session.recordRetriedResponseDiagnostic(response);
+        throw new BrowserCheckRetryError(response.statusCode);
+      }
       const rotation = input.vpnTransport
         ? await input.vpnTransport.handleResponse({
             sessionId: vpnSessionId(context.request.userData),
@@ -404,16 +425,6 @@ export async function executeDanishJsonLdSource(
         throw new VpnRotationRetryError(
           rotation.reason ?? "eligible-response"
         );
-      }
-      if (
-        shouldRetryBrowserCheck({
-          statusCode: response.statusCode,
-          retryCount: context.request.retryCount,
-          maxRetries: input.source.requestSettings.maxRetries,
-        })
-      ) {
-        session.recordRetriedResponseDiagnostic(response);
-        throw new BrowserCheckRetryError(response.statusCode);
       }
       const routes = await session.handleResponse(response);
       await route(routes);
@@ -434,7 +445,7 @@ export async function executeDanishJsonLdSource(
           error,
           request.errorMessages
         );
-        const rotation = input.vpnTransport
+        const rotation = input.vpnTransport && shouldRotateRelayOnFailure(error)
           ? await input.vpnTransport.handleFailure({
               sessionId: vpnSessionId(request.userData),
               error,

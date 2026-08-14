@@ -8,6 +8,8 @@ import {
   executeDanishJsonLdSource,
   parseHttpStatusForDiagnostics,
   shouldRetryBrowserCheck,
+  shouldRotateRelayOnFailure,
+  BrowserCheckRetryError,
   runDanishJsonLdCrawl,
   type ExecuteDanishJsonLdSource,
 } from "../../src/danish-jsonld/runner.js";
@@ -39,6 +41,14 @@ describe("dedicated Danish JSON-LD runner", () => {
       .toBe(true);
     expect(shouldRetryBrowserCheck({ statusCode: 454, retryCount: 3, maxRetries: 3 }))
       .toBe(false);
+  });
+
+  it("keeps the relay across a browser-check retry and rotates for anything else", () => {
+    // The browser clears the challenge for its own session, so rotating to a
+    // fresh relay would discard that and spend the pool on every challenge.
+    expect(shouldRotateRelayOnFailure(new BrowserCheckRetryError(454))).toBe(false);
+    expect(shouldRotateRelayOnFailure(new Error("net::ERR_CONNECTION_RESET")))
+      .toBe(true);
   });
 
   it("never retries a non-browser-check status as a browser check", () => {
