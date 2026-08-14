@@ -7,3 +7,4 @@ dist/
 *.log
 vpn/mullvad.json
 .DS_Store
+/run-queue.sh
