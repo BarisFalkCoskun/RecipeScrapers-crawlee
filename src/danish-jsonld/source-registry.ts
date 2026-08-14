@@ -3001,6 +3001,37 @@ const LEGACY_DISCOVERY_OVERRIDES: Partial<
   sydhavnsbloggen: { recipeUrlPatterns: LEGACY_LISTING_DEFAULT_PATTERNS },
 };
 
+/**
+ * Sources whose configured discovery route was verified against the live site
+ * by a read-only audit: the route resolved and yielded recipe URLs matching the
+ * registry patterns, or a sitemap index to follow. That evidence supports
+ * `configured`; it is not a canary and assigns no owner.
+ */
+const ROUTE_AUDITED_SOURCE_IDS = new Set([
+  "amo", "aperol", "aurion", "bareencocktail",
+  "beauvais", "becel", "bedstedrinks", "blenderopskrifter",
+  "bobedre", "bodylab", "bornemenuen", "bornholms",
+  "campari", "castello", "christinaskoekken", "cocktaily",
+  "copenhagendistillery_da", "danishcrown", "diabetesopskrifter", "evatrio",
+  "familiejournal", "ferrerorocher", "fevertree", "foodnotes",
+  "frederikkewaerens", "friluftslageret", "frokenkraesen_com", "gastrologik",
+  "gastrotools", "gigtforeningen", "glutenfrimagi", "glyngoere",
+  "hannerobinson", "heidiogper", "heinz", "hverdagskoekken",
+  "iform", "imerco", "ingridhornshoj", "jonsmadklub",
+  "ketomums", "klank", "knaehoejkarse", "kokke",
+  "kornkammeret", "kystfisken", "lurpak", "madenimitliv",
+  "madfolket", "madformadelskere", "madogdrikke", "madsvin",
+  "maduniverset", "mambeno", "mariavestergaard", "micadeli",
+  "mutti", "nescafe", "nogetiovnen", "nordmad",
+  "nutella", "oatly", "odensemarcipan", "oetker",
+  "opskrifterdk", "parcelhuslykke", "planetariskkogebog", "plantepusherne",
+  "puredansk", "recipesairfryer_dk", "rema1000", "revivafit",
+  "rosekylling", "santamariaworld", "schulstad", "semper",
+  "skalvibage", "skolemaelk", "slagterlampe", "spicytwist",
+  "spisekunst", "starbucksathome", "stinna", "sydhavnsbloggen",
+  "udeoghjemme", "violife"
+]);
+
 const PILOT_CANARY_RUN =
   "2026-08-13T13-52-17.460Z-attempt-e656480c-a774-4c00-aa02-1fa3fdd898e0";
 
@@ -3048,6 +3079,15 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "2026-08-13T19-21-01.957Z-attempt-4c841ddc-1d13-48c9-a02c-83587d34898e",
     shadowParity: "100%",
     deferOrBlockReason: undefined,
+  },
+  /**
+   * The listing renders twelve recipes and continues through a script-only
+   * control, so a canary here would report partial discovery as complete.
+   */
+  kenwoodworld: {
+    migrationState: "configured",
+    deferOrBlockReason:
+      "Listing continues through a script-only load-more control; needs a discovery contract for its continuation route",
   },
   kikkoman: {
     migrationState: "configured",
@@ -3136,6 +3176,9 @@ export const DANISH_JSONLD_SOURCES: DanishJsonLdSource[] =
     const effectiveSource: DanishJsonLdSource = {
       ...source,
       ...LEGACY_DISCOVERY_OVERRIDES[source.id],
+      ...(ROUTE_AUDITED_SOURCE_IDS.has(source.id)
+        ? { migrationState: "configured" as const }
+        : {}),
       ...CURRENT_SOURCE_OVERRIDES[source.id],
       requestSettings: {
         ...LEGACY_DEFAULT_REQUEST_SETTINGS,

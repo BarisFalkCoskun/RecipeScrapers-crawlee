@@ -128,6 +128,23 @@ Advance one source at a time; do not advance the whole pilot as a group.
 | Transition | Required evidence |
 | --- | --- |
 | `not_started` to `configured` | Reviewed registry entry, expected discovery route, request limits, and a documented owner. |
+
+The bulk `configured` transition rests on a read-only route audit: one request
+per source, no crawling and no persistence, feeding the live response through
+the real `discoverSitemapDocument` and `discoverListingPage`. A source passed
+when its configured route resolved and produced recipe URLs matching the
+registry patterns, or a sitemap index to follow. All 87 audited sources
+resolved; none was configured against a dead route. **Owners are still
+unassigned**, so that half of the `configured` bar is outstanding and no source
+should reach `canary_passed` on route evidence alone.
+
+The audit also caught Kenwood World continuing through a script-only load-more
+control after twelve recipes, the same shape as TV2 Mad. Its reason column
+records that rather than presenting it as ready.
+
+Route yields vary by three orders of magnitude, so order canaries by size
+rather than alphabetically: `opskrifterdk` alone lists 4,128 recipe URLs, and at
+the configured two-second delay that is a multi-hour run on its own.
 | `configured` to `canary_passed` | Remote isolated-DB canary JSON with complete discovery, no cap reached, no blocked/failed outcome, and complete JSON-LD recipes persisted. A capped run is not a passing canary. |
 | `canary_passed` to `shadow_passed` | Remote isolated-DB shadow evidence over the agreed window plus source-level parity against the legacy run: canonical URL coverage, required-field presence, clean JSON-LD rejection counters, Mongo health, and queue-admission telemetry meet the stated gates. Investigate drift; do not average it away across sources. |
 | `shadow_passed` to `cutover` | Recorded parity approval, verified consumer reads of `RecipeDocumentV2.normalized`, rollback owner, and an individually scheduled source cutover. Keep the legacy source available until the source's rollback window ends. |

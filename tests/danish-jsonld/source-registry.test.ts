@@ -67,6 +67,29 @@ describe("Danish JSON-LD source registry", () => {
     expect(DANISH_JSONLD_SOURCES.filter((source) => source.migrationState === "cutover")).toHaveLength(0);
   });
 
+  it("marks route-audited sources configured without inventing canary evidence", () => {
+    const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
+    const audited = ["amo", "opskrifterdk", "danishcrown", "bobedre", "familiejournal"];
+
+    for (const sourceId of audited) {
+      const source = byId.get(sourceId);
+      expect(source?.migrationState).toBe("configured");
+      // A verified route is not a canary; nothing may claim canary evidence.
+      expect(source?.latestCanary).toBeUndefined();
+      expect(source?.shadowParity).toBeUndefined();
+    }
+    expect(
+      DANISH_JSONLD_SOURCES.filter((source) => source.migrationState === "not_started")
+    ).toHaveLength(0);
+  });
+
+  it("records Kenwood's script-gated listing rather than calling it ready", () => {
+    const source = DANISH_JSONLD_SOURCES.find((entry) => entry.id === "kenwoodworld");
+
+    expect(source?.migrationState).toBe("configured");
+    expect(source?.deferOrBlockReason).toMatch(/script-only load-more control/u);
+  });
+
   it("uses Gamle Opskrifter's current sitemap and recipe route", () => {
     const source = DANISH_JSONLD_SOURCES.find((entry) => entry.id === "gamleopskrifter");
 
