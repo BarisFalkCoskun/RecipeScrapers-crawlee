@@ -25,6 +25,24 @@ export const DANISH_JSONLD_PLAYWRIGHT_BROWSER_POOL_OPTIONS = {
   closeInactiveBrowserAfterSecs: 10,
 } as const;
 
+/**
+ * Chromium advertises its automation by default. Sources that answer with a
+ * browser check read those markers, so the rendered path launches without
+ * them. Crawlee's fingerprint injection already supplies a browser user agent.
+ */
+export const DANISH_JSONLD_AUTOMATION_LAUNCH_ARGS = [
+  "--disable-blink-features=AutomationControlled",
+] as const;
+export const DANISH_JSONLD_IGNORED_DEFAULT_ARGS = ["--enable-automation"] as const;
+
+/** Removes the `navigator.webdriver` flag the automation launch still sets. */
+export const DANISH_JSONLD_WEBDRIVER_INIT_SCRIPT = `
+Object.defineProperty(navigator, 'webdriver', {
+  configurable: true,
+  get: () => undefined,
+});
+`;
+
 export function resolveDanishJsonLdCrawlerSettings(
   source: DanishJsonLdSource
 ): DanishJsonLdCrawlerSettings {
@@ -63,13 +81,37 @@ export function createDanishJsonLdPlaywrightCrawler(options: {
 }) {
   const launchContext = options.crawlerOptions?.launchContext;
   const browserPoolOptions = options.crawlerOptions?.browserPoolOptions;
+  const hardenedLaunchContext = {
+    ...launchContext,
+    launchOptions: {
+      ...launchContext?.launchOptions,
+      args: [
+        ...(launchContext?.launchOptions?.args ?? []),
+        ...DANISH_JSONLD_AUTOMATION_LAUNCH_ARGS,
+      ],
+      ignoreDefaultArgs: [
+        ...(Array.isArray(launchContext?.launchOptions?.ignoreDefaultArgs)
+          ? launchContext.launchOptions.ignoreDefaultArgs
+          : []),
+        ...DANISH_JSONLD_IGNORED_DEFAULT_ARGS,
+      ],
+    },
+  };
+  const preNavigationHooks = [
+    ...(options.crawlerOptions?.preNavigationHooks ?? []),
+    async ({ page }: PlaywrightCrawlingContext) => {
+      await page.addInitScript(DANISH_JSONLD_WEBDRIVER_INIT_SCRIPT);
+    },
+  ];
   return new PlaywrightCrawler({
     ...options.crawlerOptions,
+    preNavigationHooks,
+    launchContext: hardenedLaunchContext,
     ...(options.proxyConfiguration
       ? {
           proxyConfiguration: options.proxyConfiguration,
           launchContext: {
-            ...launchContext,
+            ...hardenedLaunchContext,
             browserPerProxy: true,
           },
         }

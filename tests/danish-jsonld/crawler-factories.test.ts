@@ -22,6 +22,46 @@ function crawlerInternal(crawler: unknown) {
 describe("Danish JSON-LD crawler factories", () => {
   const requestHandler = async () => undefined;
 
+  it("hides Chromium's automation markers from browser-check sources", () => {
+    const source = DANISH_JSONLD_SOURCES.find((entry) => entry.id === "sundpaabudget");
+    if (!source) throw new Error("Sund paa Budget registry fixture missing");
+    const crawler = createDanishJsonLdPlaywrightCrawler({
+      source,
+      requestHandler,
+      crawlerOptions: { launchContext: { launchOptions: { headless: true } } },
+    }) as unknown as {
+      launchContext: {
+        launchOptions: { args?: string[]; ignoreDefaultArgs?: string[]; headless?: boolean };
+      };
+    };
+    const { args = [], ignoreDefaultArgs = [], headless } =
+      crawler.launchContext.launchOptions;
+
+    expect(args).toContain("--disable-blink-features=AutomationControlled");
+    expect(ignoreDefaultArgs).toContain("--enable-automation");
+    // Caller-supplied launch options must survive the hardening merge.
+    expect(headless).toBe(true);
+  });
+
+  it("keeps caller launch args alongside the automation hardening", () => {
+    const source = DANISH_JSONLD_SOURCES.find((entry) => entry.id === "sundpaabudget");
+    if (!source) throw new Error("Sund paa Budget registry fixture missing");
+    const crawler = createDanishJsonLdPlaywrightCrawler({
+      source,
+      requestHandler,
+      crawlerOptions: {
+        launchContext: { launchOptions: { args: ["--custom-flag"] } },
+      },
+    }) as unknown as {
+      launchContext: { launchOptions: { args?: string[] } };
+    };
+
+    expect(crawler.launchContext.launchOptions.args).toContain("--custom-flag");
+    expect(crawler.launchContext.launchOptions.args).toContain(
+      "--disable-blink-features=AutomationControlled"
+    );
+  });
+
   it("applies each source's registry concurrency, retry, and delay settings", () => {
     const arla = DANISH_JSONLD_SOURCES.find((source) => source.id === "arla");
     if (!arla) throw new Error("Arla registry fixture missing");
