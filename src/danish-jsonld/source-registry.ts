@@ -3994,6 +3994,18 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted 70 recipes with complete discovery and no blocked, failed or rejected record",
   },
+  iform: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-15T22-08-06.459Z-attempt-060c6cf8-a514-4802-be0a-2a5acc83025c",
+    deferOrBlockReason:
+      "Uncapped run persisted 1664 recipes with complete discovery and no blocked or failed request; eleven pages carry Recipe JSON-LD without required fields and stay rejected",
+  },
+  jonsmadklub: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-15T23-21-15.485Z-attempt-885edc5b-deca-4315-ac1e-204f8e6c0675",
+    deferOrBlockReason:
+      "Uncapped run persisted 106 recipes with complete discovery and no blocked, failed or rejected record",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
