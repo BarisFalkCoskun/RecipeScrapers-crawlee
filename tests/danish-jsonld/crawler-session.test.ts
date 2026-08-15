@@ -172,6 +172,60 @@ describe("Danish JSON-LD source session", () => {
     expect(store.pages.get("https://example.dk/opskrifter/html-only")?.recipeCount).toBe(0);
   });
 
+  it("does not render a page whose JSON-LD parsed cleanly but holds no Recipe", async () => {
+    const session = new DanishJsonLdSourceSession({
+      source,
+      store: new MemoryV2Store(),
+      crawlRunId: "run-article",
+      crawlAttemptId: "attempt-article",
+      maxPages: 5,
+    });
+
+    // Valid Article JSON-LD and no Recipe node: the server already answered
+    // definitively, so re-rendering cannot produce a recipe.
+    const routes = await session.handleResponse({
+      kind: "recipe",
+      fetchMode: "cheerio",
+      url: "https://example.dk/opskrifter/artikel",
+      statusCode: 200,
+      headers: {},
+      body: `<html><body><script type="application/ld+json">${JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: "Ti gode råd",
+      })}</script></body></html>`,
+    });
+
+    expect(routes.playwrightRequests).toEqual([]);
+  });
+
+  it("still renders a page whose Recipe JSON-LD is incomplete", async () => {
+    const session = new DanishJsonLdSourceSession({
+      source,
+      store: new MemoryV2Store(),
+      crawlRunId: "run-incomplete",
+      crawlAttemptId: "attempt-incomplete",
+      maxPages: 5,
+    });
+
+    const routes = await session.handleResponse({
+      kind: "recipe",
+      fetchMode: "cheerio",
+      url: "https://example.dk/opskrifter/delvis",
+      statusCode: 200,
+      headers: {},
+      body: `<html><body><script type="application/ld+json">${JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Recipe",
+        name: "Kage",
+      })}</script></body></html>`,
+    });
+
+    expect(routes.playwrightRequests).toEqual([
+      { kind: "recipe", url: "https://example.dk/opskrifter/delvis" },
+    ]);
+  });
+
   it("does not render ordinary complete HTML without dynamic evidence", async () => {
     const session = new DanishJsonLdSourceSession({
       source,

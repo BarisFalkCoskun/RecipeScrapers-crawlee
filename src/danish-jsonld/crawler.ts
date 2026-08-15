@@ -386,7 +386,7 @@ export class DanishJsonLdSourceSession {
 
     const fallbackReason =
       response.fetchMode === "cheerio" && extraction.recipes.length === 0
-        ? this.playwrightFallbackReason(response, extraction.rawScripts.length)
+        ? this.playwrightFallbackReason(response, extraction)
         : null;
     const playwrightRequests: DanishJsonLdRequest[] = [];
     if (fallbackReason && !this.playwrightFallbackUrls.has(canonicalUrl)) {
@@ -586,11 +586,25 @@ export class DanishJsonLdSourceSession {
 
   private playwrightFallbackReason(
     response: DanishJsonLdResponse,
-    scriptCount: number
+    extraction: {
+      rawScripts: string[];
+      incompleteJsonLdCount: number;
+      malformedJsonLdCount: number;
+    }
   ): string | null {
     if (response.statusCode < 200 || response.statusCode >= 400) return null;
     if (this.source.fetchMode === "playwright") return "registry-playwright-source";
-    if (scriptCount > 0) return "incomplete-or-malformed-json-ld";
+    // Scripts that parsed cleanly and carried no Recipe node are a definitive
+    // answer from the server: this page is not a recipe. Rendering it again
+    // cannot change that, and on article-heavy sitemaps it costs hours.
+    if (
+      extraction.rawScripts.length > 0 &&
+      extraction.incompleteJsonLdCount === 0 &&
+      extraction.malformedJsonLdCount === 0
+    ) {
+      return null;
+    }
+    if (extraction.rawScripts.length > 0) return "incomplete-or-malformed-json-ld";
     if (/__NEXT_DATA__|__NUXT__|window\.__INITIAL_STATE__/u.test(response.body)) {
       return "client-rendering-marker";
     }
