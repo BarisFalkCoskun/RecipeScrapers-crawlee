@@ -3929,6 +3929,18 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted 1430 recipes over 1934 pages with complete discovery and no blocked or failed request; six pages carry Recipe JSON-LD without required fields and stay rejected",
   },
+  bodylab: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-15T08-26-32.970Z-attempt-c3922faf-ed16-463b-ba0d-92d0823f08af",
+    deferOrBlockReason:
+      "Uncapped run persisted 149 recipes with complete discovery and no blocked or failed request; two pages carry Recipe JSON-LD without required fields and stay rejected",
+  },
+  starbucksathome: {
+    migrationState: "configured",
+    latestCanary: "2026-08-15T08-24-54.313Z-attempt-38f62583-6ad2-4d4f-8e4f-9744e05bcbc8",
+    deferOrBlockReason:
+      "Crawl is clean but the source rejects more than it keeps: 96 pages carry Recipe JSON-LD without required fields against 28 persisted, so its JSON-LD coverage needs review before a canary",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
