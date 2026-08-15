@@ -3745,9 +3745,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   Record<string, Partial<DanishJsonLdSource>>
 > = {
   arla: {
-    migrationState: "configured",
-    latestCanary: PILOT_CANARY_RUN,
-    deferOrBlockReason: "Pilot persisted recipes but reached the canary page cap",
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-15T10-06-36.443Z-attempt-0550c74a-5637-4061-9509-d715fe054fc8",
+    deferOrBlockReason:
+      "Uncapped run persisted all 3062 discovered recipes with complete discovery and no blocked, failed or rejected record",
   },
   coop: {
     migrationState: "configured",

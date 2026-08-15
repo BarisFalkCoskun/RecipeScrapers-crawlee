@@ -31,7 +31,7 @@ describe("Danish JSON-LD migration status", () => {
     expect(renderMigrationStatus(report, "markdown")).toContain(
       "| Source | Domain | Discovery | Fetch | Scrapy | Crawlee | Canary | Shadow parity | Cutover date | Reason |"
     );
-    expect(renderMigrationStatus(report, "markdown")).toContain("| arla | arla.dk | sitemap | cheerio | not_audited | configured |");
+    expect(renderMigrationStatus(report, "markdown")).toContain("| arla | arla.dk | sitemap | cheerio | not_audited | canary_passed |");
   });
 
   it("reports Surdejsentusiasten as shadow-passed without claiming cutover", () => {

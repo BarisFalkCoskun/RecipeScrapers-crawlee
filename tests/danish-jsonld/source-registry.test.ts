@@ -38,7 +38,7 @@ describe("Danish JSON-LD source registry", () => {
     expect(["arla", "coop", "kitchenaid", "madoghave", "tv2mad"].map(
       (sourceId) => [sourceId, byId.get(sourceId)?.migrationState]
     )).toEqual([
-      ["arla", "configured"],
+      ["arla", "canary_passed"],
       ["coop", "configured"],
       ["kitchenaid", "configured"],
       ["madoghave", "shadow_passed"],
