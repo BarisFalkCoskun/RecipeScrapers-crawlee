@@ -3917,6 +3917,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted 72 recipes with complete discovery and no blocked or failed request",
   },
+  semper: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-15T06-53-38.420Z-attempt-fe65cdc2-cd7e-4dba-9d90-9007e80ed99e",
+    deferOrBlockReason:
+      "Served its recipe HTML as text/plain and returned no data until that content type was accepted; now 25 recipes with complete discovery and no blocked or failed request",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
