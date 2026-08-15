@@ -3911,6 +3911,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted 94 recipes with complete discovery and no blocked or failed request",
   },
+  madformadelskere: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-15T05-56-27.179Z-attempt-ad2aa124-2f05-469e-ad64-a2edfea11329",
+    deferOrBlockReason:
+      "Uncapped run persisted 72 recipes with complete discovery and no blocked or failed request",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
