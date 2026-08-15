@@ -19,6 +19,9 @@ export interface DanishJsonLdCrawlerSettings {
   sameDomainDelaySecs: number;
 }
 
+/** Content types that carry recipe HTML despite not being declared as HTML. */
+export const DANISH_JSONLD_ADDITIONAL_MIME_TYPES = ["text/plain"] as const;
+
 export const DANISH_JSONLD_PLAYWRIGHT_BROWSER_POOL_OPTIONS = {
   maxOpenPagesPerBrowser: 1,
   retireInactiveBrowserAfterSecs: 5,
@@ -68,6 +71,10 @@ export function createDanishJsonLdCheerioCrawler(options: {
       ? { proxyConfiguration: options.proxyConfiguration }
       : {}),
     ...resolveDanishJsonLdCrawlerSettings(options.source),
+    // Some sources serve recipe HTML under text/plain. Crawlee skips those by
+    // default, which loses the page as a failed request; the body still parses
+    // and extraction stays strict JSON-LD either way.
+    additionalMimeTypes: [...DANISH_JSONLD_ADDITIONAL_MIME_TYPES],
     respectRobotsTxtFile: false,
     requestHandler: options.requestHandler,
   });

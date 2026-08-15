@@ -22,6 +22,20 @@ function crawlerInternal(crawler: unknown) {
 describe("Danish JSON-LD crawler factories", () => {
   const requestHandler = async () => undefined;
 
+  it("accepts a mislabelled text/plain recipe page", () => {
+    const source = DANISH_JSONLD_SOURCES.find((entry) => entry.id === "blenderopskrifter");
+    if (!source) throw new Error("Blenderopskrifter registry fixture missing");
+    const crawler = createDanishJsonLdCheerioCrawler({ source, requestHandler }) as unknown as {
+      supportedMimeTypes: Set<string> | string[];
+    };
+    const supported = [...crawler.supportedMimeTypes];
+
+    // Some sources serve HTML under text/plain; Crawlee skips those by default
+    // and the recipes are lost as failed requests.
+    expect(supported).toContain("text/plain");
+    expect(supported).toContain("text/html");
+  });
+
   it("hides Chromium's automation markers from browser-check sources", () => {
     const source = DANISH_JSONLD_SOURCES.find((entry) => entry.id === "sundpaabudget");
     if (!source) throw new Error("Sund paa Budget registry fixture missing");
