@@ -3972,6 +3972,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted 60 recipes with complete discovery and no blocked, failed or rejected record",
   },
+  /**
+   * The sitemap route resolves and yields recipe-shaped URLs, but the pages
+   * carry Article, BreadcrumbList and Organization nodes and no Recipe node,
+   * so a strict JSON-LD crawl can never persist anything here.
+   */
+  bobedre: {
+    migrationState: "deferred",
+    deferOrBlockReason:
+      "248 crawled pages carried no Recipe JSON-LD node at all, only Article and site furniture",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
