@@ -58,6 +58,10 @@ export function extractCompleteJsonLdRecipes(
   let repairedJsonLdCount = 0;
 
   for (const rawScript of rawScripts) {
+    // A blank script tag carries no recipe claim, so it is absent rather than
+    // malformed. Counting it as a rejection inflates the quality counters and
+    // holds an otherwise clean source out of a canary.
+    if (rawScript.trim() === "") continue;
     const parsedScript = parseJsonLdScript(rawScript);
     if (!parsedScript) {
       rejectedReasons.push("malformed-json-ld");

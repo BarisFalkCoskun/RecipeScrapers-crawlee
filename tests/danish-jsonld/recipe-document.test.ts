@@ -215,6 +215,26 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
     expect(first.sourceRecipeKey).not.toBe(single.sourceRecipeKey);
   });
 
+  it("ignores an empty JSON-LD script instead of calling it malformed", () => {
+    const complete = {
+      "@context": "https://schema.org",
+      "@type": "Recipe",
+      name: "Kage",
+      recipeIngredient: ["1 æg"],
+      recipeInstructions: [{ "@type": "HowToStep", text: "Bag." }],
+    };
+    const result = extractCompleteJsonLdRecipes(
+      `<script type="application/ld+json">\n\n</script>
+       <script type="application/ld+json">   </script>
+       <script type="application/ld+json">${JSON.stringify(complete)}</script>`
+    );
+
+    // A blank script makes no recipe claim, so it is not a rejection.
+    expect(result.recipes).toHaveLength(1);
+    expect(result.malformedJsonLdCount).toBe(0);
+    expect(result.rejectedReasons).not.toContain("malformed-json-ld");
+  });
+
   it("preserves exact script text while rejecting malformed and incomplete JSON-LD", () => {
     const exactScript = `\n  {"@type":"Recipe","name":"Kage","recipeIngredient":["1 æg"],"recipeInstructions":["Bag."]}\n`;
     const html = `<script type="application/ld+json">${exactScript}</script>
