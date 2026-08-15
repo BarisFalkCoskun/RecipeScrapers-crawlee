@@ -3845,6 +3845,66 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted 671 recipes with complete discovery and no blocked or failed request",
   },
+  beauvais: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-14T22-55-14.681Z-attempt-06bf543f-0df8-4464-ade7-6f2e174603ea",
+    deferOrBlockReason:
+      "Uncapped run persisted 69 recipes with complete discovery and no blocked or failed request",
+  },
+  cocktaily: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-14T22-30-27.302Z-attempt-0bf7133d-8283-4f60-ab3f-d884a91e03c1",
+    deferOrBlockReason:
+      "Uncapped run persisted 36 recipes with complete discovery and no blocked or failed request",
+  },
+  evatrio: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-14T22-38-28.666Z-attempt-c7c07bee-eb1a-4a4d-ac8d-dd2076b6bd38",
+    deferOrBlockReason:
+      "Uncapped run persisted 28 recipes with complete discovery and no blocked or failed request",
+  },
+  hannerobinson: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-14T22-58-02.099Z-attempt-abadfe8b-8410-42e3-bad2-e58c6494762f",
+    deferOrBlockReason:
+      "Uncapped run persisted 2 recipes with complete discovery and no blocked or failed request",
+  },
+  ketomums: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-14T22-36-27.112Z-attempt-74639a33-c169-4513-8e20-2ace0ba01e74",
+    deferOrBlockReason:
+      "Uncapped run persisted 47 recipes with complete discovery and no blocked or failed request",
+  },
+  kornkammeret: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-14T22-20-20.119Z-attempt-63551004-a723-4094-b327-09787d4eb087",
+    deferOrBlockReason:
+      "Uncapped run persisted 33 recipes with complete discovery and no blocked or failed request",
+  },
+  nescafe: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-14T22-31-51.255Z-attempt-0b93a2d3-9e6e-4148-9306-66190afe12d9",
+    deferOrBlockReason:
+      "Uncapped run persisted 34 recipes with complete discovery and no blocked or failed request",
+  },
+  nutella: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-14T22-47-10.442Z-attempt-90370b42-f322-432f-aafe-ec630944c6b2",
+    deferOrBlockReason:
+      "Uncapped run persisted 55 recipes with complete discovery and no blocked or failed request",
+  },
+  violife: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-14T22-15-06.343Z-attempt-b9e38ccf-4d5d-4af5-8098-6134e4f46703",
+    deferOrBlockReason:
+      "Uncapped run persisted 28 recipes with complete discovery and no blocked or failed request",
+  },
+  frokenkraesen_com: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-14T22-44-17.709Z-attempt-7b4df030-3d95-4e7d-8b6f-599570b741cd",
+    deferOrBlockReason:
+      "Uncapped run persisted 51 recipes with complete discovery and no blocked or failed request",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
