@@ -366,6 +366,9 @@ export class DanishJsonLdSourceSession {
     }
 
     for (const rawScript of extraction.rawScripts.slice(0, 25)) {
+      // Extraction ignores blank scripts; the shape diagnostic must agree, or
+      // the log reports malformed scripts the counters never rejected.
+      if (rawScript.trim() === "") continue;
       const parsedScript = parseJsonLdScript(rawScript);
       if (parsedScript) {
         this.emit("json-ld-shape", {
