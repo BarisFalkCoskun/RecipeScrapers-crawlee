@@ -3923,6 +3923,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Served its recipe HTML as text/plain and returned no data until that content type was accepted; now 25 recipes with complete discovery and no blocked or failed request",
   },
+  stinna: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-15T06-54-38.846Z-attempt-eaf3d49d-5daf-4a18-99af-552e24708b88",
+    deferOrBlockReason:
+      "Uncapped run persisted 1430 recipes over 1934 pages with complete discovery and no blocked or failed request; six pages carry Recipe JSON-LD without required fields and stay rejected",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
