@@ -3988,6 +3988,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted 222 recipes with complete discovery and no blocked, failed or rejected record",
   },
+  gigtforeningen: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-15T22-05-18.050Z-attempt-16802f48-a56e-4178-9cf1-1a4e19a4f88a",
+    deferOrBlockReason:
+      "Uncapped run persisted 70 recipes with complete discovery and no blocked, failed or rejected record",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
