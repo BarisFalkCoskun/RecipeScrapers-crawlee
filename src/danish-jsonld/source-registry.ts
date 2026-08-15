@@ -3941,6 +3941,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Crawl is clean but the source rejects more than it keeps: 96 pages carry Recipe JSON-LD without required fields against 28 persisted, so its JSON-LD coverage needs review before a canary",
   },
+  klank: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-15T08-36-39.727Z-attempt-0f50f57c-d0a3-491c-a921-fc0c6c9e81da",
+    deferOrBlockReason:
+      "Uncapped run persisted 52 recipes with complete discovery and no blocked or failed request; two pages carry Recipe JSON-LD without required fields and stay rejected",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
