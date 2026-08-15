@@ -3982,6 +3982,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "248 crawled pages carried no Recipe JSON-LD node at all, only Article and site furniture",
   },
+  gastrotools: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-15T21-55-50.447Z-attempt-ed8926bc-e8c3-4ebf-bdfd-5b60dcd6a759",
+    deferOrBlockReason:
+      "Uncapped run persisted 222 recipes with complete discovery and no blocked, failed or rejected record",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
@@ -3999,9 +4005,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     recipeUrlPatterns: [
       "^https://gamleopskrifter\\.com/g/home/r/[^/?#]+/?$",
     ],
-    migrationState: "configured",
-    latestCanary: PILOT_CANARY_RUN,
-    deferOrBlockReason: "Current sitemap discovery repair awaits canary validation",
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-15T21-51-20.073Z-attempt-ff257141-2800-4de1-bd0b-42e95689a14e",
+    deferOrBlockReason:
+      "Uncapped run persisted 111 recipes with complete discovery and no blocked, failed or rejected record",
   },
   /**
    * Recipe pages answer plain HTTP clients with an HTTP 454 browser check that

@@ -50,7 +50,7 @@ describe("Danish JSON-LD source registry", () => {
     );
     expect(byId.get("surdejsentusiasten")?.migrationState).toBe("shadow_passed");
     expect(byId.get("kikkoman")?.migrationState).toBe("configured");
-    expect(byId.get("gamleopskrifter")?.migrationState).toBe("configured");
+    expect(byId.get("gamleopskrifter")?.migrationState).toBe("canary_passed");
     expect(byId.get("sundpaabudget")).toMatchObject({
       migrationState: "canary_passed",
       fetchMode: "playwright",
