@@ -3905,6 +3905,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted 51 recipes with complete discovery and no blocked or failed request",
   },
+  schulstad: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-15T05-52-37.152Z-attempt-092a30f7-537d-42bc-930c-67427da152d3",
+    deferOrBlockReason:
+      "Uncapped run persisted 94 recipes with complete discovery and no blocked or failed request",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
