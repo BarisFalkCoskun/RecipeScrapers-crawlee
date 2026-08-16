@@ -4114,6 +4114,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Recipe JSON-LD omits required ingredients and instructions: 559 of 589 crawled pages rejected as incomplete and nothing persisted",
   },
+  /**
+   * Recipe nodes carry real ingredients, yields and times but omit
+   * recipeInstructions entirely, so no page meets the strict contract.
+   */
+  tillamook: {
+    migrationState: "deferred",
+    latestCanary: "2026-08-16T21-30-44.891Z-attempt-5b482c3c-dd5c-4c8e-9ae0-8d8581d196f3",
+    deferOrBlockReason:
+      "Recipe JSON-LD carries ingredients but omits instructions: 592 of 593 crawled pages rejected as incomplete and nothing persisted",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
