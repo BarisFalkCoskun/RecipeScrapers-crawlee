@@ -4018,6 +4018,27 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted 133 recipes with complete discovery and no blocked or failed request; two pages carry Recipe JSON-LD without required fields and stay rejected",
   },
+  campari: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-16T07-11-05.017Z-attempt-fad14e1a-f942-4e10-bdd8-786fdb0bb9e3",
+    deferOrBlockReason:
+      "Uncapped run persisted 7 recipes with complete discovery and no blocked or failed request; one page carries Recipe JSON-LD without required fields and stays rejected",
+  },
+  foodnotes: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-16T07-12-57.130Z-attempt-3dbf3ede-20bf-4260-9a6e-0e9c332d1389",
+    deferOrBlockReason:
+      "Uncapped run persisted 13 recipes with complete discovery and no blocked or failed request; ten of its 23 pages carry Recipe JSON-LD without required fields and stay rejected",
+  },
+  /**
+   * The sitemap index resolves and its one nested sitemap fetches, but nothing
+   * inside matches the recipe URL patterns, so the crawl finds no candidates.
+   */
+  canadianliving: {
+    migrationState: "deferred",
+    deferOrBlockReason:
+      "Sitemap resolves but yields zero recipe candidates; the inherited recipe URL patterns do not match this site's routes",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
