@@ -215,6 +215,37 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
     expect(first.sourceRecipeKey).not.toBe(single.sourceRecipeKey);
   });
 
+  it("tolerates a trailing semicolon after the JSON value", () => {
+    const complete = {
+      "@context": "https://schema.org",
+      "@type": "Recipe",
+      name: "Kage",
+      recipeIngredient: ["1 æg"],
+      recipeInstructions: [{ "@type": "HowToStep", text: "Bag." }],
+    };
+    const result = extractCompleteJsonLdRecipes(
+      `<script type="application/ld+json">\n\t${JSON.stringify(complete)};\n\t</script>`
+    );
+
+    expect(result.malformedJsonLdCount).toBe(0);
+    expect(result.recipes).toHaveLength(1);
+  });
+
+  it("does not strip a semicolon inside a quoted value", () => {
+    const raw = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Recipe",
+      name: "Kage; med krymmel",
+      recipeIngredient: ["1 æg; stort"],
+      recipeInstructions: [{ "@type": "HowToStep", text: "Bag; køl." }],
+    });
+    const result = extractCompleteJsonLdRecipes(
+      `<script type="application/ld+json">${raw}</script>`
+    );
+
+    expect(result.recipes[0]?.["name"]).toBe("Kage; med krymmel");
+  });
+
   it("repairs a trailing comma before a closing bracket", () => {
     const raw = `{
       "@context": "https://schema.org",

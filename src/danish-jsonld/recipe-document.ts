@@ -104,10 +104,13 @@ export function extractCompleteJsonLdRecipes(
  * escaped. Exact script bytes remain preserved separately on the page record.
  */
 export function parseJsonLdScript(rawScript: string): ParsedJsonLdScript | null {
+  // Some templates emit the JSON as a statement and leave the semicolon in.
+  // Trimming it is outside the JSON value, so no quoted content is touched.
+  const script = rawScript.trim().replace(/;+$/u, "");
   try {
-    return { parsed: JSON.parse(rawScript), repairedControlCharacterCount: 0 };
+    return { parsed: JSON.parse(script), repairedControlCharacterCount: 0 };
   } catch {
-    const repaired = escapeLiteralJsonControlCharacters(rawScript);
+    const repaired = escapeLiteralJsonControlCharacters(script);
     if (repaired.count > 0) {
       try {
         return {
@@ -119,7 +122,7 @@ export function parseJsonLdScript(rawScript: string): ParsedJsonLdScript | null 
       }
     }
     const trimmed = removeTrailingCommas(
-      repaired.count > 0 ? repaired.value : rawScript
+      repaired.count > 0 ? repaired.value : script
     );
     if (trimmed.count === 0) return null;
     try {
