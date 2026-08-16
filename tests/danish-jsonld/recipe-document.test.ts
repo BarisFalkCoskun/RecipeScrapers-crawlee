@@ -215,6 +215,39 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
     expect(first.sourceRecipeKey).not.toBe(single.sourceRecipeKey);
   });
 
+  it("ignores a Recipe node reference rather than rejecting it as incomplete", () => {
+    const complete = {
+      "@context": "https://schema.org",
+      "@type": "Recipe",
+      "@id": "https://example.dk/opskrifter/kage#recipe",
+      name: "Kage",
+      recipeIngredient: ["1 æg"],
+      recipeInstructions: [{ "@type": "HowToStep", text: "Bag." }],
+    };
+    // A bare @type/@id pair points at the node above; it claims nothing itself.
+    const reference = { "@type": "Recipe", "@id": "https://example.dk/opskrifter/kage#recipe" };
+    const result = extractCompleteJsonLdRecipes(
+      `<script type="application/ld+json">${JSON.stringify({ "@graph": [reference, complete, reference] })}</script>`
+    );
+
+    expect(result.recipes).toHaveLength(1);
+    expect(result.incompleteJsonLdCount).toBe(0);
+    expect(result.rejectedReasons).not.toContain("incomplete-json-ld");
+  });
+
+  it("still rejects a Recipe that has content but lacks required fields", () => {
+    const result = extractCompleteJsonLdRecipes(
+      `<script type="application/ld+json">${JSON.stringify({
+        "@type": "Recipe",
+        "@id": "https://example.dk/x#recipe",
+        name: "Mangler alt",
+      })}</script>`
+    );
+
+    expect(result.recipes).toEqual([]);
+    expect(result.incompleteJsonLdCount).toBe(1);
+  });
+
   it("tolerates a trailing semicolon after the JSON value", () => {
     const complete = {
       "@context": "https://schema.org",

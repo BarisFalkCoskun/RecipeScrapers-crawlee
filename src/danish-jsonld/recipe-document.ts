@@ -73,6 +73,9 @@ export function extractCompleteJsonLdRecipes(
     }
 
     for (const recipe of findRecipeNodes(parsedScript.parsed)) {
+      // A bare @type/@id pair is a JSON-LD reference to a node defined
+      // elsewhere, not a recipe claim, so it is neither kept nor rejected.
+      if (isNodeReference(recipe)) continue;
       if (isCompleteRecipe(recipe)) {
         recipes.push(recipe);
       } else {
@@ -175,6 +178,14 @@ function removeTrailingCommas(rawScript: string): { value: string; count: number
     value += character;
   }
   return { value, count };
+}
+
+/** True for `{"@type":"Recipe","@id":"..."}` and nothing else of substance. */
+function isNodeReference(node: Record<string, unknown>): boolean {
+  const keys = Object.keys(node).filter(
+    (key) => key !== "@type" && key !== "@context"
+  );
+  return keys.length === 1 && keys[0] === "@id";
 }
 
 function escapeLiteralJsonControlCharacters(rawScript: string): {
