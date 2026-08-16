@@ -4057,6 +4057,18 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted 175 recipes with complete discovery and no blocked, failed or rejected record",
   },
+  kokke: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-16T08-17-59.514Z-attempt-4627bee1-e611-4f9c-acb1-8fb8ee7cf2da",
+    deferOrBlockReason:
+      "Uncapped run persisted 200 recipes with complete discovery and no blocked, failed or rejected record",
+  },
+  lurpak: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-16T08-25-46.444Z-attempt-57281cb6-110a-42b6-9766-efcee413d49f",
+    deferOrBlockReason:
+      "Uncapped run persisted 211 recipes with complete discovery and no blocked, failed or rejected record",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
