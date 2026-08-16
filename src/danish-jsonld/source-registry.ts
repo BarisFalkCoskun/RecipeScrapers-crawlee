@@ -4097,6 +4097,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted 203 recipes with complete discovery and no blocked, failed or rejected record",
   },
+  madfolket: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-16T20-54-15.391Z-attempt-e5e15d29-2aac-43b7-9825-300a410530f3",
+    deferOrBlockReason:
+      "Uncapped run persisted 283 recipes with complete discovery and no blocked, failed or rejected record",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
