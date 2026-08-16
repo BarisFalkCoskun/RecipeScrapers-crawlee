@@ -4103,6 +4103,17 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted 283 recipes with complete discovery and no blocked, failed or rejected record",
   },
+  /**
+   * Recipe nodes carry name, url, image, prepTime and rating but neither
+   * recipeIngredient nor recipeInstructions, so nothing meets the strict
+   * contract. The same shape as Netto.
+   */
+  edmonds_nz: {
+    migrationState: "deferred",
+    latestCanary: "2026-08-16T21-05-37.548Z",
+    deferOrBlockReason:
+      "Recipe JSON-LD omits required ingredients and instructions: 559 of 589 crawled pages rejected as incomplete and nothing persisted",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
