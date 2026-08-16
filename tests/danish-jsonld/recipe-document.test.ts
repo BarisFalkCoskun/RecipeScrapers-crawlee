@@ -215,6 +215,48 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
     expect(first.sourceRecipeKey).not.toBe(single.sourceRecipeKey);
   });
 
+  it("repairs a trailing comma before a closing bracket", () => {
+    const raw = `{
+      "@context": "https://schema.org",
+      "@type": "Recipe",
+      "name": "Kage",
+      "recipeIngredient": ["1 æg", "2 dl mel",        ],
+      "recipeInstructions": [{ "@type": "HowToStep", "text": "Bag." },]
+    }`;
+    const result = extractCompleteJsonLdRecipes(
+      `<script type="application/ld+json">${raw}</script>`
+    );
+
+    expect(result.malformedJsonLdCount).toBe(0);
+    expect(result.recipes).toHaveLength(1);
+    expect(result.recipes[0]?.["recipeIngredient"]).toEqual(["1 æg", "2 dl mel"]);
+  });
+
+  it("leaves a comma inside a quoted value alone", () => {
+    const raw = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Recipe",
+      name: "Kage, med krymmel ]",
+      recipeIngredient: ["1 æg, stort"],
+      recipeInstructions: [{ "@type": "HowToStep", text: "Bag, derefter køl ]" }],
+    });
+    const result = extractCompleteJsonLdRecipes(
+      `<script type="application/ld+json">${raw}</script>`
+    );
+
+    expect(result.recipes).toHaveLength(1);
+    expect(result.recipes[0]?.["name"]).toBe("Kage, med krymmel ]");
+  });
+
+  it("still rejects JSON that a trailing-comma repair cannot fix", () => {
+    const result = extractCompleteJsonLdRecipes(
+      `<script type="application/ld+json">{"@type":"Recipe", "name": }</script>`
+    );
+
+    expect(result.malformedJsonLdCount).toBe(1);
+    expect(result.recipes).toEqual([]);
+  });
+
   it("ignores an empty JSON-LD script instead of calling it malformed", () => {
     const complete = {
       "@context": "https://schema.org",
@@ -239,14 +281,14 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
     const exactScript = `\n  {"@type":"Recipe","name":"Kage","recipeIngredient":["1 æg"],"recipeInstructions":["Bag."]}\n`;
     const html = `<script type="application/ld+json">${exactScript}</script>
       <script type="application/ld+json">{"@type":"Recipe","name":"Mangler ingredienser"}</script>
-      <script type="application/ld+json">{"@type":"Recipe",}</script>`;
+      <script type="application/ld+json">{"@type":"Recipe" "name":"Uparsbar"}</script>`;
 
     const result = extractCompleteJsonLdRecipes(html);
 
     expect(result.rawScripts).toEqual([
       exactScript,
       '{"@type":"Recipe","name":"Mangler ingredienser"}',
-      '{"@type":"Recipe",}',
+      '{"@type":"Recipe" "name":"Uparsbar"}',
     ]);
     expect(result.recipes).toHaveLength(1);
     expect(result.recipes[0]).toEqual({

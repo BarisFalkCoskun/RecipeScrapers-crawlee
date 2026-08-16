@@ -4039,6 +4039,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Sitemap resolves but yields zero recipe candidates; the inherited recipe URL patterns do not match this site's routes",
   },
+  ingridhornshoj: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-16T07-57-42.724Z-attempt-cc9d33b4-376e-401c-8d21-5a1fc8d4c89b",
+    deferOrBlockReason:
+      "Uncapped run persisted 159 recipes with complete discovery and no blocked, failed or rejected record",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:

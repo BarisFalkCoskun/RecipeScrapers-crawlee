@@ -108,16 +108,70 @@ export function parseJsonLdScript(rawScript: string): ParsedJsonLdScript | null 
     return { parsed: JSON.parse(rawScript), repairedControlCharacterCount: 0 };
   } catch {
     const repaired = escapeLiteralJsonControlCharacters(rawScript);
-    if (repaired.count === 0) return null;
+    if (repaired.count > 0) {
+      try {
+        return {
+          parsed: JSON.parse(repaired.value),
+          repairedControlCharacterCount: repaired.count,
+        };
+      } catch {
+        // Fall through to the trailing-comma repair below.
+      }
+    }
+    const trimmed = removeTrailingCommas(
+      repaired.count > 0 ? repaired.value : rawScript
+    );
+    if (trimmed.count === 0) return null;
     try {
       return {
-        parsed: JSON.parse(repaired.value),
+        parsed: JSON.parse(trimmed.value),
         repairedControlCharacterCount: repaired.count,
       };
     } catch {
       return null;
     }
   }
+}
+
+/**
+ * Drops a comma that sits immediately before a closing bracket or brace, which
+ * is legal in JavaScript object literals and a common hand-authoring slip in
+ * JSON-LD. Commas inside quoted values are left untouched.
+ */
+function removeTrailingCommas(rawScript: string): { value: string; count: number } {
+  let value = "";
+  let insideString = false;
+  let escaped = false;
+  let count = 0;
+
+  for (let index = 0; index < rawScript.length; index += 1) {
+    const character = rawScript[index]!;
+    if (insideString) {
+      value += character;
+      if (escaped) escaped = false;
+      else if (character === "\\") escaped = true;
+      else if (character === '"') insideString = false;
+      continue;
+    }
+    if (character === '"') {
+      value += character;
+      insideString = true;
+      continue;
+    }
+    if (character === ",") {
+      let lookahead = index + 1;
+      while (lookahead < rawScript.length && /\s/u.test(rawScript[lookahead]!)) {
+        lookahead += 1;
+      }
+      const next = rawScript[lookahead];
+      if (next === "]" || next === "}") {
+        count += 1;
+        continue;
+      }
+    }
+    value += character;
+  }
+  return { value, count };
 }
 
 function escapeLiteralJsonControlCharacters(rawScript: string): {
