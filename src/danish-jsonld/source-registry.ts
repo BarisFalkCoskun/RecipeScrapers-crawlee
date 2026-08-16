@@ -4069,6 +4069,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted 211 recipes with complete discovery and no blocked, failed or rejected record",
   },
+  /**
+   * Clean enough to crawl but the JSON-LD coverage is poor: far more pages
+   * carry a Recipe node without required fields than carry a usable one.
+   */
+  planetariskkogebog: {
+    migrationState: "configured",
+    latestCanary: "2026-08-16T08-34-08.262Z-attempt-c26cc8bb-3025-4b7b-a15d-692bc5860429",
+    deferOrBlockReason:
+      "Uncapped run kept 72 recipes but rejected 225 incomplete and 12 malformed, and took 23 blocked requests, so JSON-LD coverage needs review before a canary",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
