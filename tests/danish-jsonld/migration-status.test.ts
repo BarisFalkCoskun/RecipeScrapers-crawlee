@@ -9,7 +9,8 @@ describe("Danish JSON-LD migration status", () => {
     const report = createMigrationStatusReport();
 
     expect(report.sources).toHaveLength(123);
-    expect(report.sources[0]).toMatchObject({
+    const unevidenced = report.sources.find((entry) => entry.latestCanary === null);
+    expect(unevidenced).toMatchObject({
       source: expect.any(String),
       domain: expect.any(String),
       discoveryMode: expect.any(String),
