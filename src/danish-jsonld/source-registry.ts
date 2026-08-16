@@ -3755,10 +3755,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     latestCanary: PILOT_CANARY_RUN,
     deferOrBlockReason: "Pilot persisted recipes but reached the canary page cap",
   },
+  /**
+   * The pagination widget mixes absolute, root-relative and document-relative
+   * hrefs for the same pages. The document-relative ones resolve to duplicated
+   * path segments and 404, on this crawler and in a browser alike.
+   */
   kitchenaid: {
     migrationState: "configured",
-    latestCanary: PILOT_CANARY_RUN,
-    deferOrBlockReason: "Pilot persisted recipes but reached the canary page cap",
+    latestCanary: "2026-08-16T00-00-01.253Z-attempt-e7e4e259-69cd-453d-b21e-046f5d3f49af",
+    deferOrBlockReason:
+      "Uncapped run persisted 726 recipes, but the source's own malformed relative pagination links produced 60 failed requests and left discovery incomplete",
   },
   madoghave: {
     migrationState: "shadow_passed",
