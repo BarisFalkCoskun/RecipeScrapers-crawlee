@@ -49,7 +49,7 @@ describe("Danish JSON-LD source registry", () => {
       /result window stops at 10000/u
     );
     expect(byId.get("surdejsentusiasten")?.migrationState).toBe("shadow_passed");
-    expect(byId.get("kikkoman")?.migrationState).toBe("configured");
+    expect(byId.get("kikkoman")?.migrationState).toBe("canary_passed");
     expect(byId.get("gamleopskrifter")?.migrationState).toBe("canary_passed");
     expect(byId.get("sundpaabudget")).toMatchObject({
       migrationState: "canary_passed",

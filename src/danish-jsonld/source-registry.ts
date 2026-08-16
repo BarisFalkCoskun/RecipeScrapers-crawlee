@@ -4012,9 +4012,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Listing continues through a script-only load-more control; needs a discovery contract for its continuation route",
   },
   kikkoman: {
-    migrationState: "configured",
-    latestCanary: PILOT_CANARY_RUN,
-    deferOrBlockReason: "Literal-control-character JSON-LD repair awaits canary validation",
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-15T23-25-27.820Z-attempt-6f1cdd5f-5e2d-4cee-b14c-c786765a0550",
+    deferOrBlockReason:
+      "Uncapped run persisted 836 recipes with complete discovery and no blocked, failed or rejected record, validating the literal-control-character JSON-LD repair",
   },
   gamleopskrifter: {
     discovery: "sitemap",
