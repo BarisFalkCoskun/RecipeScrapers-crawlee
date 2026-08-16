@@ -4124,6 +4124,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Recipe JSON-LD carries ingredients but omits instructions: 592 of 593 crawled pages rejected as incomplete and nothing persisted",
   },
+  amo: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-16T22-08-10.261Z-attempt-ef57339f-1f89-4d73-a389-8d94d0643f39",
+    deferOrBlockReason:
+      "Uncapped run persisted 307 recipes with complete discovery and no blocked, failed or rejected record",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
