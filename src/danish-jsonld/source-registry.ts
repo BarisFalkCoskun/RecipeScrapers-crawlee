@@ -4136,6 +4136,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted 312 recipes with complete discovery and no blocked, failed or rejected record",
   },
+  hverdagskoekken: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-16T23-18-35.130Z-attempt-dfce028d-b735-4dd8-a4f7-f4701fa70722",
+    deferOrBlockReason:
+      "Uncapped run persisted 375 recipes with complete discovery and no blocked, failed or rejected record",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
