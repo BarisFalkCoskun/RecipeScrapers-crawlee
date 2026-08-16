@@ -4079,6 +4079,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run kept 72 recipes but rejected 225 incomplete and 12 malformed, and took 23 blocked requests, so JSON-LD coverage needs review before a canary",
   },
+  mambeno: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-16T06-50-45.335Z-attempt-9174a211-fa66-485f-99ca-8551c4219708",
+    deferOrBlockReason:
+      "Uncapped run persisted all 3614 discovered recipes with complete discovery and no blocked, failed or rejected record",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
