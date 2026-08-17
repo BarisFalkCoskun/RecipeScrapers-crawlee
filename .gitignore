@@ -11,3 +11,7 @@ vpn/mullvad.json
 /run-queue2.sh
 /run-queue3.sh
 /run-queue4.sh
+/run-lane1.sh
+/run-lane2.sh
+/run-lane3.sh
+/run-recheck.sh
