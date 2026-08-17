@@ -4176,6 +4176,17 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted 472 recipes with complete discovery and no blocked or failed request; six pages carry Recipe JSON-LD without required fields and stay rejected",
   },
+  /**
+   * Cloudflare answers almost every recipe request with HTTP 403. The few that
+   * pass carry only Organization and WebSite markup, so nothing is persisted.
+   * Cheerio-only, so the automation-marker fix does not apply here.
+   */
+  tesco_recipes: {
+    migrationState: "blocked",
+    latestCanary: "2026-08-17T04-09-47.964Z-attempt-62c053ec-05b4-4c99-a4b3-2c85e768c78f",
+    deferOrBlockReason:
+      "Cloudflare returned HTTP 403 on 7724 requests across 530 processed pages and nothing was persisted",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:

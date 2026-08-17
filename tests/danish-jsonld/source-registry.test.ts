@@ -88,7 +88,7 @@ describe("Danish JSON-LD source registry", () => {
   it("carries the international JSON-LD sources on the same strict contract", () => {
     const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
 
-    for (const sourceId of ["allrecipes", "bbcgoodfood", "jamieoliver", "tesco_recipes"]) {
+    for (const sourceId of ["allrecipes", "bbcgoodfood", "jamieoliver", "greatbritishchefs"]) {
       expect(byId.get(sourceId)).toMatchObject({
         discovery: "sitemap",
         fetchMode: "cheerio",
