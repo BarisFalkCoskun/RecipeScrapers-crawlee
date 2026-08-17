@@ -617,6 +617,16 @@ export class DanishJsonLdSourceSession {
   private resolveCanonicalUrl(response: DanishJsonLdResponse): string {
     const $ = cheerio.load(response.body);
     const canonical = $('link[rel="canonical"]').first().attr("href");
+    // A href carrying two schemes is a template that glued its base onto an
+    // absolute URL. It parses, but into a nonsense host, so it is discarded in
+    // favour of the request URL rather than read as a cross-site canonical.
+    if (canonical && /:\/\/[^\s]*:\/\//u.test(canonical)) {
+      this.emit("canonical-ignored", {
+        reason: "concatenated-href",
+        url: response.url,
+      });
+      return canonicalizeUrl(response.url);
+    }
     if (canonical) {
       try {
         return canonicalizeUrl(canonical, response.loadedUrl ?? response.url);

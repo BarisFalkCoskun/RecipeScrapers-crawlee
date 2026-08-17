@@ -388,6 +388,59 @@ describe("Danish JSON-LD source session", () => {
     expect(session.observation.discoveryComplete).toBe(true);
   });
 
+  it("ignores a canonical href that concatenates two URLs", async () => {
+    const store = new MemoryV2Store();
+    const session = new DanishJsonLdSourceSession({
+      source,
+      store,
+      crawlRunId: "run-canonical-concat",
+      crawlAttemptId: "attempt-canonical-concat",
+      maxPages: 5,
+    });
+
+    // The site glued its base onto an absolute URL. The result parses, but its
+    // host is nonsense, so it is a template bug rather than a cross-site
+    // canonical and must not invalidate the source's discovery.
+    await session.handleResponse({
+      kind: "recipe",
+      fetchMode: "cheerio",
+      url: "https://example.dk/opskrifter/kage",
+      statusCode: 200,
+      headers: {},
+      body: `<html><head><link rel="canonical" href="https://example.dkhttps://example.dk/opskrifter/kage"/></head>
+        <body><script type="application/ld+json">${JSON.stringify(completeRecipe)}</script></body></html>`,
+    });
+
+    expect(session.observation.discoveryComplete).toBe(true);
+    expect(session.observation.discoveryFailureReasons).toEqual([]);
+    expect(store.recipesV2).toHaveLength(1);
+    expect(store.recipesV2[0]?.canonicalUrl).toBe("https://example.dk/opskrifter/kage");
+  });
+
+  it("still rejects a genuine cross-site canonical", async () => {
+    const store = new MemoryV2Store();
+    const session = new DanishJsonLdSourceSession({
+      source,
+      store,
+      crawlRunId: "run-canonical-cross",
+      crawlAttemptId: "attempt-canonical-cross",
+      maxPages: 5,
+    });
+
+    await session.handleResponse({
+      kind: "recipe",
+      fetchMode: "cheerio",
+      url: "https://example.dk/opskrifter/kage",
+      statusCode: 200,
+      headers: {},
+      body: `<html><head><link rel="canonical" href="https://elsewhere.test/opskrifter/kage"/></head>
+        <body><script type="application/ld+json">${JSON.stringify(completeRecipe)}</script></body></html>`,
+    });
+
+    expect(session.observation.discoveryComplete).toBe(false);
+    expect(store.recipesV2).toEqual([]);
+  });
+
   it("rejects an off-domain loaded URL before extraction or persistence", async () => {
     const store = new MemoryV2Store();
     const diagnostics: DanishJsonLdDiagnostic[] = [];
