@@ -566,6 +566,14 @@ export class DanishJsonLdSourceSession {
     reason: "loaded-url-domain-not-allowed" | "canonical-domain-not-allowed"
   ): void {
     this.addDiscoveryFailure(reason);
+    // The diagnostic sink is budgeted and drops these on a long crawl, which
+    // leaves the offending URL unknowable. Keep a bounded sample on the
+    // observation so the evidence file always names it.
+    const rejected = this.observation.rejectedCanonicalUrls ?? [];
+    if (rejected.length < 10 && !rejected.includes(url)) {
+      rejected.push(url);
+      this.observation.rejectedCanonicalUrls = rejected;
+    }
     this.emit("source-domain-rejected", {
       boundary,
       hostname: hostnameForDiagnostic(url),

@@ -21,6 +21,8 @@ export interface SourceRunObservation {
   pageCapReached?: boolean;
   discoveryComplete: boolean;
   discoveryFailureReasons?: SourceOutcomeReason[];
+  /** Bounded sample of canonical URLs rejected at the domain boundary. */
+  rejectedCanonicalUrls?: string[];
 }
 
 export function classifySourceOutcome(

@@ -417,6 +417,34 @@ describe("Danish JSON-LD source session", () => {
     expect(store.recipesV2[0]?.canonicalUrl).toBe("https://example.dk/opskrifter/kage");
   });
 
+  it("records the rejected canonical URLs in the observation", async () => {
+    const session = new DanishJsonLdSourceSession({
+      source,
+      store: new MemoryV2Store(),
+      crawlRunId: "run-canonical-record",
+      crawlAttemptId: "attempt-canonical-record",
+      maxPages: 5,
+    });
+
+    for (const slug of ["a", "b"]) {
+      await session.handleResponse({
+        kind: "recipe",
+        fetchMode: "cheerio",
+        url: `https://example.dk/opskrifter/${slug}`,
+        statusCode: 200,
+        headers: {},
+        body: `<html><head><link rel="canonical" href="https://elsewhere.test/${slug}"/></head></html>`,
+      });
+    }
+
+    // The evidence file has to name the offending URLs; the diagnostic budget
+    // drops these events on a long crawl, leaving the cause unidentifiable.
+    expect(session.observation.rejectedCanonicalUrls).toEqual([
+      "https://elsewhere.test/a",
+      "https://elsewhere.test/b",
+    ]);
+  });
+
   it("still rejects a genuine cross-site canonical", async () => {
     const store = new MemoryV2Store();
     const session = new DanishJsonLdSourceSession({
