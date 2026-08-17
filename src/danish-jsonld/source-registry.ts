@@ -4142,6 +4142,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted 375 recipes with complete discovery and no blocked, failed or rejected record",
   },
+  /**
+   * A real recipe page emits WebPage, BreadcrumbList and SearchAction markup
+   * and no Recipe node at all, so a strict JSON-LD crawl finds nothing.
+   */
+  avocadosfrommexico: {
+    migrationState: "deferred",
+    latestCanary: "2026-08-17T00-30-58.348Z-attempt-432e311f-a01c-4a32-a2de-501bf20c11a9",
+    deferOrBlockReason:
+      "No Recipe JSON-LD node on any of 440 crawled pages, only WebPage and site navigation markup",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
