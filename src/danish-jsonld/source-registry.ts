@@ -4152,6 +4152,18 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "No Recipe JSON-LD node on any of 440 crawled pages, only WebPage and site navigation markup",
   },
+  /**
+   * Ingredient strings carry unescaped inch marks, as in
+   * "10 stk Santa Maria Tortilla 10"", which ends the JSON string early.
+   * Repairing an unescaped quote inside a value is ambiguous, so those pages
+   * stay rejected.
+   */
+  santamariaworld: {
+    migrationState: "configured",
+    latestCanary: "2026-08-17T01-08-09.402Z-attempt-662cae2c-d747-4791-bdad-a25aa246d76c",
+    deferOrBlockReason:
+      "Uncapped run persisted 422 recipes with no blocked or failed request, but 94 scripts carry an unescaped quote inside an ingredient string and stay malformed",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
