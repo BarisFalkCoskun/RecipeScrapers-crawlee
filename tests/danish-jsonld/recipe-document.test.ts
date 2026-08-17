@@ -215,6 +215,48 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
     expect(first.sourceRecipeKey).not.toBe(single.sourceRecipeKey);
   });
 
+  it("accepts a lowercase recipe @type", () => {
+    const result = extractCompleteJsonLdRecipes(
+      `<script type="application/ld+json">${JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "recipe",
+        name: "Kage",
+        recipeIngredient: ["1 æg"],
+        recipeInstructions: [{ "@type": "HowToStep", text: "Bag." }],
+      })}</script>`
+    );
+
+    expect(result.recipes).toHaveLength(1);
+    expect(result.recipes[0]?.["name"]).toBe("Kage");
+  });
+
+  it("accepts a lowercase schema.org recipe URL type", () => {
+    const result = extractCompleteJsonLdRecipes(
+      `<script type="application/ld+json">${JSON.stringify({
+        "@type": "https://schema.org/recipe",
+        name: "Kage",
+        recipeIngredient: ["1 æg"],
+        recipeInstructions: ["Bag."],
+      })}</script>`
+    );
+
+    expect(result.recipes).toHaveLength(1);
+  });
+
+  it("does not treat another type as a recipe", () => {
+    const result = extractCompleteJsonLdRecipes(
+      `<script type="application/ld+json">${JSON.stringify({
+        "@type": "Article",
+        name: "Kage",
+        recipeIngredient: ["1 æg"],
+        recipeInstructions: ["Bag."],
+      })}</script>`
+    );
+
+    expect(result.recipes).toEqual([]);
+    expect(result.incompleteJsonLdCount).toBe(0);
+  });
+
   it("ignores a Recipe node reference rather than rejecting it as incomplete", () => {
     const complete = {
       "@context": "https://schema.org",

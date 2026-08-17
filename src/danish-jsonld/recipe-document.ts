@@ -397,9 +397,17 @@ function findRecipeNodes(data: unknown): Record<string, unknown>[] {
   });
 }
 
+/**
+ * Schema.org spells the type Recipe, but sites emit "recipe" often enough that
+ * a case-sensitive match silently discards whole sources. No other schema.org
+ * type differs from Recipe only by case, so folding case cannot widen this to
+ * anything else, and the completeness contract still applies to whatever
+ * matches.
+ */
 function isRecipeType(type: unknown): boolean {
   if (typeof type === "string") {
-    return type === "Recipe" || /^https?:\/\/schema\.org\/Recipe$/u.test(type);
+    const value = type.trim().toLowerCase();
+    return value === "recipe" || /^https?:\/\/schema\.org\/recipe$/u.test(value);
   }
   return Array.isArray(type) && type.some(isRecipeType);
 }
