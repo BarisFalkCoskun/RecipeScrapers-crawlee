@@ -4187,6 +4187,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Cloudflare returned HTTP 403 on 7724 requests across 530 processed pages and nothing was persisted",
   },
+  madogdrikke: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-17T15-07-04.733Z-attempt-d21edf83-5518-40a1-9f1b-4dda2bdf7236",
+    deferOrBlockReason:
+      "Uncapped run persisted 4966 recipes with complete discovery and no blocked or failed request; 24 pages carry Recipe JSON-LD without required fields and stay rejected",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
