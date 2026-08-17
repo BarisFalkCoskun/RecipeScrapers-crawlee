@@ -4223,6 +4223,17 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted all 503 discovered recipes with complete discovery and no blocked, failed or rejected record",
   },
+  /**
+   * Emits its recipe type in lowercase. Before type matching folded case the
+   * crawl processed 702 pages and persisted nothing, reading as an empty
+   * source rather than a broken one.
+   */
+  frederikkewaerens: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-17T22-36-29.973Z-attempt-50710db1-c5c7-4b30-a88c-757de4e91336",
+    deferOrBlockReason:
+      "Uncapped run persisted 3350 recipes with complete discovery and no blocked or failed request; 37 pages carry Recipe JSON-LD without required fields and stay rejected",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
