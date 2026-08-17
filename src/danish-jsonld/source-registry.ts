@@ -4164,6 +4164,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted 422 recipes with no blocked or failed request, but 94 scripts carry an unescaped quote inside an ingredient string and stay malformed",
   },
+  revivafit: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-17T01-29-50.068Z-attempt-41ecb1dc-7ac6-4406-9cae-2384040ef20a",
+    deferOrBlockReason:
+      "Uncapped run persisted 494 recipes with complete discovery and no blocked or failed request; four pages carry Recipe JSON-LD without required fields and stay rejected",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
