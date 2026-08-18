@@ -4276,6 +4276,17 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Crawl is clean but the source's sitemap lists dead URLs: four sitemap URLs 404, including /da-dk/recipes/pink-dragon-mocha, so the run cannot reach zero failed requests",
   },
+  /**
+   * Its pages pair each recipe with a bare @type/@id reference stub. Those were
+   * counted as incomplete recipes until node references were skipped, which is
+   * why an otherwise clean run reported one rejection per page.
+   */
+  puredansk: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-18T09-06-20.859Z-attempt-6838e4c6-586c-4e74-8529-3e6a63fb77a8",
+    deferOrBlockReason:
+      "Uncapped rerun persisted all 365 discovered recipes with complete discovery and no blocked, failed or rejected record",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
