@@ -3979,14 +3979,15 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 60 recipes with complete discovery and no blocked, failed or rejected record",
   },
   /**
-   * The sitemap route resolves and yields recipe-shaped URLs, but the pages
-   * carry Article, BreadcrumbList and Organization nodes and no Recipe node,
-   * so a strict JSON-LD crawl can never persist anything here.
+   * Previously deferred on the claim that it published no Recipe JSON-LD. That
+   * was drawn from the first 248 pages of a run that was stopped early; the
+   * recipes appear deeper in the sitemap.
    */
   bobedre: {
-    migrationState: "deferred",
+    migrationState: "configured",
+    latestCanary: "2026-08-17T23-05-35.904Z-attempt-cde2a905-dc84-49ed-b08d-ea02a68994ad",
     deferOrBlockReason:
-      "248 crawled pages carried no Recipe JSON-LD node at all, only Article and site furniture",
+      "Uncapped run persisted 710 recipes over 2699 pages with complete discovery; one failed request and 58 incomplete pages keep it short of a canary",
   },
   gastrotools: {
     migrationState: "canary_passed",
@@ -4245,6 +4246,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     latestCanary: "2026-08-17T23-28-26.237Z-attempt-6ad03698-68af-46a2-b017-7f194660caa1",
     deferOrBlockReason:
       "Uncapped run persisted 641 recipes with complete discovery and no blocked or failed request; four pages carry Recipe JSON-LD without required fields and stay rejected",
+  },
+  imerco: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-18T00-21-27.720Z-attempt-6777a367-f56e-4504-b1cc-74dbbc80957d",
+    deferOrBlockReason:
+      "Uncapped rerun after the concatenated-canonical fix completed discovery and persisted 175 recipes with no blocked or failed request; two pages carry Recipe JSON-LD without required fields",
   },
   kenwoodworld: {
     migrationState: "configured",
