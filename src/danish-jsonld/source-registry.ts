@@ -3997,6 +3997,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted 710 recipes over 2699 pages with complete discovery; one failed request and 58 incomplete pages keep it short of a canary",
   },
+  nogetiovnen: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-18T09-40-09.367Z-attempt-7887aaad-74c8-4c12-b66d-a12c31a16d02",
+    deferOrBlockReason:
+      "Uncapped run persisted 3098 recipes with complete discovery and no blocked, failed or rejected record",
+  },
   bobsredmill: {
     migrationState: "configured",
     latestCanary: "2026-08-18T10-40-06.655Z-attempt-ccf075fd-ed04-4a77-9483-63fd07c5968e",
