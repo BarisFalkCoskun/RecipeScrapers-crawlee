@@ -4019,6 +4019,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted 2091 recipes with complete discovery and no blocked or failed request; 48 pages publish Recipe JSON-LD with unescaped quotes in the description and 56 more are incomplete, which keeps it short of a canary",
   },
+  nordmad: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-18T14-55-50.641Z-attempt-d734001e-4e9c-42fc-807a-9047ccf5a977",
+    deferOrBlockReason:
+      "Uncapped run persisted 719 recipes with complete discovery and no blocked, failed or rejected record",
+  },
   oetker: {
     migrationState: "canary_passed",
     latestCanary: "2026-08-18T14-24-59.150Z-attempt-66da8895-574b-4e42-8b0f-fdc20c5d9888",
