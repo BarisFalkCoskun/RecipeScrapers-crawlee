@@ -4149,9 +4149,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
    */
   avocadosfrommexico: {
     migrationState: "deferred",
-    latestCanary: "2026-08-17T00-30-58.348Z-attempt-432e311f-a01c-4a32-a2de-501bf20c11a9",
+    latestCanary: "2026-08-18T00-48-57.865Z-attempt-13d7c3fb-5ea4-4275-81ee-895577d9c9da",
     deferOrBlockReason:
-      "No Recipe JSON-LD node on any of 440 crawled pages, only WebPage and site navigation markup",
+      "No Recipe JSON-LD node on any of 440 crawled pages, only WebPage and site navigation markup; confirmed by a complete rerun after case-insensitive type matching",
   },
   /**
    * Ingredient strings carry unescaped inch marks, as in
