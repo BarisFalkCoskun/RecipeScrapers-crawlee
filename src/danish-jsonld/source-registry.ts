@@ -4253,6 +4253,21 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped rerun after the concatenated-canonical fix completed discovery and persisted 175 recipes with no blocked or failed request; two pages carry Recipe JSON-LD without required fields",
   },
+  castello: {
+    migrationState: "configured",
+    deferOrBlockReason:
+      "Crawl is clean but the source's sitemap lists dead URLs: one sitemap URL 404s, so the run cannot reach zero failed requests",
+  },
+  fevertree: {
+    migrationState: "configured",
+    deferOrBlockReason:
+      "Crawl is clean but the source's sitemap lists dead URLs: sitemap lists /da-dk/cocktails/espresso-martini, which 404s, so the run cannot reach zero failed requests",
+  },
+  oatly: {
+    migrationState: "configured",
+    deferOrBlockReason:
+      "Crawl is clean but the source's sitemap lists dead URLs: four sitemap URLs 404, including /da-dk/recipes/pink-dragon-mocha, so the run cannot reach zero failed requests",
+  },
   kenwoodworld: {
     migrationState: "configured",
     deferOrBlockReason:
