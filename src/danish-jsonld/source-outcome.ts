@@ -23,6 +23,12 @@ export interface SourceRunObservation {
   discoveryFailureReasons?: SourceOutcomeReason[];
   /** Bounded sample of canonical URLs rejected at the domain boundary. */
   rejectedCanonicalUrls?: string[];
+  /** Bounded sample of terminally failed requests, with their cause. */
+  failedRequestSamples?: Array<{
+    url: string;
+    statusCode: number | null;
+    error: string;
+  }>;
 }
 
 export function classifySourceOutcome(

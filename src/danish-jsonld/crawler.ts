@@ -224,6 +224,22 @@ export class DanishJsonLdSourceSession {
       this.observation.playwrightFailures =
         (this.observation.playwrightFailures ?? 0) + 1;
     }
+    if (!blocked) {
+      // These go through the budgeted diagnostic sink and disappear on a long
+      // crawl, which leaves a partial outcome with no traceable cause. Keep a
+      // bounded sample on the observation so the evidence names them.
+      const samples = this.observation.failedRequestSamples ?? [];
+      if (samples.length < 10) {
+        samples.push({
+          url: input.url,
+          statusCode: input.statusCode ?? null,
+          error: input.error instanceof Error
+            ? input.error.message.slice(0, 200)
+            : String(input.error).slice(0, 200),
+        });
+        this.observation.failedRequestSamples = samples;
+      }
+    }
     if (input.blockedReason) this.addDiscoveryFailure(input.blockedReason);
     if (input.kind !== "recipe") this.observation.discoveryComplete = false;
     this.emit("request-failed", {

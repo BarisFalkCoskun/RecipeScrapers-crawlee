@@ -417,6 +417,30 @@ describe("Danish JSON-LD source session", () => {
     expect(store.recipesV2[0]?.canonicalUrl).toBe("https://example.dk/opskrifter/kage");
   });
 
+  it("records a bounded sample of failed requests in the observation", async () => {
+    const session = new DanishJsonLdSourceSession({
+      source,
+      store: new MemoryV2Store(),
+      crawlRunId: "run-failed-sample",
+      crawlAttemptId: "attempt-failed-sample",
+      maxPages: 20,
+    });
+
+    await session.recordFailedRequest({
+      fetchMode: "cheerio",
+      kind: "recipe",
+      url: "https://example.dk/opskrifter/kage",
+      retryCount: 3,
+      error: new Error("socket hang up"),
+    });
+
+    // Failed-request diagnostics go through the budgeted sink and vanish on a
+    // long crawl, leaving a partial outcome with no traceable cause.
+    expect(session.observation.failedRequestSamples).toEqual([
+      { url: "https://example.dk/opskrifter/kage", statusCode: null, error: "socket hang up" },
+    ]);
+  });
+
   it("records the rejected canonical URLs in the observation", async () => {
     const session = new DanishJsonLdSourceSession({
       source,
