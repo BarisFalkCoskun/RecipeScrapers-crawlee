@@ -4019,6 +4019,180 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted 2091 recipes with complete discovery and no blocked or failed request; 48 pages publish Recipe JSON-LD with unescaped quotes in the description and 56 more are incomplete, which keeps it short of a canary",
   },
+  aurion: {
+    migrationState: "configured",
+    latestCanary: "2026-08-18T09-20-45.164Z-attempt-085969f5-fd04-4a17-938a-b8855227448a",
+    deferOrBlockReason:
+      "Uncapped run persisted 124 recipes with complete discovery; 6 malformed pages keep it short of a canary",
+  },
+  becel: {
+    migrationState: "configured",
+    latestCanary: "2026-08-14T22-52-15.704Z-attempt-5203ef6c-2a88-4012-a058-92a7cf67fdab",
+    deferOrBlockReason:
+      "Uncapped run persisted 66 recipes with complete discovery; 2 incomplete pages and 74 malformed pages keep it short of a canary",
+  },
+  blenderopskrifter: {
+    migrationState: "configured",
+    latestCanary: "2026-08-14T20-37-08.750Z-attempt-ff928238-b1c9-465e-9c96-0748ec465f13",
+    deferOrBlockReason:
+      "Uncapped run persisted 173 recipes with complete discovery; 52 failed requests keep it short of a canary",
+  },
+  bornholms: {
+    migrationState: "blocked",
+    latestCanary: "2026-08-14T20-06-25.226Z-attempt-f7ec55c7-f41e-4ace-824e-7e7f63fab7e5",
+    deferOrBlockReason:
+      "Uncapped run persisted no recipes: the site answered the sitemap request with repeated HTTP 454 browser checks that the in-session retry could not clear, so discovery never completed",
+  },
+  diabetesopskrifter: {
+    migrationState: "configured",
+    latestCanary: "2026-08-14T20-45-43.602Z-attempt-f42c07f8-e65e-470f-bfaf-920baa7d27a6",
+    deferOrBlockReason:
+      "Uncapped run persisted 132 recipes with complete discovery; 52 failed requests keep it short of a canary",
+  },
+  heidiogper: {
+    migrationState: "configured",
+    latestCanary: "2026-08-18T00-42-16.200Z-attempt-eccfc2b5-285f-413e-92d6-b3483c74c8b4",
+    deferOrBlockReason:
+      "Uncapped run persisted 25 recipes with complete discovery; 1 failed request keep it short of a canary",
+  },
+  heinz: {
+    migrationState: "configured",
+    latestCanary: "2026-08-14T20-03-43.529Z-attempt-17ba5f17-b778-4122-948c-800bf1b07019",
+    deferOrBlockReason:
+      "Uncapped run persisted 3 recipes with complete discovery; 2 failed requests keep it short of a canary",
+  },
+  maduniverset: {
+    migrationState: "configured",
+    latestCanary: "2026-08-16T00-37-52.059Z-attempt-bffad42b-d66c-49fd-8434-e1e95f0d30f2",
+    deferOrBlockReason:
+      "Uncapped run persisted 9811 recipes with complete discovery; 2 failed requests and 42 incomplete pages keep it short of a canary",
+  },
+  micadeli: {
+    migrationState: "configured",
+    latestCanary: "2026-08-17T00-48-14.000Z-attempt-5abdda54-3e59-44aa-a0c0-1342ce7b42fa",
+    deferOrBlockReason:
+      "Uncapped run persisted 409 recipes with complete discovery; 41 blocked requests and 64 incomplete pages keep it short of a canary",
+  },
+  opskrifterdk: {
+    migrationState: "configured",
+    latestCanary: "2026-08-17T12-28-13.168Z-attempt-66a5c41c-f425-45ea-a194-3f83d52bafd7",
+    deferOrBlockReason:
+      "Uncapped run persisted 4048 recipes with complete discovery; 76 failed requests and 8 incomplete pages keep it short of a canary",
+  },
+  plantepusherne: {
+    migrationState: "configured",
+    latestCanary: "2026-08-14T22-16-18.944Z-attempt-3228faac-3030-41d5-adf7-975860999b7f",
+    deferOrBlockReason:
+      "Uncapped run persisted 31 recipes but discovery did not complete; 3 blocked requests and 1 malformed page as well",
+  },
+  skolemaelk: {
+    migrationState: "configured",
+    latestCanary: "2026-08-16T07-57-37.358Z-attempt-b9143eaf-e48b-4102-9e95-d42d3d188d7c",
+    deferOrBlockReason:
+      "Uncapped run persisted no recipes: the configured sitemap URL serves application/rss+xml rather than a sitemap and the site answered with HTTP 455, so discovery never completed",
+  },
+  slagterlampe: {
+    migrationState: "configured",
+    latestCanary: "2026-08-16T21-56-10.861Z-attempt-c785d1b8-9ac7-4ac5-abeb-3c306bbdfbc0",
+    deferOrBlockReason:
+      "Uncapped run persisted 272 recipes but discovery did not complete; 22 blocked requests as well",
+  },
+  spicytwist: {
+    migrationState: "configured",
+    latestCanary: "2026-08-14T22-19-05.328Z-attempt-225f761f-f747-46a7-9414-f63d02973200",
+    deferOrBlockReason:
+      "Uncapped run persisted 30 recipes but discovery did not complete; 1 failed request as well",
+  },
+  spisekunst: {
+    migrationState: "configured",
+    latestCanary: "2026-08-16T23-33-26.130Z-attempt-03bc4b65-0ded-4ba6-906b-cf69afd1dcca",
+    deferOrBlockReason:
+      "Uncapped run persisted 410 recipes with complete discovery; 61 blocked requests and 5 failed requests keep it short of a canary",
+  },
+  sydhavnsbloggen: {
+    migrationState: "blocked",
+    latestCanary: "2026-08-14T22-38-23.044Z-attempt-511b66da-6094-4083-be6d-1b71b0161b98",
+    deferOrBlockReason:
+      "Uncapped run persisted no recipes: the site answered discovery with an HTTP 454 browser check, so discovery never completed",
+  },
+  allrecipes: {
+    migrationState: "blocked",
+    latestCanary: "2026-08-16T07-10-37.070Z-attempt-0aa0d46c-d1fd-496f-81f0-ffbad7de385a",
+    deferOrBlockReason:
+      "Uncapped run persisted no recipes: the site answered discovery with HTTP 403 on four requests, so discovery never completed",
+  },
+  bbcgoodfood: {
+    migrationState: "configured",
+    latestCanary: "2026-08-16T08-47-33.153Z-attempt-0e25122a-89e2-4239-840e-676401df2229",
+    deferOrBlockReason:
+      "Uncapped run persisted 17004 recipes with complete discovery; 24 failed requests and 20 incomplete pages keep it short of a canary",
+  },
+  bertolli: {
+    migrationState: "configured",
+    latestCanary: "2026-08-18T09-25-59.830Z-attempt-7bf68bc2-a43b-4080-8e98-95efd18f2e37",
+    deferOrBlockReason:
+      "Uncapped run persisted 559 recipes with complete discovery; 7 blocked requests and 21 malformed pages keep it short of a canary",
+  },
+  bettycrocker: {
+    migrationState: "configured",
+    latestCanary: "2026-08-17T08-53-05.050Z-attempt-86195030-47bd-4018-bb4e-1206d9d13900",
+    deferOrBlockReason:
+      "Uncapped run persisted 6243 recipes with complete discovery; 52 failed requests and 4 incomplete pages keep it short of a canary",
+  },
+  delmonte: {
+    migrationState: "configured",
+    latestCanary: "2026-08-18T00-47-53.212Z-attempt-5f26efff-44f5-4df1-bd47-504a4dd1f28b",
+    deferOrBlockReason:
+      "Uncapped run persisted 4 recipes with complete discovery; 17 failed requests keep it short of a canary",
+  },
+  foodnetwork_uk: {
+    migrationState: "configured",
+    latestCanary: "2026-08-17T04-09-47.959Z-attempt-5442b968-b0cd-4876-a9f0-76b5dc5654bf",
+    deferOrBlockReason:
+      "Uncapped run persisted 12632 recipes with complete discovery; 2 failed requests and 232 incomplete pages keep it short of a canary",
+  },
+  jamieoliver: {
+    migrationState: "configured",
+    latestCanary: "2026-08-18T00-50-22.465Z-attempt-539679ea-c794-4c58-8e67-d873a0641a6b",
+    deferOrBlockReason:
+      "Uncapped run persisted 4466 recipes with complete discovery; 1 failed request and 12 incomplete pages keep it short of a canary",
+  },
+  nordicfoodliving: {
+    migrationState: "configured",
+    latestCanary: "2026-08-16T20-42-51.101Z-attempt-c3ccd963-f866-4391-9591-38a47075f175",
+    deferOrBlockReason:
+      "Uncapped run persisted 130 recipes with complete discovery; 25 blocked requests keep it short of a canary",
+  },
+  olivemagazine: {
+    migrationState: "configured",
+    latestCanary: "2026-08-17T02-09-19.447Z-attempt-46bbc79c-d951-4d5f-858a-e4dbe30e9559",
+    deferOrBlockReason:
+      "Uncapped run persisted 7265 recipes with complete discovery; 12 failed requests and 86 incomplete pages keep it short of a canary",
+  },
+  progresso: {
+    migrationState: "configured",
+    latestCanary: "2026-08-16T07-40-09.861Z-attempt-e4b6450c-7ba2-4a75-937a-02a646aed648",
+    deferOrBlockReason:
+      "Uncapped run persisted 22 recipes but discovery stopped because the listing canonicals point at a domain the source does not allow",
+  },
+  spam: {
+    migrationState: "configured",
+    latestCanary: "2026-08-16T20-08-48.852Z-attempt-418f3456-c0eb-4462-b07e-228dde978b75",
+    deferOrBlockReason:
+      "Uncapped run persisted 130 recipes with complete discovery; 25 failed requests and 2 malformed pages keep it short of a canary",
+  },
+  sunset: {
+    migrationState: "configured",
+    latestCanary: "2026-08-17T04-09-47.966Z-attempt-26aa1001-fc59-449a-b7bb-bc5268b4c2a0",
+    deferOrBlockReason:
+      "Uncapped run persisted 7230 recipes with complete discovery; 3 failed requests, 6 incomplete pages and 54 malformed pages keep it short of a canary",
+  },
+  tasteofhome: {
+    migrationState: "configured",
+    latestCanary: "2026-08-17T15-33-33.254Z-attempt-fb290c0e-c0a1-40d1-bbc3-2d1f1d2b082a",
+    deferOrBlockReason:
+      "Uncapped run persisted 20027 recipes with complete discovery; 5 blocked requests, 5 failed requests and 2 incomplete pages keep it short of a canary",
+  },
   nordmad: {
     migrationState: "canary_passed",
     latestCanary: "2026-08-18T14-55-50.641Z-attempt-d734001e-4e9c-42fc-807a-9047ccf5a977",
@@ -4315,16 +4489,19 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   },
   castello: {
     migrationState: "configured",
+    latestCanary: "2026-08-18T00-21-27.852Z-attempt-af471038-05b2-4e2b-9a3a-12aa1724f8a3",
     deferOrBlockReason:
       "Crawl is clean but the source's sitemap lists dead URLs: one sitemap URL 404s, so the run cannot reach zero failed requests",
   },
   fevertree: {
     migrationState: "configured",
+    latestCanary: "2026-08-18T00-35-08.655Z-attempt-04d3507e-e389-4808-9993-f1df0505d9d4",
     deferOrBlockReason:
       "Crawl is clean but the source's sitemap lists dead URLs: sitemap lists /da-dk/cocktails/espresso-martini, which 404s, so the run cannot reach zero failed requests",
   },
   oatly: {
     migrationState: "configured",
+    latestCanary: "2026-08-18T00-44-53.871Z-attempt-f587a99b-3e70-40a4-b850-295f6884a1ef",
     deferOrBlockReason:
       "Crawl is clean but the source's sitemap lists dead URLs: four sitemap URLs 404, including /da-dk/recipes/pink-dragon-mocha, so the run cannot reach zero failed requests",
   },
@@ -4341,6 +4518,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   },
   kenwoodworld: {
     migrationState: "configured",
+    latestCanary: "2026-08-16T07-12-15.987Z-attempt-6419ff46-16cd-41bd-893f-ea05ac51121e",
     deferOrBlockReason:
       "Listing continues through a script-only load-more control; needs a discovery contract for its continuation route",
   },

@@ -74,16 +74,21 @@ describe("Danish JSON-LD source registry", () => {
     expect(DANISH_JSONLD_SOURCES.filter((source) => source.migrationState === "cutover")).toHaveLength(0);
   });
 
-  it("marks route-audited sources configured without inventing canary evidence", () => {
-    const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
-    const audited = ["spam", "familiejournal", "aurion", "becel"];
+  it("claims canary evidence only as a real run id", () => {
+    const runId = /^\d{4}-\d{2}-\d{2}T[\d.-]+Z(-attempt-[0-9a-f-]{36})?$/u;
 
-    for (const sourceId of audited) {
-      const source = byId.get(sourceId);
-      expect(source?.migrationState).toBe("configured");
-      // A verified route is not a canary; nothing may claim canary evidence.
-      expect(source?.latestCanary).toBeUndefined();
-      expect(source?.shadowParity).toBeUndefined();
+    for (const source of DANISH_JSONLD_SOURCES) {
+      if (source.latestCanary !== undefined) {
+        expect(source.latestCanary).toMatch(runId);
+      }
+      // A state that asserts a passing run must name the run that passed.
+      if (source.migrationState === "canary_passed" || source.migrationState === "shadow_passed") {
+        expect(source.latestCanary).toMatch(runId);
+      }
+      // Parity is only meaningful once a shadow comparison has run.
+      if (source.shadowParity !== undefined) {
+        expect(source.migrationState).toBe("shadow_passed");
+      }
     }
     // Only a source whose route the audit could not reach stays not_started.
     expect(
@@ -100,9 +105,9 @@ describe("Danish JSON-LD source registry", () => {
         discovery: "sitemap",
         fetchMode: "cheerio",
         requireCompleteJsonLd: true,
-        migrationState: "configured",
       });
-      expect(byId.get(sourceId)?.latestCanary).toBeUndefined();
+      // None of them may claim a pass; each has run and fallen short of one.
+      expect(byId.get(sourceId)?.migrationState).not.toBe("canary_passed");
     }
     expect(byId.get("allrecipes")?.requestSettings).toMatchObject({
       delaySeconds: 3,
