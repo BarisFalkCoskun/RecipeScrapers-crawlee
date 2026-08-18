@@ -3801,11 +3801,6 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
    * The listing renders twelve recipes and continues through a script-only
    * control, so a canary here would report partial discovery as complete.
    */
-  /** Sitemap did not answer within the audit timeout; route unverified. */
-  ricardocuisine: {
-    migrationState: "not_started",
-    deferOrBlockReason: "Sitemap request timed out during the route audit; route unverified",
-  },
   aperol: {
     migrationState: "canary_passed",
     latestCanary: "2026-08-14T20-03-09.220Z-attempt-4abcc7ae-5fcc-4119-9b75-44036466910b",
@@ -4192,6 +4187,33 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     latestCanary: "2026-08-17T15-33-33.254Z-attempt-fb290c0e-c0a1-40d1-bbc3-2d1f1d2b082a",
     deferOrBlockReason:
       "Uncapped run persisted 20027 recipes with complete discovery; 5 blocked requests, 5 failed requests and 2 incomplete pages keep it short of a canary",
+  },
+  /**
+   * A Nuxt app that serves no JSON-LD until hydration, so every page routes
+   * through the browser. Only some recipes carry a Recipe block at all: a
+   * rendered probe of /opskrifter/hovedretter/buche-de-noel exposes no
+   * ld+json, while a persisted recipe exposes Brand, Recipe and
+   * BreadcrumbList. The shortfall between candidates and recipes is that
+   * source-side gap, not a rejection.
+   */
+  familiejournal: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-18T15-37-57.655Z-attempt-7803e70d-5e95-4878-ab42-ba783293cbd4",
+    deferOrBlockReason:
+      "Uncapped run persisted 993 recipes from 6432 discovered candidates with complete discovery and no blocked, failed or rejected record; the remaining candidates publish no Recipe JSON-LD even after rendering",
+  },
+  /**
+   * Its robots.txt advertises /sitemap.xml, and that endpoint never answers:
+   * three direct attempts hung to 30s and 45s while the site root answered
+   * 200 in about a second, so this is the sitemap hanging rather than the
+   * host refusing us. Mullvad relays did not help; the one relay that
+   * connected could not reach the root either.
+   */
+  ricardocuisine: {
+    migrationState: "blocked",
+    latestCanary: "2026-08-18T22-57-31.732Z-attempt-c4b4055c-297d-41c5-b94e-a964363de304",
+    deferOrBlockReason:
+      "Uncapped run persisted no recipes: the only advertised sitemap, https://www.ricardocuisine.com/sitemap.xml, times out, so discovery never started",
   },
   nordmad: {
     migrationState: "canary_passed",

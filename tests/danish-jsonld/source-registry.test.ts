@@ -58,6 +58,7 @@ describe("Danish JSON-LD source registry", () => {
     expect(byId.get("sundpaabudget")?.deferOrBlockReason).toMatch(
       /no blocked or failed request/u
     );
+    expect(byId.get("familiejournal")?.migrationState).toBe("canary_passed");
     expect(byId.get("nordmad")?.migrationState).toBe("canary_passed");
     expect(byId.get("oetker")?.migrationState).toBe("canary_passed");
     expect(byId.get("odensemarcipan")?.migrationState).toBe("canary_passed");
@@ -91,10 +92,10 @@ describe("Danish JSON-LD source registry", () => {
       }
     }
     // Only a source whose route the audit could not reach stays not_started.
+    // Every source has now been attempted, so nothing stays not_started.
     expect(
       DANISH_JSONLD_SOURCES.filter((source) => source.migrationState === "not_started")
-        .map((source) => source.id)
-    ).toEqual(["ricardocuisine"]);
+    ).toHaveLength(0);
   });
 
   it("carries the international JSON-LD sources on the same strict contract", () => {

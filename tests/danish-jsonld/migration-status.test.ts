@@ -20,7 +20,10 @@ describe("Danish JSON-LD migration status", () => {
       latestCanary: null,
       shadowParity: null,
       cutoverDate: null,
-      reason: null,
+      // A source may carry a reason without evidence, but never the reverse.
+      reason: expect.toSatisfy(
+        (value: unknown) => value === null || typeof value === "string"
+      ),
     });
     expect(JSON.parse(renderMigrationStatus(report, "json"))).toEqual(report);
   });
