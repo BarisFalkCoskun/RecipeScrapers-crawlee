@@ -69,7 +69,7 @@ describe("Danish JSON-LD source registry", () => {
 
   it("marks route-audited sources configured without inventing canary evidence", () => {
     const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
-    const audited = ["opskrifterdk", "danishcrown", "bornemenuen", "imerco"];
+    const audited = ["danishcrown", "familiejournal", "castello", "imerco"];
 
     for (const sourceId of audited) {
       const source = byId.get(sourceId);
