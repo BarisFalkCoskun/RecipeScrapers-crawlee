@@ -3750,10 +3750,18 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted all 3062 discovered recipes with complete discovery and no blocked, failed or rejected record",
   },
+  /**
+   * Six pages carry a canonical pointing at thise.dk, a separate brand whose
+   * recipes Coop republishes. That is a real cross-site canonical, not the
+   * template junk seen on Imerco and Noget i Ovnen, so the domain boundary is
+   * right to reject it and the source cannot reach complete discovery while
+   * the syndicated pages remain.
+   */
   coop: {
     migrationState: "configured",
-    latestCanary: PILOT_CANARY_RUN,
-    deferOrBlockReason: "Pilot persisted recipes but reached the canary page cap",
+    latestCanary: "2026-08-18T04-14-18.237Z-attempt-d753a334-1b6d-4ab1-a48f-415ab84a90a8",
+    deferOrBlockReason:
+      "Uncapped run persisted 4913 recipes with no blocked or failed request, but six syndicated pages declare a thise.dk canonical and are rejected at the domain boundary, leaving discovery incomplete",
   },
   /**
    * The pagination widget mixes absolute, root-relative and document-relative
