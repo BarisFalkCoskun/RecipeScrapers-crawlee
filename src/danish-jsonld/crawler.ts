@@ -653,14 +653,13 @@ export class DanishJsonLdSourceSession {
   private resolveCanonicalUrl(response: DanishJsonLdResponse): string {
     const $ = cheerio.load(response.body);
     const canonical = $('link[rel="canonical"]').first().attr("href");
-    // A href carrying two schemes is a template that glued its base onto an
-    // absolute URL. It parses, but into a nonsense host, so it is discarded in
-    // favour of the request URL rather than read as a cross-site canonical.
-    if (canonical && /:\/\/[^\s]*:\/\//u.test(canonical)) {
-      this.emit("canonical-ignored", {
-        reason: "concatenated-href",
-        url: response.url,
-      });
+    // Templates emit junk here: a base glued onto an absolute URL, or a tag
+    // list where a URL belongs. Both parse, into hosts that cannot exist, so
+    // they are discarded in favour of the already-validated request URL rather
+    // than read as cross-site canonicals that invalidate the whole source.
+    const unusable = canonical ? unusableCanonicalReason(canonical) : null;
+    if (unusable) {
+      this.emit("canonical-ignored", { reason: unusable, url: response.url });
       return canonicalizeUrl(response.url);
     }
     if (canonical) {
@@ -698,6 +697,21 @@ export class DanishJsonLdSourceSession {
       })
     );
   }
+}
+
+/** Names why a canonical href cannot be a real URL, or null if it looks fine. */
+function unusableCanonicalReason(canonical: string): string | null {
+  if (/:\/\/[^\s]*:\/\//u.test(canonical)) return "concatenated-href";
+  let hostname: string;
+  try {
+    hostname = new URL(canonical, "https://placeholder.invalid").hostname;
+  } catch {
+    return "unparsable-href";
+  }
+  // Hostnames are letters, digits, hyphens and dots once the URL parser has
+  // encoded them. Anything else means this was never a hostname.
+  if (hostname && !/^[a-z0-9.-]+$/u.test(hostname)) return "not-a-hostname";
+  return null;
 }
 
 function isSourceOutcomeReason(value: string): value is SourceOutcomeReason {

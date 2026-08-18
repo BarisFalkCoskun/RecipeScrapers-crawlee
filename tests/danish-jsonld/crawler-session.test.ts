@@ -495,6 +495,34 @@ describe("Danish JSON-LD source session", () => {
     ]);
   });
 
+  it("ignores a canonical href that is not a hostname at all", async () => {
+    const store = new MemoryV2Store();
+    const session = new DanishJsonLdSourceSession({
+      source,
+      store,
+      crawlRunId: "run-canonical-junk",
+      crawlAttemptId: "attempt-canonical-junk",
+      maxPages: 5,
+    });
+
+    // A tag list emitted where a URL belongs. It parses, but the host cannot
+    // be a hostname, so it is a template bug rather than a cross-site
+    // canonical and must not invalidate the source's discovery.
+    await session.handleResponse({
+      kind: "recipe",
+      fetchMode: "cheerio",
+      url: "https://example.dk/opskrifter/kage",
+      statusCode: 200,
+      headers: {},
+      body: `<html><head><link rel="canonical" href="http://hjemme,sommerferie,italien/"/></head>
+        <body><script type="application/ld+json">${JSON.stringify(completeRecipe)}</script></body></html>`,
+    });
+
+    expect(session.observation.discoveryComplete).toBe(true);
+    expect(session.observation.rejectedCanonicalUrls ?? []).toEqual([]);
+    expect(store.recipesV2[0]?.canonicalUrl).toBe("https://example.dk/opskrifter/kage");
+  });
+
   it("still rejects a genuine cross-site canonical", async () => {
     const store = new MemoryV2Store();
     const session = new DanishJsonLdSourceSession({
