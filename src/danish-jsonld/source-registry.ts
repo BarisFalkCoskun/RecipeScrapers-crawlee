@@ -3997,6 +3997,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted 710 recipes over 2699 pages with complete discovery; one failed request and 58 incomplete pages keep it short of a canary",
   },
+  /**
+   * The single failed request is a page the source itself serves as 500 on
+   * every request, not a crawl defect.
+   */
+  danishcrown: {
+    migrationState: "configured",
+    latestCanary: "2026-08-18T12-31-16.022Z-attempt-01cb0baf-68b3-43fd-a41f-1cdfc52f2f66",
+    deferOrBlockReason:
+      "Uncapped run persisted 1891 recipes with complete discovery and no blocked or rejected record; one sitemap URL (rugbroed-med-surdej) answers 500 at the source, which keeps it short of a canary",
+  },
   nogetiovnen: {
     migrationState: "canary_passed",
     latestCanary: "2026-08-18T09-40-09.367Z-attempt-7887aaad-74c8-4c12-b66d-a12c31a16d02",
