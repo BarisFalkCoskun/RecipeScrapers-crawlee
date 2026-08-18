@@ -4007,6 +4007,18 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted 1891 recipes with complete discovery and no blocked or rejected record; one sitemap URL (rugbroed-med-surdej) answers 500 at the source, which keeps it short of a canary",
   },
+  /**
+   * The malformed blocks carry unescaped double quotes inside the Recipe
+   * description string, which is invalid JSON at the source. Repairing it
+   * would mean guessing where the author's quotes end, so the strict
+   * contract rejects those pages.
+   */
+  chelsea_nz: {
+    migrationState: "configured",
+    latestCanary: "2026-08-18T13-05-11.809Z-attempt-0b3fbf74-dd09-438c-9849-d5c1be0dcd01",
+    deferOrBlockReason:
+      "Uncapped run persisted 2091 recipes with complete discovery and no blocked or failed request; 48 pages publish Recipe JSON-LD with unescaped quotes in the description and 56 more are incomplete, which keeps it short of a canary",
+  },
   odensemarcipan: {
     migrationState: "canary_passed",
     latestCanary: "2026-08-18T13-45-21.279Z-attempt-f3be8023-e4c2-4645-80e2-08752d997dc1",
