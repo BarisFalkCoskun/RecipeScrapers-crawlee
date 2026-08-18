@@ -417,6 +417,32 @@ describe("Danish JSON-LD source session", () => {
     expect(store.recipesV2[0]?.canonicalUrl).toBe("https://example.dk/opskrifter/kage");
   });
 
+  it("records a non-2xx response as a failure sample too", async () => {
+    const session = new DanishJsonLdSourceSession({
+      source,
+      store: new MemoryV2Store(),
+      crawlRunId: "run-status-sample",
+      crawlAttemptId: "attempt-status-sample",
+      maxPages: 5,
+    });
+
+    // A response that arrives and is simply not 2xx counts as a failure, and
+    // needs recording just as much as one that threw in the error handler.
+    await session.handleResponse({
+      kind: "recipe",
+      fetchMode: "cheerio",
+      url: "https://example.dk/opskrifter/borte",
+      statusCode: 404,
+      headers: {},
+      body: "not found",
+    });
+
+    expect(session.observation.failedRequests).toBe(1);
+    expect(session.observation.failedRequestSamples).toEqual([
+      { url: "https://example.dk/opskrifter/borte", statusCode: 404, error: "http-404" },
+    ]);
+  });
+
   it("records a bounded sample of failed requests in the observation", async () => {
     const session = new DanishJsonLdSourceSession({
       source,

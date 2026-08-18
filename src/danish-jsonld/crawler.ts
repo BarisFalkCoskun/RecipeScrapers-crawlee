@@ -169,6 +169,11 @@ export class DanishJsonLdSourceSession {
       if (!blocked) {
         this.observation.failedRequests =
           (this.observation.failedRequests ?? 0) + 1;
+        this.recordFailedRequestSample(
+          response.url,
+          response.statusCode,
+          `http-${response.statusCode}`
+        );
       }
       if (response.kind !== "recipe") this.observation.discoveryComplete = false;
       return emptyRoutes();
@@ -225,20 +230,11 @@ export class DanishJsonLdSourceSession {
         (this.observation.playwrightFailures ?? 0) + 1;
     }
     if (!blocked) {
-      // These go through the budgeted diagnostic sink and disappear on a long
-      // crawl, which leaves a partial outcome with no traceable cause. Keep a
-      // bounded sample on the observation so the evidence names them.
-      const samples = this.observation.failedRequestSamples ?? [];
-      if (samples.length < 10) {
-        samples.push({
-          url: input.url,
-          statusCode: input.statusCode ?? null,
-          error: input.error instanceof Error
-            ? input.error.message.slice(0, 200)
-            : String(input.error).slice(0, 200),
-        });
-        this.observation.failedRequestSamples = samples;
-      }
+      this.recordFailedRequestSample(
+        input.url,
+        input.statusCode ?? null,
+        input.error instanceof Error ? input.error.message : String(input.error)
+      );
     }
     if (input.blockedReason) this.addDiscoveryFailure(input.blockedReason);
     if (input.kind !== "recipe") this.observation.discoveryComplete = false;
@@ -548,6 +544,22 @@ export class DanishJsonLdSourceSession {
       requests.push({ kind: "recipe", url });
     }
     return requests;
+  }
+
+  /**
+   * Failure diagnostics go through the budgeted sink and disappear on a long
+   * crawl, leaving a partial outcome with no traceable cause. A bounded sample
+   * on the observation always reaches the evidence file.
+   */
+  private recordFailedRequestSample(
+    url: string,
+    statusCode: number | null,
+    error: string
+  ): void {
+    const samples = this.observation.failedRequestSamples ?? [];
+    if (samples.length >= 10) return;
+    samples.push({ url, statusCode, error: error.slice(0, 200) });
+    this.observation.failedRequestSamples = samples;
   }
 
   private markPageCapReached(): void {
