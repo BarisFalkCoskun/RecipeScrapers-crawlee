@@ -4007,6 +4007,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted 1891 recipes with complete discovery and no blocked or rejected record; one sitemap URL (rugbroed-med-surdej) answers 500 at the source, which keeps it short of a canary",
   },
+  odensemarcipan: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-18T13-45-21.279Z-attempt-f3be8023-e4c2-4645-80e2-08752d997dc1",
+    deferOrBlockReason:
+      "Uncapped run persisted 1026 recipes with complete discovery and no blocked, failed or rejected record",
+  },
   nogetiovnen: {
     migrationState: "canary_passed",
     latestCanary: "2026-08-18T09-40-09.367Z-attempt-7887aaad-74c8-4c12-b66d-a12c31a16d02",
