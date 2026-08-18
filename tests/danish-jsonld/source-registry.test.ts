@@ -58,6 +58,7 @@ describe("Danish JSON-LD source registry", () => {
     expect(byId.get("sundpaabudget")?.deferOrBlockReason).toMatch(
       /no blocked or failed request/u
     );
+    expect(byId.get("oetker")?.migrationState).toBe("canary_passed");
     expect(byId.get("odensemarcipan")?.migrationState).toBe("canary_passed");
     expect(byId.get("nogetiovnen")?.migrationState).toBe("canary_passed");
     expect(byId.get("nogetiovnen")?.deferOrBlockReason).toMatch(
