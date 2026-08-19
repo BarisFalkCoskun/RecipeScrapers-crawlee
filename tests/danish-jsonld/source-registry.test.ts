@@ -312,12 +312,16 @@ describe("Danish JSON-LD source registry", () => {
       expect(source.startUrls).toHaveLength(1);
       // Four sites expose a custom post type rather than core posts, and one
       // reaches the API through ?rest_route= instead of a path.
-      expect(source.startUrls[0]).toMatch(/[?&]per_page=100&page=1$/u);
+      // per_page is per source: aggieskitchen answers 200 with an empty body
+      // above 20, so the window size is part of the source's contract.
+      expect(source.startUrls[0]).toMatch(/[?&]per_page=\d+&page=1$/u);
       expect(source.startUrls[0]).toMatch(/\/wp\/v2\//u);
       expect(source.requireCompleteJsonLd).toBe(true);
       expect(source.migrationState).toBe("not_started");
       expect(source.latestCanary).toBeUndefined();
     }
+
+    expect(byId.get("aggieskitchen")?.startUrls[0]).toContain("per_page=20&");
 
     expect(byId.get("acouplecooks")).toMatchObject({
       domain: "acouplecooks.com",

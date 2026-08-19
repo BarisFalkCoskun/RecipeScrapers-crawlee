@@ -3609,7 +3609,7 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "discovery": "listing",
       "sitemapUrls": [],
       "startUrls": [
-        "https://www.aggieskitchen.com/wp-json/wp/v2/posts?per_page=100&page=1"
+        "https://www.aggieskitchen.com/wp-json/wp/v2/posts?per_page=20&page=1"
       ],
       "recipeUrlPatterns": [
         "^https?://"
