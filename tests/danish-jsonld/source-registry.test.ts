@@ -5,10 +5,200 @@ import {
 } from "../../src/danish-jsonld/source-registry.js";
 
 describe("Danish JSON-LD source registry", () => {
-  const expectedLegacySourceIds = ["allrecipes", "amo", "aperol", "arla", "aurion", "avocadosfrommexico", "bareencocktail", "bbcgoodfood", "beauvais", "becel", "bedstedrinks", "bertolli", "bettycrocker", "blenderopskrifter", "bobedre", "bobsredmill", "bodylab", "bornemenuen", "bornholms", "campari", "canadianliving", "castello", "chelsea_nz", "christinaskoekken", "cocktaily", "coop", "copenhagendistillery_da", "danishcrown", "delmonte", "diabetesopskrifter", "edmonds_nz", "evatrio", "familiejournal", "ferrerorocher", "fevertree", "foodnetwork_uk", "foodnotes", "frederikkewaerens", "friluftslageret", "frokenkraesen_com", "gamleopskrifter", "gastrologik", "gastrotools", "gigtforeningen", "glutenfrimagi", "glyngoere", "greatbritishchefs", "hannerobinson", "heidiogper", "heinz", "hverdagskoekken", "iform", "imerco", "ingridhornshoj", "jamieoliver", "jonsmadklub", "kenwoodworld", "ketomums", "kikkoman", "kitchenaid", "klank", "klinksgaard", "knaehoejkarse", "kokke", "kornkammeret", "kystfisken", "landolakes", "lurpak", "madenimitliv", "madfolket", "madformadelskere", "madogdrikke", "madoghave", "madrejsen", "madsvin", "maduniverset", "mambeno", "mariavestergaard", "micadeli", "mutti", "nescafe", "netto", "nogetiovnen", "nordicfoodliving", "nordmad", "nutella", "oatly", "odensemarcipan", "oetker", "olivemagazine", "opskrifterdk", "parcelhuslykke", "pillsbury", "planetariskkogebog", "plantepusherne", "progresso", "puredansk", "recipesairfryer_dk", "rema1000", "revivafit", "ricardocuisine", "rosekylling", "santamariaworld", "schulstad", "semper", "skalvibage", "skolemaelk", "slagterlampe", "spam", "spicytwist", "spisekunst", "starbucksathome", "stinna", "sundpaabudget", "sunset", "surdejsentusiasten", "sydhavnsbloggen", "tasteofhome", "tesco_recipes", "tillamook", "tv2mad", "udeoghjemme", "violife"];
+  const expectedLegacySourceIds = [
+  "abakershouse",
+  "acouplecooks",
+  "afamilyfeast",
+  "aggieskitchen",
+  "allergylicious",
+  "allrecipes",
+  "amo",
+  "anicula",
+  "annsentitledlife",
+  "aperol",
+  "arla",
+  "artfuldishes",
+  "asweetspoonful",
+  "aurion",
+  "avocadosfrommexico",
+  "babybite",
+  "bakerella",
+  "bareencocktail",
+  "basisvarer",
+  "bbcgoodfood",
+  "beauvais",
+  "becel",
+  "bedstedrinks",
+  "bellalimento",
+  "bertolli",
+  "bettycrocker",
+  "blenderopskrifter",
+  "bobedre",
+  "bobsredmill",
+  "bodylab",
+  "bornemenuen",
+  "bornholms",
+  "breadtopia",
+  "brownedbutterblondie",
+  "butternutbakeryblog",
+  "campari",
+  "canadianliving",
+  "carrotstick",
+  "castello",
+  "chelsea_nz",
+  "choosingchia",
+  "christinaskoekken",
+  "closetcooking",
+  "cocktaily",
+  "cookieandkate",
+  "cookiesandcups",
+  "cookingwithruthie",
+  "coop",
+  "copenhagendistillery_da",
+  "coupleinthekitchen",
+  "danishcrown",
+  "delmonte",
+  "diabetesopskrifter",
+  "edmonds_nz",
+  "evatrio",
+  "familiejournal",
+  "fannetasticfood",
+  "ferrerorocher",
+  "fevertree",
+  "foodnetwork_uk",
+  "foodnotes",
+  "frederikkewaerens",
+  "friluftslageret",
+  "frokenkraesen_com",
+  "gamleopskrifter",
+  "gastrologik",
+  "gastrotools",
+  "gatheranddine",
+  "gigtforeningen",
+  "gimmesomeoven",
+  "glutenfrimagi",
+  "glyngoere",
+  "goodlifeeats",
+  "greatbritishchefs",
+  "greedygourmet",
+  "grownupdish",
+  "gunris",
+  "hannerobinson",
+  "heidiogper",
+  "heinz",
+  "hverdagskoekken",
+  "iform",
+  "imerco",
+  "ingridhornshoj",
+  "inspiredtaste",
+  "jamieoliver",
+  "jonsmadklub",
+  "joyfulhealthyeats",
+  "joythebaker",
+  "kalynskitchen",
+  "kenwoodworld",
+  "ketomums",
+  "kikkoman",
+  "kitchenaid",
+  "klank",
+  "klinksgaard",
+  "knaehoejkarse",
+  "kokke",
+  "kokkeriermedpassion",
+  "kornkammeret",
+  "kystfisken",
+  "landolakes",
+  "lavenderandlovage",
+  "lazycatkitchen",
+  "lowcarbdelish",
+  "lundoaagaard",
+  "lurpak",
+  "madenimitliv",
+  "madfolket",
+  "madformadelskere",
+  "madogdrikke",
+  "madoghave",
+  "madrejsen",
+  "madsvin",
+  "maduniverset",
+  "mambeno",
+  "mariavestergaard",
+  "micadeli",
+  "moderncrumb",
+  "mutti",
+  "nannapretzmann",
+  "nescafe",
+  "netto",
+  "nogetiovnen",
+  "nordicfoodliving",
+  "nordmad",
+  "nutella",
+  "nyssaskitchen",
+  "oatly",
+  "odensemarcipan",
+  "oetker",
+  "olivemagazine",
+  "opskrifterdk",
+  "opskrifterforalle",
+  "orwhateveryoudo",
+  "parcelhuslykke",
+  "peaceloveandlowcarb",
+  "perrysplate",
+  "pickledplum",
+  "pillsbury",
+  "pinchofyum",
+  "planetariskkogebog",
+  "plantepusherne",
+  "progresso",
+  "projectmealplan",
+  "puredansk",
+  "rachlmansfield",
+  "recipesairfryer_dk",
+  "rema1000",
+  "revivafit",
+  "ricardocuisine",
+  "rockrecipes",
+  "rosekylling",
+  "santamariaworld",
+  "schulstad",
+  "semper",
+  "shelikesfood",
+  "skalvibage",
+  "skolemaelk",
+  "slagterlampe",
+  "smaagroenneskridt",
+  "smittenkitchen",
+  "spam",
+  "spicytwist",
+  "spisekunst",
+  "starbucksathome",
+  "stegeso",
+  "stinna",
+  "sundpaabudget",
+  "sunset",
+  "surdejsentusiasten",
+  "sweetsimplevegan",
+  "sydhavnsbloggen",
+  "tasteandsee",
+  "tasteofhome",
+  "tesco_recipes",
+  "thatskinnychickcanbake",
+  "thecakeblog",
+  "thecastawaykitchen",
+  "thecookful",
+  "thehappierhomemaker",
+  "thehealthymaven",
+  "therealfoodrds",
+  "tidymom",
+  "tillamook",
+  "tv2mad",
+  "udeoghjemme",
+  "violife",
+  "withspice",
+];
 
-  it("contains exactly the 123 legacy JSON-LD sources", () => {
-    expect(DANISH_JSONLD_SOURCES).toHaveLength(123);
+  it("contains exactly the legacy JSON-LD sources across all three families", () => {
+    expect(DANISH_JSONLD_SOURCES).toHaveLength(189);
     expect(DANISH_JSONLD_SOURCES.filter(
       (source) => source.legacyFamily === "JsonLdSitemapRecipeSpider"
     )).toHaveLength(89);
@@ -92,10 +282,44 @@ describe("Danish JSON-LD source registry", () => {
       }
     }
     // Only a source whose route the audit could not reach stays not_started.
-    // Every source has now been attempted, so nothing stays not_started.
+    // Every source carried over from the sitemap and listing families has been
+    // attempted; only the newly added WordPress posts family is unrun.
     expect(
       DANISH_JSONLD_SOURCES.filter((source) => source.migrationState === "not_started")
-    ).toHaveLength(0);
+        .every((source) => source.legacyFamily === "WpPostsJsonLdSpider")
+    ).toBe(true);
+  });
+
+  it("carries the WordPress posts sources on the strict JSON-LD contract", () => {
+    const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
+    const wpPosts = DANISH_JSONLD_SOURCES.filter(
+      (source) => source.legacyFamily === "WpPostsJsonLdSpider"
+    );
+
+    expect(wpPosts).toHaveLength(66);
+    for (const source of wpPosts) {
+      // Discovery is the posts API, so the window must end on the terminal
+      // document rather than on an empty collection.
+      expect(source.listingDiscovery?.payload).toMatchObject({
+        expectedRoot: "array",
+        recipePaths: ["[].link"],
+        terminalPayload: { path: "code", equals: "rest_post_invalid_page_number" },
+      });
+      expect(source.startUrls).toHaveLength(1);
+      // Four sites expose a custom post type rather than core posts, and one
+      // reaches the API through ?rest_route= instead of a path.
+      expect(source.startUrls[0]).toMatch(/[?&]per_page=100&page=1$/u);
+      expect(source.startUrls[0]).toMatch(/\/wp\/v2\//u);
+      expect(source.requireCompleteJsonLd).toBe(true);
+      expect(source.migrationState).toBe("not_started");
+      expect(source.latestCanary).toBeUndefined();
+    }
+
+    expect(byId.get("acouplecooks")).toMatchObject({
+      domain: "acouplecooks.com",
+      discovery: "listing",
+      fetchMode: "cheerio",
+    });
   });
 
   it("carries the international JSON-LD sources on the same strict contract", () => {
@@ -178,8 +402,12 @@ describe("Danish JSON-LD source registry", () => {
       (source) => source.discovery === "listing"
     );
 
+    // A payload listing reads a JSON API, where HTML link selectors have no
+    // meaning; the default selectors are an HTML-listing invariant.
     for (const listing of listingSources.filter(
-      (source) => !["madrejsen", "rema1000", "tv2mad"].includes(source.id)
+      (source) =>
+        !["madrejsen", "rema1000", "tv2mad"].includes(source.id) &&
+        source.listingDiscovery?.payload === undefined
     )) {
       expect(listing.listingDiscovery).toMatchObject({
         recipeLinkSelectors: ["a[href]"],

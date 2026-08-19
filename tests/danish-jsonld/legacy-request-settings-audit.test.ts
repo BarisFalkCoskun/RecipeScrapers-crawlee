@@ -3,6 +3,336 @@ import { DANISH_JSONLD_SOURCES } from "../../src/danish-jsonld/source-registry.j
 
 // Literal effective Scrapy values from the legacy project defaults plus per-spider overrides.
 const expectedSettings = {
+  "abakershouse": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "acouplecooks": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "afamilyfeast": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "aggieskitchen": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "allergylicious": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "anicula": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "annsentitledlife": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "artfuldishes": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "asweetspoonful": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "babybite": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "bakerella": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "basisvarer": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "bellalimento": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "breadtopia": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "brownedbutterblondie": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "butternutbakeryblog": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "carrotstick": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "choosingchia": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "closetcooking": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "cookieandkate": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "cookiesandcups": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "cookingwithruthie": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "coupleinthekitchen": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "fannetasticfood": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "gatheranddine": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "gimmesomeoven": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "goodlifeeats": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "greedygourmet": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "grownupdish": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "gunris": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "inspiredtaste": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "joyfulhealthyeats": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "joythebaker": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "kalynskitchen": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "kokkeriermedpassion": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "lavenderandlovage": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "lazycatkitchen": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "lowcarbdelish": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "lundoaagaard": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "moderncrumb": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "nannapretzmann": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "nyssaskitchen": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "opskrifterforalle": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "orwhateveryoudo": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "peaceloveandlowcarb": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "perrysplate": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "pickledplum": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "pinchofyum": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "projectmealplan": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "rachlmansfield": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "rockrecipes": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "shelikesfood": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "smaagroenneskridt": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "smittenkitchen": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "stegeso": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "sweetsimplevegan": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "tasteandsee": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "thatskinnychickcanbake": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "thecakeblog": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "thecastawaykitchen": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "thecookful": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "thehappierhomemaker": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "thehealthymaven": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "therealfoodrds": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "tidymom": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "withspice": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
   "amo": {
     "delaySeconds": 2,
     "maxConcurrency": 2,
