@@ -42,6 +42,22 @@ export interface DanishJsonLdCrawlSelection extends DanishJsonLdCrawlOptions {
 export const DANISH_JSONLD_OBSERVED_HTTP_ERROR_STATUS_CODES = [
   401, 403, 429, 454, 455, 526,
 ] as const;
+/**
+ * A service that ends its pagination window with an error document answers the
+ * page past the last one with HTTP 400. That status has to reach the route for
+ * the terminal payload to be read, but only for sources that declare one: a
+ * 400 anywhere else is a real failed request and must stay one.
+ */
+export function httpErrorStatusCodesForSources(
+  sources: readonly DanishJsonLdSource[]
+): number[] {
+  const codes = [...DANISH_JSONLD_OBSERVED_HTTP_ERROR_STATUS_CODES] as number[];
+  const endsOnTerminalPayload = sources.some(
+    (source) => source.listingDiscovery?.payload?.terminalPayload !== undefined
+  );
+  return endsOnTerminalPayload ? [...codes, 400] : codes;
+}
+
 const QUEUE_RECLAIM_GRACE_BUFFER_MS = 100;
 
 /** WAF interstitials a real browser clears for the rest of its session. */
@@ -329,9 +345,7 @@ export async function executeDanishJsonLdSource(
       ...(input.vpnTransport?.requestHandlerTimeoutSecs
         ? { requestHandlerTimeoutSecs: input.vpnTransport.requestHandlerTimeoutSecs }
         : {}),
-      ignoreHttpErrorStatusCodes: [
-        ...DANISH_JSONLD_OBSERVED_HTTP_ERROR_STATUS_CODES,
-      ],
+      ignoreHttpErrorStatusCodes: httpErrorStatusCodesForSources([input.source]),
       errorHandler: async (
         { request }: CheerioCrawlingContext,
         error: Error

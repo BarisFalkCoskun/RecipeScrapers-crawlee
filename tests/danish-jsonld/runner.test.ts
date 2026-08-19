@@ -7,6 +7,7 @@ import {
   cleanupDanishJsonLdAttemptQueues,
   executeDanishJsonLdSource,
   parseHttpStatusForDiagnostics,
+  httpErrorStatusCodesForSources,
   shouldRetryBrowserCheck,
   shouldRotateRelayOnFailure,
   BrowserCheckRetryError,
@@ -30,6 +31,30 @@ describe("dedicated Danish JSON-LD runner", () => {
       }),
       []
     )).toBeUndefined();
+  });
+
+  it("tolerates HTTP 400 only for sources whose window ends in a terminal payload", () => {
+    const plain = {
+      id: "plain",
+      listingDiscovery: { payload: { kind: "json-paths", expectedRoot: "array", recipePaths: ["[].url"] } },
+    } as unknown as DanishJsonLdSource;
+    const wpPosts = {
+      id: "wp",
+      listingDiscovery: {
+        payload: {
+          kind: "json-paths",
+          expectedRoot: "array",
+          recipePaths: ["[].link"],
+          terminalPayload: { path: "code", equals: "rest_post_invalid_page_number" },
+        },
+      },
+    } as unknown as DanishJsonLdSource;
+
+    // A real 400 anywhere else must still register as a failed request.
+    expect(httpErrorStatusCodesForSources([plain]))
+      .toEqual([...DANISH_JSONLD_OBSERVED_HTTP_ERROR_STATUS_CODES]);
+    expect(httpErrorStatusCodesForSources([wpPosts])).toContain(400);
+    expect(httpErrorStatusCodesForSources([plain, wpPosts])).toContain(400);
   });
 
   it("retries a rendered browser check while retries remain, then accepts it", () => {
