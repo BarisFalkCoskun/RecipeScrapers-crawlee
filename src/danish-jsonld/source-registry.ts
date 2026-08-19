@@ -6139,6 +6139,17 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
    * BreadcrumbList. The shortfall between candidates and recipes is that
    * source-side gap, not a rejection.
    */
+  /**
+   * First of the WordPress posts family to pass, and the proof its discovery
+   * contract works end to end: the whole window is one page, so the run
+   * exercises the terminal document rather than only continuation.
+   */
+  gunris: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-19T15-14-08.924Z-attempt-6b402d49-a238-448e-b2e4-2d7ae6bbce2d",
+    deferOrBlockReason:
+      "Uncapped run persisted all 5 recipes the API reports with complete discovery and no blocked, failed or rejected record",
+  },
   familiejournal: {
     migrationState: "canary_passed",
     latestCanary: "2026-08-18T15-37-57.655Z-attempt-7803e70d-5e95-4878-ab42-ba783293cbd4",

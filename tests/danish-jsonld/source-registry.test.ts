@@ -248,6 +248,8 @@ describe("Danish JSON-LD source registry", () => {
     expect(byId.get("sundpaabudget")?.deferOrBlockReason).toMatch(
       /no blocked or failed request/u
     );
+    // First source of the WordPress posts family to pass.
+    expect(byId.get("gunris")?.migrationState).toBe("canary_passed");
     expect(byId.get("familiejournal")?.migrationState).toBe("canary_passed");
     expect(byId.get("nordmad")?.migrationState).toBe("canary_passed");
     expect(byId.get("oetker")?.migrationState).toBe("canary_passed");
@@ -317,8 +319,13 @@ describe("Danish JSON-LD source registry", () => {
       expect(source.startUrls[0]).toMatch(/[?&]per_page=\d+&page=1$/u);
       expect(source.startUrls[0]).toMatch(/\/wp\/v2\//u);
       expect(source.requireCompleteJsonLd).toBe(true);
-      expect(source.migrationState).toBe("not_started");
-      expect(source.latestCanary).toBeUndefined();
+      // Sources in this family are unrun until a lane reaches them, and a
+      // state past not_started has to name the run that earned it.
+      if (source.migrationState === "not_started") {
+        expect(source.latestCanary).toBeUndefined();
+      } else {
+        expect(source.latestCanary).toBeTruthy();
+      }
     }
 
     expect(byId.get("aggieskitchen")?.startUrls[0]).toContain("per_page=20&");
