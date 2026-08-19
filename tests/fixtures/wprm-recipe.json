@@ -1,0 +1,342 @@
+[
+  {
+    "id": 17539,
+    "link": "https://www.dadwithapan.com/zesty-cowboy-butter-recipe/",
+    "slug": "wprm-cowboy-butter",
+    "type": "wprm_recipe",
+    "recipe": {
+      "id": 17539,
+      "name": "Cowboy Butter",
+      "summary": "<p>Cowboy butter is a loaded compound butter with garlic, herbs, lemon, Dijon, a little heat, and a savory kick from Worcestershire, perfect compound butter for any grilling dish!!!</p>",
+      "servings": "8",
+      "servings_unit": "servings",
+      "prep_time": "5",
+      "cook_time": "0",
+      "total_time": "0",
+      "image_url": "https://www.dadwithapan.com/cdn-cgi/image/quality=80,format=auto,onerror=redirect,metadata=none/wp-content/uploads/2026/06/how-to-make-cowboy-butter-8.jpg",
+      "ingredients": [
+        {
+          "ingredients": [
+            {
+              "uid": 1,
+              "amount": "1",
+              "unit": "cup",
+              "name": "unsalted butter",
+              "notes": "softened (2 sticks)",
+              "link": {
+                "url": "",
+                "nofollow": "default",
+                "eafl": ""
+              },
+              "conversion_item_snapshot": {
+                "amount": "1",
+                "unit": "cup",
+                "timestamp": 1781149710000
+              },
+              "unit_id": 7572,
+              "id": 1642
+            },
+            {
+              "uid": 2,
+              "amount": "2",
+              "unit": "tbsp",
+              "name": "prepared horseradish",
+              "notes": "drained if watery",
+              "link": {
+                "url": "",
+                "nofollow": "default",
+                "eafl": ""
+              },
+              "conversion_item_snapshot": {
+                "amount": "2",
+                "unit": "tbsp",
+                "timestamp": 1781149710000
+              },
+              "unit_id": 7567,
+              "id": 7828
+            },
+            {
+              "uid": 3,
+              "amount": "2",
+              "unit": "tbsp",
+              "name": "fresh parsley",
+              "notes": "finely chopped",
+              "link": {
+                "url": "",
+                "nofollow": "default",
+                "eafl": ""
+              },
+              "conversion_item_snapshot": {
+                "amount": "2",
+                "unit": "tbsp",
+                "timestamp": 1781149710000
+              },
+              "unit_id": 7567,
+              "id": 1617
+            },
+            {
+              "uid": 4,
+              "amount": "1",
+              "unit": "tbsp",
+              "name": "fresh chives",
+              "notes": "finely chopped",
+              "link": {
+                "url": "",
+                "nofollow": "default",
+                "eafl": ""
+              },
+              "conversion_item_snapshot": {
+                "amount": "1",
+                "unit": "tbsp",
+                "timestamp": 1781149710000
+              },
+              "unit_id": 7567,
+              "id": 1653
+            },
+            {
+              "uid": 5,
+              "amount": "1",
+              "unit": "tbsp",
+              "name": "Dijon mustard",
+              "notes": "",
+              "link": {
+                "url": "",
+                "nofollow": "default",
+                "eafl": ""
+              },
+              "conversion_item_snapshot": {
+                "amount": "1",
+                "unit": "tbsp",
+                "timestamp": 1781149710000
+              },
+              "unit_id": 7567,
+              "id": 1305
+            },
+            {
+              "uid": 6,
+              "amount": "1",
+              "unit": "tbsp",
+              "name": "lemon juice",
+              "notes": "",
+              "link": {
+                "url": "",
+                "nofollow": "default",
+                "eafl": ""
+              },
+              "conversion_item_snapshot": {
+                "amount": "1",
+                "unit": "tbsp",
+                "timestamp": 1781149710000
+              },
+              "unit_id": 7567,
+              "id": 1122
+            },
+            {
+              "uid": 7,
+              "amount": "1",
+              "unit": "tsp",
+              "name": "lemon zest",
+              "notes": "",
+              "link": {
+                "url": "",
+                "nofollow": "default",
+                "eafl": ""
+              },
+              "conversion_item_snapshot": {
+                "amount": "1",
+                "unit": "tsp",
+                "timestamp": 1781149710000
+              },
+              "unit_id": 7574,
+              "id": 1763
+            },
+            {
+              "uid": 8,
+              "amount": "2",
+              "unit": "cloves",
+              "name": "garlic",
+              "notes": "minced or grated",
+              "link": {
+                "url": "",
+                "nofollow": "default",
+                "eafl": ""
+              },
+              "conversion_item_snapshot": {
+                "amount": "2",
+                "unit": "cloves",
+                "timestamp": 1781149710000
+              },
+              "unit_id": 7573,
+              "id": 1054
+            },
+            {
+              "uid": 9,
+              "amount": "1",
+              "unit": "tsp",
+              "name": "Worcestershire sauce",
+              "notes": "",
+              "link": {
+                "url": "",
+                "nofollow": "default",
+                "eafl": ""
+              },
+              "conversion_item_snapshot": {
+                "amount": "1",
+                "unit": "tsp",
+                "timestamp": 1781149710000
+              },
+              "unit_id": 7574,
+              "id": 1352
+            },
+            {
+              "uid": 10,
+              "amount": "1/2",
+              "unit": "tsp",
+              "name": "smoked paprika",
+              "notes": "",
+              "link": {
+                "url": "",
+                "nofollow": "default",
+                "eafl": ""
+              },
+              "conversion_item_snapshot": {
+                "amount": "1/2",
+                "unit": "tsp",
+                "timestamp": 1781149710000
+              },
+              "unit_id": 7574,
+              "id": 1165
+            },
+            {
+              "uid": 11,
+              "amount": "1/2",
+              "unit": "tsp",
+              "name": "kosher salt",
+              "notes": "",
+              "link": {
+                "url": "",
+                "nofollow": "default",
+                "eafl": ""
+              },
+              "conversion_item_snapshot": {
+                "amount": "1/2",
+                "unit": "tsp",
+                "timestamp": 1781149710000
+              },
+              "unit_id": 7574,
+              "id": 1053
+            },
+            {
+              "uid": 12,
+              "amount": "1/4",
+              "unit": "tsp",
+              "name": "black pepper",
+              "notes": "",
+              "link": {
+                "url": "",
+                "nofollow": "default",
+                "eafl": ""
+              },
+              "conversion_item_snapshot": {
+                "amount": "1/4",
+                "unit": "tsp",
+                "timestamp": 1781149710000
+              },
+              "unit_id": 7574,
+              "id": 1176
+            },
+            {
+              "uid": 13,
+              "amount": "1/4",
+              "unit": "tsp",
+              "name": "crushed red pepper flakes",
+              "notes": "",
+              "link": {
+                "url": "",
+                "nofollow": "default",
+                "eafl": ""
+              },
+              "conversion_item_snapshot": {
+                "amount": "1/4",
+                "unit": "tsp",
+                "timestamp": 1781149710000
+              },
+              "unit_id": 7574,
+              "id": 1446
+            },
+            {
+              "uid": 14,
+              "amount": "",
+              "unit": "",
+              "name": "cayenne pepper",
+              "notes": "optional if you want more heat",
+              "link": {
+                "url": "",
+                "nofollow": "default",
+                "eafl": ""
+              },
+              "conversion_item_snapshot": {
+                "amount": "",
+                "unit": "",
+                "timestamp": 1781149710000
+              },
+              "id": 1225
+            }
+          ],
+          "name": "Ingredients",
+          "uid": 0
+        }
+      ],
+      "instructions": [
+        {
+          "instructions": [
+            {
+              "uid": 0,
+              "name": "",
+              "text": "Let the butter sit at room temperature until it is soft enough to mash with a fork, but not melted.",
+              "image": 0,
+              "ingredients": []
+            },
+            {
+              "uid": 1,
+              "name": "",
+              "text": "Add the softened butter to a bowl with the prepared horseradish, parsley, chives, Dijon, lemon juice, lemon zest, garlic, Worcestershire, smoked paprika, salt, pepper, red pepper flakes, and cayenne if using.",
+              "image": 0,
+              "ingredients": []
+            },
+            {
+              "uid": 2,
+              "name": "",
+              "text": "Mix everything together with a fork or rubber spatula until the herbs and seasonings are evenly distributed through the butter. Scrape the sides of the bowl so there are no plain butter pockets.",
+              "image": 0,
+              "ingredients": []
+            },
+            {
+              "uid": 3,
+              "name": "",
+              "text": "Taste a small amount and adjust if needed: more salt for depth, more lemon for brightness, more red pepper flakes or cayenne for heat, or a little extra horseradish if you want it sharper.",
+              "image": 0,
+              "ingredients": []
+            },
+            {
+              "uid": 4,
+              "name": "",
+              "text": "Spoon the butter onto a sheet of parchment paper or plastic wrap. Roll it into a log, twist the ends, and chill until firm, about 1 hour.",
+              "image": 0,
+              "ingredients": []
+            },
+            {
+              "uid": 5,
+              "name": "",
+              "text": "Slice into rounds and place over hot steak, burgers, grilled chicken, pork chops, vegetables, potatoes, or bread so the butter melts into the food.",
+              "image": 0,
+              "ingredients": []
+            }
+          ],
+          "name": "",
+          "uid": -1
+        }
+      ]
+    }
+  }
+]
