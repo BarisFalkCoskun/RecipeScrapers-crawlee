@@ -111,6 +111,17 @@ export function discoverListingPage(input: {
       return result;
     }
     if (payload) {
+      // A service that pages past its last page answers with an error
+      // document, not an empty collection. That is the window ending, so it
+      // has to be read before the shape check rejects it.
+      const terminal = payload.terminalPayload;
+      if (terminal) {
+        const [value] = valuesAtJsonPath(parsed, terminal.path);
+        if (value === terminal.equals) {
+          result.terminal = true;
+          return result;
+        }
+      }
       const rootMatches = payload.expectedRoot === "array"
         ? Array.isArray(parsed)
         : parsed !== null && typeof parsed === "object" && !Array.isArray(parsed);

@@ -162,6 +162,77 @@ describe("Danish JSON-LD discovery", () => {
   const offsetBody = (slugs: string[]) =>
     JSON.stringify(slugs.map((slug) => ({ url: `https://example.dk/opskrifter/${slug}` })));
 
+  const wpPostsSource = (): DanishJsonLdSource => ({
+    ...source,
+    discovery: "listing",
+    legacyFamily: "WpPostsJsonLdSpider",
+    listingDiscovery: {
+      recipeLinkSelectors: [],
+      skipPathFragments: [],
+      continuationSelectors: [],
+      continuationUrlPatterns: [],
+      payload: {
+        kind: "json-paths",
+        expectedRoot: "array",
+        recipePaths: ["[].link"],
+        continuationOffset: { parameter: "page", step: 1, maxOffset: 500 },
+        terminalPayload: { path: "code", equals: "rest_post_invalid_page_number" },
+      },
+    },
+  });
+
+  it("ends WordPress posts pagination on the invalid-page-number document", () => {
+    const result = discoverListingPage({
+      source: wpPostsSource(),
+      pageUrl: "https://example.dk/wp-json/wp/v2/posts?per_page=100&page=7",
+      // WordPress localises `message`, so only `code` is a stable signal.
+      body: JSON.stringify({
+        code: "rest_post_invalid_page_number",
+        message: "Det forespurgte sidenummer er større end antallet af sider.",
+        data: { status: 400 },
+      }),
+      contentType: "application/json",
+    });
+
+    expect(result.recipeUrls).toEqual([]);
+    expect(result.nextUrls).toEqual([]);
+    expect(result.terminal).toBe(true);
+    expect(result.complete).toBe(true);
+    expect(result.incompleteReasons).toEqual([]);
+  });
+
+  it("still reports an unrecognised object payload as an unexpected shape", () => {
+    const result = discoverListingPage({
+      source: wpPostsSource(),
+      pageUrl: "https://example.dk/wp-json/wp/v2/posts?per_page=100&page=7",
+      body: JSON.stringify({ code: "rest_forbidden", data: { status: 401 } }),
+      contentType: "application/json",
+    });
+
+    expect(result.complete).toBe(false);
+    expect(result.incompleteReasons).toEqual(["unexpected-listing-shape"]);
+  });
+
+  it("advances WordPress posts pagination while pages stay full", () => {
+    const result = discoverListingPage({
+      source: wpPostsSource(),
+      pageUrl: "https://example.dk/wp-json/wp/v2/posts?per_page=100&page=1",
+      body: JSON.stringify([
+        { link: "https://example.dk/opskrifter/kage" },
+        { link: "https://example.dk/opskrifter/boller" },
+      ]),
+      contentType: "application/json",
+    });
+
+    expect(result.recipeUrls).toEqual([
+      "https://example.dk/opskrifter/kage",
+      "https://example.dk/opskrifter/boller",
+    ]);
+    expect(result.nextUrls).toEqual([
+      "https://example.dk/wp-json/wp/v2/posts?per_page=100&page=2",
+    ]);
+  });
+
   it("reads recipe URLs from a root-array listing payload", () => {
     const result = discoverListingPage({
       source: offsetSource(),

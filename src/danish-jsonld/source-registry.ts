@@ -38,6 +38,16 @@ export interface ListingDiscoveryStrategy {
       step: number;
       maxOffset: number;
     };
+    /**
+     * Document a paginated service serves once the window is past its last
+     * page. Reaching it ends discovery cleanly rather than reporting the
+     * error document as an unexpected shape. WordPress localises its
+     * `message`, so the signal has to be the stable `code`.
+     */
+    terminalPayload?: {
+      path: string;
+      equals: string;
+    };
   };
 }
 
