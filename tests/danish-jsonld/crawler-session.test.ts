@@ -417,6 +417,86 @@ describe("Danish JSON-LD source session", () => {
     expect(store.recipesV2[0]?.canonicalUrl).toBe("https://example.dk/opskrifter/kage");
   });
 
+  it("reads a declared terminal payload off its error status instead of failing", async () => {
+    const wpSource = {
+      ...source,
+      discovery: "listing" as const,
+      recipeUrlPatterns: ["^https?://"],
+      listingDiscovery: {
+        recipeLinkSelectors: [],
+        skipPathFragments: [],
+        continuationSelectors: [],
+        continuationUrlPatterns: [],
+        payload: {
+          kind: "json-paths" as const,
+          expectedRoot: "array" as const,
+          recipePaths: ["[].link"],
+          continuationOffset: { parameter: "page", step: 1, maxOffset: 500 },
+          terminalPayload: { path: "code", equals: "rest_post_invalid_page_number" },
+        },
+      },
+    };
+    const session = new DanishJsonLdSourceSession({
+      source: wpSource,
+      store: new MemoryV2Store(),
+      crawlRunId: "run-wp-terminal",
+      crawlAttemptId: "attempt-wp-terminal",
+      maxPages: 5,
+    });
+
+    // WordPress answers the page past the last one with 400. That is the
+    // window ending, not a failed request.
+    await session.handleResponse({
+      kind: "listing",
+      fetchMode: "cheerio",
+      url: "https://example.dk/wp-json/wp/v2/posts?per_page=100&page=34",
+      statusCode: 400,
+      headers: {},
+      body: JSON.stringify({ code: "rest_post_invalid_page_number" }),
+    });
+
+    expect(session.observation.failedRequests ?? 0).toBe(0);
+    expect(session.observation.discoveryComplete).not.toBe(false);
+  });
+
+  it("still fails a declared-terminal status carrying a different document", async () => {
+    const wpSource = {
+      ...source,
+      discovery: "listing" as const,
+      recipeUrlPatterns: ["^https?://"],
+      listingDiscovery: {
+        recipeLinkSelectors: [],
+        skipPathFragments: [],
+        continuationSelectors: [],
+        continuationUrlPatterns: [],
+        payload: {
+          kind: "json-paths" as const,
+          expectedRoot: "array" as const,
+          recipePaths: ["[].link"],
+          terminalPayload: { path: "code", equals: "rest_post_invalid_page_number" },
+        },
+      },
+    };
+    const session = new DanishJsonLdSourceSession({
+      source: wpSource,
+      store: new MemoryV2Store(),
+      crawlRunId: "run-wp-other-400",
+      crawlAttemptId: "attempt-wp-other-400",
+      maxPages: 5,
+    });
+
+    await session.handleResponse({
+      kind: "listing",
+      fetchMode: "cheerio",
+      url: "https://example.dk/wp-json/wp/v2/posts?per_page=100&page=3",
+      statusCode: 400,
+      headers: {},
+      body: JSON.stringify({ code: "rest_invalid_param" }),
+    });
+
+    expect(session.observation.discoveryComplete).toBe(false);
+  });
+
   it("records a non-2xx response as a failure sample too", async () => {
     const session = new DanishJsonLdSourceSession({
       source,

@@ -3527,7 +3527,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.abakershouse.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -3553,7 +3555,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.acouplecooks.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -3579,7 +3583,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.afamilyfeast.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -3605,7 +3611,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.aggieskitchen.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -3631,7 +3639,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.allergylicious.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -3657,7 +3667,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://anicula.dk/wp-json/wp/v2/rpr/recipes?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -3683,7 +3695,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.annsentitledlife.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -3709,7 +3723,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.artfuldishes.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -3735,7 +3751,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.asweetspoonful.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -3761,7 +3779,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://babybite.dk/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -3787,7 +3807,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.bakerella.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -3813,7 +3835,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.basisvarer.dk/wp-json/wp/v2/cooked_recipe?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -3839,7 +3863,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.bellalimento.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -3865,7 +3891,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.breadtopia.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -3891,7 +3919,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.brownedbutterblondie.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -3917,7 +3947,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.butternutbakeryblog.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -3943,7 +3975,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://carrotstick.dk/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -3969,7 +4003,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.choosingchia.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -3995,7 +4031,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.closetcooking.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4021,7 +4059,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.cookieandkate.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4047,7 +4087,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.cookiesandcups.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4073,7 +4115,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.cookingwithruthie.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4099,7 +4143,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.coupleinthekitchen.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4125,7 +4171,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.fannetasticfood.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4151,7 +4199,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.gatheranddine.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4177,7 +4227,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.gimmesomeoven.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4203,7 +4255,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.goodlifeeats.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4229,7 +4283,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.greedygourmet.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4255,7 +4311,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.grownupdish.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4281,7 +4339,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://gunris.dk/wp-json/wp/v2/recipe?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4307,7 +4367,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.inspiredtaste.net/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4333,7 +4395,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.joyfulhealthyeats.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4359,7 +4423,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.joythebaker.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4385,7 +4451,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.kalynskitchen.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4411,7 +4479,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://kokkeriermedpassion.dk/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4437,7 +4507,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.lavenderandlovage.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4463,7 +4535,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.lazycatkitchen.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4489,7 +4563,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.lowcarbdelish.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4515,7 +4591,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://lundoaagaard.dk/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4541,7 +4619,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.moderncrumb.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4567,7 +4647,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://nannapretzmann.dk/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4593,7 +4675,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.nyssaskitchen.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4619,7 +4703,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://opskrifter-for-alle.dk/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4645,7 +4731,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.orwhateveryoudo.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4671,7 +4759,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.peaceloveandlowcarb.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4697,7 +4787,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.perrysplate.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4723,7 +4815,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.pickledplum.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4749,7 +4843,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.pinchofyum.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4775,7 +4871,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.projectmealplan.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4801,7 +4899,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.rachlmansfield.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4827,7 +4927,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.rockrecipes.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4853,7 +4955,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.shelikesfood.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4879,7 +4983,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.smaagroenneskridt.dk/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4905,7 +5011,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.smittenkitchen.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4931,7 +5039,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://stegeso.com/?rest_route=/wp/v2/opskrifter&per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4957,7 +5067,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.sweetsimplevegan.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -4983,7 +5095,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.tasteandsee.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -5009,7 +5123,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.thatskinnychickcanbake.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -5035,7 +5151,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.thecakeblog.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -5061,7 +5179,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.thecastawaykitchen.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -5087,7 +5207,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.thecookful.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -5113,7 +5235,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.thehappierhomemaker.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -5139,7 +5263,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.thehealthymaven.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -5165,7 +5291,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.therealfoodrds.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -5191,7 +5319,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.tidymom.net/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,
@@ -5217,7 +5347,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "startUrls": [
         "https://www.withspice.com/wp-json/wp/v2/posts?per_page=100&page=1"
       ],
-      "recipeUrlPatterns": [],
+      "recipeUrlPatterns": [
+        "^https?://"
+      ],
       "fetchMode": "cheerio",
       "requestSettings": {
         "delaySeconds": 2,

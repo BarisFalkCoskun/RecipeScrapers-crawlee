@@ -305,6 +305,10 @@ describe("Danish JSON-LD source registry", () => {
         recipePaths: ["[].link"],
         terminalPayload: { path: "code", equals: "rest_post_invalid_page_number" },
       });
+      // The posts API already scopes the set to this site's posts, so
+      // admission is the domain check; JSON-LD presence does the filtering,
+      // exactly as the legacy spider relied on.
+      expect(source.recipeUrlPatterns).toEqual(["^https?://"]);
       expect(source.startUrls).toHaveLength(1);
       // Four sites expose a custom post type rather than core posts, and one
       // reaches the API through ?rest_route= instead of a path.

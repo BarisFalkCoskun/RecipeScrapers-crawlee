@@ -165,6 +165,19 @@ export class DanishJsonLdSourceSession {
       return emptyRoutes();
     }
 
+    // A service whose pagination window ends in an error document answers the
+    // page past the last one with that error status. Reading the body is the
+    // only way to tell the window ending from a real failure, so it has to
+    // reach discovery; a body that is not the declared terminal document
+    // still reports itself incomplete from there.
+    if (
+      response.kind === "listing" &&
+      response.statusCode === TERMINAL_PAYLOAD_STATUS &&
+      this.source.listingDiscovery?.payload?.terminalPayload !== undefined
+    ) {
+      return this.handleListing(response);
+    }
+
     if (response.statusCode < 200 || response.statusCode >= 300) {
       if (!blocked) {
         this.observation.failedRequests =
@@ -700,6 +713,9 @@ export class DanishJsonLdSourceSession {
 }
 
 /** Names why a canonical href cannot be a real URL, or null if it looks fine. */
+/** The status a paginated service answers with once past its last page. */
+const TERMINAL_PAYLOAD_STATUS = 400;
+
 function unusableCanonicalReason(canonical: string): string | null {
   if (/:\/\/[^\s]*:\/\//u.test(canonical)) return "concatenated-href";
   let hostname: string;
