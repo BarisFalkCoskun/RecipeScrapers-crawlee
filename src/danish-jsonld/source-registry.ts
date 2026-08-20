@@ -3980,8 +3980,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "domain": "brownedbutterblondie.com",
       "allowedDomains": [
         "brownedbutterblondie.com",
-        "www.brownedbutterblondie.com"
-      ],
+        "www.brownedbutterblondie.com",
+      "athomebyheather.com",
+      "www.athomebyheather.com"],
       "legacySpider": "BrownedbutterblondieSpider",
       "legacyFamily": "WpPostsJsonLdSpider",
       "discovery": "listing",
@@ -4624,8 +4625,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "domain": "lowcarbdelish.com",
       "allowedDomains": [
         "lowcarbdelish.com",
-        "www.lowcarbdelish.com"
-      ],
+        "www.lowcarbdelish.com",
+      "wellportionedplate.com",
+      "www.wellportionedplate.com"],
       "legacySpider": "LowcarbdelishSpider",
       "legacyFamily": "WpPostsJsonLdSpider",
       "discovery": "listing",
@@ -5352,8 +5354,9 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "domain": "therealfoodrds.com",
       "allowedDomains": [
         "therealfoodrds.com",
-        "www.therealfoodrds.com"
-      ],
+        "www.therealfoodrds.com",
+      "therealfooddietitians.com",
+      "www.therealfooddietitians.com"],
       "legacySpider": "TherealfoodrdsSpider",
       "legacyFamily": "WpPostsJsonLdSpider",
       "discovery": "listing",

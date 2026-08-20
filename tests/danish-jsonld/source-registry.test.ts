@@ -507,6 +507,13 @@ describe("Danish JSON-LD source registry", () => {
     for (const id of ["closetcooking", "asweetspoonful"]) {
       expect(byId.get(id)?.migrationState).toBe("deferred");
     }
+    // Three sites rebranded after the legacy spiders were written, and their
+    // API redirects across to the new name. Without it in allowedDomains every
+    // response is rejected and the run ends with no candidates at all.
+    expect(byId.get("therealfoodrds")?.allowedDomains).toContain("therealfooddietitians.com");
+    expect(byId.get("brownedbutterblondie")?.allowedDomains).toContain("athomebyheather.com");
+    expect(byId.get("lowcarbdelish")?.allowedDomains).toContain("wellportionedplate.com");
+
     // Parity work already took gunris past a canary; recording must not undo it.
     expect(byId.get("gunris")?.migrationState).toBe("shadow_passed");
   });
