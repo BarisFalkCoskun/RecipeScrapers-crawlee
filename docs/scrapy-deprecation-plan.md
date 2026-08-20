@@ -231,9 +231,11 @@ without a durable deployment, run, dashboard, change, or approval reference.
   and two legacy runs gave up on page 1. The comparison waits for the source to
   recover rather than being retried against it.
 
-- [x] All five reachable Danish WordPress-posts sources cleared full shadow
-  parity: `hoerup` (38), `madopskriften` (146), `opskriftslageret` (159),
-  `nemmadplan` (32), and `veganermor` (298) — 673 records. Each had discovered
+- [x] Five Danish WordPress-posts sources cleared full shadow parity: `hoerup`
+  (38), `madopskriften` (146), `opskriftslageret` (159), `nemmadplan` (32), and
+  `veganermor` (298) — 673 records. `dittejulie` (386 records) and `madhang`
+  (55) crawl cleanly but stay `configured` on their own counts, and `mummum`
+  still needs its full catalog run. Each of the five had discovered
   nothing at all before the rendered
   JSON viewer document was unwrapped, so these comparisons are what confirm
   that fix rather than a clean run alone. Legacy has no cuisine field for this
