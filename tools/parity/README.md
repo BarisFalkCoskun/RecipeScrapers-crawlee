@@ -56,3 +56,12 @@ rather than as a diverging record set.
 
 The comparison exits non-zero when either side produced no records, so a failed
 legacy run cannot be mistaken for a clean match.
+
+## Runs that get cut short
+
+Legacy items are written as JSON Lines and flushed per item, so a run killed by
+`PARITY_SCRAPY_TIMEOUT` still leaves everything it had collected. The reader
+drops a trailing partial line and says so. A short legacy run is still a failed
+comparison — the record sets will not agree — but it reports which records it
+did get instead of failing to parse at all. Raise `PARITY_SCRAPY_TIMEOUT` for a
+source whose legacy spider needs longer than the 2400s default.

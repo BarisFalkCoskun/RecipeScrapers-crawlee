@@ -9,7 +9,28 @@
  * without them every one reads as drift. They are named where they are applied.
  */
 const fs=require("fs");
-const legacy=JSON.parse(fs.readFileSync(process.argv[2],"utf8"));
+/**
+ * Legacy items arrive as JSON Lines so a killed run stays readable up to its
+ * last complete line; a trailing partial line is dropped rather than failing
+ * the whole comparison. A plain JSON array is still accepted.
+ */
+function readRecords(path){
+  const text=fs.readFileSync(path,"utf8").trim();
+  if(!text) return [];
+  if(text.startsWith("[")){
+    try{ return JSON.parse(text); }
+    catch{ /* a truncated array: salvage its complete lines below */ }
+  }
+  const out=[]; let dropped=0;
+  for(const raw of text.replace(/^\[/u,"").split("\n")){
+    const line=raw.trim().replace(/,$/u,"");
+    if(!line || line==="]") continue;
+    try{ out.push(JSON.parse(line)); }catch{ dropped++; }
+  }
+  if(dropped) console.log(`note: dropped ${dropped} incomplete line(s) from ${path} - the run was cut short`);
+  return out;
+}
+const legacy=readRecords(process.argv[2]);
 const crawlee=JSON.parse(fs.readFileSync(process.argv[3],"utf8"));
 const {decodeHTML}=require("entities");
 // Legacy leaves upstream HTML entities encoded; V2 decodes them. Comparing the
