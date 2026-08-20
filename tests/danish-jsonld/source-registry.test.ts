@@ -579,7 +579,7 @@ describe("Danish JSON-LD source registry", () => {
       "annamaddk", "newyorkerbyheart", "muttionline", "emmaolsen", "hverdagsro",
       "frahaventilmaven", "onekitchenblog", "madogkaerlighed", "gastromad",
       "opskriftorg", "louisesmadblog", "marialottes", "opskriftnet",
-      "hoerup", "madopskriften", "opskriftslageret", "nemmadplan",
+      "hoerup", "madopskriften", "opskriftslageret", "nemmadplan", "veganermor",
     ];
 
     for (const id of shadowed) {
@@ -615,14 +615,13 @@ describe("Danish JSON-LD source registry", () => {
   it("records the browser-fetched WordPress posts sources the unwrap fix reached", () => {
     const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
 
-    // Four of the five now carry full parity against their legacy spiders,
-    // which is what confirms the unwrap fix rather than just a clean run.
-    for (const id of ["madopskriften", "opskriftslageret", "hoerup", "nemmadplan"]) {
+    // All five now carry full parity against their legacy spiders, which is
+    // what confirms the unwrap fix rather than just a clean run.
+    for (const id of ["madopskriften", "opskriftslageret", "hoerup", "nemmadplan", "veganermor"]) {
       expect(byId.get(id)?.migrationState).toBe("shadow_passed");
       expect(byId.get(id)?.deferOrBlockReason)
         .toMatch(/discovered nothing at all until the browser's rendered JSON viewer/u);
     }
-    expect(byId.get("veganermor")?.migrationState).toBe("canary_passed");
     // Both remaining sources are closed at the source, not by extraction.
     expect(byId.get("hverdagsgourmet")?.deferOrBlockReason)
       .toMatch(/itsec_rest_api_access_restricted/u);

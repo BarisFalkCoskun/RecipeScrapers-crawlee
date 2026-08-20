@@ -7905,10 +7905,13 @@ const DANISH_WP_POSTS_EVIDENCE_OVERRIDES: Record<
       "Two uncapped Crawlee runs emitted identical 159-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 159 recipes with every material field matching; one record keeps a cuisine legacy has no field for. This source discovered nothing at all until the browser's rendered JSON viewer document was unwrapped, so the parity run is what confirms the fix",
   },
   veganermor: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-20T06-17-01.886Z-attempt-196a8813-cc9d-4599-ad31-0b1bab1dbea7",
+    shadowParity:
+      "298/298 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 298 recipes over 586 requests with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 298-record keys and normalized content across 586 requests with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 298 recipes with every material field matching; 10 records keep a cuisine legacy has no field for. This source discovered nothing at all until the browser's rendered JSON viewer document was unwrapped, so the parity run is what confirms the fix",
   },
 };
 

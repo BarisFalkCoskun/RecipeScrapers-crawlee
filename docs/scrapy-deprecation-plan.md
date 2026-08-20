@@ -231,9 +231,10 @@ without a durable deployment, run, dashboard, change, or approval reference.
   and two legacy runs gave up on page 1. The comparison waits for the source to
   recover rather than being retried against it.
 
-- [x] Four of the nine Danish WordPress-posts sources cleared full shadow
-  parity: `hoerup` (38), `madopskriften` (146), `opskriftslageret` (159), and
-  `nemmadplan` (32). Each had discovered nothing at all before the rendered
+- [x] All five reachable Danish WordPress-posts sources cleared full shadow
+  parity: `hoerup` (38), `madopskriften` (146), `opskriftslageret` (159),
+  `nemmadplan` (32), and `veganermor` (298) — 673 records. Each had discovered
+  nothing at all before the rendered
   JSON viewer document was unwrapped, so these comparisons are what confirm
   that fix rather than a clean run alone. Legacy has no cuisine field for this
   family, so V2's cuisines are purely additive — 143 of madopskriften's records
@@ -333,8 +334,8 @@ or production writes are not part of a probe.
 
 Scrapy cannot yet be deprecated. Crawlee covers all 235 Danish spiders at the
 registry level, every one of the 314 registered sources now carries evidence
-from a live run rather than an assumed state, and the registry stands at 90
-`shadow_passed`, 87 `canary_passed`, 117 `configured`, 11 `blocked`, and 9
+from a live run rather than an assumed state, and the registry stands at 91
+`shadow_passed`, 86 `canary_passed`, 117 `configured`, 11 `blocked`, and 9
 `deferred`. Full-catalog evidence is now recorded for Aperol, Beauvais,
 Bornholms, Campari, Cocktaily, Eva Trio, Ferrero Rocher, FoodFanatic, Foodnotes,
 Friluftslageret, Frøken Kræsen, Glutenfri Magi, Hanne Robinson, Kager og Sager,
