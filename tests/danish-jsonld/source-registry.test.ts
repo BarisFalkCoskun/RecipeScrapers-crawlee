@@ -542,7 +542,7 @@ describe("Danish JSON-LD source registry", () => {
     const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
 
     // Clean uncapped runs.
-    for (const id of ["airfryermad", "emmaolsen", "opskriftnet", "airfryerkogebogen"]) {
+    for (const id of ["emmaolsen", "opskriftnet", "airfryerkogebogen", "gastromad"]) {
       expect(byId.get(id)?.migrationState).toBe("canary_passed");
       expect(byId.get(id)?.latestCanary).toBeTruthy();
     }
@@ -569,6 +569,10 @@ describe("Danish JSON-LD source registry", () => {
     const shadowed = [
       "frukreativ", "minopskrift", "nemlchf", "madskribent", "sundmor",
       "jensensmadblog", "johanjohansen", "gastry", "chilisauce", "bondemad", "twinfood",
+      "italienskvinogmad", "airfryermad", "camillemaja", "cookingclub", "altmad",
+      "fuldkorn", "rigeligtsmor", "veganernu", "vielskermad", "mariasilje",
+      "albertestengaard", "juliebruun", "planteaederen", "pilenskoekken", "drkoch",
+      "annamaddk",
     ];
 
     for (const id of shadowed) {
@@ -579,6 +583,22 @@ describe("Danish JSON-LD source registry", () => {
       // Each promotion rests on two uncapped runs, not one.
       expect(source?.deferOrBlockReason).toMatch(/Two uncapped Crawlee runs/u);
     }
+  });
+
+  it("names the WPRM named-step prefixes Crawlee keeps and legacy drops", () => {
+    const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
+
+    // WPRM lets a step carry a name. V2 keeps it as a "Name: body" prefix, so
+    // the step matches legacy once the prefix comes off and carries more of the
+    // source; the reasons say so rather than leaving it looking like drift.
+    expect(byId.get("cookingclub")?.deferOrBlockReason)
+      .toMatch(/named-step prefixes on 136 records/u);
+    expect(byId.get("drkoch")?.deferOrBlockReason)
+      .toMatch(/named-step prefix on one record/u);
+    // Legacy was unhealthy on its first pilenskoekken run; the parity rests on
+    // the run where it emitted its whole catalog.
+    expect(byId.get("pilenskoekken")?.deferOrBlockReason)
+      .toMatch(/robots preflight answered HTTP 403/u);
   });
 
   it("records the browser-fetched WordPress posts sources the unwrap fix reached", () => {
