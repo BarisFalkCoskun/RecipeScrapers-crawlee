@@ -26,7 +26,7 @@ checkout.
 
 ## What the comparison normalizes
 
-Six differences are formatting rather than content, and every one is a place
+Seven differences are formatting rather than content, and every one is a place
 where V2 keeps more of the source than legacy did. Comparing without
 normalizing them reports false mismatches:
 
@@ -44,6 +44,10 @@ normalizing them reports false mismatches:
    space, or the text reads as different.
 6. **Inline markup.** Legacy keeps tags inside text fields where V2 stores the
    rendered text; a `<strong>` around a title is presentation, not content.
+7. **Yield.** Legacy reduces `recipeYield` to its leading integer and drops the
+   unit, so `1.75 liter` becomes `1`. V2 keeps the published text. Where
+   legacy's value is exactly the leading integer of V2's, it is the same yield
+   with more of it preserved; anything else is a real difference.
 
 Records are keyed by canonical URL **and** title, because a page can carry
 several sibling Recipe nodes. Legacy stops at the first; extra V2 records

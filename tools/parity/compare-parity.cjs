@@ -43,6 +43,7 @@ console.log("only legacy:",onlyL.length,onlyL.slice(0,4));
 console.log("only crawlee:",onlyC.length,onlyC.slice(0,4));
 let namedSteps=0;
 let cuisineDropped=0;
+let richerYield=0;
 const diffs={}; const add=(f,u,a,b)=>{(diffs[f]=diffs[f]||[]).push({u,legacy:a,crawlee:b});};
 for(const [k,l] of L){
   const c=C.get(k); if(!c) continue; const n=c.normalized||{};
@@ -65,7 +66,15 @@ for(const [k,l] of L){
   if((l.prep_time_minutes??null)!==(n.prepMinutes??null)) add("prep",k,l.prep_time_minutes,n.prepMinutes);
   if((l.cook_time_minutes??null)!==(n.cookMinutes??null)) add("cook",k,l.cook_time_minutes,n.cookMinutes);
   if((l.total_time_minutes??null)!==(n.totalMinutes??null)) add("total",k,l.total_time_minutes,n.totalMinutes);
-  if(norm(`${l.servings??""} ${l.servings_unit??""}`)!==norm(n.yieldText)) add("yield",k,norm(`${l.servings??""} ${l.servings_unit??""}`),norm(n.yieldText));
+  const ly=norm(`${l.servings??""} ${l.servings_unit??""}`), cy=norm(n.yieldText);
+  if(ly!==cy){
+    // Legacy reduces recipeYield to its leading integer and drops the unit, so
+    // "1.75 liter" becomes "1" and "4 personer" becomes "4". V2 keeps the
+    // published text, which is the same yield with more of it preserved.
+    const lead=/^(\d+)/u.exec(cy);
+    if(lead && lead[1]===ly) richerYield++;
+    else add("yield",k,ly,cy);
+  }
   if(JSON.stringify((l.image_urls||[]).map(norm))!==JSON.stringify((n.imageUrls||[]).map(norm))) add("images",k,l.image_urls,n.imageUrls);
   if(JSON.stringify((l.categories||[]).map(norm).sort())!==JSON.stringify((n.categories||[]).map(norm).sort())) add("categories",k,l.categories,n.categories);
   const lt=(l.tags||[]).map(norm).sort();
@@ -98,5 +107,5 @@ if(!legacy.length || !crawlee.length){
   console.log("\nMISMATCH: field differences above");
   process.exitCode=2;
 } else {
-  console.log(`\nALL MATERIAL FIELDS MATCH (${cuisineDropped?`${cuisineDropped} records keep a cuisine legacy has no field for`:"tags == keywords + cuisines"}${namedSteps?`; ${namedSteps} records keep WPRM named-step prefixes legacy drops`:""}${siblings.length?`; ${siblings.length} sibling recipes recovered`:""})`);
+  console.log(`\nALL MATERIAL FIELDS MATCH (${cuisineDropped?`${cuisineDropped} records keep a cuisine legacy has no field for`:"tags == keywords + cuisines"}${namedSteps?`; ${namedSteps} records keep WPRM named-step prefixes legacy drops`:""}${richerYield?`; ${richerYield} records keep a fuller yield than legacy leading-integer`:""}${siblings.length?`; ${siblings.length} sibling recipes recovered`:""})`);
 }
