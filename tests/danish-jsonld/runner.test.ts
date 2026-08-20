@@ -9,6 +9,7 @@ import {
   executeDanishJsonLdSource,
   parseHttpStatusForDiagnostics,
   httpErrorStatusCodesForSources,
+  readSettledPageContent,
   shouldEscalateBrowserCheck,
   shouldRetryBrowserCheck,
   shouldRotateRelayOnFailure,
@@ -96,6 +97,56 @@ describe("dedicated Danish JSON-LD runner", () => {
       fetchMode: "cheerio",
       vpnEnabled: false,
     })).toBe(false);
+  });
+
+  it("waits for a WAF interstitial to replace itself with the real page", async () => {
+    const challenge = readFileSync(
+      new URL("../fixtures/simply-waf-browser-check.html", import.meta.url),
+      "utf-8"
+    );
+    const real = "<html><body><article><a class=\"entry-title-link\" href=\"/kage\">Kage</a>"
+      + "</article></body></html>";
+    // The simply.com challenge resolves after about three seconds; reading the
+    // moment navigation settles captures the interstitial instead of the page.
+    let reads = 0;
+    const page = {
+      content: async () => (reads++ < 3 ? challenge : real),
+      waitForTimeout: async () => {},
+    };
+
+    const result = await readSettledPageContent(page, { timeoutMs: 5_000, pollMs: 500 });
+
+    expect(result.clearedBrowserCheck).toBe(true);
+    expect(result.body).toBe(real);
+  });
+
+  it("gives up on an interstitial that never clears, and never waits on a normal page", async () => {
+    const challenge = readFileSync(
+      new URL("../fixtures/simply-waf-browser-check.html", import.meta.url),
+      "utf-8"
+    );
+    let waits = 0;
+    const stuck = {
+      content: async () => challenge,
+      waitForTimeout: async () => { waits += 1; },
+    };
+
+    const gaveUp = await readSettledPageContent(stuck, { timeoutMs: 1_500, pollMs: 500 });
+
+    expect(gaveUp.clearedBrowserCheck).toBe(false);
+    expect(gaveUp.body).toBe(challenge);
+    expect(waits).toBe(3);
+
+    // An ordinary page never enters the loop, so the wait costs nothing.
+    let ordinaryWaits = 0;
+    const ordinary = {
+      content: async () => "<html><body><h1>Opskrifter</h1></body></html>",
+      waitForTimeout: async () => { ordinaryWaits += 1; },
+    };
+    const straight = await readSettledPageContent(ordinary);
+
+    expect(straight.clearedBrowserCheck).toBe(false);
+    expect(ordinaryWaits).toBe(0);
   });
 
   it("treats a WAF challenge served under a 5xx status as a browser check", () => {

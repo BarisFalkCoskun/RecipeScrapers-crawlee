@@ -108,6 +108,43 @@ export function shouldEscalateBrowserCheck(input: {
   );
 }
 
+/**
+ * How long to let a WAF interstitial finish before giving up on it. The
+ * simply.com challenge resolves in about three seconds; the budget is well
+ * clear of that without stalling a source whose challenge never completes.
+ */
+const BROWSER_CHECK_SETTLE_TIMEOUT_MS = 15_000;
+const BROWSER_CHECK_POLL_MS = 500;
+
+/**
+ * Read the page a browser actually ended up on. A WAF interstitial replaces
+ * itself with the real document once its challenge script runs, so reading
+ * content the moment navigation settles captures the challenge instead of the
+ * page: madrejsen answers every listing URL with one, and the crawl saw five
+ * blocked requests and no candidates while a browser reaches the real 16-link
+ * listing about three seconds later. Waiting for the interstitial to go away
+ * costs nothing on an ordinary page, which never enters the loop.
+ */
+export async function readSettledPageContent(
+  page: { content: () => Promise<string>; waitForTimeout: (ms: number) => Promise<void> },
+  options: { timeoutMs?: number; pollMs?: number } = {}
+): Promise<{ body: string; clearedBrowserCheck: boolean }> {
+  let body = await page.content();
+  if (!looksLikeBrowserCheckDocument(body)) {
+    return { body, clearedBrowserCheck: false };
+  }
+  const timeoutMs = options.timeoutMs ?? BROWSER_CHECK_SETTLE_TIMEOUT_MS;
+  const pollMs = options.pollMs ?? BROWSER_CHECK_POLL_MS;
+  for (let waited = 0; waited < timeoutMs; waited += pollMs) {
+    await page.waitForTimeout(pollMs);
+    body = await page.content();
+    if (!looksLikeBrowserCheckDocument(body)) {
+      return { body, clearedBrowserCheck: true };
+    }
+  }
+  return { body, clearedBrowserCheck: false };
+}
+
 export class BrowserCheckRetryError extends Error {
   constructor(statusCode: number) {
     super(`Rendered browser check HTTP ${statusCode}; retrying in session`);
@@ -462,16 +499,21 @@ export async function executeDanishJsonLdSource(
       ? { proxyConfiguration: input.vpnTransport.proxyConfiguration }
       : {}),
     requestHandler: async (context: PlaywrightCrawlingContext) => {
-      const body = await context.page.content();
+      const { body, clearedBrowserCheck } = await readSettledPageContent(context.page);
       const headers = context.response
         ? await context.response.allHeaders()
         : {};
+      // The navigation response carries the interstitial's status. Once the
+      // challenge has replaced itself with the real document, that status
+      // describes a page the browser is no longer on, and keeping it would
+      // record a blocked request against content that arrived fine.
+      const navigationStatus = context.response?.status() ?? 200;
       const response = {
         kind: requestKind(context.request.label, context.request.userData),
         fetchMode: "playwright" as const,
         url: context.request.url,
         loadedUrl: context.request.loadedUrl,
-        statusCode: context.response?.status() ?? 200,
+        statusCode: clearedBrowserCheck ? 200 : navigationStatus,
         headers,
         body,
         ...requestData(context.request.userData),
