@@ -6564,16 +6564,19 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 243 recipes from 225 posts with complete discovery and no blocked, failed or rejected record",
   },
   moderncrumb: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-20T01-51-32.159Z-attempt-bf8dd063-7eee-4129-ae25-f12daedf63de",
+    shadowParity:
+      "290/290 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 290 recipes from 292 posts with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 290-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 290 recipes with every material field matching; 290 records keep a cuisine legacy has no field for",
   },
   breadtopia: {
     migrationState: "canary_passed",
     latestCanary: "2026-08-20T01-47-17.589Z-attempt-4da2795a-7294-42af-b4f9-39187059a32d",
     deferOrBlockReason:
-      "Uncapped run persisted 353 recipes from 501 posts with complete discovery and no blocked, failed or rejected record",
+      "Uncapped run persisted 353 recipes with complete discovery and no blocked, failed or rejected record, and the full isolated Scrapy run matched every material field on all 353; 9 records keep a cuisine legacy has no field for and 87 keep a yield legacy reduces to its first integer. The second uncapped run needed for shadow parity has not completed yet",
   },
   thecastawaykitchen: {
     migrationState: "canary_passed",

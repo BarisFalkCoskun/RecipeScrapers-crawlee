@@ -252,6 +252,42 @@ without a durable deployment, run, dashboard, change, or approval reference.
   losing data: the site publishes `["1.75", "1.75 liter"]` and legacy's
   first-integer search reduces that to `1`.
 
+### Sources where the legacy spider is being blocked
+
+Four WordPress-posts sources show Crawlee persisting roughly twice what the
+legacy spider emits, with the legacy output a strict subset and every
+overlapping record matching on every material field. A diagnostic legacy run
+over `thecastawaykitchen` explains it: legacy discovered all 452 posts across
+its five API pages, but **188 of the 452 detail requests answered HTTP 403**,
+and `json_ld_missing_no_script_count` is exactly 188. The site rate-limits the
+legacy request pattern, and because 403 is in the spider's
+`handle_httpstatus_list`, the block page reaches the callback, carries no
+JSON-LD, and is recorded as "No Recipe JSON-LD" — indistinguishable in the
+output from a page that genuinely has no recipe. The same run scraped 206 items
+against 226 in an earlier one, which is the block rate moving between runs.
+
+Crawlee recorded no 403 at all on the same source in the same period. The
+counts are therefore a difference in what each implementation was allowed to
+fetch, not in what the site publishes:
+
+| Source | Crawlee | Legacy | Upstream posts |
+| --- | --- | --- | --- |
+| `thecastawaykitchen` | 367 | 226 | 452 |
+| `butternutbakeryblog` | 369 | 230 | 388 |
+| `tasteandsee` | 411 | 222 | 458 |
+| `annsentitledlife` | 457 | short run | 2054 |
+
+`brownedbutterblondie` is a separate case in the same family: the domain
+redirects to `athomebyheather.com`, which is absent from the legacy spider's
+`allowed_domains`, so every response is filtered off-domain and the spider
+emits nothing at all.
+
+These sources cannot reach `shadow_passed` on legacy parity, because the legacy
+run is not a sound comparison. They take the documented legacy-unhealthy route
+instead: discovery proven complete against the live listing contract, two
+complete uncapped runs whose second upserts rather than duplicates, and a manual
+read of stored records.
+
 ## Family sweeps
 
 Two families were swept uncapped end to end, which closed the last sources that
