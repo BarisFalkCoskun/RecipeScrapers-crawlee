@@ -582,7 +582,7 @@ describe("Danish JSON-LD source registry", () => {
       "hoerup", "madopskriften", "opskriftslageret", "nemmadplan", "veganermor",
       "lundoaagaard", "smaagroenneskridt", "kokkeriermedpassion", "anicula", "babybite",
       "nannapretzmann", "coupleinthekitchen", "bakerella", "abakershouse",
-      "thecakeblog", "basisvarer", "moderncrumb",
+      "thecakeblog", "basisvarer", "moderncrumb", "breadtopia",
     ];
 
     for (const id of shadowed) {
@@ -593,6 +593,24 @@ describe("Danish JSON-LD source registry", () => {
       // Each promotion rests on two uncapped runs, not one.
       expect(source?.deferOrBlockReason).toMatch(/Two uncapped Crawlee runs/u);
     }
+  });
+
+  it("takes the blocked-legacy sources through the legacy-unhealthy route", () => {
+    const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
+
+    // A legacy run that is being blocked, or pointed at an abandoned domain, is
+    // not a sound comparison, so these cannot be promoted on parity. They carry
+    // the alternative evidence instead and say why.
+    for (const id of ["butternutbakeryblog", "tasteandsee", "brownedbutterblondie"]) {
+      const source = byId.get(id);
+      expect(source?.migrationState).toBe("shadow_passed");
+      expect(source?.latestScrapyOutcome).toBe("failed");
+      expect(source?.shadowParity).toMatch(/legacy-unhealthy/u);
+      expect(source?.deferOrBlockReason).toMatch(/manual read of 25 stored records/u);
+    }
+    expect(byId.get("brownedbutterblondie")?.deferOrBlockReason)
+      .toMatch(/redirects to athomebyheather\.com/u);
+    expect(byId.get("tasteandsee")?.deferOrBlockReason).toMatch(/HTTP 403/u);
   });
 
   it("names the yield legacy reduces to a leading integer", () => {

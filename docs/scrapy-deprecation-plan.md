@@ -286,7 +286,20 @@ These sources cannot reach `shadow_passed` on legacy parity, because the legacy
 run is not a sound comparison. They take the documented legacy-unhealthy route
 instead: discovery proven complete against the live listing contract, two
 complete uncapped runs whose second upserts rather than duplicates, and a manual
-read of stored records.
+read of stored records. `butternutbakeryblog`, `tasteandsee`, and
+`brownedbutterblondie` have now cleared it, each with 25 stored records read
+complete and every recipe the legacy run did emit matching on every material
+field. `thecastawaykitchen` and `annsentitledlife` are still short of a clean
+second run.
+
+The negative-duration defect surfaced through this family and is worth stating
+separately, because the obvious cases were not the dangerous ones.
+`thecastawaykitchen` publishes `prepTime: "PT-1H12M"` on one recipe, which the
+old parser read as **72 minutes** — entirely plausible, and wrong: the same
+recipe states 15 minutes cooking and 27 minutes total. Across the stored data,
+438 records held an obviously absurd value from a negative duration and 3 held a
+plausible one. The absurd ones announce themselves; the plausible ones would
+have been believed.
 
 ## Family sweeps
 

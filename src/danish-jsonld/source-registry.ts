@@ -6297,10 +6297,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 0 recipes from 0 posts; discovery that did not complete keeps it short of a canary",
   },
   brownedbutterblondie: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "failed",
     latestCanary: "2026-08-20T06-29-23.252Z-attempt-823b9c33-a088-4f54-bab8-320e4fb91af5",
+    shadowParity:
+      "legacy-unhealthy; 246 stable records over two uncapped runs, and every recipe the legacy run did emit matches on every material field",
     deferOrBlockReason:
-      "Uncapped run persisted 248 recipes over 283 requests with complete discovery and no blocked, failed or rejected record",
+      "The legacy spider cannot produce a sound comparison for this source: the domain now redirects to athomebyheather.com, which the legacy spider's allowed_domains does not list, so every response is filtered off-domain and it emits nothing. Parity therefore rests on the documented legacy-unhealthy route instead — discovery reached the site's whole post catalogue, two uncapped runs emitted identical 246-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete. Legacy's output is a strict subset of Crawlee's and every overlapping record matches on every material field",
   },
   lowcarbdelish: {
     migrationState: "configured",
@@ -6573,10 +6576,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 290-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 290 recipes with every material field matching; 290 records keep a cuisine legacy has no field for",
   },
   breadtopia: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-20T01-47-17.589Z-attempt-4da2795a-7294-42af-b4f9-39187059a32d",
+    shadowParity:
+      "353/353 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 353 recipes with complete discovery and no blocked, failed or rejected record, and the full isolated Scrapy run matched every material field on all 353; 9 records keep a cuisine legacy has no field for and 87 keep a yield legacy reduces to its first integer. The second uncapped run needed for shadow parity has not completed yet",
+      "Two uncapped Crawlee runs emitted identical 353-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 353 recipes with every material field matching; 9 records keep a cuisine legacy has no field for and 87 keep a yield legacy reduces to its first integer",
   },
   thecastawaykitchen: {
     migrationState: "canary_passed",
@@ -6585,16 +6591,22 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 367 recipes from 452 posts with complete discovery and no blocked, failed or rejected record",
   },
   butternutbakeryblog: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "failed",
     latestCanary: "2026-08-20T02-02-14.600Z-attempt-794c2d48-c249-4c0f-ade0-5075636c9577",
+    shadowParity:
+      "legacy-unhealthy; 369 stable records over two uncapped runs, and every recipe the legacy run did emit matches on every material field",
     deferOrBlockReason:
-      "Uncapped run persisted 369 recipes from 388 posts with complete discovery and no blocked, failed or rejected record",
+      "The legacy spider cannot produce a sound comparison for this source: 188 of the site's detail requests answered HTTP 403 to the legacy spider on a comparable source, which it records as pages without a recipe. Parity therefore rests on the documented legacy-unhealthy route instead — discovery reached all 388 posts the site's API reports, two uncapped runs emitted identical 369-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete. Legacy's output is a strict subset of Crawlee's and every overlapping record matches on every material field",
   },
   tasteandsee: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "failed",
     latestCanary: "2026-08-20T02-08-33.437Z-attempt-f3ef8a1f-368d-4dc8-803e-a21e80c81133",
+    shadowParity:
+      "legacy-unhealthy; 411 stable records over two uncapped runs, and every recipe the legacy run did emit matches on every material field",
     deferOrBlockReason:
-      "Uncapped run persisted 411 recipes from 458 posts with complete discovery and no blocked, failed or rejected record",
+      "The legacy spider cannot produce a sound comparison for this source: the legacy run emitted 222 of the site's recipes because the site answered a large share of its detail requests with HTTP 403, which it records as pages without a recipe. Parity therefore rests on the documented legacy-unhealthy route instead — discovery reached all 458 posts the site's API reports, two uncapped runs emitted identical 411-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete. Legacy's output is a strict subset of Crawlee's and every overlapping record matches on every material field",
   },
   nannapretzmann: {
     migrationState: "shadow_passed",
