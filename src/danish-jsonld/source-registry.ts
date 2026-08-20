@@ -6309,10 +6309,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 0 recipes from 0 posts; discovery that did not complete keeps it short of a canary",
   },
   therealfoodrds: {
-    migrationState: "configured",
-    latestCanary: "2026-08-19T23-34-02.982Z-attempt-3364f3ca-81dd-4034-9766-df79bc1d33ac",
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-20T05-51-54.744Z-attempt-e3ba06a3-f9c8-4b2c-9f83-060a79b34e6a",
     deferOrBlockReason:
-      "Uncapped run persisted 0 recipes from 0 posts; discovery that did not complete keeps it short of a canary",
+      "Uncapped run persisted 748 recipes from 928 posts with complete discovery and no blocked, failed or rejected record, once allowedDomains followed the rebrand to therealfooddietitians.com",
   },
   artfuldishes: {
     migrationState: "configured",
