@@ -76,7 +76,7 @@ export function renderMigrationStatus(
   }
 
   return [
-    "Danish JSON-LD migration status",
+    "Danish recipe migration status",
     headers.join("\t"),
     ...report.sources.map((row) => values(row).join("\t")),
   ].join("\n");

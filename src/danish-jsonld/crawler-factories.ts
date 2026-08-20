@@ -20,7 +20,10 @@ export interface DanishJsonLdCrawlerSettings {
 }
 
 /** Content types that carry recipe HTML despite not being declared as HTML. */
-export const DANISH_JSONLD_ADDITIONAL_MIME_TYPES = ["text/plain"] as const;
+export const DANISH_JSONLD_ADDITIONAL_MIME_TYPES = [
+  "text/plain",
+  "application/graphql-response+json",
+] as const;
 
 export const DANISH_JSONLD_PLAYWRIGHT_BROWSER_POOL_OPTIONS = {
   maxOpenPagesPerBrowser: 1,
@@ -65,8 +68,17 @@ export function createDanishJsonLdCheerioCrawler(options: {
   proxyConfiguration?: ProxyConfiguration;
   crawlerOptions?: Omit<CheerioOptions, "requestHandler">;
 }) {
+  const preNavigationHooks = [
+    ...(options.crawlerOptions?.preNavigationHooks ?? []),
+    ...(options.source.disableHeaderGenerator
+      ? [async (_context: CheerioCrawlingContext, gotOptions: { useHeaderGenerator?: boolean }) => {
+          gotOptions.useHeaderGenerator = false;
+        }]
+      : []),
+  ];
   return new CheerioCrawler({
     ...options.crawlerOptions,
+    preNavigationHooks,
     ...(options.proxyConfiguration
       ? { proxyConfiguration: options.proxyConfiguration }
       : {}),

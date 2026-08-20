@@ -81,6 +81,19 @@ describe("Danish JSON-LD discovery", () => {
     expect(terminal.terminal).toBe(true);
   });
 
+  it("matches path-scoped recipe rules even when a listing link has presentation query parameters", () => {
+    const result = discoverListingPage({
+      source: { ...source, discovery: "listing", legacyFamily: "JsonLdListingSpider" },
+      pageUrl: "https://example.dk/opskrifter/",
+      body: `<a href="/opskrifter/kage/?portfolioCats=57">Kage</a>`,
+    });
+
+    expect(result.recipeUrls).toEqual([
+      "https://example.dk/opskrifter/kage/?portfolioCats=57",
+    ]);
+    expect(result.rejectedByReason).toEqual({});
+  });
+
   it("reports a script-gated load-more listing as incomplete instead of terminal", () => {
     const result = discoverListingPage({
       source: { ...source, discovery: "listing", legacyFamily: "JsonLdListingSpider" },

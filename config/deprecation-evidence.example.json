@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "gates": {
+    "consumer-data-contract": {
+      "passed": false,
+      "evidence": "",
+      "observedAt": ""
+    },
+    "scheduler-and-monitoring-deployed": {
+      "passed": false,
+      "evidence": "",
+      "observedAt": ""
+    },
+    "rollback-validated": {
+      "passed": false,
+      "evidence": "",
+      "observedAt": ""
+    },
+    "observation-window-complete": {
+      "passed": false,
+      "evidence": "",
+      "observedAt": ""
+    },
+    "scrapy-retirement-approved": {
+      "passed": false,
+      "evidence": "",
+      "observedAt": ""
+    }
+  }
+}

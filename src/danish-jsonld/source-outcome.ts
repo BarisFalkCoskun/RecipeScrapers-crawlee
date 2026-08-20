@@ -14,6 +14,10 @@ export interface SourceRunObservation {
   processedRecipePages?: number;
   rejectedIncompleteJsonLd?: number;
   rejectedMalformedJsonLd?: number;
+  rejectedIncompleteWprm?: number;
+  rejectedMalformedWprm?: number;
+  rejectedIncompleteCustom?: number;
+  rejectedMalformedCustom?: number;
   playwrightFailures?: number;
   mongoFailures?: number;
   /** Requests that reached a queue despite falling outside the source allowlist. */
@@ -59,6 +63,10 @@ export function classifySourceOutcome(
     (observation.discoveredRecipeCandidates ?? 0) > 0 ||
     (observation.rejectedIncompleteJsonLd ?? 0) > 0 ||
     (observation.rejectedMalformedJsonLd ?? 0) > 0 ||
+    (observation.rejectedIncompleteWprm ?? 0) > 0 ||
+    (observation.rejectedMalformedWprm ?? 0) > 0 ||
+    (observation.rejectedIncompleteCustom ?? 0) > 0 ||
+    (observation.rejectedMalformedCustom ?? 0) > 0 ||
     hasIncompleteWork(observation)
   )) {
     return { sourceId: observation.sourceId, outcome: "failed", outcomeReasons: reasons };
@@ -77,6 +85,10 @@ function hasIncompleteWork(observation: SourceRunObservation): boolean {
     (observation.failedRequests ?? 0) > 0 ||
     (observation.rejectedIncompleteJsonLd ?? 0) > 0 ||
     (observation.rejectedMalformedJsonLd ?? 0) > 0 ||
+    (observation.rejectedIncompleteWprm ?? 0) > 0 ||
+    (observation.rejectedMalformedWprm ?? 0) > 0 ||
+    (observation.rejectedIncompleteCustom ?? 0) > 0 ||
+    (observation.rejectedMalformedCustom ?? 0) > 0 ||
     (observation.playwrightFailures ?? 0) > 0 ||
     (observation.mongoFailures ?? 0) > 0 ||
     observation.pageCapReached === true ||
@@ -92,6 +104,10 @@ function outcomeReasons(observation: SourceRunObservation): SourceOutcomeReason[
   if ((observation.discoveredRecipeCandidates ?? 0) > 0) reasons.push("recipe-candidates-discovered");
   if ((observation.rejectedIncompleteJsonLd ?? 0) > 0) reasons.push("incomplete-json-ld-rejected");
   if ((observation.rejectedMalformedJsonLd ?? 0) > 0) reasons.push("malformed-json-ld-rejected");
+  if ((observation.rejectedIncompleteWprm ?? 0) > 0) reasons.push("incomplete-wprm-rejected");
+  if ((observation.rejectedMalformedWprm ?? 0) > 0) reasons.push("malformed-wprm-rejected");
+  if ((observation.rejectedIncompleteCustom ?? 0) > 0) reasons.push("incomplete-custom-recipe-rejected");
+  if ((observation.rejectedMalformedCustom ?? 0) > 0) reasons.push("malformed-custom-payload-rejected");
   if ((observation.playwrightFailures ?? 0) > 0) reasons.push("playwright-failure");
   if ((observation.mongoFailures ?? 0) > 0) reasons.push("mongo-failure");
   if (observation.pageCapReached === true) reasons.push("max-pages-cap-reached");
@@ -100,7 +116,11 @@ function outcomeReasons(observation: SourceRunObservation): SourceOutcomeReason[
     (observation.persistedRecipes ?? 0) === 0 &&
     (observation.processedRecipePages ?? 0) > 0 &&
     (observation.rejectedIncompleteJsonLd ?? 0) === 0 &&
-    (observation.rejectedMalformedJsonLd ?? 0) === 0
+    (observation.rejectedMalformedJsonLd ?? 0) === 0 &&
+    (observation.rejectedIncompleteWprm ?? 0) === 0 &&
+    (observation.rejectedMalformedWprm ?? 0) === 0 &&
+    (observation.rejectedIncompleteCustom ?? 0) === 0 &&
+    (observation.rejectedMalformedCustom ?? 0) === 0
   ) reasons.push("structured-extraction-empty");
   reasons.push(...(observation.discoveryFailureReasons ?? []));
   if (reasons.length === 0) reasons.push("no-recipe-candidates");

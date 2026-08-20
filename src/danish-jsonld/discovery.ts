@@ -285,7 +285,9 @@ export function matchesSourceRecipeUrl(
   return source.recipeUrlPatterns.some((pattern) => {
     try {
       const regex = new RegExp(pattern, "iu");
-      return regex.test(url.toString()) || regex.test(`${url.pathname}${url.search}`);
+      return regex.test(url.toString()) ||
+        regex.test(`${url.pathname}${url.search}`) ||
+        regex.test(url.pathname);
     } catch {
       return false;
     }

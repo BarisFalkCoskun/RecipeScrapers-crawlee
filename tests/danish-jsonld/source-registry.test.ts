@@ -3,6 +3,25 @@ import {
   DANISH_JSONLD_SOURCES,
   MIGRATION_STATES,
 } from "../../src/danish-jsonld/source-registry.js";
+import { DANISH_WPRM_SOURCE_DEFINITIONS } from "../../src/wprm/danish-sources.js";
+import { DANISH_WP_POSTS_SOURCE_DEFINITIONS } from "../../src/danish-jsonld/danish-wp-posts-sources.js";
+import {
+  DANISH_CUSTOM_JSONLD_SOURCE_DEFINITIONS,
+  DANISH_CUSTOM_LISTING_JSONLD_SOURCE_DEFINITIONS,
+  DANISH_CUSTOM_WPRM_SOURCE_DEFINITIONS,
+  DANISH_ARTICLE_HTML_SOURCE_DEFINITIONS,
+  DANISH_JSONLD_HTML_SOURCE_DEFINITIONS,
+  DANISH_REDIRECTED_JSONLD_SOURCE_DEFINITIONS,
+  DANISH_ALT_HTML_SOURCE_DEFINITIONS,
+  DANISH_MULTI_RECIPE_HTML_SOURCE_DEFINITIONS,
+  DANISH_DR_GRAPHQL_SOURCE_DEFINITIONS,
+  DANISH_AUTHENTICATED_API_SOURCE_DEFINITIONS,
+  DANISH_DAGROFA_API_SOURCE_DEFINITIONS,
+  DANISH_SITECORE_API_SOURCE_DEFINITIONS,
+  DANISH_SHOPIFY_BLOG_SOURCE_DEFINITIONS,
+  DANISH_EMBEDDED_JSON_SOURCE_DEFINITIONS,
+  DANISH_HTML_RECIPE_SOURCE_DEFINITIONS,
+} from "../../src/danish-jsonld/custom-danish-sources.js";
 
 describe("Danish JSON-LD source registry", () => {
   const expectedLegacySourceIds = [
@@ -71,6 +90,7 @@ describe("Danish JSON-LD source registry", () => {
   "friluftslageret",
   "frokenkraesen_com",
   "gamleopskrifter",
+  "gastrofun",
   "gastrologik",
   "gastrotools",
   "gatheranddine",
@@ -81,6 +101,7 @@ describe("Danish JSON-LD source registry", () => {
   "goodlifeeats",
   "greatbritishchefs",
   "greedygourmet",
+  "groedgrisen",
   "grownupdish",
   "gunris",
   "hannerobinson",
@@ -97,6 +118,7 @@ describe("Danish JSON-LD source registry", () => {
   "joythebaker",
   "kalynskitchen",
   "kenwoodworld",
+  "ketoliv",
   "ketomums",
   "kikkoman",
   "kitchenaid",
@@ -114,6 +136,7 @@ describe("Danish JSON-LD source registry", () => {
   "lundoaagaard",
   "lurpak",
   "madenimitliv",
+  "madensverden",
   "madfolket",
   "madformadelskere",
   "madogdrikke",
@@ -148,6 +171,7 @@ describe("Danish JSON-LD source registry", () => {
   "pillsbury",
   "pinchofyum",
   "planetariskkogebog",
+  "planteaederen",
   "plantepusherne",
   "progresso",
   "projectmealplan",
@@ -197,15 +221,46 @@ describe("Danish JSON-LD source registry", () => {
   "withspice",
 ];
 
-  it("contains exactly the legacy JSON-LD sources across all three families", () => {
-    expect(DANISH_JSONLD_SOURCES).toHaveLength(189);
+  it("contains the migrated legacy source families and every Danish WPRM source", () => {
+    expect(DANISH_JSONLD_SOURCES).toHaveLength(314);
     expect(DANISH_JSONLD_SOURCES.filter(
       (source) => source.legacyFamily === "JsonLdSitemapRecipeSpider"
     )).toHaveLength(89);
     expect(DANISH_JSONLD_SOURCES.filter(
       (source) => source.legacyFamily === "JsonLdListingSpider"
     )).toHaveLength(34);
-    expect(DANISH_JSONLD_SOURCES.map((source) => source.id).sort()).toEqual(expectedLegacySourceIds);
+    expect(DANISH_JSONLD_SOURCES.filter(
+      (source) => source.legacyFamily === "WprmApiSpider"
+    )).toHaveLength(88);
+    expect(DANISH_JSONLD_SOURCES.filter(
+      (source) => source.legacyFamily === "WpPostsJsonLdSpider"
+    )).toHaveLength(76);
+    expect(DANISH_JSONLD_SOURCES.map((source) => source.id).sort()).toEqual(
+      [...new Set([
+        ...expectedLegacySourceIds,
+        ...DANISH_WPRM_SOURCE_DEFINITIONS.map(([id]) => id),
+        ...DANISH_WP_POSTS_SOURCE_DEFINITIONS.map(([id]) => id),
+        ...DANISH_CUSTOM_JSONLD_SOURCE_DEFINITIONS.map(({ id }) => id),
+        ...DANISH_CUSTOM_LISTING_JSONLD_SOURCE_DEFINITIONS.map(({ id }) => id),
+        ...DANISH_CUSTOM_WPRM_SOURCE_DEFINITIONS.map(({ id }) => id),
+        ...DANISH_SHOPIFY_BLOG_SOURCE_DEFINITIONS.map(({ id }) => id),
+        ...DANISH_ARTICLE_HTML_SOURCE_DEFINITIONS.map(({ id }) => id),
+        ...DANISH_JSONLD_HTML_SOURCE_DEFINITIONS.map(({ id }) => id),
+        ...DANISH_REDIRECTED_JSONLD_SOURCE_DEFINITIONS.map(({ id }) => id),
+        ...DANISH_ALT_HTML_SOURCE_DEFINITIONS.map(({ id }) => id),
+        "dkkogebogen",
+        "nipunijulie",
+        "thefoodclub",
+        ...DANISH_MULTI_RECIPE_HTML_SOURCE_DEFINITIONS.map(({ id }) => id),
+        ...DANISH_DR_GRAPHQL_SOURCE_DEFINITIONS.map(({ id }) => id),
+        ...DANISH_AUTHENTICATED_API_SOURCE_DEFINITIONS.map(({ id }) => id),
+        ...DANISH_DAGROFA_API_SOURCE_DEFINITIONS.map(({ id }) => id),
+        ...DANISH_SITECORE_API_SOURCE_DEFINITIONS.map(({ id }) => id),
+        ...DANISH_EMBEDDED_JSON_SOURCE_DEFINITIONS.map(({ id }) => id),
+        ...DANISH_HTML_RECIPE_SOURCE_DEFINITIONS.map(({ id }) => id),
+        "meyers",
+      ])].sort()
+    );
   });
 
   it("keeps source ids unique and preserves the required migration metadata", () => {
@@ -240,7 +295,7 @@ describe("Danish JSON-LD source registry", () => {
     );
     expect(byId.get("surdejsentusiasten")?.migrationState).toBe("shadow_passed");
     expect(byId.get("kikkoman")?.migrationState).toBe("canary_passed");
-    expect(byId.get("gamleopskrifter")?.migrationState).toBe("canary_passed");
+    expect(byId.get("gamleopskrifter")?.migrationState).toBe("shadow_passed");
     expect(byId.get("sundpaabudget")).toMatchObject({
       migrationState: "canary_passed",
       fetchMode: "playwright",
@@ -248,8 +303,75 @@ describe("Danish JSON-LD source registry", () => {
     expect(byId.get("sundpaabudget")?.deferOrBlockReason).toMatch(
       /no blocked or failed request/u
     );
-    // First source of the WordPress posts family to pass.
-    expect(byId.get("gunris")?.migrationState).toBe("canary_passed");
+    // First source of the WordPress posts family to pass, now shadow-verified.
+    expect(byId.get("gunris")).toMatchObject({
+      migrationState: "shadow_passed",
+      latestScrapyOutcome: "succeeded",
+      numericYieldOnly: true,
+      shadowParity: expect.stringContaining("5/5"),
+    });
+    expect(byId.get("gigtforeningen")).toMatchObject({
+      discovery: "listing",
+      recipeExtractor: "gigtforeningen-wp-html",
+      migrationState: "shadow_passed",
+      latestScrapyOutcome: "failed",
+      shadowParity: expect.stringContaining("legacy-unhealthy"),
+    });
+    expect(byId.get("bedstedrinks")).toMatchObject({
+      migrationState: "shadow_passed",
+      latestScrapyOutcome: "succeeded",
+      shadowParity: expect.stringContaining("80/80"),
+    });
+    expect(byId.get("madformadelskere")).toMatchObject({
+      migrationState: "shadow_passed",
+      latestScrapyOutcome: "succeeded",
+      shadowParity: expect.stringContaining("72/72"),
+    });
+    expect(byId.get("schulstad")).toMatchObject({
+      migrationState: "shadow_passed",
+      latestScrapyOutcome: "succeeded",
+      shadowParity: expect.stringContaining("94/94"),
+    });
+    expect(byId.get("jonsmadklub")).toMatchObject({
+      migrationState: "shadow_passed",
+      latestScrapyOutcome: "succeeded",
+      shadowParity: expect.stringContaining("106/106"),
+    });
+    expect(byId.get("kystfisken")).toMatchObject({
+      migrationState: "shadow_passed",
+      latestScrapyOutcome: "succeeded",
+      shadowParity: expect.stringContaining("136/136"),
+    });
+    expect(byId.get("klank")).toMatchObject({
+      migrationState: "shadow_passed",
+      latestScrapyOutcome: "succeeded",
+      shadowParity: expect.stringContaining("52/52"),
+    });
+    expect(byId.get("glyngoere")).toMatchObject({
+      migrationState: "shadow_passed",
+      latestScrapyOutcome: "succeeded",
+      shadowParity: expect.stringContaining("74/74"),
+    });
+    expect(byId.get("bareencocktail")).toMatchObject({
+      migrationState: "shadow_passed",
+      latestScrapyOutcome: "succeeded",
+      shadowParity: expect.stringContaining("81/81"),
+    });
+    expect(byId.get("copenhagendistillery_da")).toMatchObject({
+      migrationState: "shadow_passed",
+      latestScrapyOutcome: "succeeded",
+      shadowParity: expect.stringContaining("87/87"),
+    });
+    expect(byId.get("gamleopskrifter")).toMatchObject({
+      migrationState: "shadow_passed",
+      latestScrapyOutcome: "failed",
+      shadowParity: expect.stringMatching(/legacy-unhealthy.*5\/5/u),
+    });
+    expect(byId.get("bodylab")).toMatchObject({
+      migrationState: "shadow_passed",
+      latestScrapyOutcome: "partial",
+      shadowParity: expect.stringMatching(/29\/29.*149-recipe/u),
+    });
     expect(byId.get("familiejournal")?.migrationState).toBe("canary_passed");
     expect(byId.get("nordmad")?.migrationState).toBe("canary_passed");
     expect(byId.get("oetker")?.migrationState).toBe("canary_passed");
@@ -259,6 +381,20 @@ describe("Danish JSON-LD source registry", () => {
       /no blocked, failed or rejected record/u
     );
     expect(byId.get("klinksgaard")?.migrationState).toBe("blocked");
+    expect(byId.get("bornholms")).toMatchObject({
+      migrationState: "shadow_passed",
+      latestScrapyOutcome: "succeeded",
+      latestCanary: "2026-08-19T20-16-22.495Z",
+      shadowParity: expect.stringMatching(/11\/11 unique current recipes/u),
+    });
+    expect(byId.get("bornholms")?.listingDiscovery?.skipPathFragments)
+      .toContain("/opskrifter/bagel-med-bornholms-fiskepate");
+    expect(byId.get("sydhavnsbloggen")).toMatchObject({
+      migrationState: "shadow_passed",
+      latestScrapyOutcome: "succeeded",
+      latestCanary: "2026-08-19T20-20-33.834Z",
+      shadowParity: expect.stringMatching(/42\/42 recipes/u),
+    });
     expect(byId.get("netto")?.migrationState).toBe("deferred");
     expect(byId.get("madrejsen")?.migrationState).toBe("canary_passed");
     expect(byId.get("madrejsen")?.deferOrBlockReason).toMatch(
@@ -288,8 +424,70 @@ describe("Danish JSON-LD source registry", () => {
     // attempted; only the newly added WordPress posts family is unrun.
     expect(
       DANISH_JSONLD_SOURCES.filter((source) => source.migrationState === "not_started")
-        .every((source) => source.legacyFamily === "WpPostsJsonLdSpider")
+        .every((source) =>
+          source.legacyFamily === "WpPostsJsonLdSpider" ||
+          source.legacyFamily === "WprmApiSpider" ||
+          source.legacyFamily === "CustomSitemapSpider" ||
+          source.legacyFamily === "CustomListingSpider" ||
+          source.legacyFamily === "EmbeddedJsonSitemapSpider" ||
+          source.legacyFamily === "HtmlMicrodataSitemapSpider"
+        )
     ).toBe(true);
+  });
+
+  it("registers every Danish WPRM spider on direct API discovery", () => {
+    const sources = DANISH_JSONLD_SOURCES.filter(
+      (source) => source.legacyFamily === "WprmApiSpider"
+    );
+
+    expect(sources.map((source) => source.id).sort()).toEqual(
+      DANISH_WPRM_SOURCE_DEFINITIONS.map(([id]) => id).sort()
+    );
+    for (const source of sources) {
+      expect(source.startUrls[0]).toMatch(
+        /\/wp-json\/wp\/v2\/wprm_recipe\?per_page=100&page=1$/u
+      );
+      expect(source.listingDiscovery?.payload).toMatchObject({
+        expectedRoot: "array",
+        recipePaths: ["[].link"],
+        terminalPayload: { path: "code", equals: "rest_post_invalid_page_number" },
+      });
+      expect(["not_started", "configured", "shadow_passed"])
+        .toContain(source.migrationState);
+    }
+    expect(sources.filter((source) => source.fetchMode === "playwright").map(
+      (source) => source.id
+    ).sort()).toEqual(
+      DANISH_WPRM_SOURCE_DEFINITIONS.filter(([, , , , usePlaywright]) => usePlaywright)
+        .map(([id]) => id)
+        .sort()
+    );
+    expect(sources.find((source) => source.id === "altmad")?.requestSettings)
+      .toMatchObject({ delaySeconds: 10, maxConcurrency: 1 });
+    expect(sources.find((source) => source.id === "madbanditten")?.requestSettings)
+      .toMatchObject({ delaySeconds: 100, maxConcurrency: 1 });
+    expect(sources.find((source) => source.id === "twinfood"))
+      .toMatchObject({ fetchMode: "playwright", requestSettings: {
+        delaySeconds: 20,
+        rateLimitPerMinute: null,
+        maxConcurrency: 1,
+        maxRetries: 3,
+      } });
+    expect(sources.find((source) => source.id === "gastrofun")).toMatchObject({
+      migrationState: "configured",
+      latestScrapyOutcome: "partial",
+      latestCanary: "2026-08-19T15-51-22.062Z",
+    });
+    expect(sources.find((source) => source.id === "gastrofun")?.deferOrBlockReason)
+      .toMatch(/38-page catalog still requires an uncapped run/u);
+    expect(sources.find((source) => source.id === "ketoliv")).toMatchObject({
+      migrationState: "shadow_passed",
+      latestScrapyOutcome: "succeeded",
+      latestCanary: "2026-08-19T20-33-21.809Z",
+      shadowParity: expect.stringMatching(/578\/578 complete records/u),
+    });
+    expect(sources.find((source) => source.id === "ketoliv")?.deferOrBlockReason)
+      .toMatch(/named-step prefixes on 69 records/u);
   });
 
   it("carries the WordPress posts sources on the strict JSON-LD contract", () => {
@@ -298,7 +496,7 @@ describe("Danish JSON-LD source registry", () => {
       (source) => source.legacyFamily === "WpPostsJsonLdSpider"
     );
 
-    expect(wpPosts).toHaveLength(66);
+    expect(wpPosts).toHaveLength(76);
     for (const source of wpPosts) {
       // Discovery is the posts API, so the window must end on the terminal
       // document rather than on an empty collection.
@@ -328,6 +526,31 @@ describe("Danish JSON-LD source registry", () => {
       }
     }
 
+    for (const [id, legacySpider, domain, postsApiUrl, usePlaywright] of DANISH_WP_POSTS_SOURCE_DEFINITIONS) {
+      expect(byId.get(id)).toMatchObject({
+        legacySpider,
+        domain,
+        allowedDomains: [domain],
+        startUrls: [`${postsApiUrl}?per_page=100&page=1`],
+        fetchMode: usePlaywright === false ? "cheerio" : "playwright",
+        requestSettings: {
+          delaySeconds: 2,
+          rateLimitPerMinute: null,
+          maxConcurrency: 1,
+          maxRetries: 3,
+        },
+      });
+    }
+    expect(byId.get("mummum")).toMatchObject({
+      migrationState: "configured",
+      latestScrapyOutcome: "partial",
+      latestCanary: "2026-08-19T16-20-34.637Z",
+      fetchMode: "cheerio",
+    });
+    expect(byId.get("mummum")?.deferOrBlockReason).toMatch(
+      /35-page catalog remains unvalidated/u
+    );
+
     expect(byId.get("aggieskitchen")?.startUrls[0]).toContain("per_page=20&");
 
     expect(byId.get("acouplecooks")).toMatchObject({
@@ -335,6 +558,250 @@ describe("Danish JSON-LD source registry", () => {
       discovery: "listing",
       fetchMode: "cheerio",
     });
+  });
+
+  it("registers compatible custom sitemap spiders without changing their routes", () => {
+    const source = DANISH_JSONLD_SOURCES.find((entry) => entry.id === "beetrootbakery");
+    expect(source).toMatchObject({
+      legacySpider: "BeetrootBakerySpider",
+      legacyFamily: "CustomSitemapSpider",
+      discovery: "sitemap",
+      sitemapUrls: ["https://www.beetrootbakery.dk/wp-sitemap.xml"],
+      fetchMode: "cheerio",
+      requestSettings: {
+        delaySeconds: 2,
+        rateLimitPerMinute: null,
+        maxConcurrency: 2,
+        maxRetries: 3,
+      },
+      migrationState: "configured",
+      latestScrapyOutcome: "partial",
+      latestCanary: "2026-08-19T16-01-22.287Z",
+    });
+    expect(source?.sitemapDiscovery).toMatchObject({
+      followPatterns: ["post-sitemap"],
+      skipUrlFragments: expect.arrayContaining(["/category/", "/tag/"]),
+    });
+    expect(source?.deferOrBlockReason).toMatch(/uncapped shadow comparison is still required/u);
+
+    expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "vegetariskhverdag"))
+      .toMatchObject({
+        legacySpider: "VegetariskhverdagSpider",
+        legacyFamily: "CustomListingSpider",
+        discovery: "listing",
+        startUrls: ["https://vegetariskhverdag.dk/opskrifter"],
+        recipeUrlPatterns: ["^/\\d{4}/\\d{2}/[a-z0-9æøå-]+/?$"],
+        fetchMode: "cheerio",
+        migrationState: "configured",
+        latestScrapyOutcome: "partial",
+        latestCanary: "2026-08-19T16-23-14.879Z",
+      });
+
+    expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "spisbedre"))
+      .toMatchObject({
+        legacySpider: "SpisbedreSpider",
+        legacyFamily: "EmbeddedJsonSitemapSpider",
+        discovery: "sitemap",
+        sitemapUrls: ["https://spisbedre.dk/opskrifter/sitemap.xml"],
+        recipeExtractor: "spisbedre-inertia",
+        fetchMode: "cheerio",
+        migrationState: "configured",
+        latestScrapyOutcome: "partial",
+        latestCanary: "2026-08-19T16-11-30.677Z",
+      });
+    expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "webopskrifter"))
+      .toMatchObject({
+        legacySpider: "WebopskrifterSpider",
+        legacyFamily: "HtmlMicrodataSitemapSpider",
+        sitemapUrls: ["https://www.webopskrifter.dk/sitemap.xml"],
+        recipeExtractor: "webopskrifter-microdata",
+        fetchMode: "cheerio",
+        migrationState: "configured",
+        latestScrapyOutcome: "succeeded",
+        latestCanary: "2026-08-19T16-16-22.434Z",
+      });
+    expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "meyers"))
+      .toMatchObject({
+        legacySpider: "MeyersSpider",
+        legacyFamily: "SanityRecipeApiSpider",
+        discovery: "listing",
+        fetchMode: "cheerio",
+        requestSettings: { delaySeconds: 1, maxConcurrency: 1 },
+        migrationState: "shadow_passed",
+        latestScrapyOutcome: "succeeded",
+        latestCanary: "2026-08-19T16-28-11.559Z",
+        shadowParity: expect.stringMatching(/1123\/1123 complete records matched/u),
+      });
+    for (const definition of DANISH_CUSTOM_WPRM_SOURCE_DEFINITIONS) {
+      expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === definition.id))
+        .toMatchObject({
+          legacySpider: definition.legacySpider,
+          legacyFamily: "CustomWprmApiSpider",
+          discovery: "listing",
+          startUrls: [`${definition.apiUrl}?per_page=100&page=1`],
+          recipeExtractor: "wprm-api",
+          fetchMode: "cheerio",
+          migrationState: ["foodfanatic", "scandikitchen"].includes(definition.id)
+            ? "shadow_passed"
+            : "configured",
+          latestScrapyOutcome: ["foodfanatic", "scandikitchen"].includes(definition.id)
+            ? "succeeded"
+            : "partial",
+          latestCanary: definition.id === "foodfanatic"
+            ? "2026-08-19T20-30-43.490Z"
+            : definition.id === "scandikitchen"
+              ? "2026-08-19T20-30-04.163Z"
+              : "2026-08-19T16-30-48.666Z",
+        });
+      const source = DANISH_JSONLD_SOURCES.find((entry) => entry.id === definition.id);
+      if (definition.id === "foodfanatic") {
+        expect(source?.shadowParity).toMatch(/504\/504 complete records/u);
+      } else if (definition.id === "scandikitchen") {
+        expect(source?.shadowParity).toMatch(/109\/109 records/u);
+      } else {
+        expect(source?.deferOrBlockReason).toMatch(/catalog still requires an uncapped run/u);
+      }
+    }
+    for (const definition of DANISH_SHOPIFY_BLOG_SOURCE_DEFINITIONS) {
+      expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === definition.id))
+        .toMatchObject({
+          legacySpider: definition.legacySpider,
+          legacyFamily: "HtmlRecipeSitemapSpider",
+          sitemapUrls: [definition.sitemapUrl],
+          recipeExtractor: "shopify-blog-html",
+          fetchMode: "cheerio",
+          migrationState: "shadow_passed",
+          latestScrapyOutcome: "succeeded",
+        });
+      expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === definition.id)
+        ?.shadowParity).toMatch(/\d+\/\d+/u);
+    }
+    expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "femina"))
+      .toMatchObject({
+        legacySpider: "FeminaSpider",
+        legacyFamily: "HtmlRecipeSitemapSpider",
+        sitemapUrls: ["https://www.femina.dk/sitemap.xml"],
+        recipeExtractor: "femina-html",
+        fetchMode: "cheerio",
+        migrationState: "canary_passed",
+        latestScrapyOutcome: "succeeded",
+        latestCanary: "2026-08-19T17-27-48.705Z",
+      });
+    expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "gocook"))
+      .toMatchObject({
+        legacySpider: "GocookSpider",
+        legacyFamily: "HtmlRecipeSitemapSpider",
+        sitemapUrls: ["https://gocook.dk/sitemap.xml"],
+        recipeExtractor: "gocook-jsonld-html",
+        fetchMode: "cheerio",
+        migrationState: "canary_passed",
+        latestScrapyOutcome: "partial",
+        latestCanary: "2026-08-19T17-34-06.299Z",
+      });
+    expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "samvirke"))
+      .toMatchObject({
+        legacySpider: "SamvirkeSpider",
+        legacyFamily: "CustomSitemapSpider",
+        recipeExtractor: "strict-json-ld",
+        allowedDomains: ["samvirke.dk", "opskrifter.coop.dk"],
+        canonicalFollowStatuses: [200, 404],
+        migrationState: "canary_passed",
+        latestScrapyOutcome: "no_data",
+        latestCanary: "2026-08-19T17-45-20.157Z",
+      });
+    expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "alt"))
+      .toMatchObject({
+        legacySpider: "AltSpider",
+        legacyFamily: "HtmlRecipeSitemapSpider",
+        recipeExtractor: "alt-html",
+        sitemapDiscovery: { followPatterns: ["sitemap\\?start="] },
+        migrationState: "canary_passed",
+        latestScrapyOutcome: "partial",
+        latestCanary: "2026-08-19T17-50-45.285Z",
+      });
+    expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "365discount"))
+      .toMatchObject({
+        legacySpider: "Discount365Spider",
+        legacyFamily: "HtmlRecipeSitemapSpider",
+        recipeExtractor: "discount365-html",
+        allowedDomains: ["365discount.coop.dk", "365discount.dk"],
+        migrationState: "canary_passed",
+        latestScrapyOutcome: "partial",
+        latestCanary: "2026-08-19T18-03-03.842Z",
+      });
+    expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "drdk"))
+      .toMatchObject({
+        legacySpider: "DrDkSpider",
+        legacyFamily: "DirectRecipeApiSpider",
+        recipeExtractor: "dr-graphql",
+        migrationState: "canary_passed",
+        latestScrapyOutcome: "no_data",
+        latestCanary: "2026-08-19T18-10-28.791Z",
+      });
+    expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "dr"))
+      .toMatchObject({ legacySpider: "DrSpider", aliasFor: "drdk" });
+    expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "hellofresh"))
+      .toMatchObject({
+        legacySpider: "HellofreshSpider",
+        legacyFamily: "DirectRecipeApiSpider",
+        recipeExtractor: "hellofresh-api",
+        migrationState: "canary_passed",
+        latestScrapyOutcome: "partial",
+        latestCanary: "2026-08-19T18-16-15.232Z",
+      });
+    expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "madforfattigroeve"))
+      .toMatchObject({
+        legacySpider: "MadForFattigroeveSpider",
+        legacyFamily: "DirectRecipeApiSpider",
+        recipeExtractor: "madforfattigroeve-nextjs",
+        migrationState: "canary_passed",
+      });
+    expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "meny"))
+      .toMatchObject({
+        legacySpider: "MenySpider",
+        recipeExtractor: "meny-api",
+        migrationState: "canary_passed",
+        latestScrapyOutcome: "partial",
+        latestCanary: "2026-08-19T18-24-35.758Z",
+      });
+    expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "aarstiderne"))
+      .toMatchObject({ legacySpider: "AarstiderneSpider", aliasFor: "meny" });
+    expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "nemlig"))
+      .toMatchObject({
+        legacySpider: "NemligSpider",
+        recipeExtractor: "nemlig-sitecore",
+        disableHeaderGenerator: true,
+        migrationState: "canary_passed",
+      });
+    expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "kagerogsager"))
+      .toMatchObject({
+        legacySpider: "KagerOgSagerSpider",
+        discovery: "listing",
+        numericYieldOnly: true,
+        migrationState: "shadow_passed",
+        latestCanary: "2026-08-19T19-21-03.129Z",
+        shadowParity: expect.stringContaining("9/9"),
+      });
+    expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "dkkogebogen"))
+      .toMatchObject({
+        legacySpider: "DkKogebogenSpider",
+        discovery: "listing",
+        recipeExtractor: "dkkogebogen-microdata",
+        migrationState: "canary_passed",
+      });
+    expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "nipunijulie"))
+      .toMatchObject({
+        recipeExtractor: "nipunijulie-body-html",
+        migrationState: "shadow_passed",
+        latestScrapyOutcome: "succeeded",
+        shadowParity: expect.stringContaining("140/140"),
+      });
+    expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "thefoodclub"))
+      .toMatchObject({
+        recipeExtractor: "thefoodclub-body-html",
+        fetchMode: "cheerio",
+        migrationState: "canary_passed",
+      });
   });
 
   it("carries the international JSON-LD sources on the same strict contract", () => {
@@ -421,7 +888,9 @@ describe("Danish JSON-LD source registry", () => {
     // meaning; the default selectors are an HTML-listing invariant.
     for (const listing of listingSources.filter(
       (source) =>
-        !["madrejsen", "rema1000", "tv2mad"].includes(source.id) &&
+        !["dkkogebogen", "foodfanatic", "madrejsen", "meyers", "rema1000", "scandikitchen", "tv2mad"]
+          .includes(source.id) &&
+        source.legacyFamily !== "DirectRecipeApiSpider" &&
         source.listingDiscovery?.payload === undefined
     )) {
       expect(listing.listingDiscovery).toMatchObject({
@@ -436,6 +905,17 @@ describe("Danish JSON-LD source registry", () => {
         expect.arrayContaining(["/category/", "/tag/", "/page/", "/author/"])
       );
     }
+
+    expect(byId.get("dkkogebogen")?.listingDiscovery).toMatchObject({
+      recipeLinkSelectors: ['a[href*="/opskrifter/"]'],
+      continuationSelectors: [
+        'a[href*="/kategorier/"]',
+        'a[href*="/retter/"]',
+        'a[rel~="next"][href]',
+      ],
+      continuationForefront: true,
+      recipeForefront: true,
+    });
 
     expect(byId.get("rema1000")?.listingDiscovery?.continuationSelectors)
       .toEqual(["a.sr-only[href]"]);

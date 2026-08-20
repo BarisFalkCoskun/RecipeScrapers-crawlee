@@ -72,6 +72,7 @@ export async function executeDanishJsonLdCli(
   const database = options.database ?? resolved.env["DB_NAME"] ??
     MONGODB_CONFIG.defaultDatabaseName;
   const mongoUri = resolved.env["MONGODB_URI"] ?? "mongodb://localhost:27017";
+  const runKind = crawlRunKind(selection);
   let store: CliStore | undefined;
   let vpnTransport: DanishJsonLdVpnTransport | undefined;
 
@@ -89,7 +90,7 @@ export async function executeDanishJsonLdCli(
       ...(vpnTransport ? { vpnTransport } : {}),
     });
     await store.insertDanishJsonLdRun({
-      kind: "danish-jsonld-v2",
+      kind: runKind,
       schemaVersion: 2,
       crawlRunId,
       startedAt,
@@ -100,6 +101,7 @@ export async function executeDanishJsonLdCli(
     });
     const evidence = {
       crawlRunId,
+      kind: runKind,
       selectedSources: selection.sourceIds,
       maxPages: selection.maxPages ?? null,
       database,
@@ -122,6 +124,27 @@ export async function executeDanishJsonLdCli(
       if (vpnTransport) await vpnTransport.cleanup();
     }
   }
+}
+
+function crawlRunKind(
+  selection: DanishJsonLdCrawlSelection
+): "danish-jsonld-v2" | "danish-wprm-v2" | "danish-recipe-v2" {
+  const wprmCount = selection.sources.filter(
+    (source) => source.legacyFamily === "WprmApiSpider" ||
+      source.recipeExtractor === "wprm-api"
+  ).length;
+  if (wprmCount === selection.sources.length) return "danish-wprm-v2";
+  if (wprmCount > 0) return "danish-recipe-v2";
+  if (selection.sources.some(
+    (source) => source.recipeExtractor !== undefined &&
+      source.recipeExtractor !== "strict-json-ld"
+  )) {
+    return "danish-recipe-v2";
+  }
+  if (selection.sources.some(
+    (source) => source.legacyFamily === "SanityRecipeApiSpider"
+  )) return "danish-recipe-v2";
+  return "danish-jsonld-v2";
 }
 
 function logVpnDiagnostic(event: {

@@ -68,6 +68,82 @@ const completeRecipe = {
 };
 
 describe("Danish JSON-LD source session", () => {
+  it("persists multiple custom recipes from one page with distinct stable identities", async () => {
+    const multiSource: DanishJsonLdSource = {
+      ...source,
+      id: "365discount",
+      domain: "365discount.coop.dk",
+      allowedDomains: ["365discount.coop.dk"],
+      recipeUrlPatterns: ["^https://365discount\\.coop\\.dk/inspiration/opskrifter/"],
+      recipeExtractor: "discount365-html",
+    };
+    const store = new MemoryV2Store();
+    const session = new DanishJsonLdSourceSession({
+      source: multiSource,
+      store,
+      crawlRunId: "run-multi",
+      crawlAttemptId: "attempt-multi",
+      maxPages: 5,
+    });
+    const url = "https://365discount.coop.dk/inspiration/opskrifter/to-retter/";
+    const body = `<html><body><main>
+      <div class="text-container"><h2>Sprøde falafler</h2><p>Ingredienser (2 personer)</p>
+        <p>1 dåse kikærter</p><h3>Fremgangsmåde</h3>
+        <p>1. Blend kikærterne grundigt med krydderier.</p></div>
+      <div class="text-container"><h2>Grøn coleslaw</h2><p>Ingredienser (4 personer)</p>
+        <p>1 spidskål</p><h3>Fremgangsmåde</h3>
+        <p>1. Snit kålen fint og vend salaten grundigt.</p></div>
+    </main></body></html>`;
+
+    await session.handleResponse({
+      kind: "recipe",
+      fetchMode: "cheerio",
+      url,
+      statusCode: 200,
+      headers: {},
+      body,
+    });
+
+    expect(store.recipesV2.map((recipe) => recipe.canonicalUrl)).toEqual([
+      "https://365discount.coop.dk/inspiration/opskrifter/to-retter#sprde-falafler",
+      "https://365discount.coop.dk/inspiration/opskrifter/to-retter#grn-coleslaw",
+    ]);
+    expect(new Set(store.recipesV2.map((recipe) => recipe.sourceRecipeKey)).size).toBe(2);
+    expect(store.pages.get("https://365discount.coop.dk/inspiration/opskrifter/to-retter")?.recipeCount)
+      .toBe(2);
+    expect(session.observation.persistedRecipes).toBe(2);
+  });
+
+  it("follows a validated canonical from a declared retired-page status", async () => {
+    const redirectedSource: DanishJsonLdSource = {
+      ...source,
+      allowedDomains: ["example.dk", "recipes.example.dk"],
+      recipeUrlPatterns: ["^https://(?:example|recipes\\.example)\\.dk/opskrifter/"],
+      canonicalFollowStatuses: [404],
+    };
+    const session = new DanishJsonLdSourceSession({
+      source: redirectedSource,
+      store: new MemoryV2Store(),
+      crawlRunId: "run-rewrite",
+      crawlAttemptId: "attempt-rewrite",
+      maxPages: 5,
+    });
+    const routes = await session.handleResponse({
+      kind: "recipe",
+      fetchMode: "cheerio",
+      url: "https://example.dk/opskrifter/kage",
+      statusCode: 404,
+      headers: { "content-type": "text/html" },
+      body: `<link rel="canonical" href="https://recipes.example.dk/opskrifter/kage-123">`,
+    });
+    expect(routes.cheerioRequests).toContainEqual({
+      kind: "recipe",
+      url: "https://recipes.example.dk/opskrifter/kage-123",
+      forefront: true,
+    });
+    expect(session.observation.failedRequests).toBe(0);
+  });
+
   it("records an off-domain request only after runner queue admission, without requiring page persistence", () => {
     const session = new DanishJsonLdSourceSession({
       source,
@@ -126,6 +202,7 @@ describe("Danish JSON-LD source session", () => {
     expect(first.playwrightRequests).toEqual([{ kind: "recipe", url }]);
     expect(duplicate.playwrightRequests).toEqual([]);
     expect(rendered.playwrightRequests).toEqual([]);
+    expect(session.observation.rejectedIncompleteJsonLd).toBe(0);
     expect(store.recipesV2).toHaveLength(1);
     expect(store.recipesV2[0]).toMatchObject({
       schemaVersion: 2,
@@ -224,6 +301,21 @@ describe("Danish JSON-LD source session", () => {
     expect(routes.playwrightRequests).toEqual([
       { kind: "recipe", url: "https://example.dk/opskrifter/delvis" },
     ]);
+    expect(session.observation.rejectedIncompleteJsonLd).toBe(0);
+
+    await session.handleResponse({
+      kind: "recipe",
+      fetchMode: "playwright",
+      url: "https://example.dk/opskrifter/delvis",
+      statusCode: 200,
+      headers: {},
+      body: `<script type="application/ld+json">${JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Recipe",
+        name: "Kage",
+      })}</script>`,
+    });
+    expect(session.observation.rejectedIncompleteJsonLd).toBe(1);
   });
 
   it("does not render ordinary complete HTML without dynamic evidence", async () => {
@@ -333,6 +425,31 @@ describe("Danish JSON-LD source session", () => {
       "script-gated-continuation"
     );
     expect(session.outcome().outcome).not.toBe("succeeded");
+  });
+
+  it("deduplicates by canonical identity while preserving the discovered fetch URL", async () => {
+    const session = new DanishJsonLdSourceSession({
+      source: { ...source, discovery: "listing", legacyFamily: "JsonLdListingSpider" },
+      store: new MemoryV2Store(),
+      crawlRunId: "run-fetch-representation",
+      crawlAttemptId: "attempt-fetch-representation",
+      maxPages: 5,
+    });
+
+    const routes = await session.handleResponse({
+      kind: "listing",
+      fetchMode: "cheerio",
+      url: "https://example.dk/opskrifter/",
+      statusCode: 200,
+      headers: { "content-type": "text/html" },
+      body: `<a href="https://www.example.dk/opskrifter/kage/">Kage</a>
+        <a href="https://example.dk/opskrifter/kage">Dublet</a>`,
+    });
+
+    expect(routes.cheerioRequests).toEqual([
+      { kind: "recipe", url: "https://www.example.dk/opskrifter/kage/" },
+    ]);
+    expect(session.observation.discoveredRecipeCandidates).toBe(2);
   });
 
   it("admits a configured listing host without counting it off-domain", async () => {
@@ -457,6 +574,87 @@ describe("Danish JSON-LD source session", () => {
 
     expect(session.observation.failedRequests ?? 0).toBe(0);
     expect(session.observation.discoveryComplete).not.toBe(false);
+  });
+
+  it("persists complete WPRM API recipes without fetching their HTML pages", async () => {
+    const wprmSource: DanishJsonLdSource = {
+      ...source,
+      id: "wprm-fixture",
+      legacyFamily: "WprmApiSpider",
+      discovery: "listing",
+      sitemapUrls: [],
+      startUrls: ["https://example.dk/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"],
+      recipeUrlPatterns: ["^https?://"],
+      listingDiscovery: {
+        recipeLinkSelectors: [],
+        skipPathFragments: [],
+        continuationSelectors: [],
+        continuationUrlPatterns: [],
+        payload: {
+          kind: "json-paths",
+          expectedRoot: "array",
+          recipePaths: ["[].link"],
+          continuationOffset: { parameter: "page", step: 1, maxOffset: 500 },
+          terminalPayload: { path: "code", equals: "rest_post_invalid_page_number" },
+        },
+      },
+    };
+    const payload = [{
+      link: "https://www.example.dk/opskrifter/groed",
+      recipe: {
+        id: 42,
+        name: "Morgengrød",
+        summary: "<p>En dansk opskrift.</p>",
+        servings: "2",
+        servings_unit: "portioner",
+        ingredients: [{ ingredients: [{ amount: "2", unit: "dl", name: "havregryn", notes: "" }] }],
+        instructions: [{ instructions: [{ text: "Kog grøden i fem minutter." }] }],
+        tags: { course: [{ name: "Morgenmad" }] },
+      },
+    }];
+    const store = new MemoryV2Store();
+    const session = new DanishJsonLdSourceSession({
+      source: wprmSource,
+      store,
+      crawlRunId: "run-wprm",
+      crawlAttemptId: "attempt-wprm",
+      maxPages: 5,
+    });
+    const body = JSON.stringify(payload);
+
+    const routes = await session.handleResponse({
+      kind: "listing",
+      fetchMode: "cheerio",
+      url: wprmSource.startUrls[0],
+      statusCode: 200,
+      headers: { "content-type": "application/json" },
+      body,
+    });
+
+    expect(routes.cheerioRequests).toEqual([{
+      kind: "listing",
+      url: "https://example.dk/wp-json/wp/v2/wprm_recipe?per_page=100&page=2",
+    }]);
+    expect(routes.playwrightRequests).toEqual([]);
+    expect(store.recipesV2).toHaveLength(1);
+    expect(store.recipesV2[0]).toMatchObject({
+      sourceId: "wprm-fixture",
+      canonicalUrl: "https://example.dk/opskrifter/groed",
+      extractionMethod: "wprm-api",
+      normalized: {
+        title: "Morgengrød",
+        categories: ["Morgenmad"],
+      },
+    });
+    const page = [...store.pages.values()][0];
+    expect(page.extractionMethod).toBe("wprm-api");
+    expect(gunzipSync(Buffer.from(page.rawApiPayload?.buffer ?? [])).toString()).toBe(body);
+    expect(session.observation).toMatchObject({
+      persistedRecipes: 1,
+      discoveredRecipeCandidates: 1,
+      rejectedIncompleteWprm: 0,
+      rejectedMalformedWprm: 0,
+    });
   });
 
   it("still fails a declared-terminal status carrying a different document", async () => {

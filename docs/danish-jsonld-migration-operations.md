@@ -99,6 +99,12 @@ session. Configure those sources with `fetchMode: "playwright"`; the rendered
 path re-requests a browser check while retries remain instead of recording it
 as a terminal block. Sund på Budget is the known instance.
 
+For otherwise HTTP-friendly sources with only intermittent challenged pages,
+the runner escalates an HTTP 454/455 response from Cheerio to Playwright. That
+request then uses the same in-browser retry behavior, while unchallenged pages
+stay on the faster HTTP path. This escalation is disabled under `--vpn` because
+it cannot preserve the browser-cleared address/session pair across transports.
+
 Such a source must not be crawled behind `--vpn`. The transport leases a relay
 per request, so each request arrives from a new address and earns a new
 challenge, and rotating on a challenge discards the very session that would
@@ -283,7 +289,7 @@ The native MongoDB collections for this path are:
 | `recipes_v2` | Strict JSON-LD `RecipeDocumentV2` records, keyed by `sourceRecipeKey`; indexed by `(sourceId, crawlRunId)` for exact-run evidence reads. |
 | `pages` | Page provenance; exact `application/ld+json` script bodies are stored in compressed `rawJsonLdScripts`. |
 | `recipe_content_matches` | Cross-source and same-source content-hash match audit records. |
-| `crawl_runs` | Both legacy run summaries and dedicated V2 run records. Danish records have `kind: "danish-jsonld-v2"`, `schemaVersion: 2`, source IDs, source outcomes, and observations; legacy reports exclude those records. Retention is managed by the TTL index. |
+| `crawl_runs` | Both legacy run summaries and dedicated V2 run records. Strict JSON-LD records use `kind: "danish-jsonld-v2"`, direct WPRM records use `kind: "danish-wprm-v2"`, and mixed or custom embedded-recipe selections use `kind: "danish-recipe-v2"`. All carry `schemaVersion: 2`, source IDs, source outcomes, and observations; legacy reports exclude them. Retention is managed by the TTL index. |
 
 Consumers must read `RecipeDocumentV2.normalized` for the portable recipe
 payload: title, ingredients, ordered instructions, durations, yield, images,

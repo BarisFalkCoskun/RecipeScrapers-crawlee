@@ -34,7 +34,7 @@ export interface PageDocument {
   httpStatus: number;
   fetchMode: "cheerio" | "playwright";
   redirectChain?: string[];
-  extractionMethod: "json-ld" | "html-parsing" | "partial" | "failed";
+  extractionMethod: "json-ld" | "wprm-api" | "embedded-json" | "html-parsing" | "api-json" | "partial" | "failed";
   extractorVersion: string;
   extractionConfidence: number;
   extractionSignals: string[];
@@ -42,6 +42,8 @@ export interface PageDocument {
   rawHtml?: Binary;
   /** Exact application/ld+json script bodies, each compressed independently. */
   rawJsonLdScripts?: Binary[];
+  /** Exact WPRM API response body, compressed for source provenance. */
+  rawApiPayload?: Binary;
   pageContentHash: string;
   discoverySource: DiscoverySource;
   sourceDomain?: string;
@@ -126,7 +128,7 @@ export interface RecipeDocumentV2 {
   language: string;
   languageConfidence: number;
   languageSignals: string[];
-  extractionMethod: "json-ld";
+  extractionMethod: "json-ld" | "wprm-api" | "embedded-json" | "html-parsing" | "api-json";
   extractorVersion: string;
   extractionConfidence: number;
   extractionSignals: string[];
@@ -152,6 +154,10 @@ export type SourceOutcomeReason =
   | "recipe-candidates-discovered"
   | "incomplete-json-ld-rejected"
   | "malformed-json-ld-rejected"
+  | "incomplete-wprm-rejected"
+  | "malformed-wprm-rejected"
+  | "incomplete-custom-recipe-rejected"
+  | "malformed-custom-payload-rejected"
   | "playwright-failure"
   | "mongo-failure"
   | "max-pages-cap-reached"
@@ -186,7 +192,7 @@ export interface DanishJsonLdRunSummary {
  */
 export interface DanishJsonLdCrawlRunDocument {
   _id?: ObjectId;
-  kind: "danish-jsonld-v2";
+  kind: "danish-jsonld-v2" | "danish-wprm-v2" | "danish-recipe-v2";
   schemaVersion: 2;
   crawlRunId: string;
   startedAt: Date;

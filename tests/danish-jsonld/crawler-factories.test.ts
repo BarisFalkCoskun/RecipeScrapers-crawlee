@@ -34,6 +34,7 @@ describe("Danish JSON-LD crawler factories", () => {
     // and the recipes are lost as failed requests.
     expect(supported).toContain("text/plain");
     expect(supported).toContain("text/html");
+    expect(supported).toContain("application/graphql-response+json");
   });
 
   it("hides Chromium's automation markers from browser-check sources", () => {
@@ -99,6 +100,22 @@ describe("Danish JSON-LD crawler factories", () => {
       maxRequestRetries: 3,
       sameDomainDelaySecs: 2,
     });
+  });
+
+  it("disables browser header generation only for Nemlig's JSON transport", async () => {
+    const nemlig = DANISH_JSONLD_SOURCES.find((source) => source.id === "nemlig");
+    const arla = DANISH_JSONLD_SOURCES.find((source) => source.id === "arla");
+    if (!nemlig || !arla) throw new Error("Registry fixtures missing");
+    const hooksFor = (source: typeof nemlig) =>
+      (createDanishJsonLdCheerioCrawler({ source, requestHandler }) as unknown as {
+        preNavigationHooks: Array<(context: unknown, options: { useHeaderGenerator?: boolean }) => Promise<void>>;
+      }).preNavigationHooks;
+
+    const nemligOptions: { useHeaderGenerator?: boolean } = {};
+    await hooksFor(nemlig).at(-1)?.({}, nemligOptions);
+
+    expect(nemligOptions.useHeaderGenerator).toBe(false);
+    expect(hooksFor(arla)).toHaveLength(0);
   });
 
   it("accepts the same dynamic proxy configuration for Cheerio and Playwright", () => {

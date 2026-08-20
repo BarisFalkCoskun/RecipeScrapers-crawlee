@@ -8,7 +8,7 @@ describe("Danish JSON-LD migration status", () => {
   it("reports all required checklist fields in JSON", () => {
     const report = createMigrationStatusReport();
 
-    expect(report.sources).toHaveLength(189);
+    expect(report.sources).toHaveLength(314);
     const unevidenced = report.sources.find((entry) => entry.latestCanary === null);
     expect(unevidenced).toMatchObject({
       source: expect.any(String),
@@ -31,7 +31,7 @@ describe("Danish JSON-LD migration status", () => {
   it("renders readable console and Markdown reports", () => {
     const report = createMigrationStatusReport();
 
-    expect(renderMigrationStatus(report, "console")).toContain("Danish JSON-LD migration status");
+    expect(renderMigrationStatus(report, "console")).toContain("Danish recipe migration status");
     expect(renderMigrationStatus(report, "markdown")).toContain(
       "| Source | Domain | Discovery | Fetch | Scrapy | Crawlee | Canary | Shadow parity | Cutover date | Reason |"
     );

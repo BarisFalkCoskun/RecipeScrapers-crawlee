@@ -1,3 +1,25 @@
+import { DANISH_WPRM_SOURCE_DEFINITIONS } from "../wprm/danish-sources.js";
+import { DANISH_WP_POSTS_SOURCE_DEFINITIONS } from "./danish-wp-posts-sources.js";
+import {
+  DANISH_CUSTOM_JSONLD_SOURCE_DEFINITIONS,
+  DANISH_CUSTOM_LISTING_JSONLD_SOURCE_DEFINITIONS,
+  DANISH_CUSTOM_WPRM_SOURCE_DEFINITIONS,
+  DANISH_ARTICLE_HTML_SOURCE_DEFINITIONS,
+  DANISH_JSONLD_HTML_SOURCE_DEFINITIONS,
+  DANISH_REDIRECTED_JSONLD_SOURCE_DEFINITIONS,
+  DANISH_ALT_HTML_SOURCE_DEFINITIONS,
+  DANISH_MULTI_RECIPE_HTML_SOURCE_DEFINITIONS,
+  DANISH_DR_GRAPHQL_SOURCE_DEFINITIONS,
+  DANISH_AUTHENTICATED_API_SOURCE_DEFINITIONS,
+  DANISH_DAGROFA_API_SOURCE_DEFINITIONS,
+  DANISH_SITECORE_API_SOURCE_DEFINITIONS,
+  DANISH_LEGACY_BODY_HTML_SOURCE_DEFINITIONS,
+  DANISH_SHOPIFY_BLOG_SOURCE_DEFINITIONS,
+  DANISH_EMBEDDED_JSON_SOURCE_DEFINITIONS,
+  DANISH_HTML_RECIPE_SOURCE_DEFINITIONS,
+} from "./custom-danish-sources.js";
+import { MEYERS_SANITY_URL } from "../custom/meyers.js";
+
 export const MIGRATION_STATES = [
   "not_started",
   "configured",
@@ -17,6 +39,10 @@ export interface ListingDiscoveryStrategy {
   skipPathFragments: string[];
   continuationSelectors: string[];
   continuationUrlPatterns: string[];
+  /** Prefer depth-first traversal for deeply nested listing hierarchies. */
+  continuationForefront?: boolean;
+  /** Process discovered recipes before exploring more listing branches. */
+  recipeForefront?: boolean;
   /**
    * Hosts that serve this source's listing route without serving its recipes.
    * They are admitted for listing and continuation requests only; recipes and
@@ -61,14 +87,33 @@ export interface DanishJsonLdSource {
   domain: string;
   allowedDomains: string[];
   legacySpider: string;
-  legacyFamily: "JsonLdSitemapRecipeSpider" | "JsonLdListingSpider";
+  legacyFamily:
+    | "JsonLdSitemapRecipeSpider"
+    | "JsonLdListingSpider"
+    | "WpPostsJsonLdSpider"
+    | "WprmApiSpider"
+    | "CustomSitemapSpider"
+    | "CustomListingSpider"
+    | "EmbeddedJsonSitemapSpider"
+    | "HtmlMicrodataSitemapSpider"
+    | "SanityRecipeApiSpider"
+    | "CustomWprmApiSpider"
+    | "DirectRecipeApiSpider"
+    | "HtmlRecipeSitemapSpider";
   discovery: DiscoveryMode;
   sitemapUrls: string[];
   startUrls: string[];
   recipeUrlPatterns: string[];
+  canonicalFollowStatuses?: number[];
+  /** A legacy command name that resolves to one canonical source execution. */
+  aliasFor?: string;
   listingDiscovery?: ListingDiscoveryStrategy;
   sitemapDiscovery?: SitemapDiscoveryStrategy;
   fetchMode: FetchMode;
+  /** Disable Crawlee's browser-like HTTP headers for JSON APIs that gate browsers. */
+  disableHeaderGenerator?: true;
+  /** Match legacy spiders that persisted only the first integer from recipeYield. */
+  numericYieldOnly?: true;
   requestSettings: {
     delaySeconds: number;
     rateLimitPerMinute: number | null;
@@ -76,8 +121,33 @@ export interface DanishJsonLdSource {
     maxRetries: number;
   };
   requireCompleteJsonLd: true;
+  recipeExtractor?:
+    | "strict-json-ld"
+    | "wprm-api"
+    | "shopify-blog-html"
+    | "femina-html"
+    | "gocook-jsonld-html"
+    | "alt-html"
+    | "discount365-html"
+    | "dr-graphql"
+    | "hellofresh-api"
+    | "madforfattigroeve-nextjs"
+    | "meny-api"
+    | "nemlig-sitecore"
+    | "spisbedre-inertia"
+    | "dkkogebogen-microdata"
+    | "nipunijulie-body-html"
+    | "thefoodclub-body-html"
+    | "webopskrifter-microdata"
+    | "gigtforeningen-wp-html";
   migrationState: MigrationState;
-  latestScrapyOutcome: "not_audited";
+  latestScrapyOutcome:
+    | "not_audited"
+    | "succeeded"
+    | "partial"
+    | "blocked"
+    | "no_data"
+    | "failed";
   deferOrBlockReason?: string;
   latestCanary?: string;
   shadowParity?: string;
@@ -5407,6 +5477,12 @@ const LEGACY_LISTING_DISCOVERY_OVERRIDES: Record<
   string,
   Partial<ListingDiscoveryStrategy>
 > = {
+  bornholms: {
+    skipPathFragments: [
+      ...LEGACY_LISTING_SKIP_PATHS,
+      "/opskrifter/bagel-med-bornholms-fiskepate",
+    ],
+  },
   ferrerorocher: {
     payload: {
       kind: "json-paths",
@@ -5745,34 +5821,39 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
    * control, so a canary here would report partial discovery as complete.
    */
   aperol: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-14T20-03-09.220Z-attempt-4abcc7ae-5fcc-4119-9b75-44036466910b",
+    shadowParity: "100%",
     deferOrBlockReason:
-      "Uncapped run persisted 1 recipes with complete discovery and no blocked or failed request",
+      "Three uncapped Crawlee runs produced the same single complete recipe with complete discovery and no operational failures; the full side-effect-disabled Scrapy run emitted the same URL, and every material field matched exactly",
   },
   ferrerorocher: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-14T20-03-32.139Z-attempt-f3b7a390-cb11-42ae-9782-728099d8e443",
+    shadowParity: "100%",
     deferOrBlockReason:
-      "Uncapped run persisted 3 recipes with complete discovery and no blocked or failed request",
+      "Three uncapped Crawlee runs produced the same three-recipe catalog with complete discovery and no operational failures; all three records matched the full Scrapy output on every material field after the shared normalizer decoded upstream HTML entities in JSON-LD strings",
   },
   friluftslageret: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-14T20-08-35.579Z-attempt-53fdc75c-e4dd-4a03-bc06-000512c6b8c2",
+    shadowParity: "100% required fields; additive cuisine",
     deferOrBlockReason:
-      "Uncapped run persisted 1 recipes with complete discovery and no blocked or failed request",
+      "Three uncapped Crawlee runs and the full Scrapy run traversed all 17 current recipe candidates and emitted the same sole complete record with every legacy material field matching; Crawlee additionally preserves recipeCuisine=Outdoor, which the legacy item schema discards, and both reproduce the upstream page's mismatched fajitas URL and pizza Recipe payload",
   },
   glutenfrimagi: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-14T20-07-53.129Z-attempt-25799574-7bc4-42c5-820a-09518a4eda5c",
+    shadowParity: "100%",
     deferOrBlockReason:
-      "Uncapped run persisted 8 recipes with complete discovery and no blocked or failed request",
+      "Three uncapped Crawlee runs and the full browser-backed Scrapy run traversed the same 15 candidates, emitted the same eight complete recipes, rejected the same seven non-recipe pages, and matched every material field; the latest Crawlee run cleared one initial HTTP 454 browser check on its in-session retry with no terminal failure",
   },
   knaehoejkarse: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-14T20-07-13.596Z-attempt-bf40d0e4-7bed-4947-90c6-45049106452d",
+    migrationState: "shadow_passed",
+    latestCanary: "2026-08-19T21-07-35.013Z",
+    shadowParity: "12/12 recipes; 100% material-field parity",
     deferOrBlockReason:
-      "Uncapped run persisted 12 recipes with complete discovery and no blocked or failed request",
+      "Three uncapped browser-backed Crawlee runs and the full Scrapy run traversed the same 13 candidates, emitted the same 12 recipes, excluded the same non-recipe page, and matched every material field with no failed or blocked request",
   },
   madrejsen: {
     migrationState: "canary_passed",
@@ -5781,16 +5862,18 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 149 recipes with complete discovery and no blocked or failed request",
   },
   parcelhuslykke: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-14T20-06-39.804Z-attempt-7f38470e-f0f5-422d-a434-ff152b40e681",
+    migrationState: "shadow_passed",
+    latestCanary: "2026-08-19T21-07-35.013Z",
+    shadowParity: "11/11 recipes; 100% legacy fields with additive yield and cuisine",
     deferOrBlockReason:
-      "Uncapped run persisted 11 recipes with complete discovery and no blocked or failed request",
+      "Three uncapped Crawlee runs and the full Scrapy run completed the same 12 requests and emitted the same 11 recipes with exact URLs, titles, ingredients, instruction grouping and text, times, images, categories, and keywords; Crawlee intentionally preserves full yield text and recipeCuisine that the legacy item schema truncates or drops",
   },
   recipesairfryer_dk: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-14T20-04-00.259Z-attempt-a7db1f8a-4133-459e-b30a-448c35056fdb",
+    migrationState: "shadow_passed",
+    latestCanary: "2026-08-19T21-26-09.106Z",
+    shadowParity: "47/47 recipes; 100% legacy fields with richer yield text",
     deferOrBlockReason:
-      "Uncapped run persisted 47 recipes with complete discovery and no blocked or failed request",
+      "Three uncapped Crawlee runs and the full Scrapy run followed all eight listing pages, emitted the same 47 recipes, rejected the same two non-recipe articles, and matched every legacy field; Crawlee intentionally preserves full yield labels on eight records that Scrapy truncates",
   },
   rema1000: {
     migrationState: "canary_passed",
@@ -5799,82 +5882,99 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 671 recipes with complete discovery and no blocked or failed request",
   },
   beauvais: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-14T22-55-14.681Z-attempt-06bf543f-0df8-4464-ade7-6f2e174603ea",
+    migrationState: "shadow_passed",
+    latestCanary: "2026-08-19T21-43-54.090Z",
+    shadowParity: "69/69 recipes; 100% material-field parity",
     deferOrBlockReason:
-      "Uncapped run persisted 69 recipes with complete discovery and no blocked or failed request",
+      "Two uncapped Crawlee runs and the full Scrapy run completed both source sitemaps and the same 71 requests, emitted the same 69 recipes, and matched every material field exactly with no operational failure",
   },
   cocktaily: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-14T22-30-27.302Z-attempt-0bf7133d-8283-4f60-ab3f-d884a91e03c1",
+    shadowParity: "100% required fields; additive yield units and cuisines",
     deferOrBlockReason:
-      "Uncapped run persisted 36 recipes with complete discovery and no blocked or failed request",
+      "Three uncapped Crawlee runs and the full Scrapy run produced the same 36 URLs with exact titles, ingredients, instructions, times, images, categories, and keywords and no operational failures; Crawlee intentionally preserves each upstream yield as '1 serving' instead of legacy numeric-only 1 and retains recipeCuisine, which the legacy item schema discards",
   },
   evatrio: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-14T22-38-28.666Z-attempt-c7c07bee-eb1a-4a4d-ac8d-dd2076b6bd38",
+    shadowParity: "100% required fields; additive yield units and cuisines",
     deferOrBlockReason:
-      "Uncapped run persisted 28 recipes with complete discovery and no blocked or failed request",
+      "Three uncapped Crawlee runs and the full Scrapy run each completed 92 requests over 218 listing occurrences and 88 unique recipe pages, emitting the same 28 recipes while the other 60 pages had no Recipe JSON-LD; after normalizing zero durations, embedded HTML, and comma-separated categories, every legacy field matches, while Crawlee intentionally preserves full yield text and recipeCuisine that the legacy schema truncates or drops",
   },
   hannerobinson: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-14T22-58-02.099Z-attempt-abadfe8b-8410-42e3-bad2-e58c6494762f",
+    migrationState: "shadow_passed",
+    latestCanary: "2026-08-19T21-43-54.090Z",
+    shadowParity: "2/2 recipes; 100% legacy fields with richer yield and cuisine",
     deferOrBlockReason:
-      "Uncapped run persisted 2 recipes with complete discovery and no blocked or failed request",
+      "Two uncapped Crawlee runs and the full Scrapy run traversed the same 69 candidates, emitted the same two recipes, and agreed that 67 pages contain no Recipe JSON-LD; every legacy field matched, while Crawlee intentionally preserves full yield labels and the published Dansk or Italiensk cuisine",
   },
   ketomums: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-14T22-36-27.112Z-attempt-74639a33-c169-4513-8e20-2ace0ba01e74",
+    migrationState: "shadow_passed",
+    latestCanary: "2026-08-19T21-40-24.489Z",
+    shadowParity: "50/50 recipes; 100% legacy fields with richer yield text",
     deferOrBlockReason:
-      "Uncapped run persisted 47 recipes with complete discovery and no blocked or failed request",
+      "Two current uncapped Crawlee runs emitted byte-identical 50-record outputs and source keys with no operational failures, confirming three recipes added since the retained runs; the full Scrapy run emitted the same 50 URLs and every legacy field matched, while Crawlee intentionally preserves full yield labels that Scrapy truncates",
   },
   kornkammeret: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-14T22-20-20.119Z-attempt-63551004-a723-4094-b327-09787d4eb087",
+    migrationState: "shadow_passed",
+    latestCanary: "2026-08-19T21-14-37.357Z",
+    shadowParity: "33/33 recipes; 100% legacy fields with richer yield text",
     deferOrBlockReason:
-      "Uncapped run persisted 33 recipes with complete discovery and no blocked or failed request",
+      "Three uncapped Crawlee runs and the full Scrapy run emitted the same 33-recipe catalog with exact URLs, titles, ingredients, instructions, times, images, and taxonomy and no operational failures; Crawlee intentionally preserves full yield labels on 20 records that Scrapy truncates",
   },
   nescafe: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-14T22-31-51.255Z-attempt-0b93a2d3-9e6e-4148-9306-66190afe12d9",
+    migrationState: "shadow_passed",
+    latestCanary: "2026-08-19T21-23-23.709Z",
+    shadowParity: "34/34 recipes; 100% legacy fields with richer yield text",
     deferOrBlockReason:
-      "Uncapped run persisted 34 recipes with complete discovery and no blocked or failed request",
+      "Three uncapped Crawlee runs and the full Scrapy run traversed the same 36 recipe candidates, emitted the same 34 recipes, excluded the same two listing pages, and matched every legacy field after ignoring presentational ingredient HTML and dropping one empty UI-label HowToStep; Crawlee intentionally preserves upstream Serving units that Scrapy discards",
   },
   nutella: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-14T22-47-10.442Z-attempt-90370b42-f322-432f-aafe-ec630944c6b2",
+    migrationState: "shadow_passed",
+    latestCanary: "2026-08-19T21-37-39.862Z",
+    shadowParity: "55/55 recipes; 100% legacy fields with richer yield text",
     deferOrBlockReason:
-      "Uncapped run persisted 55 recipes with complete discovery and no blocked or failed request",
+      "Four uncapped Crawlee runs and the full Scrapy run traversed the same 58 candidates, emitted the same 55 recipes, rejected the same three campaign pages, and matched every legacy field after preserving inline HTML text adjacency while spacing line breaks; Crawlee intentionally retains complete yield units on 22 records that Scrapy truncates",
   },
   violife: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-14T22-15-06.343Z-attempt-b9e38ccf-4d5d-4af5-8098-6134e4f46703",
+    migrationState: "shadow_passed",
+    latestCanary: "2026-08-19T21-14-37.357Z",
+    shadowParity: "28/28 recipes; 100% material-field parity",
     deferOrBlockReason:
-      "Uncapped run persisted 28 recipes with complete discovery and no blocked or failed request",
+      "Three uncapped Crawlee runs and the full Scrapy run completed the same 29 requests, emitted the same 28 recipes, and matched every material field exactly with no failed, blocked, rejected, storage, or domain record",
   },
   frokenkraesen_com: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-14T22-44-17.709Z-attempt-7b4df030-3d95-4e7d-8b6f-599570b741cd",
+    migrationState: "shadow_passed",
+    latestCanary: "2026-08-19T21-43-54.090Z",
+    shadowParity: "51/51 recipes; 100% legacy fields with richer yield text",
     deferOrBlockReason:
-      "Uncapped run persisted 51 recipes with complete discovery and no blocked or failed request",
+      "Two uncapped Crawlee runs and the full Scrapy run completed the same 57 requests over 56 discovered candidates, emitted the same 51 recipes, excluded the same four non-recipe pages plus one redirect duplicate, and matched every legacy field except intentionally preserved yield labels",
   },
   schulstad: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-15T05-52-37.152Z-attempt-092a30f7-537d-42bc-930c-67427da152d3",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
+    latestCanary: "2026-08-19T22-44-52.098Z",
+    shadowParity:
+      "94/94 recipes and all material legacy fields; richer yield labels retained",
     deferOrBlockReason:
-      "Uncapped run persisted 94 recipes with complete discovery and no blocked or failed request",
+      "Two post-fix uncapped Crawlee runs emitted identical 94-record keys and normalized content and completed all 95 requests without failure; the full Scrapy run emitted the same recipes and every legacy field matches after preserving ingredient array boundaries, while Crawlee retains yield labels that Scrapy truncates to the first integer",
   },
   madformadelskere: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-15T05-56-27.179Z-attempt-ad2aa124-2f05-469e-ad64-a2edfea11329",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
+    latestCanary: "2026-08-19T22-27-55.477Z",
+    shadowParity:
+      "72/72 recipes and all material legacy fields; additive cuisines retained",
     deferOrBlockReason:
-      "Uncapped run persisted 72 recipes with complete discovery and no blocked or failed request",
+      "Two Crawlee outputs had identical 72-record keys and normalized content; after preserving discovered fetch URLs, the uncapped rerun completed all 113 requests without failure. All 71 full-run Scrapy records plus its directly parsed redirect-deduped 72nd page match every legacy field, while Crawlee retains recipeCuisine that the JSON-LD item adapter discards",
   },
   semper: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-15T06-53-38.420Z-attempt-fe65cdc2-cd7e-4dba-9d90-9007e80ed99e",
+    migrationState: "shadow_passed",
+    latestCanary: "2026-08-19T21-07-35.013Z",
+    shadowParity: "25/25 recipes; 100% legacy fields with richer yield text",
     deferOrBlockReason:
-      "Served its recipe HTML as text/plain and returned no data until that content type was accepted; now 25 recipes with complete discovery and no blocked or failed request",
+      "Three uncapped Crawlee runs and the full Scrapy run completed the same 26 requests and emitted the same 25 recipes with exact legacy fields after handling text/plain recipe HTML, top-level string instructions, Danish duration text such as '1 time', and equivalent www and bare-host image URLs; Crawlee intentionally preserves yield ranges and units that Scrapy truncates to the first integer",
   },
   stinna: {
     migrationState: "canary_passed",
@@ -5883,10 +5983,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1430 recipes over 1934 pages with complete discovery and no blocked or failed request; six pages carry Recipe JSON-LD without required fields and stay rejected",
   },
   bodylab: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-15T08-26-32.970Z-attempt-c3922faf-ed16-463b-ba0d-92d0823f08af",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "partial",
+    latestCanary: "2026-08-20T00-15-47.667Z",
+    shadowParity:
+      "29/29 legacy-visible recipes match exactly; stable 149-recipe Crawlee catalog",
     deferOrBlockReason:
-      "Uncapped run persisted 149 recipes with complete discovery and no blocked or failed request; two pages carry Recipe JSON-LD without required fields and stay rejected",
+      "Two uncapped Crawlee runs traversed all ten current listing pages and emitted identical 149-record keys and normalized content across 175 responses with no operational failure. Scrapy stopped after the first visible-anchor listing window and emitted 29 recipes; every overlapping recipe and material field matches exactly. Crawlee correctly retains the complete paginated catalog and rejects one incomplete page",
   },
   starbucksathome: {
     migrationState: "configured",
@@ -5895,34 +5998,45 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Crawl is clean but the source rejects more than it keeps: 96 pages carry Recipe JSON-LD without required fields against 28 persisted, so its JSON-LD coverage needs review before a canary",
   },
   klank: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-15T08-36-39.727Z-attempt-0f50f57c-d0a3-491c-a921-fc0c6c9e81da",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
+    latestCanary: "2026-08-19T23-22-41.211Z",
+    shadowParity: "52/52 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 52 recipes with complete discovery and no blocked or failed request; two pages carry Recipe JSON-LD without required fields and stay rejected",
+      "Two current uncapped Crawlee runs and the full Scrapy run completed the same 74 requests, emitted the same 52 recipes, and rejected the same two incomplete pages. Every material field matches, both Crawlee outputs have identical keys and normalized records, and no operational failure occurred",
   },
   glyngoere: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-15T09-12-35.284Z-attempt-32ec834a-eb8e-4921-94b0-d9310965378b",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
+    latestCanary: "2026-08-20T00-04-32.242Z",
+    shadowParity: "74/74 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 74 recipes with complete discovery and no blocked or failed request; one page carries Recipe JSON-LD without required fields and stays rejected",
+      "Two clean uncapped Crawlee runs emitted identical 74-record keys and normalized content, completed all 76 requests, and rejected the same incomplete page; the full Scrapy run emitted the same recipes with exact material-field parity. A longer cooldown let the repeat clear its initial HTTP 454 on the first in-session retry; Crawlee completed in 188 seconds versus Scrapy's 483 seconds",
   },
   bareencocktail: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-15T09-15-42.018Z-attempt-2bea2286-2c9c-4260-94b6-7ce5a53bca8d",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
+    latestCanary: "2026-08-19T23-40-40.230Z",
+    shadowParity: "81/81 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 81 recipes with complete discovery and no blocked or failed request; one page carries Recipe JSON-LD without required fields and stays rejected",
+      "Two current uncapped Crawlee runs and the full Scrapy run emitted the same 81 recipes with exact material-field parity, rejected the same incomplete Clover Club page, and identified the same three category pages without Recipe JSON-LD. Crawlee cleared one initial HTTP 454 in-session on the first run; the repeat completed without retries, and both outputs have identical keys and normalized records",
   },
   copenhagendistillery_da: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-15T09-19-17.647Z-attempt-081d4437-9b38-40f7-bd50-fd7cd343a974",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
+    latestCanary: "2026-08-19T23-48-59.237Z",
+    shadowParity: "87/87 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 87 recipes with complete discovery and no blocked or failed request; two pages carry Recipe JSON-LD without required fields and stay rejected",
+      "Two current uncapped Crawlee runs emitted identical 87-record keys and normalized content with complete discovery and no operational failure; the full Scrapy run emitted the same recipes and every material field matches. Both reject the same incomplete Scorpio Punch page",
   },
   bedstedrinks: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-15T12-08-47.750Z-attempt-5809be47-27f1-4c9b-be7f-2bf82ca1dd48",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
+    latestCanary: "2026-08-19T22-17-03.579Z",
+    shadowParity:
+      "80/80 recipes and every material legacy field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 60 recipes with complete discovery and no blocked, failed or rejected record",
+      "Two current uncapped Crawlee runs emitted identical 80-recipe outputs and stable keys; the full Scrapy run emitted the same URLs and all material fields match exactly, with no operational failure",
   },
   /**
    * Previously deferred on the claim that it published no Recipe JSON-LD. That
@@ -5976,10 +6090,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 173 recipes with complete discovery; 52 failed requests keep it short of a canary",
   },
   bornholms: {
-    migrationState: "blocked",
-    latestCanary: "2026-08-14T20-06-25.226Z-attempt-f7ec55c7-f41e-4ace-824e-7e7f63fab7e5",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
+    latestCanary: "2026-08-19T20-16-22.495Z",
+    shadowParity:
+      "11/11 unique current recipes and every material field matched; Scrapy emitted one additional query-string duplicate",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: the site answered the sitemap request with repeated HTTP 454 browser checks that the in-session retry could not clear, so discovery never completed",
+      "Two uncapped Crawlee runs completed the current listing with a stable 11-record key set and the final run had no failed, blocked, rejected, storage, or domain records; all 11 unique recipes exactly matched the 12-row legacy output after collapsing its query-string duplicate, and one known dead listing URL is explicitly skipped. One intervening fresh browser session remained on HTTP 454 through all retries, so production monitoring and retry scheduling remain required",
   },
   diabetesopskrifter: {
     migrationState: "configured",
@@ -6048,10 +6165,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 410 recipes with complete discovery; 61 blocked requests and 5 failed requests keep it short of a canary",
   },
   sydhavnsbloggen: {
-    migrationState: "blocked",
-    latestCanary: "2026-08-14T22-38-23.044Z-attempt-511b66da-6094-4083-be6d-1b71b0161b98",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
+    latestCanary: "2026-08-19T20-20-33.834Z",
+    shadowParity:
+      "42/42 recipes, identical URL set, and every material field matched across the complete current listing",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: the site answered discovery with an HTTP 454 browser check, so discovery never completed",
+      "The uncapped hybrid run escalated the listing's HTTP 454 response to browser transport, cleared it on the first in-session retry, and completed all 48 admitted candidates with 42 recipes and no terminal block, failure, reject, storage error, or domain violation; the complete 42-record output exactly matched Scrapy, while its five parsed non-recipe pages emitted no items",
   },
   allrecipes: {
     migrationState: "blocked",
@@ -6144,11 +6264,26 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
    * contract works end to end: the whole window is one page, so the run
    * exercises the terminal document rather than only continuation.
    */
-  gunris: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-19T15-14-08.924Z-attempt-6b402d49-a238-448e-b2e4-2d7ae6bbce2d",
+  /**
+   * The one rejected canonical is a syndicated guest post pointing at
+   * fooddrinklife.com. Rejecting it is right — the recipe belongs to that
+   * site, not this one — but it marks discovery incomplete on its own.
+   */
+  fannetasticfood: {
+    migrationState: "configured",
+    latestCanary: "2026-08-19T13-38-24.804Z-attempt-73aeb5e2-827c-4ba0-8e61-c8dd38a76625",
     deferOrBlockReason:
-      "Uncapped run persisted all 5 recipes the API reports with complete discovery and no blocked, failed or rejected record",
+      "Uncapped run persisted 415 recipes from 2975 posts with no blocked request and no rejected JSON-LD; 53 requests timed out at the source and one syndicated post carries an off-domain canonical, which keeps it short of a canary",
+  },
+  gunris: {
+    migrationState: "shadow_passed",
+    numericYieldOnly: true,
+    latestScrapyOutcome: "succeeded",
+    latestCanary: "2026-08-19T22-15-09.284Z",
+    shadowParity:
+      "5/5 recipes and every material legacy field match exactly",
+    deferOrBlockReason:
+      "The uncapped WordPress API crawl and full Scrapy run emitted the same five recipes with exact field parity and no blocked, failed, rejected, storage, or domain record",
   },
   familiejournal: {
     migrationState: "canary_passed",
@@ -6206,10 +6341,19 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 222 recipes with complete discovery and no blocked, failed or rejected record",
   },
   gigtforeningen: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-15T22-05-18.050Z-attempt-16802f48-a56e-4178-9cf1-1a4e19a4f88a",
+    discovery: "listing",
+    sitemapUrls: [],
+    startUrls: [
+      "https://www.gigtforeningen.dk/wp-json/wp/v2/posts?per_page=100&page=1&_fields=id,link,title,content,yoast_head_json",
+    ],
+    recipeExtractor: "gigtforeningen-wp-html",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "failed",
+    latestCanary: "2026-08-19T22-16-01.893Z",
+    shadowParity:
+      "legacy-unhealthy; two current API runs emitted the same 70 stable normalized recipes",
     deferOrBlockReason:
-      "Uncapped run persisted 70 recipes with complete discovery and no blocked, failed or rejected record",
+      "The former recipe routes now redirect to the homepage and the full Scrapy sitemap crawl failed; two uncapped Crawlee API runs each recovered all 70 authoritative WordPress recipe bodies with identical keys and normalized records, complete discovery, and no failed, blocked, rejected, storage, or domain record",
   },
   iform: {
     migrationState: "canary_passed",
@@ -6218,28 +6362,34 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1664 recipes with complete discovery and no blocked or failed request; eleven pages carry Recipe JSON-LD without required fields and stay rejected",
   },
   jonsmadklub: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-15T23-21-15.485Z-attempt-885edc5b-deca-4315-ac1e-204f8e6c0675",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
+    latestCanary: "2026-08-19T23-00-20.113Z",
+    shadowParity: "106/106 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 106 recipes with complete discovery and no blocked, failed or rejected record",
+      "Two post-fix uncapped Crawlee runs completed all 112 requests and emitted identical 106-record keys and normalized content; the full Scrapy run emitted the same recipes and every material field matches after supporting numeric Schema.org recipeYield values",
   },
   kystfisken: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-16T00-32-09.099Z-attempt-59b1f928-f460-44e3-a5e1-af3784798e8e",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
+    latestCanary: "2026-08-19T23-13-21.191Z",
+    shadowParity: "136/136 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 133 recipes with complete discovery and no blocked or failed request; two pages carry Recipe JSON-LD without required fields and stay rejected",
+      "Two current uncapped Crawlee runs completed all 145 requests and emitted identical 136-record keys and normalized content; the full Scrapy run emitted the same recipes and every material field matches after comparing escaped category markup as rendered text. Both parsers reject the same incomplete recipe page",
   },
   campari: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-16T07-11-05.017Z-attempt-fad14e1a-f942-4e10-bdd8-786fdb0bb9e3",
+    shadowParity: "100% legacy coverage; 5 complete recipes recovered",
     deferOrBlockReason:
-      "Uncapped run persisted 7 recipes with complete discovery and no blocked or failed request; one page carries Recipe JSON-LD without required fields and stays rejected",
+      "Three uncapped Crawlee runs stably persisted seven complete recipes with no operational failures; every material field matches on both records emitted by the full Scrapy run, Crawlee correctly retains five additional complete sibling Recipe nodes that the legacy parser drops from a multi-recipe page, and both reject the same incomplete CAMPARI & SODA node",
   },
   foodnotes: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-16T07-12-57.130Z-attempt-3dbf3ede-20bf-4260-9a6e-0e9c332d1389",
+    shadowParity: "100% required fields; additive yield units and cuisines",
     deferOrBlockReason:
-      "Uncapped run persisted 13 recipes with complete discovery and no blocked or failed request; ten of its 23 pages carry Recipe JSON-LD without required fields and stay rejected",
+      "Three uncapped Crawlee runs and the full Scrapy run emitted the same 13 recipes with exact legacy-field parity and no operational failures; both reject the same five incomplete recipe pages, Crawlee now counts those only on the terminal rendered attempt instead of double-counting Cheerio plus Playwright, and V2 intentionally retains full yield text and cuisines that Scrapy truncates or drops",
   },
   /**
    * The sitemap index resolves and its one nested sitemap fetches, but nothing
@@ -6511,10 +6661,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     recipeUrlPatterns: [
       "^https://gamleopskrifter\\.com/g/home/r/[^/?#]+/?$",
     ],
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-15T21-51-20.073Z-attempt-ff257141-2800-4de1-bd0b-42e95689a14e",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "failed",
+    latestCanary: "2026-08-19T23-58-25.765Z",
+    shadowParity:
+      "legacy-unhealthy; 5/5 representative current recipes match every material field",
     deferOrBlockReason:
-      "Uncapped run persisted 111 recipes with complete discovery and no blocked, failed or rejected record",
+      "The legacy listing route now returns 404 and the full Scrapy run emitted no data. Two current sitemap-backed Crawlee runs each completed 117 requests and emitted the same 116 recipes with identical keys and normalized records and no operational failures; direct legacy parsing of five representative current pages matched every material field after comparing escaped taxonomy as rendered text",
   },
   /**
    * Recipe pages answer plain HTTP clients with an HTTP 454 browser check that
@@ -6531,8 +6684,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   },
   klinksgaard: {
     migrationState: "blocked",
-    latestCanary: PILOT_CANARY_RUN,
-    deferOrBlockReason: "HTTP 401 security verification on configured sitemap",
+    latestCanary: "2026-08-19T19-59-27.000Z",
+    deferOrBlockReason:
+      "The configured sitemap, sitemap indexes, WordPress REST API, and homepage all return HTTP 401 Security Verification; hardened Chromium remained on the challenge after eight seconds, so no public discovery route is currently usable",
   },
   netto: {
     migrationState: "deferred",
@@ -6579,8 +6733,670 @@ const LEGACY_REQUEST_SETTING_OVERRIDES: Record<
  * The raw class declarations are intentionally kept separate because several
  * listing spiders inherit their recipe patterns and request settings.
  */
-export const DANISH_JSONLD_SOURCES: DanishJsonLdSource[] =
-  RAW_DANISH_JSONLD_SOURCES.map((source) => {
+const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
+  string,
+  Partial<Pick<
+    DanishJsonLdSource,
+    "migrationState" | "latestScrapyOutcome" | "latestCanary" | "shadowParity" | "deferOrBlockReason"
+  >>
+> = {
+  gastrofun: {
+    migrationState: "configured",
+    latestScrapyOutcome: "partial",
+    latestCanary: "2026-08-19T15-51-22.062Z",
+    deferOrBlockReason:
+      "Bounded page-1 shadow probe matched Scrapy on all 100 recipes and material normalized fields; two Crawlee probes produced identical keys and records, but the 38-page catalog still requires an uncapped run",
+  },
+  ketoliv: {
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
+    latestCanary: "2026-08-19T20-33-21.809Z",
+    shadowParity:
+      "578/578 complete records matched every required field across the full six-page catalog; 69 records intentionally add WPRM named-step prefixes",
+    deferOrBlockReason:
+      "The uncapped seven-request Crawlee and legacy runs both processed all 581 candidates, rejected the same three incomplete recipes, and emitted the same 578-record URL set with exact titles, ingredients, step counts, times, yields, images, and taxonomy; 509 instruction arrays are text-identical, while Crawlee intentionally preserves named-step prefixes on 69 records that legacy discards",
+  },
+};
+
+const DANISH_WPRM_SOURCES: DanishJsonLdSource[] =
+  DANISH_WPRM_SOURCE_DEFINITIONS.map(([
+    id,
+    legacySpider,
+    domain,
+    apiUrl,
+    usePlaywright,
+    delaySeconds,
+    maxConcurrency,
+  ]) => ({
+    id,
+    domain,
+    allowedDomains: [domain],
+    legacySpider,
+    legacyFamily: "WprmApiSpider",
+    discovery: "listing",
+    sitemapUrls: [],
+    startUrls: [`${apiUrl}?per_page=100&page=1`],
+    recipeUrlPatterns: ["^https?://"],
+    listingDiscovery: {
+      ...LEGACY_LISTING_DISCOVERY_DEFAULT,
+      ...WP_POSTS_LISTING_DISCOVERY,
+    },
+    fetchMode: usePlaywright ? "playwright" : "cheerio",
+    requestSettings: {
+      delaySeconds,
+      rateLimitPerMinute: null,
+      maxConcurrency,
+      maxRetries: 3,
+    },
+    requireCompleteJsonLd: true,
+    migrationState: "not_started",
+    latestScrapyOutcome: "not_audited",
+    ...DANISH_WPRM_EVIDENCE_OVERRIDES[id],
+  }));
+
+const NEW_DANISH_WP_POSTS_SOURCES: DanishJsonLdSource[] =
+  DANISH_WP_POSTS_SOURCE_DEFINITIONS.map(([
+    id,
+    legacySpider,
+    domain,
+    postsApiUrl,
+    usePlaywright,
+  ]) => ({
+    id,
+    domain,
+    allowedDomains: [domain],
+    legacySpider,
+    legacyFamily: "WpPostsJsonLdSpider",
+    discovery: "listing",
+    sitemapUrls: [],
+    startUrls: [`${postsApiUrl}?per_page=100&page=1`],
+    recipeUrlPatterns: ["^https?://"],
+    listingDiscovery: {
+      ...LEGACY_LISTING_DISCOVERY_DEFAULT,
+      ...WP_POSTS_LISTING_DISCOVERY,
+    },
+    fetchMode: usePlaywright === false ? "cheerio" : "playwright",
+    requestSettings: {
+      delaySeconds: 2,
+      rateLimitPerMinute: null,
+      maxConcurrency: 1,
+      maxRetries: 3,
+    },
+    requireCompleteJsonLd: true,
+    migrationState: id === "mummum" ? "configured" : "not_started",
+    latestScrapyOutcome: id === "mummum" ? "partial" : "not_audited",
+    ...(id === "mummum" ? {
+      latestCanary: "2026-08-19T16-20-34.637Z",
+      deferOrBlockReason:
+        "Bounded three-request live canary persisted both sampled recipes without request, extraction, storage, or domain failures; both overlapping Scrapy records matched all material recipe fields, while Crawlee intentionally preserves the full yield text that legacy reduced to an integer, and the 35-page catalog remains unvalidated",
+    } : {}),
+  }));
+
+const CUSTOM_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] =
+  DANISH_CUSTOM_JSONLD_SOURCE_DEFINITIONS.map((definition) => ({
+    id: definition.id,
+    domain: definition.domain,
+    allowedDomains: [definition.domain],
+    legacySpider: definition.legacySpider,
+    legacyFamily: "CustomSitemapSpider",
+    discovery: "sitemap",
+    sitemapUrls: [definition.sitemapUrl],
+    startUrls: [],
+    recipeUrlPatterns: [definition.recipeUrlPattern],
+    sitemapDiscovery: {
+      followPatterns: [...definition.followPatterns],
+      skipUrlFragments: [...definition.skipUrlFragments],
+    },
+    fetchMode: "cheerio",
+    requestSettings: {
+      delaySeconds: definition.delaySeconds,
+      rateLimitPerMinute: null,
+      maxConcurrency: definition.maxConcurrency,
+      maxRetries: 3,
+    },
+    requireCompleteJsonLd: true,
+    migrationState: "configured",
+    latestScrapyOutcome: "partial",
+    latestCanary: "2026-08-19T16-01-22.287Z",
+    deferOrBlockReason:
+      "Bounded live crawl discovered 341 candidates and persisted complete Recipe JSON-LD without request, rejection, or domain failures; Scrapy close concurrency selected a different eight-URL window, so an uncapped shadow comparison is still required",
+  }));
+
+const CUSTOM_DANISH_LISTING_JSONLD_SOURCES: DanishJsonLdSource[] =
+  DANISH_CUSTOM_LISTING_JSONLD_SOURCE_DEFINITIONS.map((definition) => ({
+    id: definition.id,
+    domain: definition.domain,
+    allowedDomains: [definition.domain],
+    legacySpider: definition.legacySpider,
+    legacyFamily: "CustomListingSpider",
+    discovery: "listing",
+    sitemapUrls: [],
+    startUrls: [definition.startUrl],
+    recipeUrlPatterns: [definition.recipeUrlPattern],
+    listingDiscovery: {
+      recipeLinkSelectors: ["a[href]"],
+      skipPathFragments: [...definition.skipPathFragments],
+      continuationSelectors: [
+        "a.next[href]",
+        "a.page-numbers.next[href]",
+        "link[rel~=\"next\"][href]",
+      ],
+      continuationUrlPatterns: ["/opskrifter/page/\\d+/?$"],
+    },
+    fetchMode: "cheerio",
+    requestSettings: {
+      delaySeconds: definition.delaySeconds,
+      rateLimitPerMinute: null,
+      maxConcurrency: definition.maxConcurrency,
+      maxRetries: 3,
+    },
+    requireCompleteJsonLd: true,
+    ...(definition.id === "kagerogsager" ? { numericYieldOnly: true as const } : {}),
+    migrationState: definition.id === "kagerogsager" ? "shadow_passed" : "configured",
+    ...(definition.id === "vegetariskhverdag" ? {
+      latestScrapyOutcome: "partial" as const,
+      latestCanary: "2026-08-19T16-23-14.879Z",
+      deferOrBlockReason:
+        "Bounded four-request live canary discovered 24 candidates and persisted three complete recipes with no failures or rejections; direct Scrapy parsing of an overlapping URL matched all material recipe fields, while the legacy bounded feed run exposed its existing __provides__ exporter failure and the full paginated listing remains unvalidated",
+    } : definition.id === "kagerogsager" ? {
+      latestScrapyOutcome: "partial" as const,
+      latestCanary: "2026-08-19T19-21-03.129Z",
+      shadowParity:
+        "9/9 legacy-discovered recipes and every material field matched; Crawlee recovered 106 additional complete recipes by following all 13 Shopify listing pages",
+      deferOrBlockReason:
+        "Two full Crawlee runs naturally completed all 13 listing pages with 115 stable complete recipes and no operational failures; the 116th article is an intentional paid-recipe notice without recipe data, while Scrapy stopped after page one because it ignores Shopify link[rel=next] pagination",
+    } : {
+      latestScrapyOutcome: "not_audited" as const,
+      deferOrBlockReason:
+        "Registered from the legacy custom listing contract; bounded live extraction and comparable Scrapy evidence are still required",
+    }),
+  }));
+
+const EMBEDDED_DANISH_RECIPE_SOURCES: DanishJsonLdSource[] =
+  DANISH_EMBEDDED_JSON_SOURCE_DEFINITIONS.map((definition) => ({
+    id: definition.id,
+    domain: definition.domain,
+    allowedDomains: [definition.domain],
+    legacySpider: definition.legacySpider,
+    legacyFamily: "EmbeddedJsonSitemapSpider",
+    discovery: "sitemap",
+    sitemapUrls: [definition.sitemapUrl],
+    startUrls: [],
+    recipeUrlPatterns: [definition.recipeUrlPattern],
+    sitemapDiscovery: { followPatterns: [], skipUrlFragments: [] },
+    fetchMode: "cheerio",
+    requestSettings: {
+      delaySeconds: definition.delaySeconds,
+      rateLimitPerMinute: null,
+      maxConcurrency: definition.maxConcurrency,
+      maxRetries: 3,
+    },
+    requireCompleteJsonLd: true,
+    recipeExtractor: definition.extractor,
+    migrationState: "configured",
+    latestScrapyOutcome: "partial",
+    latestCanary: "2026-08-19T16-11-30.677Z",
+    deferOrBlockReason:
+      "Bounded live probe persisted the selected embedded recipe with material-field parity against a direct Scrapy parse and no request, extraction, or domain failures; the 2000-URL sitemap still requires uncapped validation",
+  }));
+
+const HTML_DANISH_RECIPE_SOURCES: DanishJsonLdSource[] =
+  DANISH_HTML_RECIPE_SOURCE_DEFINITIONS.map((definition) => ({
+    id: definition.id,
+    domain: definition.domain,
+    allowedDomains: [definition.domain],
+    legacySpider: definition.legacySpider,
+    legacyFamily: "HtmlMicrodataSitemapSpider",
+    discovery: "sitemap",
+    sitemapUrls: [definition.sitemapUrl],
+    startUrls: [],
+    recipeUrlPatterns: [definition.recipeUrlPattern],
+    sitemapDiscovery: {
+      followPatterns: [...definition.followPatterns],
+      skipUrlFragments: [],
+    },
+    fetchMode: "cheerio",
+    requestSettings: {
+      delaySeconds: definition.delaySeconds,
+      rateLimitPerMinute: null,
+      maxConcurrency: definition.maxConcurrency,
+      maxRetries: 3,
+    },
+    requireCompleteJsonLd: true,
+    recipeExtractor: definition.extractor,
+    migrationState: "configured",
+    latestScrapyOutcome: "succeeded",
+    latestCanary: "2026-08-19T16-16-22.434Z",
+    deferOrBlockReason:
+      "Bounded live probe persisted complete microdata recipes without request, extraction, or domain failures; direct Scrapy comparison matched the selected recipe while Crawlee intentionally preserves visible fractional amounts and normalized step positions, but the full catalog remains unvalidated",
+  }));
+
+const DIRECT_DANISH_RECIPE_API_SOURCES: DanishJsonLdSource[] = [{
+  id: "meyers",
+  domain: "meyers.dk",
+  allowedDomains: ["meyers.dk", "dbvg5cs2.api.sanity.io"],
+  legacySpider: "MeyersSpider",
+  legacyFamily: "SanityRecipeApiSpider",
+  discovery: "listing",
+  sitemapUrls: [],
+  startUrls: [MEYERS_SANITY_URL],
+  recipeUrlPatterns: ["^https?://(?:www\\.)?meyers\\.dk/opskrifter/[^/?#]+/?$"],
+  listingDiscovery: {
+    recipeLinkSelectors: [],
+    skipPathFragments: [],
+    continuationSelectors: [],
+    continuationUrlPatterns: [],
+  },
+  fetchMode: "cheerio",
+  requestSettings: {
+    delaySeconds: 1,
+    rateLimitPerMinute: null,
+    maxConcurrency: 1,
+    maxRetries: 3,
+  },
+  requireCompleteJsonLd: true,
+  migrationState: "shadow_passed",
+  latestScrapyOutcome: "succeeded",
+  latestCanary: "2026-08-19T16-28-11.559Z",
+  shadowParity:
+    "1123/1123 complete records matched; 30 legacy-only records were incomplete and intentionally rejected",
+  deferOrBlockReason:
+    "Full public Sanity catalog shadow matched all 1123 complete records across material fields; Crawlee intentionally rejected 30 incomplete legacy records and preserves instruction section headings that legacy discarded, so only downstream cutover remains",
+}];
+
+const RECURSIVE_MICRODATA_LISTING_SOURCES: DanishJsonLdSource[] = [{
+  id: "dkkogebogen",
+  domain: "dk-kogebogen.dk",
+  allowedDomains: ["dk-kogebogen.dk"],
+  legacySpider: "DkKogebogenSpider",
+  legacyFamily: "CustomListingSpider",
+  discovery: "listing",
+  sitemapUrls: [],
+  startUrls: [
+    "https://www.dk-kogebogen.dk/kategorier/",
+    "https://www.dk-kogebogen.dk/retter/",
+  ],
+  recipeUrlPatterns: ["^/opskrifter/\\d+/[^/?#]+/?$"],
+  listingDiscovery: {
+    recipeLinkSelectors: ['a[href*="/opskrifter/"]'],
+    skipPathFragments: [],
+    continuationSelectors: [
+      'a[href*="/kategorier/"]',
+      'a[href*="/retter/"]',
+      'a[rel~="next"][href]',
+    ],
+    continuationUrlPatterns: ["^/(?:kategorier|retter)/"],
+    continuationForefront: true,
+    recipeForefront: true,
+  },
+  fetchMode: "cheerio",
+  requestSettings: { delaySeconds: 3, rateLimitPerMinute: null, maxConcurrency: 1, maxRetries: 3 },
+  requireCompleteJsonLd: true,
+  recipeExtractor: "dkkogebogen-microdata",
+  migrationState: "canary_passed",
+  latestScrapyOutcome: "partial",
+  latestCanary: "2026-08-19T18-54-31.972Z",
+  deferOrBlockReason:
+    "Depth-first bounded canary persisted seven recipes without operational failures and every material field matched the legacy parser on those exact pages; Crawlee uses final numeric request URLs to avoid the site's stale cross-recipe canonical collisions, while the roughly 39000-recipe hierarchy remains unvalidated",
+}];
+
+const CUSTOM_DANISH_WPRM_SOURCES: DanishJsonLdSource[] =
+  DANISH_CUSTOM_WPRM_SOURCE_DEFINITIONS.map((definition) => ({
+    id: definition.id,
+    domain: definition.domain,
+    allowedDomains: [definition.domain],
+    legacySpider: definition.legacySpider,
+    legacyFamily: "CustomWprmApiSpider",
+    discovery: "listing",
+    sitemapUrls: [],
+    startUrls: [`${definition.apiUrl}?per_page=100&page=1`],
+    recipeUrlPatterns: ["^https?://"],
+    listingDiscovery: {
+      ...LEGACY_LISTING_DISCOVERY_DEFAULT,
+      ...WP_POSTS_LISTING_DISCOVERY,
+    },
+    fetchMode: "cheerio",
+    requestSettings: {
+      delaySeconds: definition.delaySeconds,
+      rateLimitPerMinute: null,
+      maxConcurrency: definition.maxConcurrency,
+      maxRetries: 3,
+    },
+    requireCompleteJsonLd: true,
+    recipeExtractor: "wprm-api",
+    ...(["foodfanatic", "scandikitchen"].includes(definition.id) ? {
+      migrationState: "shadow_passed" as const,
+      latestScrapyOutcome: "succeeded" as const,
+      latestCanary: definition.id === "foodfanatic"
+        ? "2026-08-19T20-30-43.490Z"
+        : "2026-08-19T20-30-04.163Z",
+      shadowParity:
+        definition.id === "foodfanatic"
+          ? "504/504 complete records and every material field matched across the complete six-page API catalog"
+          : "109/109 records and every material field matched across the complete two-page API catalog, including seven same-page sibling recipes",
+      deferOrBlockReason:
+        definition.id === "foodfanatic"
+          ? "The uncapped seven-request Crawlee run completed all six API pages without failures, blocks, malformed records, storage errors, or domain violations; Crawlee and Scrapy both rejected the same one incomplete upstream record, and all 504 complete records matched on every material field including ingredient text"
+          : "The uncapped three-request Crawlee run completed discovery without terminal failures, blocks, rejects, storage errors, or domain violations after two transient terminal-page retries; all 109 records matched the complete legacy output on every material field after the parity comparator was hardened to retain same-page sibling recipes and compare ingredient text",
+    } : {
+      migrationState: "configured" as const,
+      latestScrapyOutcome: "partial" as const,
+      latestCanary: "2026-08-19T16-30-48.666Z",
+      deferOrBlockReason:
+        `Bounded first-page live shadow matched Scrapy on all 100 emitted records and every material field with no extraction, request, storage, or domain failures; the ${definition.id === "foodfanatic" ? "6-page" : "2-page"} catalog still requires an uncapped run`,
+    }),
+  }));
+
+const SHOPIFY_BLOG_RECIPE_SOURCES: DanishJsonLdSource[] =
+  DANISH_SHOPIFY_BLOG_SOURCE_DEFINITIONS.map((definition) => ({
+    id: definition.id,
+    domain: definition.domain,
+    allowedDomains: [definition.domain],
+    legacySpider: definition.legacySpider,
+    legacyFamily: "HtmlRecipeSitemapSpider",
+    discovery: "sitemap",
+    sitemapUrls: [definition.sitemapUrl],
+    startUrls: [],
+    recipeUrlPatterns: [definition.recipeUrlPattern],
+    sitemapDiscovery: { followPatterns: [], skipUrlFragments: [] },
+    fetchMode: "cheerio",
+    requestSettings: {
+      delaySeconds: 2,
+      rateLimitPerMinute: null,
+      maxConcurrency: 2,
+      maxRetries: 3,
+    },
+    requireCompleteJsonLd: true,
+    recipeExtractor: "shopify-blog-html",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
+    ...(definition.id === "hvidlogvin" ? {
+      latestCanary: "2026-08-19T16-39-51.189Z",
+      shadowParity: "3/3 recipes and all material fields matched across the complete 10-page sitemap",
+      deferOrBlockReason:
+        "Full catalog shadow matched all three legacy recipes and every material field; seven non-recipe gardening articles were rejected by the complete-recipe contract, so only downstream cutover remains",
+    } : definition.id === "vinpusheren" ? {
+      latestCanary: "2026-08-19T16-47-44.354Z",
+      shadowParity:
+        "14/14 recipes matched across the complete 70-article sitemap; Crawlee preserves three yield units discarded by legacy",
+      deferOrBlockReason:
+        "Full catalog shadow matched all 14 legacy recipes and all material fields; Crawlee intentionally preserves three person yield units that legacy discarded, while 56 non-recipe articles remain rejected, so only downstream cutover remains",
+    } : definition.id === "hejholger" ? {
+      latestCanary: "2026-08-19T17-00-02.647Z",
+      shadowParity:
+        "31/31 overlapping recipes matched every material field except ten richer total durations; Crawlee also found two recipes added after the cached Scrapy crawl",
+      deferOrBlockReason:
+        "Full 36-page sitemap shadow matched all 31 legacy recipes on titles, ingredients, instructions, yields, images, categories, prep, and cook times; Crawlee preserves minute components in ten hour-plus durations and discovered two fresh recipes, so only downstream cutover remains",
+    } : {
+      latestCanary: "2026-08-19T17-18-31.929Z",
+      shadowParity:
+        "89/89 recipes and every material field matched across the complete 116-page sitemap",
+      deferOrBlockReason:
+        "Full catalog shadow matched Scrapy on all 89 emitted recipes and every material field; 27 non-recipe or incomplete articles were rejected by both implementations, so only downstream cutover remains",
+    }),
+  }));
+
+const ARTICLE_HTML_RECIPE_SOURCES: DanishJsonLdSource[] =
+  DANISH_ARTICLE_HTML_SOURCE_DEFINITIONS.map((definition) => ({
+    id: definition.id,
+    domain: definition.domain,
+    allowedDomains: [definition.domain],
+    legacySpider: definition.legacySpider,
+    legacyFamily: "HtmlRecipeSitemapSpider",
+    discovery: "sitemap",
+    sitemapUrls: [definition.sitemapUrl],
+    startUrls: [],
+    recipeUrlPatterns: [definition.recipeUrlPattern],
+    sitemapDiscovery: { followPatterns: [], skipUrlFragments: [] },
+    fetchMode: "cheerio",
+    requestSettings: {
+      delaySeconds: 2,
+      rateLimitPerMinute: null,
+      maxConcurrency: 2,
+      maxRetries: 3,
+    },
+    requireCompleteJsonLd: true,
+    recipeExtractor: "femina-html",
+    migrationState: "canary_passed",
+    latestScrapyOutcome: "succeeded",
+    latestCanary: "2026-08-19T17-27-48.705Z",
+    deferOrBlockReason:
+      "Bounded live canary persisted both selected recipes without failures and both exact direct Scrapy parses matched every material field; the 324-candidate catalog still requires an uncapped shadow run",
+  }));
+
+const JSONLD_HTML_RECIPE_SOURCES: DanishJsonLdSource[] =
+  DANISH_JSONLD_HTML_SOURCE_DEFINITIONS.map((definition) => ({
+    id: definition.id,
+    domain: definition.domain,
+    allowedDomains: [definition.domain],
+    legacySpider: definition.legacySpider,
+    legacyFamily: "HtmlRecipeSitemapSpider",
+    discovery: "sitemap",
+    sitemapUrls: [definition.sitemapUrl],
+    startUrls: [],
+    recipeUrlPatterns: [definition.recipeUrlPattern],
+    sitemapDiscovery: { followPatterns: [], skipUrlFragments: [] },
+    fetchMode: "cheerio",
+    requestSettings: {
+      delaySeconds: 2,
+      rateLimitPerMinute: null,
+      maxConcurrency: 2,
+      maxRetries: 3,
+    },
+    requireCompleteJsonLd: true,
+    recipeExtractor: "gocook-jsonld-html",
+    migrationState: "canary_passed",
+    latestScrapyOutcome: "partial",
+    latestCanary: "2026-08-19T17-34-06.299Z",
+    deferOrBlockReason:
+      "Bounded live canary persisted all five selected recipes without failures using current responsive step rows; the legacy spider now emits zero instructions on a direct live parse, and the 1081-recipe catalog still requires an uncapped Crawlee validation",
+  }));
+
+const REDIRECTED_JSONLD_RECIPE_SOURCES: DanishJsonLdSource[] =
+  DANISH_REDIRECTED_JSONLD_SOURCE_DEFINITIONS.map((definition) => ({
+    id: definition.id,
+    domain: definition.domain,
+    allowedDomains: [...definition.allowedDomains],
+    legacySpider: definition.legacySpider,
+    legacyFamily: "CustomSitemapSpider",
+    discovery: "sitemap",
+    sitemapUrls: [definition.sitemapUrl],
+    startUrls: [],
+    recipeUrlPatterns: [definition.recipeUrlPattern],
+    canonicalFollowStatuses: [...definition.canonicalFollowStatuses],
+    sitemapDiscovery: { followPatterns: [], skipUrlFragments: [] },
+    fetchMode: "cheerio",
+    requestSettings: { delaySeconds: 2, rateLimitPerMinute: null, maxConcurrency: 2, maxRetries: 3 },
+    requireCompleteJsonLd: true,
+    recipeExtractor: "strict-json-ld",
+    migrationState: "canary_passed",
+    latestScrapyOutcome: "no_data",
+    latestCanary: "2026-08-19T17-45-20.157Z",
+    deferOrBlockReason:
+      "Bounded canary followed four validated stale-page canonicals at foreground priority and persisted three complete Coop JSON-LD recipes without failures; a direct legacy parse emitted no recipe, and the 1936-candidate archive still requires an uncapped validation",
+  }));
+
+const ALT_HTML_RECIPE_SOURCES: DanishJsonLdSource[] =
+  DANISH_ALT_HTML_SOURCE_DEFINITIONS.map((definition) => ({
+    id: definition.id,
+    domain: definition.domain,
+    allowedDomains: [definition.domain],
+    legacySpider: definition.legacySpider,
+    legacyFamily: "HtmlRecipeSitemapSpider",
+    discovery: "sitemap",
+    sitemapUrls: [definition.sitemapUrl],
+    startUrls: [],
+    recipeUrlPatterns: [definition.recipeUrlPattern],
+    sitemapDiscovery: { followPatterns: [...definition.followPatterns], skipUrlFragments: [] },
+    fetchMode: "cheerio",
+    requestSettings: { delaySeconds: 2, rateLimitPerMinute: null, maxConcurrency: 2, maxRetries: 3 },
+    requireCompleteJsonLd: true,
+    recipeExtractor: "alt-html",
+    migrationState: "canary_passed",
+    latestScrapyOutcome: "partial",
+    latestCanary: "2026-08-19T17-50-45.285Z",
+    deferOrBlockReason:
+      "Bounded live canary followed the corrected child-sitemap regex, persisted two complete current-layout recipes without operational failures, and rejected nine editorial or incomplete candidates; the multi-sitemap catalog remains uncapped",
+  }));
+
+const MULTI_RECIPE_HTML_SOURCES: DanishJsonLdSource[] =
+  DANISH_MULTI_RECIPE_HTML_SOURCE_DEFINITIONS.map((definition) => ({
+    id: definition.id,
+    domain: definition.domain,
+    allowedDomains: [...definition.allowedDomains],
+    legacySpider: definition.legacySpider,
+    legacyFamily: "HtmlRecipeSitemapSpider",
+    discovery: "sitemap",
+    sitemapUrls: [definition.sitemapUrl],
+    startUrls: [],
+    recipeUrlPatterns: [definition.recipeUrlPattern],
+    sitemapDiscovery: { followPatterns: [], skipUrlFragments: [] },
+    fetchMode: "cheerio",
+    requestSettings: { delaySeconds: 2, rateLimitPerMinute: null, maxConcurrency: 2, maxRetries: 3 },
+    requireCompleteJsonLd: true,
+    recipeExtractor: "discount365-html",
+    migrationState: "canary_passed",
+    latestScrapyOutcome: "partial",
+    latestCanary: "2026-08-19T18-03-03.842Z",
+    deferOrBlockReason:
+      "Bounded live shadow matched all 23 overlapping single- and multi-recipe records and every material field, with no Crawlee request, storage, malformed-payload, or domain failures; six legacy-only records came from its larger in-flight window, and the full catalog remains unvalidated",
+  }));
+
+const DR_GRAPHQL_RECIPE_SOURCES: DanishJsonLdSource[] =
+  DANISH_DR_GRAPHQL_SOURCE_DEFINITIONS.map((definition) => ({
+    id: definition.id,
+    domain: definition.domain,
+    allowedDomains: [definition.domain],
+    legacySpider: definition.legacySpider,
+    legacyFamily: "DirectRecipeApiSpider",
+    discovery: "listing",
+    sitemapUrls: [],
+    startUrls: ["https://www.dr.dk/tjenester/steffi/graphql"],
+    recipeUrlPatterns: ["^https?://(?:www\\.)?dr\\.dk/[^?#]+$"],
+    fetchMode: "cheerio",
+    requestSettings: { delaySeconds: 1, rateLimitPerMinute: null, maxConcurrency: 2, maxRetries: 3 },
+    requireCompleteJsonLd: true,
+    recipeExtractor: "dr-graphql",
+    migrationState: "canary_passed",
+    latestScrapyOutcome: "no_data",
+    latestCanary: "2026-08-19T18-10-28.791Z",
+    ...("aliasFor" in definition ? { aliasFor: definition.aliasFor } : {}),
+    deferOrBlockReason:
+      "Bounded live canary completed five POST requests without operational failures and persisted the complete recipe among four sampled articles using DR's current nested EmphasizedList shape; the legacy query returned zero recipes across its larger 12-response in-flight window because it requests only the retired ListComponent shape, while the full 500-plus catalog remains unvalidated",
+  }));
+
+const AUTHENTICATED_API_RECIPE_SOURCES: DanishJsonLdSource[] =
+  DANISH_AUTHENTICATED_API_SOURCE_DEFINITIONS.map((definition) => ({
+    id: definition.id,
+    domain: definition.domain,
+    allowedDomains: definition.id === "madforfattigroeve"
+      ? [definition.domain, "backend.madforfattigroeve.dk"]
+      : [definition.domain],
+    legacySpider: definition.legacySpider,
+    legacyFamily: "DirectRecipeApiSpider",
+    discovery: "listing",
+    sitemapUrls: [],
+    startUrls: [definition.startUrl],
+    recipeUrlPatterns: [definition.id === "hellofresh"
+      ? "^https?://(?:www\\.)?hellofresh\\.dk/recipes/[^?#]+$"
+      : "^https?://madforfattigroeve\\.dk/opskrifter/\\d+$"],
+    fetchMode: "cheerio",
+    requestSettings: { delaySeconds: 1, rateLimitPerMinute: null, maxConcurrency: 2, maxRetries: 3 },
+    requireCompleteJsonLd: true,
+    recipeExtractor: definition.extractor,
+    ...(definition.id === "hellofresh" ? {
+      migrationState: "canary_passed" as const,
+      latestScrapyOutcome: "partial" as const,
+      latestCanary: "2026-08-19T18-16-15.232Z",
+      deferOrBlockReason:
+        "Bounded token-plus-first-page live shadow matched all 250 recipes and every material field with no request, extraction, storage, or domain failures; the current 15465-recipe catalog spans 62 API pages and still requires uncapped validation",
+    } : {
+      migrationState: "canary_passed" as const,
+      latestScrapyOutcome: "no_data" as const,
+      latestCanary: "2026-08-19T19-09-13.765Z",
+      deferOrBlockReason:
+        "Two uncapped two-request runs each persisted the complete current 588-recipe GraphQL catalog with identical keys and normalized records and no failures, blocks, rejects, page cap, storage errors, or domain admissions; five rendered recipe-page payloads matched titles, ingredient identities, instructions, and images exactly, while the retired legacy numeric sitemap remains HTTP 404 and cannot provide a current shadow",
+    }),
+  }));
+
+const DAGROFA_API_RECIPE_SOURCES: DanishJsonLdSource[] =
+  DANISH_DAGROFA_API_SOURCE_DEFINITIONS.map((definition) => ({
+    id: definition.id,
+    domain: definition.domain,
+    allowedDomains: ["meny.dk", "spar.dk"],
+    legacySpider: definition.legacySpider,
+    legacyFamily: "DirectRecipeApiSpider",
+    discovery: "listing",
+    sitemapUrls: [],
+    startUrls: ["https://meny.dk/dagrofa/Search/SearchRecipes?pageSize=50&pageOffset=0"],
+    recipeUrlPatterns: ["^https?://(?:www\\.)?(?:meny|spar)\\.dk/opskrift/[^?#]+$"],
+    fetchMode: "cheerio",
+    requestSettings: { delaySeconds: 1, rateLimitPerMinute: null, maxConcurrency: 2, maxRetries: 3 },
+    requireCompleteJsonLd: true,
+    recipeExtractor: "meny-api",
+    migrationState: "canary_passed",
+    latestScrapyOutcome: "partial",
+    latestCanary: "2026-08-19T18-24-35.758Z",
+    ...("aliasFor" in definition ? { aliasFor: definition.aliasFor } : {}),
+    deferOrBlockReason:
+      "Bounded first-page live shadow matched all 50 recipes and every material field without request, extraction, storage, or domain failures; the Aarstiderne alias deduplicated to the canonical Meny execution, while the 3049-recipe catalog still requires uncapped validation",
+  }));
+
+const SITECORE_API_RECIPE_SOURCES: DanishJsonLdSource[] =
+  DANISH_SITECORE_API_SOURCE_DEFINITIONS.map((definition) => ({
+    id: definition.id,
+    domain: definition.domain,
+    allowedDomains: [definition.domain],
+    legacySpider: definition.legacySpider,
+    legacyFamily: "DirectRecipeApiSpider",
+    discovery: "listing",
+    sitemapUrls: [],
+    startUrls: [definition.startUrl],
+    recipeUrlPatterns: ["^https?://(?:www\\.)?nemlig\\.com/opskrifter/[^?#]+$"],
+    fetchMode: "cheerio",
+    disableHeaderGenerator: true,
+    requestSettings: { delaySeconds: 2, rateLimitPerMinute: null, maxConcurrency: 2, maxRetries: 3 },
+    requireCompleteJsonLd: true,
+    recipeExtractor: "nemlig-sitecore",
+    migrationState: "canary_passed",
+    latestScrapyOutcome: "partial",
+    latestCanary: "2026-08-19T18-36-18.085Z",
+    deferOrBlockReason:
+      "Bounded 50-request live canary completed without request, extraction, storage, or domain failures, discovered 370 candidates, and persisted 25 recipes; those exact 25 live documents matched the legacy parser on every material field, while the stock legacy browser-profile middleware is now diverted into Queue-it and the full catalog remains unvalidated",
+  }));
+
+const LEGACY_BODY_HTML_RECIPE_SOURCES: DanishJsonLdSource[] =
+  DANISH_LEGACY_BODY_HTML_SOURCE_DEFINITIONS.map((definition) => ({
+    id: definition.id,
+    domain: definition.domain,
+    allowedDomains: [definition.domain],
+    legacySpider: definition.legacySpider,
+    legacyFamily: "HtmlRecipeSitemapSpider",
+    discovery: "sitemap",
+    sitemapUrls: [definition.sitemapUrl],
+    startUrls: [],
+    recipeUrlPatterns: [definition.recipeUrlPattern],
+    sitemapDiscovery: { followPatterns: [], skipUrlFragments: [] },
+    fetchMode: "cheerio",
+    requestSettings: { delaySeconds: 2, rateLimitPerMinute: null, maxConcurrency: 2, maxRetries: 3 },
+    requireCompleteJsonLd: true,
+    recipeExtractor: definition.extractor,
+    migrationState: definition.id === "nipunijulie" ? "shadow_passed" : "canary_passed",
+    latestScrapyOutcome: definition.id === "nipunijulie" ? "succeeded" : "partial",
+    latestCanary: definition.id === "nipunijulie"
+      ? "2026-08-19T19-53-52.062Z"
+      : "2026-08-19T19-31-12.779Z",
+    ...(definition.id === "nipunijulie" ? {
+      shadowParity:
+        "140/140 recipes, identical URL set, and every material field matched across the complete 233-candidate sitemap",
+    } : {}),
+    deferOrBlockReason: definition.id === "nipunijulie"
+      ? "Two full Crawlee traversals completed all 233 candidates with stable source keys and no terminal block, failed request, storage failure, or domain violation; the final 140-record output is exactly equal to the full legacy output, while 93 ordinary posts do not satisfy the recipe contract"
+      : "Two bounded live canaries persisted complete recipes with no terminal block or request failure; a forced-browser run cleared an HTTP 454 challenge on an in-session retry, and the hybrid HTTP run completed normally. Two exact pages match the legacy parser on every material field, while all 756 sitemap candidates remain uncapped",
+  }));
+
+export const DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
+  ...RAW_DANISH_JSONLD_SOURCES.map((source) => {
     const effectiveSource: DanishJsonLdSource = {
       ...source,
       ...LEGACY_DISCOVERY_OVERRIDES[source.id],
@@ -6609,7 +7425,28 @@ export const DANISH_JSONLD_SOURCES: DanishJsonLdSource[] =
             },
           }),
     };
-  });
+  }),
+  ...NEW_DANISH_WP_POSTS_SOURCES,
+  ...CUSTOM_DANISH_JSONLD_SOURCES,
+  ...CUSTOM_DANISH_LISTING_JSONLD_SOURCES,
+  ...EMBEDDED_DANISH_RECIPE_SOURCES,
+  ...HTML_DANISH_RECIPE_SOURCES,
+  ...DIRECT_DANISH_RECIPE_API_SOURCES,
+  ...RECURSIVE_MICRODATA_LISTING_SOURCES,
+  ...CUSTOM_DANISH_WPRM_SOURCES,
+  ...SHOPIFY_BLOG_RECIPE_SOURCES,
+  ...ARTICLE_HTML_RECIPE_SOURCES,
+  ...JSONLD_HTML_RECIPE_SOURCES,
+  ...REDIRECTED_JSONLD_RECIPE_SOURCES,
+  ...ALT_HTML_RECIPE_SOURCES,
+  ...MULTI_RECIPE_HTML_SOURCES,
+  ...DR_GRAPHQL_RECIPE_SOURCES,
+  ...AUTHENTICATED_API_RECIPE_SOURCES,
+  ...DAGROFA_API_RECIPE_SOURCES,
+  ...SITECORE_API_RECIPE_SOURCES,
+  ...LEGACY_BODY_HTML_RECIPE_SOURCES,
+  ...DANISH_WPRM_SOURCES,
+];
 
 /** Legacy normalized Mongo documents identify their producer by source_site. */
 export const DANISH_JSONLD_LEGACY_SOURCE_SITES: Record<string, string[]> =

@@ -33,6 +33,7 @@ import {
   requestVpnSessionId,
   type DanishJsonLdVpnTransport,
 } from "./vpn-transport.js";
+import { createDrListRequest } from "../custom/dr.js";
 
 export interface DanishJsonLdCrawlSelection extends DanishJsonLdCrawlOptions {
   sourceIds: string[];
@@ -76,6 +77,19 @@ export function shouldRetryBrowserCheck(input: {
   return (
     BROWSER_CHECK_STATUS_CODES.includes(input.statusCode) &&
     input.retryCount < input.maxRetries
+  );
+}
+
+/** Plain HTTP cannot clear a browser challenge; retry that request in Chromium. */
+export function shouldEscalateBrowserCheck(input: {
+  statusCode: number;
+  fetchMode: "cheerio" | "playwright";
+  vpnEnabled: boolean;
+}): boolean {
+  return (
+    input.fetchMode === "cheerio" &&
+    !input.vpnEnabled &&
+    BROWSER_CHECK_STATUS_CODES.includes(input.statusCode)
   );
 }
 
@@ -261,8 +275,13 @@ export async function executeDanishJsonLdSource(
     fetchMode: "cheerio" | "playwright"
   ): Promise<void> => {
     if (requests.length === 0) return;
-    await queue.addRequestsBatched(
-      requests.map((request) => {
+    const addBatch = async (
+      batch: DanishJsonLdRequest[],
+      forefront: boolean
+    ): Promise<void> => {
+      if (batch.length === 0) return;
+      await queue.addRequestsBatched(
+      batch.map((request) => {
         const requestSessionId = input.vpnTransport
           ? requestVpnSessionId(
               input.source.id,
@@ -273,17 +292,24 @@ export async function executeDanishJsonLdSource(
         if (requestSessionId) sourceVpnSessions.add(requestSessionId);
         return {
           url: request.url,
-          uniqueKey: `${request.kind}:${request.url}`,
+          uniqueKey: request.uniqueKey ?? `${request.kind}:${request.url}`,
           label: request.kind,
+          ...(request.method ? { method: request.method } : {}),
+          ...(request.requestHeaders ? { headers: request.requestHeaders } : {}),
+          ...(request.payload ? { payload: request.payload } : {}),
           userData: {
             kind: request.kind,
             sourceId: input.source.id,
+            ...(request.requestData ? { requestData: request.requestData } : {}),
             ...(requestSessionId ? { vpnSessionId: requestSessionId } : {}),
           },
         };
       }),
-      { waitForAllRequestsToBeAdded: true }
-    );
+      { waitForAllRequestsToBeAdded: true, forefront }
+      );
+    };
+    await addBatch(requests.filter((request) => !request.forefront), false);
+    await addBatch(requests.filter((request) => request.forefront), true);
     for (const request of requests) session.recordQueueAdmission(request.url);
   };
   const route = async (routes: {
@@ -319,7 +345,26 @@ export async function executeDanishJsonLdSource(
         statusCode: context.response.statusCode ?? 200,
         headers: normalizeHeaders(context.response.headers),
         body,
+        ...requestData(context.request.userData),
       };
+      if (shouldEscalateBrowserCheck({
+        statusCode: response.statusCode,
+        fetchMode: response.fetchMode,
+        vpnEnabled: Boolean(input.vpnTransport),
+      })) {
+        session.recordRetriedResponseDiagnostic(response);
+        await route({
+          cheerioRequests: [],
+          playwrightRequests: [{
+            kind: response.kind,
+            url: response.url,
+            forefront: true,
+            ...requestData(context.request.userData),
+          }],
+        });
+        await releaseVpnRequest(context.request.userData);
+        return;
+      }
       const rotation = input.vpnTransport
         ? await input.vpnTransport.handleResponse({
             sessionId: vpnSessionId(context.request.userData),
@@ -413,6 +458,7 @@ export async function executeDanishJsonLdSource(
         statusCode: context.response?.status() ?? 200,
         headers,
         body,
+        ...requestData(context.request.userData),
       };
       // A browser check is cleared by this browser session, so it is retried
       // before the relay logic sees it; rotating would discard that session.
@@ -566,6 +612,9 @@ function initialRequests(source: DanishJsonLdSource): {
   cheerioRequests: DanishJsonLdRequest[];
   playwrightRequests: DanishJsonLdRequest[];
 } {
+  if (source.recipeExtractor === "dr-graphql") {
+    return { cheerioRequests: [createDrListRequest()], playwrightRequests: [] };
+  }
   if (source.discovery === "sitemap") {
     return {
       cheerioRequests: source.sitemapUrls.map((url) => ({ kind: "sitemap", url })),
@@ -598,6 +647,15 @@ function vpnSessionId(userData: Record<string, unknown>): string {
     throw new Error("VPN request is missing its explicit relay session identity");
   }
   return value;
+}
+
+function requestData(userData: Record<string, unknown>): {
+  requestData?: Record<string, unknown>;
+} {
+  const value = userData["requestData"];
+  return value !== null && typeof value === "object" && !Array.isArray(value)
+    ? { requestData: value as Record<string, unknown> }
+    : {};
 }
 
 function normalizeHeaders(

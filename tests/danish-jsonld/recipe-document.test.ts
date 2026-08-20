@@ -71,6 +71,135 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
     expect(document.sourceHash).not.toBe(document.contentHash);
   });
 
+  it("decodes HTML entities in normalized JSON-LD text while preserving raw provenance", () => {
+    const rawRecipe = {
+      ...completeRecipe,
+      name: "Salt &amp; peber",
+      recipeIngredient: ["&nbsp; Salt", "1 &frac12; dl vand"],
+      recipeInstructions: [{ "@type": "HowToStep", text: "<strong>Rør</strong> &amp; smag til." }],
+      recipeCategory: "Morgenmad, Brunch, Dessert",
+      recipeCuisine: "Europæisk, Skandinavisk",
+      prepTime: "PT0M",
+    };
+    const document = buildRecipeDocumentV2({
+      sourceId: "ferrerorocher",
+      canonicalUrl: "https://example.dk/opskrift",
+      pageUrl: "https://example.dk/opskrift",
+      crawlRunId: "run-entities",
+      crawlAttemptId: "attempt-entities",
+      extractedAt: new Date("2026-08-19T20:00:00.000Z"),
+      rawRecipe,
+      language: "da",
+      languageConfidence: 1,
+      languageSignals: [],
+      extractorVersion: "2.0.0",
+      extractionSignals: [],
+    });
+
+    expect(document.rawRecipe).toEqual(rawRecipe);
+    expect(document.normalized).toMatchObject({
+      title: "Salt & peber",
+      ingredients: ["Salt", "1 ½ dl vand"],
+      instructions: [{ position: 1, text: "Rør & smag til." }],
+      categories: ["Morgenmad", "Brunch", "Dessert"],
+      cuisines: ["Europæisk", "Skandinavisk"],
+    });
+    expect(document.normalized).not.toHaveProperty("prepMinutes");
+  });
+
+  it("preserves inline text adjacency while spacing HTML line breaks", () => {
+    const document = buildRecipeDocumentV2({
+      sourceId: "nutella",
+      canonicalUrl: "https://example.dk/opskrift",
+      pageUrl: "https://example.dk/opskrift",
+      crawlRunId: "run-markup",
+      crawlAttemptId: "attempt-markup",
+      extractedAt: new Date("2026-08-19T20:00:00.000Z"),
+      rawRecipe: {
+        ...completeRecipe,
+        name: "Veganske crepes med<br>Nutella<sup>®</sup>",
+        recipeIngredient: ["60 g Nutella<sup>®</sup> (15 g/portion)"],
+      },
+      language: "da",
+      languageConfidence: 1,
+      languageSignals: [],
+      extractorVersion: "2.0.0",
+      extractionSignals: [],
+    });
+
+    expect(document.normalized.title).toBe("Veganske crepes med Nutella®");
+    expect(document.normalized.ingredients).toEqual(["60 g Nutella® (15 g/portion)"]);
+  });
+
+  it("supports legacy numeric-only yields without changing raw provenance", () => {
+    const document = buildRecipeDocumentV2({
+      sourceId: "kagerogsager",
+      canonicalUrl: "https://kagerogsager.dk/blogs/gratis-opskrifter/tiramisusnitter",
+      pageUrl: "https://kagerogsager.dk/blogs/gratis-opskrifter/tiramisusnitter",
+      crawlRunId: "run-1",
+      crawlAttemptId: "attempt-1",
+      extractedAt: new Date("2026-08-19T19:00:00.000Z"),
+      rawRecipe: { ...completeRecipe, recipeYield: "16 store stykker" },
+      language: "da",
+      languageConfidence: 1,
+      languageSignals: ["domain-da"],
+      extractorVersion: "2.0.0",
+      extractionSignals: ["strict-json-ld-only"],
+      numericYieldOnly: true,
+    });
+
+    expect(document.rawRecipe.recipeYield).toBe("16 store stykker");
+    expect(document.normalized.yieldText).toBe("16");
+  });
+
+  it("normalizes the first value from an array-shaped recipe yield", () => {
+    const document = buildRecipeDocumentV2({
+      sourceId: "bornholms",
+      canonicalUrl: "https://bornholms.dk/opskrifter/hummersuppe",
+      pageUrl: "https://bornholms.dk/opskrifter/hummersuppe/",
+      crawlRunId: "run-1",
+      crawlAttemptId: "attempt-1",
+      extractedAt: new Date("2026-08-19T20:00:00.000Z"),
+      rawRecipe: { ...completeRecipe, recipeYield: ["4"] },
+      language: "da",
+      languageConfidence: 1,
+      languageSignals: ["domain-da"],
+      extractorVersion: "2.0.0",
+      extractionSignals: ["strict-json-ld-only"],
+    });
+
+    expect(document.rawRecipe.recipeYield).toEqual(["4"]);
+    expect(document.normalized.yieldText).toBe("4");
+  });
+
+  it("normalizes Danish, English, and extended ISO duration forms", () => {
+    const document = buildRecipeDocumentV2({
+      sourceId: "semper",
+      canonicalUrl: "https://semper.dk/opskrift",
+      pageUrl: "https://semper.dk/opskrift",
+      crawlRunId: "run-duration",
+      crawlAttemptId: "attempt-duration",
+      extractedAt: new Date("2026-08-19T20:00:00.000Z"),
+      rawRecipe: {
+        ...completeRecipe,
+        prepTime: "1 time 30 min",
+        cookTime: "2 hours 15 minutes",
+        totalTime: "P0Y0M0DT3H45M0S",
+      },
+      language: "da",
+      languageConfidence: 1,
+      languageSignals: [],
+      extractorVersion: "2.0.0",
+      extractionSignals: [],
+    });
+
+    expect(document.normalized).toMatchObject({
+      prepMinutes: 90,
+      cookMinutes: 135,
+      totalMinutes: 225,
+    });
+  });
+
   it("normalizes nested ingredients and numeric-keyed instruction maps", () => {
     const rawRecipe = {
       "@context": "https://schema.org",
@@ -114,6 +243,122 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
     expect(document.normalized.instructions).toEqual([
       { position: 1, text: "Lav saltlagen." },
       { position: 2, text: "Rul slaget stramt." },
+    ]);
+  });
+
+  it("preserves an ingredient array boundary across presentation newlines", () => {
+    const rawRecipe = {
+      "@context": "https://schema.org",
+      "@type": "Recipe",
+      name: "Smørrebrød",
+      recipeIngredient: [
+        "2 skiver rugbrød, gerne Signaturbrød\nRestaurant Gilleleje Havn",
+        "saltagurker",
+      ],
+      recipeInstructions: [{ "@type": "HowToStep", text: "Anret brødet." }],
+    };
+
+    const document = buildRecipeDocumentV2({
+      sourceId: "schulstad",
+      canonicalUrl: "https://schulstad.dk/opskrifter/smoerrebroed",
+      pageUrl: "https://www.schulstad.dk/opskrifter/smoerrebroed/",
+      crawlRunId: "run-ingredient-newline",
+      crawlAttemptId: "attempt-ingredient-newline",
+      extractedAt: new Date("2026-08-19T00:00:00.000Z"),
+      rawRecipe,
+      language: "da",
+      languageConfidence: 1,
+      languageSignals: [],
+      extractorVersion: "2.0.0",
+      extractionSignals: [],
+    });
+
+    expect(document.normalized.ingredients).toEqual([
+      "2 skiver rugbrød, gerne Signaturbrød Restaurant Gilleleje Havn",
+      "saltagurker",
+    ]);
+  });
+
+  it("preserves numeric Schema.org recipeYield values", () => {
+    const rawRecipe = {
+      "@context": "https://schema.org",
+      "@type": "Recipe",
+      name: "Citronmåne",
+      recipeYield: 2,
+      recipeIngredient: ["2 citroner"],
+      recipeInstructions: [{ "@type": "HowToStep", text: "Bag kagen." }],
+    };
+
+    const document = buildRecipeDocumentV2({
+      sourceId: "jonsmadklub",
+      canonicalUrl: "https://jonsmadklub.dk/blogs/opskrifter/citronmaane",
+      pageUrl: "https://jonsmadklub.dk/blogs/opskrifter/citronmaane",
+      crawlRunId: "run-numeric-yield",
+      crawlAttemptId: "attempt-numeric-yield",
+      extractedAt: new Date("2026-08-19T00:00:00.000Z"),
+      rawRecipe,
+      language: "da",
+      languageConfidence: 1,
+      languageSignals: [],
+      extractorVersion: "2.0.0",
+      extractionSignals: [],
+    });
+
+    expect(document.normalized.yieldText).toBe("2");
+  });
+
+  it("preserves array step boundaries and splits a single instruction string like legacy", () => {
+    const baseInput = {
+      sourceId: "example",
+      canonicalUrl: "https://example.dk/opskrift",
+      pageUrl: "https://example.dk/opskrift",
+      crawlRunId: "run-instructions",
+      crawlAttemptId: "attempt-instructions",
+      extractedAt: new Date("2026-08-19T20:00:00.000Z"),
+      language: "da",
+      languageConfidence: 1,
+      languageSignals: [],
+      extractorVersion: "2.0.0",
+      extractionSignals: [],
+    };
+    const arrayDocument = buildRecipeDocumentV2({
+      ...baseInput,
+      rawRecipe: {
+        ...completeRecipe,
+        recipeInstructions: ["Aftenen før:\nGør dejen klar.", "Bag kagen."],
+      },
+    });
+    expect(arrayDocument.normalized.instructions).toEqual([
+      { position: 1, text: "Aftenen før: Gør dejen klar." },
+      { position: 2, text: "Bag kagen." },
+    ]);
+
+    const stringDocument = buildRecipeDocumentV2({
+      ...baseInput,
+      rawRecipe: {
+        ...completeRecipe,
+        recipeInstructions: "Trin 1: Rør dejen. Trin 2: Bag kagen. Køl den af.",
+      },
+    });
+    expect(stringDocument.normalized.instructions).toEqual([
+      { position: 1, text: "Trin 1: Rør dejen." },
+      { position: 2, text: "Trin 2: Bag kagen." },
+      { position: 3, text: "Køl den af." },
+    ]);
+
+    const placeholderDocument = buildRecipeDocumentV2({
+      ...baseInput,
+      rawRecipe: {
+        ...completeRecipe,
+        recipeInstructions: [
+          { "@type": "HowToStep", name: "Pisk dejen." },
+          { "@type": "HowToStep", name: "Step" },
+          { "@type": "HowToStep", name: "Trin 3" },
+        ],
+      },
+    });
+    expect(placeholderDocument.normalized.instructions).toEqual([
+      { position: 1, text: "Pisk dejen." },
     ]);
   });
 

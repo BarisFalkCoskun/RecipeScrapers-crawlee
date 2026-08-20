@@ -1,6 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 import { RecipeStore } from "../../src/storage/mongodb.js";
-import type { RecipeDocumentV2 } from "../../src/types.js";
+import type {
+  CrawlRunDocument,
+  DanishJsonLdCrawlRunDocument,
+  RecipeDocumentV2,
+} from "../../src/types.js";
 
 type StoredRecipeV2 = Omit<RecipeDocumentV2, "_id">;
 
@@ -94,6 +98,16 @@ class FakeContentMatchAuditCollection {
   }
 }
 
+class FakeRunCollection {
+  constructor(
+    readonly documents: Array<CrawlRunDocument | DanishJsonLdCrawlRunDocument>
+  ) {}
+
+  find() {
+    return { toArray: async () => this.documents };
+  }
+}
+
 function recipe(overrides: Partial<StoredRecipeV2> = {}): StoredRecipeV2 {
   return {
     schemaVersion: 2,
@@ -136,6 +150,39 @@ function recipe(overrides: Partial<StoredRecipeV2> = {}): StoredRecipeV2 {
 }
 
 describe("RecipeStore V2 persistence", () => {
+  it("lists dedicated Danish V2 runs separately from generic crawler runs", async () => {
+    const store = new RecipeStore("mongodb://unused", "crawlee_test");
+    const danishRun: DanishJsonLdCrawlRunDocument = {
+      kind: "danish-recipe-v2",
+      schemaVersion: 2,
+      crawlRunId: "run-danish",
+      startedAt: new Date("2026-08-19T01:00:00.000Z"),
+      finishedAt: new Date("2026-08-19T01:05:00.000Z"),
+      sourceIds: ["ketoliv"],
+      summary: {
+        robotsEnforced: false,
+        sourceOutcomes: [{
+          sourceId: "ketoliv",
+          outcome: "succeeded",
+          outcomeReasons: [],
+        }],
+      },
+      observations: [{ sourceId: "ketoliv", persistedRecipes: 578 }],
+    };
+    const genericRun = {
+      startedAt: new Date("2026-08-19T02:00:00.000Z"),
+      finishedAt: new Date("2026-08-19T02:05:00.000Z"),
+      recrawlCutoff: new Date("2026-07-19T02:00:00.000Z"),
+      seeds: ["example.dk"],
+      summary: {},
+    } as CrawlRunDocument;
+    (store as never as { crawlRuns: FakeRunCollection }).crawlRuns =
+      new FakeRunCollection([genericRun, danishRun]);
+
+    await expect(store.listDanishRecipeRuns()).resolves.toEqual([danishRun]);
+    await expect(store.listCrawlRuns()).resolves.toEqual([genericRun]);
+  });
+
   it("upserts by sourceRecipeKey and audits same-source and cross-source content matches", async () => {
     const store = new RecipeStore("mongodb://unused", "crawlee_test");
     const recipesV2 = new FakeV2RecipeCollection();

@@ -8,6 +8,7 @@ import {
   executeDanishJsonLdSource,
   parseHttpStatusForDiagnostics,
   httpErrorStatusCodesForSources,
+  shouldEscalateBrowserCheck,
   shouldRetryBrowserCheck,
   shouldRotateRelayOnFailure,
   BrowserCheckRetryError,
@@ -66,6 +67,34 @@ describe("dedicated Danish JSON-LD runner", () => {
       .toBe(true);
     expect(shouldRetryBrowserCheck({ statusCode: 454, retryCount: 3, maxRetries: 3 }))
       .toBe(false);
+  });
+
+  it("escalates plain HTTP browser checks to Chromium only without a VPN", () => {
+    expect(shouldEscalateBrowserCheck({
+      statusCode: 454,
+      fetchMode: "cheerio",
+      vpnEnabled: false,
+    })).toBe(true);
+    expect(shouldEscalateBrowserCheck({
+      statusCode: 455,
+      fetchMode: "cheerio",
+      vpnEnabled: false,
+    })).toBe(true);
+    expect(shouldEscalateBrowserCheck({
+      statusCode: 454,
+      fetchMode: "playwright",
+      vpnEnabled: false,
+    })).toBe(false);
+    expect(shouldEscalateBrowserCheck({
+      statusCode: 454,
+      fetchMode: "cheerio",
+      vpnEnabled: true,
+    })).toBe(false);
+    expect(shouldEscalateBrowserCheck({
+      statusCode: 403,
+      fetchMode: "cheerio",
+      vpnEnabled: false,
+    })).toBe(false);
   });
 
   it("keeps the relay across a browser-check retry and rotates for anything else", () => {

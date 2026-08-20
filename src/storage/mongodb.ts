@@ -261,8 +261,23 @@ export class RecipeStore implements CrawlStore, RecipeDocumentV2Store {
   async listCrawlRuns(): Promise<CrawlRunDocument[]> {
     const runs = await this.crawlRuns.find({}).toArray();
     return runs.filter(
-      (run) => !("kind" in run && run.kind === "danish-jsonld-v2")
+      (run) => !("kind" in run && [
+        "danish-jsonld-v2",
+        "danish-wprm-v2",
+        "danish-recipe-v2",
+      ].includes(String(run.kind)))
     ) as CrawlRunDocument[];
+  }
+
+  async listDanishRecipeRuns(): Promise<DanishJsonLdCrawlRunDocument[]> {
+    const runs = await this.crawlRuns.find({}).toArray();
+    return runs.filter(
+      (run) => "kind" in run && [
+        "danish-jsonld-v2",
+        "danish-wprm-v2",
+        "danish-recipe-v2",
+      ].includes(String(run.kind))
+    ) as DanishJsonLdCrawlRunDocument[];
   }
 
   async dropDatabase(): Promise<void> {

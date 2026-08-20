@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   createDanishJsonLdCrawlSelection,
   DANISH_JSONLD_PILOT_SOURCE_IDS,
+  DANISH_WPRM_PILOT_SOURCE_IDS,
   parseDanishJsonLdCrawlArgs,
   selectDanishJsonLdSources,
 } from "../../src/danish-jsonld/source-selection.js";
@@ -36,7 +37,7 @@ describe("Danish JSON-LD source selection", () => {
 
   it("rejects unknown sources and malformed runtime options", () => {
     expect(() => parseDanishJsonLdCrawlArgs(["--sources", "missing"])).toThrow(
-      'Unknown Danish JSON-LD source: "missing"'
+      'Unknown Danish recipe source: "missing"'
     );
     expect(() => parseDanishJsonLdCrawlArgs(["--max-pages", "0"])).toThrow(
       "--max-pages must be a positive integer"
@@ -52,11 +53,36 @@ describe("Danish JSON-LD source selection", () => {
     );
   });
 
+  it("exposes a Danish-first WPRM pilot without international sources", () => {
+    expect(DANISH_WPRM_PILOT_SOURCE_IDS).toEqual([
+      "gastrofun",
+      "groedgrisen",
+      "ketoliv",
+      "madensverden",
+      "planteaederen",
+    ]);
+    expect(createDanishJsonLdCrawlSelection({
+      sourceIds: DANISH_WPRM_PILOT_SOURCE_IDS,
+      force: false,
+      vpn: false,
+    }).sources.every((source) => source.legacyFamily === "WprmApiSpider")).toBe(true);
+  });
+
   it("deduplicates valid sources in first-seen order", () => {
     expect(
       parseDanishJsonLdCrawlArgs(["--sources", "arla,kenwoodworld,arla"])
         .sourceIds
     ).toEqual(["arla", "kenwoodworld"]);
+  });
+
+  it("resolves legacy command aliases to one canonical source execution", () => {
+    const selection = createDanishJsonLdCrawlSelection({
+      sourceIds: ["dr", "drdk"],
+      force: false,
+      vpn: false,
+    });
+    expect(selection.sourceIds).toEqual(["drdk"]);
+    expect(selection.sources.map((source) => source.id)).toEqual(["drdk"]);
   });
 
   it("defaults to Arla rather than running every unverified source", () => {

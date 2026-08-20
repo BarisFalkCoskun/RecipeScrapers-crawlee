@@ -19,6 +19,15 @@ export const DANISH_JSONLD_PILOT_SOURCE_IDS = [
   "gamleopskrifter",
 ] as const;
 
+/** First Danish sources whose recipes come directly from the WPRM REST API. */
+export const DANISH_WPRM_PILOT_SOURCE_IDS = [
+  "gastrofun",
+  "groedgrisen",
+  "ketoliv",
+  "madensverden",
+  "planteaederen",
+] as const;
+
 export interface DanishJsonLdCrawlOptions {
   sourceIds?: string[];
   maxPages?: number;
@@ -89,7 +98,7 @@ export function parseDanishJsonLdCrawlArgs(
 
   for (const sourceId of options.sourceIds ?? []) {
     if (!DANISH_JSONLD_SOURCES.some((source) => source.id === sourceId)) {
-      throw new Error(`Unknown Danish JSON-LD source: "${sourceId}"`);
+      throw new Error(`Unknown Danish recipe source: "${sourceId}"`);
     }
   }
 
@@ -105,7 +114,11 @@ export function selectDanishJsonLdSources(
 export function createDanishJsonLdCrawlSelection(
   options: DanishJsonLdCrawlOptions
 ) {
-  const sourceIds = selectDanishJsonLdSources(options);
+  const requestedSourceIds = selectDanishJsonLdSources(options);
+  const sourceIds = [...new Set(requestedSourceIds.map((sourceId) => {
+    const source = DANISH_JSONLD_SOURCES.find((candidate) => candidate.id === sourceId);
+    return source?.aliasFor ?? sourceId;
+  }))];
 
   return {
     ...options,

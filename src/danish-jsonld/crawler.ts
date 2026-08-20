@@ -8,6 +8,68 @@ import { canonicalizeUrl, normalizeDomain } from "../utils/canonicalize.js";
 import { hashHtml } from "../utils/hash.js";
 import { detectLanguage } from "../utils/language.js";
 import {
+  buildWprmRecipeDocumentV2,
+  extractWprmRecipes,
+  parseWprmApiResponseBody,
+} from "../wprm/recipe-document.js";
+import {
+  buildEmbeddedRecipeDocumentV2,
+  extractSpisbedreRecipe,
+  type EmbeddedRecipe,
+  type EmbeddedRecipeExtraction,
+} from "../custom/spisbedre.js";
+import { extractWebopskrifterRecipe } from "../custom/webopskrifter.js";
+import { extractDkKogebogenRecipe } from "../custom/dkkogebogen.js";
+import {
+  extractNipuniJulieRecipe,
+  extractTheFoodClubRecipe,
+} from "../custom/legacy-body-recipes.js";
+import { extractMeyersRecipes } from "../custom/meyers.js";
+import {
+  extractShopifyBlogRecipe,
+  type ShopifyBlogSourceId,
+} from "../custom/shopify-blog.js";
+import { extractFeminaRecipe } from "../custom/femina.js";
+import { extractGocookRecipe } from "../custom/gocook.js";
+import { extractAltRecipe } from "../custom/alt.js";
+import { extractDiscount365Recipes } from "../custom/discount365.js";
+import {
+  extractGigtforeningenPosts,
+  nextGigtforeningenPostsRequest,
+} from "../custom/gigtforeningen.js";
+import { extractDrListing, extractDrRecipe } from "../custom/dr.js";
+import {
+  createHelloFreshSearchRequest,
+  extractHelloFreshPage,
+  extractHelloFreshToken,
+  HELLOFRESH_PAGE_SIZE,
+} from "../custom/hellofresh.js";
+import {
+  createMadForFattigroeveCurrentRequest,
+  createMadForFattigroeveSitemapRequest,
+  discoverMadForFattigroeveRecipes,
+  extractMadForFattigroeveBuildId,
+  extractMadForFattigroeveCurrentCatalog,
+  extractMadForFattigroeveCurrentRecipes,
+  extractMadForFattigroeveDictionary,
+  extractMadForFattigroeveGraphqlCatalog,
+  extractMadForFattigroeveRecipe,
+} from "../custom/madforfattigroeve.js";
+import {
+  createMenySearchRequest,
+  extractMenyPage,
+  MENY_PAGE_SIZE,
+} from "../custom/meny.js";
+import {
+  createNemligCategoryRequest,
+  createNemligGroupRequest,
+  extractNemligCategory,
+  extractNemligGroup,
+  extractNemligRecipe,
+  extractNemligStamp,
+  NEMLIG_SEED_CATEGORIES,
+} from "../custom/nemlig.js";
+import {
   buildRecipeDocumentV2,
   extractCompleteJsonLdRecipes,
   gzipJsonLdScripts,
@@ -31,6 +93,12 @@ export type DanishJsonLdRequestKind = "sitemap" | "listing" | "recipe";
 export interface DanishJsonLdRequest {
   kind: DanishJsonLdRequestKind;
   url: string;
+  forefront?: boolean;
+  method?: "GET" | "POST";
+  requestHeaders?: Record<string, string>;
+  payload?: string;
+  uniqueKey?: string;
+  requestData?: Record<string, unknown>;
 }
 export interface DanishJsonLdResponse extends DanishJsonLdRequest {
   fetchMode: "cheerio" | "playwright";
@@ -60,6 +128,12 @@ export class DanishJsonLdSourceSession {
   private readonly diagnosticSink: (event: DanishJsonLdDiagnostic) => void;
   private readonly admittedRecipeUrls = new Set<string>();
   private readonly playwrightFallbackUrls = new Set<string>();
+  private helloFreshToken?: string;
+  private madForFattigroeveBuildId?: string;
+  private nemligStamp?: string;
+  private readonly nemligCategories = new Set<string>();
+  private readonly nemligGroups = new Set<string>();
+  private readonly nemligRecipes = new Set<string>();
   private readonly requestBudget;
 
   constructor(options: {
@@ -86,6 +160,10 @@ export class DanishJsonLdSourceSession {
       processedRecipePages: 0,
       rejectedIncompleteJsonLd: 0,
       rejectedMalformedJsonLd: 0,
+      rejectedIncompleteWprm: 0,
+      rejectedMalformedWprm: 0,
+      rejectedIncompleteCustom: 0,
+      rejectedMalformedCustom: 0,
       playwrightFailures: 0,
       mongoFailures: 0,
       unintendedOffDomainAdmissions: 0,
@@ -176,6 +254,26 @@ export class DanishJsonLdSourceSession {
       this.source.listingDiscovery?.payload?.terminalPayload !== undefined
     ) {
       return this.handleListing(response);
+    }
+
+    if (
+      response.kind === "recipe" &&
+      this.source.canonicalFollowStatuses?.includes(response.statusCode)
+    ) {
+      const canonicalUrl = this.resolveCanonicalUrl(response);
+      if (canonicalUrl !== canonicalizeUrl(response.url) && this.isAllowedSourceUrl(canonicalUrl)) {
+        if (this.admittedRecipeUrls.has(canonicalUrl)) return emptyRoutes();
+        this.admittedRecipeUrls.add(canonicalUrl);
+        this.emit("canonical-followup", {
+          statusCode: response.statusCode,
+          fromUrl: response.url,
+          canonicalUrl,
+        });
+        const request = { kind: "recipe" as const, url: canonicalUrl, forefront: true };
+        return this.source.fetchMode === "playwright"
+          ? { cheerioRequests: [], playwrightRequests: [request] }
+          : { cheerioRequests: [request], playwrightRequests: [] };
+      }
     }
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
@@ -326,16 +424,303 @@ export class DanishJsonLdSourceSession {
         };
   }
 
-  private handleListing(response: DanishJsonLdResponse): DanishJsonLdRoutingResult {
+  private async handleListing(
+    response: DanishJsonLdResponse
+  ): Promise<DanishJsonLdRoutingResult> {
+    if (this.source.recipeExtractor === "gigtforeningen-wp-html") {
+      const extraction = extractGigtforeningenPosts(response.body);
+      this.observation.discoveredRecipeCandidates =
+        (this.observation.discoveredRecipeCandidates ?? 0) + extraction.candidateCount;
+      this.observation.processedRecipePages =
+        (this.observation.processedRecipePages ?? 0) + extraction.candidateCount;
+      if (extraction.malformedCount > 0 && extraction.postCount === 0) {
+        this.observation.discoveryComplete = false;
+        this.addDiscoveryFailure("unexpected-listing-shape");
+      }
+      const totalPagesHeader = firstHeader(response.headers, "x-wp-totalpages");
+      const next = nextGigtforeningenPostsRequest(response.url, totalPagesHeader);
+      if (!totalPagesHeader && extraction.postCount >= 100) {
+        this.observation.discoveryComplete = false;
+        this.addDiscoveryFailure("script-gated-continuation");
+      }
+      this.emit("listing-discovery", {
+        url: response.url,
+        fetchMode: response.fetchMode,
+        acceptedCount: extraction.candidateCount,
+        rejectedCount: extraction.incompleteCount + extraction.malformedCount,
+        rejectedByReason: {
+          ...(extraction.incompleteCount > 0
+            ? { "incomplete-custom-recipe": extraction.incompleteCount }
+            : {}),
+          ...(extraction.malformedCount > 0
+            ? { "malformed-custom-payload": extraction.malformedCount }
+            : {}),
+        },
+        linkCount: extraction.candidateCount,
+        nextCount: next ? 1 : 0,
+        terminal: !next,
+      });
+      const stored = await this.handleCustomRecipe(
+        response,
+        canonicalizeUrl(response.url),
+        extraction,
+        "api-json",
+        ["wordpress-posts-api", "gigtforeningen-post-body-html", "complete-api-recipe-only"],
+        "wordpress-post-body"
+      );
+      if (next) stored.cheerioRequests.push(next);
+      return stored;
+    }
+    if (this.source.recipeExtractor === "nemlig-sitecore") {
+      const phase = response.requestData?.nemligPhase;
+      if (phase !== "category" && phase !== "group") {
+        const stamp = extractNemligStamp(response.body);
+        if (!stamp) {
+          this.observation.rejectedMalformedCustom =
+            (this.observation.rejectedMalformedCustom ?? 0) + 1;
+          this.observation.discoveryComplete = false;
+          this.addDiscoveryFailure("malformed-listing-payload");
+          return emptyRoutes();
+        }
+        this.nemligStamp = stamp;
+        const requests = NEMLIG_SEED_CATEGORIES.filter((path) => {
+          if (this.nemligCategories.has(path)) return false;
+          this.nemligCategories.add(path);
+          return true;
+        }).map(createNemligCategoryRequest);
+        return { cheerioRequests: requests, playwrightRequests: [] };
+      }
+      if (phase === "category") {
+        const extraction = extractNemligCategory(response.body);
+        if (extraction.malformed || !this.nemligStamp) {
+          this.observation.rejectedMalformedCustom =
+            (this.observation.rejectedMalformedCustom ?? 0) + 1;
+          this.observation.discoveryComplete = false;
+          this.addDiscoveryFailure("malformed-listing-payload");
+          return emptyRoutes();
+        }
+        const groupRequests = extraction.groupIds.filter((id) => {
+          if (this.nemligGroups.has(id)) return false;
+          this.nemligGroups.add(id);
+          return true;
+        }).map((id) => createNemligGroupRequest(this.nemligStamp as string, id, 0));
+        const categoryRequests = extraction.categoryPaths.filter((path) => {
+          if (this.nemligCategories.has(path)) return false;
+          this.nemligCategories.add(path);
+          return true;
+        }).map(createNemligCategoryRequest);
+        return { cheerioRequests: [...groupRequests, ...categoryRequests], playwrightRequests: [] };
+      }
+      const stamp = this.nemligStamp;
+      const groupId = typeof response.requestData?.groupId === "string" ? response.requestData.groupId : "";
+      const pageIndex = typeof response.requestData?.pageIndex === "number" ? response.requestData.pageIndex : 0;
+      if (!stamp || !groupId) {
+        this.observation.discoveryComplete = false;
+        this.addDiscoveryFailure("malformed-listing-payload");
+        return emptyRoutes();
+      }
+      const extraction = extractNemligGroup(response.body, stamp, groupId, pageIndex);
+      if (extraction.malformed) {
+        this.observation.rejectedMalformedCustom =
+          (this.observation.rejectedMalformedCustom ?? 0) + 1;
+        this.observation.discoveryComplete = false;
+        this.addDiscoveryFailure("malformed-listing-payload");
+      }
+      const requests = extraction.requests.filter((request) => {
+        if (request.kind !== "recipe") return true;
+        if (this.nemligRecipes.has(request.url)) return false;
+        this.nemligRecipes.add(request.url);
+        return true;
+      });
+      const candidates = requests.filter((request) => request.kind === "recipe").length;
+      this.observation.discoveredRecipeCandidates =
+        (this.observation.discoveredRecipeCandidates ?? 0) + candidates;
+      return { cheerioRequests: requests, playwrightRequests: [] };
+    }
+    if (this.source.recipeExtractor === "meny-api") {
+      const offset = typeof response.requestData?.menyOffset === "number"
+        ? response.requestData.menyOffset
+        : 0;
+      const extraction = extractMenyPage(response.body);
+      this.observation.discoveredRecipeCandidates =
+        (this.observation.discoveredRecipeCandidates ?? 0) + extraction.itemCount;
+      this.observation.processedRecipePages =
+        (this.observation.processedRecipePages ?? 0) + extraction.itemCount;
+      const stored = await this.handleCustomRecipe(
+        response,
+        canonicalizeUrl(response.url),
+        extraction,
+        "api-json",
+        ["dagrofa-search-api", "complete-api-recipe-only"],
+        "meny-api-page"
+      );
+      const hasNext = extraction.itemCount > 0 && (
+        (extraction.total !== undefined && offset + extraction.itemCount < extraction.total) ||
+        extraction.itemCount >= MENY_PAGE_SIZE
+      );
+      if (hasNext) stored.cheerioRequests.push(createMenySearchRequest(offset + MENY_PAGE_SIZE));
+      return stored;
+    }
+    if (this.source.recipeExtractor === "madforfattigroeve-nextjs") {
+      const phase = response.requestData?.madForFattigroevePhase;
+      if (phase === "current-catalog") {
+        const catalog = extractMadForFattigroeveGraphqlCatalog(response.body);
+        const dictionary = extractMadForFattigroeveDictionary(response.body);
+        if (!dictionary || catalog.malformed) {
+          this.observation.rejectedMalformedCustom =
+            (this.observation.rejectedMalformedCustom ?? 0) + 1;
+          this.observation.discoveryComplete = false;
+          this.addDiscoveryFailure("malformed-listing-payload");
+          return emptyRoutes();
+        }
+        const extraction = extractMadForFattigroeveCurrentRecipes(
+          catalog.recipes,
+          dictionary
+        );
+        this.observation.discoveredRecipeCandidates =
+          (this.observation.discoveredRecipeCandidates ?? 0) + catalog.recipes.length;
+        this.observation.processedRecipePages =
+          (this.observation.processedRecipePages ?? 0) + catalog.recipes.length;
+        return this.handleCustomRecipe(
+          response,
+          "https://madforfattigroeve.dk/",
+          extraction,
+          "api-json",
+          ["nextjs-server-recipe-catalog", "graphql-ingredient-dictionary", "complete-api-recipe-only"],
+          "current-recipe-catalog"
+        );
+      }
+      if (phase !== "sitemap") {
+        const current = extractMadForFattigroeveCurrentCatalog(response.body);
+        if (!current.malformed) {
+          return {
+            cheerioRequests: [createMadForFattigroeveCurrentRequest()],
+            playwrightRequests: [],
+          };
+        }
+        const buildId = extractMadForFattigroeveBuildId(response.body);
+        if (!buildId) {
+          this.observation.rejectedMalformedCustom =
+            (this.observation.rejectedMalformedCustom ?? 0) + 1;
+          this.observation.discoveryComplete = false;
+          this.addDiscoveryFailure("malformed-listing-payload");
+          return emptyRoutes();
+        }
+        this.madForFattigroeveBuildId = buildId;
+        return {
+          cheerioRequests: [createMadForFattigroeveSitemapRequest()],
+          playwrightRequests: [],
+        };
+      }
+      if (!this.madForFattigroeveBuildId) {
+        this.observation.discoveryComplete = false;
+        this.addDiscoveryFailure("malformed-listing-payload");
+        return emptyRoutes();
+      }
+      const requests = discoverMadForFattigroeveRecipes(
+        response.body,
+        this.madForFattigroeveBuildId
+      );
+      this.observation.discoveredRecipeCandidates =
+        (this.observation.discoveredRecipeCandidates ?? 0) + requests.length;
+      this.emit("listing-discovery", {
+        url: response.url,
+        fetchMode: response.fetchMode,
+        acceptedCount: requests.length,
+        rejectedCount: 0,
+        rejectedByReason: {},
+        linkCount: requests.length,
+        nextCount: 0,
+        terminal: true,
+      });
+      return { cheerioRequests: requests, playwrightRequests: [] };
+    }
+    if (this.source.recipeExtractor === "hellofresh-api") {
+      if (response.requestData?.helloFreshPhase !== "search") {
+        const token = extractHelloFreshToken(response.body);
+        if (!token) {
+          this.observation.rejectedMalformedCustom =
+            (this.observation.rejectedMalformedCustom ?? 0) + 1;
+          this.observation.discoveryComplete = false;
+          this.addDiscoveryFailure("malformed-listing-payload");
+          return emptyRoutes();
+        }
+        this.helloFreshToken = token;
+        return {
+          cheerioRequests: [createHelloFreshSearchRequest(token, 0)],
+          playwrightRequests: [],
+        };
+      }
+      const offset = typeof response.requestData.offset === "number"
+        ? response.requestData.offset
+        : 0;
+      const extraction = extractHelloFreshPage(response.body);
+      this.observation.discoveredRecipeCandidates =
+        (this.observation.discoveredRecipeCandidates ?? 0) + extraction.itemCount;
+      this.observation.processedRecipePages =
+        (this.observation.processedRecipePages ?? 0) + extraction.itemCount;
+      const stored = await this.handleCustomRecipe(
+        response,
+        canonicalizeUrl(response.url),
+        extraction,
+        "api-json",
+        ["hellofresh-search-api", "complete-api-recipe-only"],
+        "hellofresh-api-page"
+      );
+      const hasNext = extraction.total !== undefined && extraction.itemCount > 0 &&
+        offset + HELLOFRESH_PAGE_SIZE < extraction.total;
+      if (!hasNext) return stored;
+      if (!this.helloFreshToken) {
+        this.observation.discoveryComplete = false;
+        this.addDiscoveryFailure("malformed-listing-payload");
+        return stored;
+      }
+      stored.cheerioRequests.push(
+        createHelloFreshSearchRequest(this.helloFreshToken, offset + HELLOFRESH_PAGE_SIZE)
+      );
+      return stored;
+    }
+    if (this.source.recipeExtractor === "dr-graphql") {
+      const offset = typeof response.requestData?.offset === "number"
+        ? response.requestData.offset
+        : 0;
+      const discovery = extractDrListing(response.body, offset);
+      this.observation.discoveredRecipeCandidates =
+        (this.observation.discoveredRecipeCandidates ?? 0) + discovery.candidateCount;
+      if (discovery.malformed) {
+        this.observation.rejectedMalformedCustom =
+          (this.observation.rejectedMalformedCustom ?? 0) + 1;
+        this.observation.discoveryComplete = false;
+        this.addDiscoveryFailure("unexpected-listing-shape");
+      }
+      this.emit("listing-discovery", {
+        url: response.url,
+        fetchMode: response.fetchMode,
+        acceptedCount: discovery.candidateCount,
+        rejectedCount: discovery.malformed ? 1 : 0,
+        rejectedByReason: discovery.malformed ? { "malformed-custom-payload": 1 } : {},
+        linkCount: discovery.candidateCount,
+        nextCount: discovery.requests.filter((request) => request.kind === "listing").length,
+        terminal: discovery.terminal,
+      });
+      return { cheerioRequests: discovery.requests, playwrightRequests: [] };
+    }
+    if (this.source.legacyFamily === "SanityRecipeApiSpider") {
+      return this.handleMeyersListing(response);
+    }
     const contentType = firstHeader(response.headers, "content-type");
+    const isWprmSource = this.source.legacyFamily === "WprmApiSpider" ||
+      this.source.recipeExtractor === "wprm-api";
+    const wprmPayload = isWprmSource
+      ? parseWprmApiResponseBody(response.body)
+      : undefined;
     const discovery = discoverListingPage({
       source: this.source,
       pageUrl: response.loadedUrl ?? response.url,
-      body: response.body,
+      body: wprmPayload === undefined ? response.body : JSON.stringify(wprmPayload),
       contentType,
     });
     this.recordDiscoveryCompletion(response.kind, discovery);
-    const recipeRequests = this.admitRecipeUrls(discovery.recipeUrls);
     this.emit("listing-discovery", {
       url: response.url,
       fetchMode: response.fetchMode,
@@ -346,9 +731,19 @@ export class DanishJsonLdSourceSession {
       nextCount: discovery.nextUrls.length,
       terminal: discovery.terminal,
     });
+    if (isWprmSource) {
+      return this.handleWprmListing(response, discovery, wprmPayload);
+    }
+    const recipeRequests = this.admitRecipeUrls(discovery.recipeUrls).map((request) => ({
+      ...request,
+      ...(this.source.listingDiscovery?.recipeForefront ? { forefront: true } : {}),
+    }));
     const nextRequests = discovery.nextUrls.map((url) => ({
       kind: "listing" as const,
       url,
+      ...(this.source.listingDiscovery?.continuationForefront && discovery.recipeUrls.length === 0
+        ? { forefront: true }
+        : {}),
     }));
     const playwrightRequests = [
       ...(this.source.fetchMode === "playwright" ? recipeRequests : []),
@@ -361,10 +756,363 @@ export class DanishJsonLdSourceSession {
     return { cheerioRequests, playwrightRequests };
   }
 
+  private async handleMeyersListing(
+    response: DanishJsonLdResponse
+  ): Promise<DanishJsonLdRoutingResult> {
+    const extraction = extractMeyersRecipes(response.body);
+    this.observation.rejectedIncompleteCustom =
+      (this.observation.rejectedIncompleteCustom ?? 0) + extraction.incompleteCount;
+    this.observation.rejectedMalformedCustom =
+      (this.observation.rejectedMalformedCustom ?? 0) + extraction.malformedCount;
+    const candidateCount = extraction.recipes.length +
+      extraction.incompleteCount + extraction.malformedCount;
+    this.observation.discoveredRecipeCandidates =
+      (this.observation.discoveredRecipeCandidates ?? 0) + candidateCount;
+    this.observation.processedRecipePages =
+      (this.observation.processedRecipePages ?? 0) + candidateCount;
+
+    const accepted = [];
+    for (const recipe of extraction.recipes) {
+      let canonicalUrl: string;
+      try {
+        canonicalUrl = canonicalizeUrl(recipe.canonicalUrl);
+      } catch {
+        this.observation.rejectedMalformedCustom =
+          (this.observation.rejectedMalformedCustom ?? 0) + 1;
+        continue;
+      }
+      if (!this.isAllowedSourceUrl(canonicalUrl)) {
+        this.rejectDomainBoundary(
+          "canonical",
+          canonicalUrl,
+          "canonical-domain-not-allowed"
+        );
+        continue;
+      }
+      accepted.push({ ...recipe, canonicalUrl });
+    }
+
+    this.emit("listing-discovery", {
+      url: response.url,
+      fetchMode: response.fetchMode,
+      acceptedCount: accepted.length,
+      rejectedCount: candidateCount - accepted.length,
+      rejectedByReason: {
+        "incomplete-custom-recipe": extraction.incompleteCount,
+        "malformed-custom-payload": extraction.malformedCount,
+      },
+      linkCount: accepted.length,
+      nextCount: 0,
+      terminal: true,
+    });
+
+    const apiPageUrl = canonicalizeUrl(response.loadedUrl ?? response.url);
+    const domain = normalizeDomain(new URL(apiPageUrl).hostname);
+    const language = detectLanguage({
+      recipe: accepted[0]?.rawRecipe,
+      domain: this.source.domain,
+    });
+    const extractionSignals = [
+      "meyers-sanity-groq-api",
+      "complete-structured-recipe-only",
+    ];
+    const pageContentHash = hashHtml(response.body);
+    try {
+      await this.store.upsertPage({
+        canonicalUrl: apiPageUrl,
+        domain,
+        language: language.language,
+        languageConfidence: language.languageConfidence,
+        languageSignals: language.languageSignals,
+        fetchedAt: new Date(),
+        httpStatus: response.statusCode,
+        fetchMode: response.fetchMode,
+        redirectChain:
+          response.loadedUrl && response.loadedUrl !== response.url
+            ? [response.url, response.loadedUrl]
+            : undefined,
+        extractionMethod: accepted.length > 0 ? "api-json" : "partial",
+        extractorVersion: EXTRACTOR_VERSION,
+        extractionConfidence: accepted.length > 0 ? 1 : 0,
+        extractionSignals,
+        recipeCount: accepted.length,
+        rawApiPayload: new Binary(gzipSync(Buffer.from(response.body))),
+        pageContentHash,
+        discoverySource: "discovered",
+        sourceDomain: this.source.domain,
+        admissionSignals: ["registry-sanity-api"],
+        outboundRecipeLinks: [],
+      });
+      this.emit("mongo-page-upsert", {
+        canonicalUrl: apiPageUrl,
+        pageContentHash,
+        operation: "upserted",
+        apiRecipeCount: accepted.length,
+      });
+    } catch (error) {
+      this.observation.mongoFailures = (this.observation.mongoFailures ?? 0) + 1;
+      this.emit("mongo-failure", {
+        canonicalUrl: apiPageUrl,
+        operation: "api-page-upsert",
+        error: error instanceof Error ? error.message : String(error),
+      });
+      throw new DanishJsonLdStoreFailure("Recipe API page upsert failed", error);
+    }
+
+    for (const recipe of accepted) {
+      const recipeLanguage = detectLanguage({
+        recipe: recipe.rawRecipe,
+        domain: this.source.domain,
+      });
+      const document = buildEmbeddedRecipeDocumentV2({
+        sourceId: this.source.id,
+        crawlRunId: this.crawlRunId,
+        crawlAttemptId: this.crawlAttemptId,
+        pageUrl: apiPageUrl,
+        extractedAt: new Date(),
+        recipe,
+        language: recipeLanguage.language,
+        languageConfidence: recipeLanguage.languageConfidence,
+        languageSignals: recipeLanguage.languageSignals,
+        extractorVersion: EXTRACTOR_VERSION,
+        extractionSignals,
+        extractionMethod: "api-json",
+      });
+      try {
+        const result = await this.store.upsertRecipeV2(document);
+        this.observation.persistedRecipes =
+          (this.observation.persistedRecipes ?? 0) + 1;
+        this.emit("mongo-upsert", {
+          canonicalUrl: document.canonicalUrl,
+          sourceRecipeKey: document.sourceRecipeKey,
+          sourceHash: document.sourceHash,
+          contentHash: document.contentHash,
+          operation: result.operation,
+          extractionMethod: "api-json",
+          contentMatchCount: result.contentMatches.length,
+        });
+      } catch (error) {
+        this.observation.mongoFailures = (this.observation.mongoFailures ?? 0) + 1;
+        this.emit("mongo-failure", {
+          canonicalUrl: document.canonicalUrl,
+          sourceRecipeKey: document.sourceRecipeKey,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+    return emptyRoutes();
+  }
+
+  private async handleWprmListing(
+    response: DanishJsonLdResponse,
+    discovery: { nextUrls: string[]; terminal: boolean },
+    payload: unknown | undefined
+  ): Promise<DanishJsonLdRoutingResult> {
+    const nextRequests = discovery.nextUrls.map((url) => ({
+      kind: "listing" as const,
+      url,
+    }));
+    // WordPress signals the page after the last page with its declared
+    // terminal error object. It contains no recipes and is not malformed.
+    if (response.statusCode === TERMINAL_PAYLOAD_STATUS && discovery.terminal) {
+      return response.fetchMode === "playwright"
+        ? { cheerioRequests: [], playwrightRequests: nextRequests }
+        : { cheerioRequests: nextRequests, playwrightRequests: [] };
+    }
+
+    const extraction = extractWprmRecipes(payload);
+    this.observation.rejectedIncompleteWprm =
+      (this.observation.rejectedIncompleteWprm ?? 0) + extraction.incompleteCount;
+    this.observation.rejectedMalformedWprm =
+      (this.observation.rejectedMalformedWprm ?? 0) + extraction.malformedCount;
+    const candidateCount = extraction.recipes.length +
+      extraction.incompleteCount + extraction.malformedCount;
+    this.observation.discoveredRecipeCandidates =
+      (this.observation.discoveredRecipeCandidates ?? 0) + candidateCount;
+    this.observation.processedRecipePages =
+      (this.observation.processedRecipePages ?? 0) + candidateCount;
+
+    const accepted = [];
+    for (const recipe of extraction.recipes) {
+      let canonicalUrl: string;
+      try {
+        canonicalUrl = canonicalizeUrl(recipe.canonicalUrl);
+      } catch {
+        this.observation.rejectedMalformedWprm =
+          (this.observation.rejectedMalformedWprm ?? 0) + 1;
+        continue;
+      }
+      if (!this.isAllowedSourceUrl(canonicalUrl)) {
+        this.rejectDomainBoundary(
+          "canonical",
+          canonicalUrl,
+          "canonical-domain-not-allowed"
+        );
+        continue;
+      }
+      accepted.push({ ...recipe, canonicalUrl });
+    }
+
+    const apiPageUrl = canonicalizeUrl(response.loadedUrl ?? response.url);
+    const domain = normalizeDomain(new URL(apiPageUrl).hostname);
+    const pageLanguage = detectLanguage({
+      recipe: accepted[0]?.rawRecipe,
+      domain: this.source.domain,
+    });
+    const extractionSignals = [
+      "wprm-rest-api",
+      "complete-structured-recipe-only",
+      ...(response.fetchMode === "playwright" ? ["playwright-json-rendered"] : []),
+    ];
+    const pageContentHash = hashHtml(response.body);
+    try {
+      await this.store.upsertPage({
+        canonicalUrl: apiPageUrl,
+        domain,
+        language: pageLanguage.language,
+        languageConfidence: pageLanguage.languageConfidence,
+        languageSignals: pageLanguage.languageSignals,
+        fetchedAt: new Date(),
+        httpStatus: response.statusCode,
+        fetchMode: response.fetchMode,
+        redirectChain:
+          response.loadedUrl && response.loadedUrl !== response.url
+            ? [response.url, response.loadedUrl]
+            : undefined,
+        extractionMethod: accepted.length > 0 ? "wprm-api" : "partial",
+        extractorVersion: EXTRACTOR_VERSION,
+        extractionConfidence: accepted.length > 0 ? 1 : 0,
+        extractionSignals,
+        recipeCount: accepted.length,
+        rawApiPayload: new Binary(gzipSync(Buffer.from(response.body))),
+        pageContentHash,
+        discoverySource: "discovered",
+        sourceDomain: this.source.domain,
+        admissionSignals: ["registry-wprm-api"],
+        outboundRecipeLinks: [],
+      });
+      this.emit("mongo-page-upsert", {
+        canonicalUrl: apiPageUrl,
+        pageContentHash,
+        operation: "upserted",
+        wprmRecipeCount: accepted.length,
+      });
+    } catch (error) {
+      this.observation.mongoFailures = (this.observation.mongoFailures ?? 0) + 1;
+      this.emit("mongo-failure", {
+        canonicalUrl: apiPageUrl,
+        operation: "wprm-page-upsert",
+        error: error instanceof Error ? error.message : String(error),
+      });
+      throw new DanishJsonLdStoreFailure("WPRM API page upsert failed", error);
+    }
+
+    for (const recipe of accepted) {
+      const language = detectLanguage({
+        recipe: recipe.rawRecipe,
+        domain: this.source.domain,
+      });
+      const document = buildWprmRecipeDocumentV2({
+        sourceId: this.source.id,
+        crawlRunId: this.crawlRunId,
+        crawlAttemptId: this.crawlAttemptId,
+        apiPageUrl,
+        extractedAt: new Date(),
+        recipe,
+        language: language.language,
+        languageConfidence: language.languageConfidence,
+        languageSignals: language.languageSignals,
+        extractorVersion: EXTRACTOR_VERSION,
+        extractionSignals,
+      });
+      try {
+        const result = await this.store.upsertRecipeV2(document);
+        this.observation.persistedRecipes =
+          (this.observation.persistedRecipes ?? 0) + 1;
+        this.emit("mongo-upsert", {
+          canonicalUrl: document.canonicalUrl,
+          sourceRecipeKey: document.sourceRecipeKey,
+          sourceHash: document.sourceHash,
+          contentHash: document.contentHash,
+          operation: result.operation,
+          extractionMethod: "wprm-api",
+          contentMatchCount: result.contentMatches.length,
+        });
+      } catch (error) {
+        this.observation.mongoFailures = (this.observation.mongoFailures ?? 0) + 1;
+        this.emit("mongo-failure", {
+          canonicalUrl: document.canonicalUrl,
+          sourceRecipeKey: document.sourceRecipeKey,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
+    return response.fetchMode === "playwright"
+      ? { cheerioRequests: [], playwrightRequests: nextRequests }
+      : { cheerioRequests: nextRequests, playwrightRequests: [] };
+  }
+
   private async handleRecipe(
     response: DanishJsonLdResponse
   ): Promise<DanishJsonLdRoutingResult> {
-    const canonicalUrl = this.resolveCanonicalUrl(response);
+    if (this.source.recipeExtractor === "nemlig-sitecore") {
+      this.observation.processedRecipePages =
+        (this.observation.processedRecipePages ?? 0) + 1;
+      const extraction = extractNemligRecipe(response.body, response.url);
+      return this.handleCustomRecipe(
+        response,
+        extraction.recipe?.canonicalUrl ?? response.url,
+        extraction,
+        "api-json",
+        ["nemlig-sitecore-json", "complete-api-recipe-only"],
+        "nemlig-sitecore-recipe"
+      );
+    }
+    if (this.source.recipeExtractor === "madforfattigroeve-nextjs") {
+      this.observation.processedRecipePages =
+        (this.observation.processedRecipePages ?? 0) + 1;
+      const recipeId = typeof response.requestData?.recipeId === "string"
+        ? response.requestData.recipeId
+        : response.url.match(/\/(\d+)\.json(?:\?|$)/u)?.[1] ?? "";
+      const extraction = extractMadForFattigroeveRecipe(response.body, recipeId);
+      const pageCanonicalUrl = extraction.recipe?.canonicalUrl ?? response.url;
+      return this.handleCustomRecipe(
+        response,
+        pageCanonicalUrl,
+        extraction,
+        "api-json",
+        ["nextjs-data-endpoint", "complete-api-recipe-only"],
+        "madforfattigroeve-nextjs"
+      );
+    }
+    if (this.source.recipeExtractor === "dr-graphql") {
+      this.observation.processedRecipePages =
+        (this.observation.processedRecipePages ?? 0) + 1;
+      const extraction = extractDrRecipe(response.body);
+      let pageCanonicalUrl = response.url;
+      if (extraction.recipe) {
+        try {
+          pageCanonicalUrl = canonicalizeUrl(extraction.recipe.canonicalUrl);
+        } catch {
+          // The shared custom handler records the malformed identity.
+        }
+      }
+      return this.handleCustomRecipe(
+        response,
+        pageCanonicalUrl,
+        extraction,
+        "api-json",
+        ["dr-steffi-graphql", "complete-api-recipe-only"],
+        "dr-graphql-article"
+      );
+    }
+    // DK Kogebogen has unrelated recipe pages with stale canonical tags that
+    // collide with valid numeric recipe URLs. The legacy spider identifies a
+    // record by the final requested URL, which is also the stable site key.
+    const canonicalUrl = this.source.recipeExtractor === "dkkogebogen-microdata"
+      ? canonicalizeUrl(response.loadedUrl ?? response.url)
+      : this.resolveCanonicalUrl(response);
     if (!this.isAllowedSourceUrl(canonicalUrl)) {
       this.rejectDomainBoundary(
         "canonical",
@@ -375,13 +1123,111 @@ export class DanishJsonLdSourceSession {
     }
     this.observation.processedRecipePages =
       (this.observation.processedRecipePages ?? 0) + 1;
+    if (this.source.recipeExtractor === "spisbedre-inertia") {
+      return this.handleCustomRecipe(
+        response,
+        canonicalUrl,
+        extractSpisbedreRecipe(response.body, canonicalUrl),
+        "embedded-json",
+        ["spisbedre-inertia-data-page", "complete-embedded-recipe-only"],
+        "embedded-inertia-payload"
+      );
+    }
+    if (this.source.recipeExtractor === "webopskrifter-microdata") {
+      return this.handleCustomRecipe(
+        response,
+        canonicalUrl,
+        extractWebopskrifterRecipe(response.body, canonicalUrl),
+        "html-parsing",
+        ["webopskrifter-recipe-microdata", "complete-html-recipe-only"],
+        "recipe-microdata"
+      );
+    }
+    if (this.source.recipeExtractor === "dkkogebogen-microdata") {
+      return this.handleCustomRecipe(
+        response,
+        canonicalUrl,
+        extractDkKogebogenRecipe(response.body, canonicalUrl),
+        "html-parsing",
+        ["dkkogebogen-recipe-microdata", "complete-html-recipe-only"],
+        "recipe-microdata"
+      );
+    }
+    if (this.source.recipeExtractor === "nipunijulie-body-html") {
+      return this.handleCustomRecipe(
+        response,
+        canonicalUrl,
+        extractNipuniJulieRecipe(response.body, canonicalUrl),
+        "html-parsing",
+        ["nipunijulie-article-body", "complete-html-recipe-only"],
+        "legacy-article-body"
+      );
+    }
+    if (this.source.recipeExtractor === "thefoodclub-body-html") {
+      return this.handleCustomRecipe(
+        response,
+        canonicalUrl,
+        extractTheFoodClubRecipe(response.body, canonicalUrl),
+        "html-parsing",
+        ["thefoodclub-article-body", "complete-html-recipe-only"],
+        "legacy-article-body"
+      );
+    }
+    if (this.source.recipeExtractor === "shopify-blog-html") {
+      return this.handleCustomRecipe(
+        response,
+        canonicalUrl,
+        extractShopifyBlogRecipe({
+          sourceId: this.source.id as ShopifyBlogSourceId,
+          html: response.body,
+          canonicalUrl,
+        }),
+        "html-parsing",
+        ["shopify-article-html", "complete-html-recipe-only"],
+        "shopify-recipe-article"
+      );
+    }
+    if (this.source.recipeExtractor === "femina-html") {
+      return this.handleCustomRecipe(
+        response,
+        canonicalUrl,
+        extractFeminaRecipe(response.body, canonicalUrl),
+        "html-parsing",
+        ["femina-wysiwyg-html", "complete-html-recipe-only"],
+        "femina-recipe-article"
+      );
+    }
+    if (this.source.recipeExtractor === "gocook-jsonld-html") {
+      return this.handleCustomRecipe(
+        response,
+        canonicalUrl,
+        extractGocookRecipe(response.body, canonicalUrl),
+        "html-parsing",
+        ["gocook-json-ld-metadata", "gocook-html-instructions", "complete-html-recipe-only"],
+        "json-ld-plus-html"
+      );
+    }
+    if (this.source.recipeExtractor === "alt-html") {
+      return this.handleCustomRecipe(
+        response,
+        canonicalUrl,
+        extractAltRecipe(response.body, canonicalUrl),
+        "html-parsing",
+        ["alt-current-recipe-html", "complete-html-recipe-only"],
+        "alt-recipe-html"
+      );
+    }
+    if (this.source.recipeExtractor === "discount365-html") {
+      return this.handleCustomRecipe(
+        response,
+        canonicalUrl,
+        extractDiscount365Recipes(response.body, canonicalUrl),
+        "html-parsing",
+        ["365discount-text-container-html", "complete-html-recipe-only"],
+        "365discount-recipe-html"
+      );
+    }
     const extraction = extractCompleteJsonLdRecipes(response.body);
-    this.observation.rejectedIncompleteJsonLd =
-      (this.observation.rejectedIncompleteJsonLd ?? 0) +
-      extraction.incompleteJsonLdCount;
-    this.observation.rejectedMalformedJsonLd =
-      (this.observation.rejectedMalformedJsonLd ?? 0) +
-      extraction.malformedJsonLdCount;
     if (extraction.repairedJsonLdCount > 0) {
       this.emit("json-ld-repair", {
         repairedScriptCount: extraction.repairedJsonLdCount,
@@ -417,6 +1263,17 @@ export class DanishJsonLdSourceSession {
     if (fallbackReason && !this.playwrightFallbackUrls.has(canonicalUrl)) {
       this.playwrightFallbackUrls.add(canonicalUrl);
       playwrightRequests.push({ kind: "recipe", url: response.url });
+    }
+    // Cheerio evidence that triggers rendering is intermediate. Count only the
+    // terminal rendered extraction so rejection metrics and alerts do not
+    // report the same upstream Recipe node twice.
+    if (!fallbackReason) {
+      this.observation.rejectedIncompleteJsonLd =
+        (this.observation.rejectedIncompleteJsonLd ?? 0) +
+        extraction.incompleteJsonLdCount;
+      this.observation.rejectedMalformedJsonLd =
+        (this.observation.rejectedMalformedJsonLd ?? 0) +
+        extraction.malformedJsonLdCount;
     }
     this.emit("playwright-decision", {
       url: response.url,
@@ -513,6 +1370,7 @@ export class DanishJsonLdSourceSession {
         languageSignals: recipeLanguage.languageSignals,
         extractorVersion: EXTRACTOR_VERSION,
         extractionSignals,
+        ...(this.source.numericYieldOnly ? { numericYieldOnly: true as const } : {}),
         ...(extraction.recipes.length > 1 && !firstNonBlankString(rawRecipe["@id"])
           ? { pageRecipeDiscriminator: `recipe-${recipeIndex + 1}` }
           : {}),
@@ -546,11 +1404,156 @@ export class DanishJsonLdSourceSession {
     return { cheerioRequests: [], playwrightRequests };
   }
 
+  private async handleCustomRecipe(
+    response: DanishJsonLdResponse,
+    pageCanonicalUrl: string,
+    extraction: EmbeddedRecipeExtraction,
+    extractionMethod: "embedded-json" | "html-parsing" | "api-json",
+    sourceExtractionSignals: string[],
+    admissionSignal: string
+  ): Promise<DanishJsonLdRoutingResult> {
+    this.observation.rejectedIncompleteCustom =
+      (this.observation.rejectedIncompleteCustom ?? 0) + extraction.incompleteCount;
+    this.observation.rejectedMalformedCustom =
+      (this.observation.rejectedMalformedCustom ?? 0) + extraction.malformedCount;
+    const extractedRecipes = extraction.recipes ?? (extraction.recipe ? [extraction.recipe] : []);
+    const recipes: EmbeddedRecipe[] = [];
+    for (let recipe of extractedRecipes) {
+      let canonicalUrl: string;
+      try {
+        const resolved = new URL(recipe.canonicalUrl, pageCanonicalUrl);
+        const fragment = recipe.preserveCanonicalFragment ? resolved.hash : "";
+        canonicalUrl = canonicalizeUrl(resolved.toString());
+        if (fragment) canonicalUrl += fragment;
+      } catch {
+        this.observation.rejectedMalformedCustom =
+          (this.observation.rejectedMalformedCustom ?? 0) + 1;
+        continue;
+      }
+      if (!this.isAllowedSourceUrl(canonicalUrl)) {
+        this.rejectDomainBoundary(
+          "canonical",
+          canonicalUrl,
+          "canonical-domain-not-allowed"
+        );
+      } else {
+        recipes.push({ ...recipe, canonicalUrl });
+      }
+    }
+
+    const $ = cheerio.load(response.body);
+    const bodyText = $("body").text();
+    const domain = normalizeDomain(new URL(pageCanonicalUrl).hostname);
+    const language = detectLanguage({
+      $,
+      html: response.body,
+      bodyText,
+      domain,
+      recipe: recipes[0]?.rawRecipe,
+    });
+    const extractionSignals = [
+      ...sourceExtractionSignals,
+      ...(response.fetchMode === "playwright" ? ["playwright-js-rendered"] : []),
+    ];
+    const pageContentHash = hashHtml(response.body);
+    try {
+      await this.store.upsertPage({
+        canonicalUrl: pageCanonicalUrl,
+        domain,
+        language: language.language,
+        languageConfidence: language.languageConfidence,
+        languageSignals: language.languageSignals,
+        fetchedAt: new Date(),
+        httpStatus: response.statusCode,
+        fetchMode: response.fetchMode,
+        redirectChain:
+          response.loadedUrl && response.loadedUrl !== response.url
+            ? [response.url, response.loadedUrl]
+            : undefined,
+        extractionMethod: recipes.length > 0 ? extractionMethod : "partial",
+        extractorVersion: EXTRACTOR_VERSION,
+        extractionConfidence: recipes.length > 0 ? 1 : 0,
+        extractionSignals,
+        recipeCount: recipes.length,
+        rawHtml: new Binary(gzipSync(Buffer.from(response.body))),
+        pageContentHash,
+        discoverySource:
+          response.fetchMode === "playwright" ? "playwright-fallback" : "discovered",
+        sourceDomain: this.source.domain,
+        admissionSignals: ["registry-url-pattern", admissionSignal],
+        outboundRecipeLinks: [],
+      });
+      this.emit("mongo-page-upsert", {
+        canonicalUrl: pageCanonicalUrl,
+        pageContentHash,
+        operation: "upserted",
+        embeddedRecipeCount: recipes.length,
+      });
+    } catch (error) {
+      this.observation.mongoFailures = (this.observation.mongoFailures ?? 0) + 1;
+      this.emit("mongo-failure", {
+        canonicalUrl: pageCanonicalUrl,
+        operation: "embedded-page-upsert",
+        error: error instanceof Error ? error.message : String(error),
+      });
+      throw new DanishJsonLdStoreFailure("Embedded recipe page upsert failed", error);
+    }
+
+    this.emit("playwright-decision", {
+      url: response.url,
+      from: response.fetchMode,
+      queued: false,
+      reason: "source-custom-extraction-final",
+    });
+    for (const recipe of recipes) {
+      const document = buildEmbeddedRecipeDocumentV2({
+        sourceId: this.source.id,
+        crawlRunId: this.crawlRunId,
+        crawlAttemptId: this.crawlAttemptId,
+        pageUrl: response.loadedUrl ?? response.url,
+        extractedAt: new Date(),
+        recipe,
+        language: language.language,
+        languageConfidence: language.languageConfidence,
+        languageSignals: language.languageSignals,
+        extractorVersion: EXTRACTOR_VERSION,
+        extractionSignals,
+        extractionMethod,
+      });
+      try {
+        const result = await this.store.upsertRecipeV2(document);
+        this.observation.persistedRecipes =
+          (this.observation.persistedRecipes ?? 0) + 1;
+        this.emit("mongo-upsert", {
+          canonicalUrl: document.canonicalUrl,
+          sourceRecipeKey: document.sourceRecipeKey,
+          sourceHash: document.sourceHash,
+          contentHash: document.contentHash,
+          operation: result.operation,
+          extractionMethod,
+          contentMatchCount: result.contentMatches.length,
+        });
+      } catch (error) {
+        this.observation.mongoFailures = (this.observation.mongoFailures ?? 0) + 1;
+        this.emit("mongo-failure", {
+          canonicalUrl: document.canonicalUrl,
+          sourceRecipeKey: document.sourceRecipeKey,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+    return emptyRoutes();
+  }
+
   private admitRecipeUrls(urls: string[]): DanishJsonLdRequest[] {
     this.observation.discoveredRecipeCandidates =
       (this.observation.discoveredRecipeCandidates ?? 0) + urls.length;
     const requests: DanishJsonLdRequest[] = [];
     for (const url of urls) {
+      // Canonical form is the deduplication identity, not necessarily a safe
+      // fetch representation. Some WordPress routes distinguish `/category/`
+      // from `/category` and only redirect correctly on the www host. Keep the
+      // discovered URL on the wire, then normalize the loaded recipe identity.
       const canonicalUrl = canonicalizeUrl(url);
       if (this.admittedRecipeUrls.has(canonicalUrl)) continue;
       this.admittedRecipeUrls.add(canonicalUrl);

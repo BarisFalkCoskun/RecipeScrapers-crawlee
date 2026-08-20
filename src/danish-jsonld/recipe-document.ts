@@ -1,4 +1,5 @@
 import { Binary } from "mongodb";
+import { decodeHTML } from "entities";
 import { gzipSync } from "node:zlib";
 import type {
   NormalizedRecipeInstruction,
@@ -39,6 +40,8 @@ export interface BuildRecipeDocumentV2Input {
   languageSignals: string[];
   extractorVersion: string;
   extractionSignals: string[];
+  /** Preserve raw provenance but normalize recipeYield to its first integer. */
+  numericYieldOnly?: true;
   /** Stable positional identity used only when one page contains multiple Recipes without @id. */
   pageRecipeDiscriminator?: string;
 }
@@ -252,6 +255,11 @@ export function buildRecipeDocumentV2(
 ): Omit<RecipeDocumentV2, "_id"> {
   const rawRecipe = structuredClone(input.rawRecipe);
   const normalized = normalizeRecipeV2(rawRecipe);
+  if (input.numericYieldOnly) {
+    const numericYield = normalized.yieldText?.match(/\d+/u)?.[0];
+    if (numericYield) normalized.yieldText = numericYield;
+    else delete normalized.yieldText;
+  }
   const sourceHash = hashRecipe(rawRecipe);
   const contentHash = hashRecipe(normalized as unknown as Record<string, unknown>);
   const sourceRecipeKey = createSourceRecipeKey({
@@ -299,7 +307,7 @@ export function normalizeRecipeV2(
     rawRecipe["headline"],
     rawRecipe["title"]
   );
-  const ingredients = normalizeStrings(
+  const ingredients = normalizeIngredientStrings(
     rawRecipe["recipeIngredient"] ?? rawRecipe["ingredients"]
   );
   const instructions = normalizeInstructions(rawRecipe["recipeInstructions"]);
@@ -308,13 +316,15 @@ export function normalizeRecipeV2(
     ingredients,
     instructions,
     imageUrls: normalizeImageUrls(rawRecipe["image"]),
-    categories: normalizeStrings(rawRecipe["recipeCategory"]),
-    cuisines: normalizeStrings(rawRecipe["recipeCuisine"]),
+    categories: normalizeCommaSeparatedStrings(rawRecipe["recipeCategory"]),
+    cuisines: normalizeCommaSeparatedStrings(rawRecipe["recipeCuisine"]),
     keywords: normalizeKeywords(rawRecipe["keywords"]),
   };
 
   const description = firstString(rawRecipe["description"]);
-  const recipeYield = firstString(rawRecipe["recipeYield"], rawRecipe["yield"]);
+  const recipeYield = normalizeYieldText(
+    rawRecipe["recipeYield"] ?? rawRecipe["yield"]
+  );
   const nutrition = rawRecipe["nutrition"];
   if (description) normalized.description = description;
   if (recipeYield) normalized.yieldText = recipeYield;
@@ -416,18 +426,23 @@ function isCompleteRecipe(recipe: Record<string, unknown>): boolean {
   return Boolean(
     isRecipeType(recipe["@type"]) &&
       firstString(recipe["name"], recipe["headline"], recipe["title"]) &&
-      normalizeStrings(recipe["recipeIngredient"] ?? recipe["ingredients"]).length > 0 &&
+      normalizeIngredientStrings(recipe["recipeIngredient"] ?? recipe["ingredients"]).length > 0 &&
       normalizeInstructions(recipe["recipeInstructions"]).length > 0
   );
 }
 
 function normalizeInstructions(value: unknown): NormalizedRecipeInstruction[] {
-  const texts = instructionTexts(value);
+  const texts = typeof value === "string"
+    ? splitInstructionString(value)
+    : instructionTexts(value);
   return texts.map((text, index) => ({ position: index + 1, text }));
 }
 
 function instructionTexts(value: unknown): string[] {
-  if (typeof value === "string") return normalizeStrings(value);
+  // A string inside an instruction array is already one explicit step. Do not
+  // split its embedded newlines; the legacy parser and Schema.org both retain
+  // that array boundary as the step boundary.
+  if (typeof value === "string") return [cleanText(value)].filter(Boolean);
   if (Array.isArray(value)) return value.flatMap(instructionTexts);
   if (!value || typeof value !== "object") return [];
 
@@ -442,8 +457,21 @@ function instructionTexts(value: unknown): string[] {
     );
   }
   const text = firstString(node["text"], node["name"]);
-  if (text) return [text];
+  // Several publishers append an empty HowToStep whose only value is the UI
+  // label "Step". It is not an instruction and the legacy parser correctly
+  // ignored it because it had no text. Keep meaningful name-only steps, while
+  // dropping generic ordinal placeholders.
+  if (text && !/^(?:step|trin)(?:\s+\d+)?[:.]?$/iu.test(text)) return [text];
   return numericKeyValues(node).flatMap(instructionTexts);
+}
+
+function splitInstructionString(value: string): string[] {
+  // Match the established legacy behavior for sites that put every step in one
+  // Recipe.recipeInstructions string (notably Semper).
+  return value
+    .split(/\n+|(?<=\.)\s+(?=[A-ZÆØÅ])/u)
+    .map(cleanText)
+    .filter(Boolean);
 }
 
 function normalizeImageUrls(value: unknown): string[] {
@@ -457,6 +485,11 @@ function normalizeImageUrls(value: unknown): string[] {
 }
 
 function normalizeKeywords(value: unknown): string[] {
+  if (typeof value !== "string") return normalizeStrings(value);
+  return value.split(",").map(cleanText).filter(Boolean);
+}
+
+function normalizeCommaSeparatedStrings(value: unknown): string[] {
   if (typeof value !== "string") return normalizeStrings(value);
   return value.split(",").map(cleanText).filter(Boolean);
 }
@@ -477,6 +510,34 @@ function normalizeStrings(value: unknown): string[] {
   return [];
 }
 
+function normalizeYieldText(value: unknown): string | undefined {
+  if (typeof value === "number" && Number.isFinite(value)) return String(value);
+  if (Array.isArray(value)) {
+    for (const entry of value) {
+      const normalized = normalizeYieldText(entry);
+      if (normalized) return normalized;
+    }
+    return undefined;
+  }
+  if (value && typeof value === "object") {
+    return normalizeYieldText(numericKeyValues(value as Record<string, unknown>));
+  }
+  return normalizeStrings(value)[0];
+}
+
+function normalizeIngredientStrings(value: unknown): string[] {
+  // Each Schema.org array entry is one ingredient. Embedded newlines are
+  // presentation whitespace (Schulstad uses them inside product names), not
+  // additional ingredients. This mirrors the legacy adapter's leaf flattening.
+  if (typeof value === "string") return [cleanText(value)].filter(Boolean);
+  if (Array.isArray(value)) return value.flatMap(normalizeIngredientStrings);
+  if (value && typeof value === "object") {
+    return numericKeyValues(value as Record<string, unknown>)
+      .flatMap(normalizeIngredientStrings);
+  }
+  return [];
+}
+
 function numericKeyValues(node: Record<string, unknown>): unknown[] {
   return Object.entries(node)
     .filter(([key]) => /^\d+$/u.test(key))
@@ -486,9 +547,24 @@ function numericKeyValues(node: Record<string, unknown>): unknown[] {
 
 function parseIsoDurationMinutes(value: unknown): number | undefined {
   if (typeof value !== "string") return undefined;
-  const match = /^P(?:\d+D)?T(?:(\d+)H)?(?:(\d+)M)?$/u.exec(value.trim());
-  if (!match) return undefined;
-  return Number(match[1] ?? 0) * 60 + Number(match[2] ?? 0);
+  const normalized = value.trim().toLowerCase().replace(",", ".");
+  const iso = /^p(?:\d+y)?(?:\d+m)?(?:\d+d)?t(?:(\d+(?:\.\d+)?)h)?(?:(\d+(?:\.\d+)?)m)?(?:\d+(?:\.\d+)?s)?$/u.exec(normalized);
+  if (iso) return positiveRoundedMinutes(
+    Number(iso[1] ?? 0) * 60 + Number(iso[2] ?? 0)
+  );
+  const hours = /(\d+(?:\.\d+)?)\s*(?:timer?|hours?|hrs?|h)\s*(?:(\d+(?:\.\d+)?)\s*(?:min(?:ut(?:ter)?)?|minutes?|mins?|m))?/u.exec(normalized);
+  if (hours) return positiveRoundedMinutes(
+    Number(hours[1]) * 60 + Number(hours[2] ?? 0)
+  );
+  const minutes = /(\d+(?:\.\d+)?)\s*(?:min(?:ut(?:ter)?)?|minutes?|mins?|m)/u.exec(normalized);
+  if (minutes) return positiveRoundedMinutes(Number(minutes[1]));
+  if (/^\d+$/u.test(normalized)) return positiveRoundedMinutes(Number(normalized));
+  return undefined;
+}
+
+function positiveRoundedMinutes(value: number): number | undefined {
+  const rounded = Math.round(value);
+  return Number.isFinite(rounded) && rounded > 0 ? rounded : undefined;
 }
 
 function firstString(...values: unknown[]): string | undefined {
@@ -502,5 +578,12 @@ function firstString(...values: unknown[]): string | undefined {
 }
 
 function cleanText(value: string): string {
-  return value.replace(/\s+/gu, " ").trim();
+  return decodeHTML(value)
+    // Block separators need a boundary, while inline markup must not turn
+    // `Nutella<sup>®</sup>` into the semantically different `Nutella ®`.
+    .replace(/<br\s*\/?>/giu, " ")
+    .replace(/<\/?(?:article|div|h[1-6]|li|ol|p|section|ul)\b[^>]*>/giu, " ")
+    .replace(/<[^>]+>/gu, "")
+    .replace(/\s+/gu, " ")
+    .trim();
 }

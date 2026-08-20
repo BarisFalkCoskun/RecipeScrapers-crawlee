@@ -66,6 +66,10 @@ describe("Danish JSON-LD source outcomes", () => {
     ["recipe candidate", { discoveredRecipeCandidates: 1 }],
     ["rejected JSON-LD", { rejectedIncompleteJsonLd: 1 }],
     ["malformed JSON-LD", { rejectedMalformedJsonLd: 1 }],
+    ["rejected WPRM recipe", { rejectedIncompleteWprm: 1 }],
+    ["malformed WPRM recipe", { rejectedMalformedWprm: 1 }],
+    ["rejected custom recipe", { rejectedIncompleteCustom: 1 }],
+    ["malformed custom payload", { rejectedMalformedCustom: 1 }],
     ["Playwright failure", { playwrightFailures: 1 }],
     ["Mongo failure", { mongoFailures: 1 }],
     ["incomplete discovery", { discoveryComplete: false }],
@@ -79,6 +83,39 @@ describe("Danish JSON-LD source outcomes", () => {
         ...observation,
       }).outcome
     ).not.toBe("no_data");
+  });
+
+  it("uses WPRM-specific reasons for direct API rejection evidence", () => {
+    expect(classifySourceOutcome({
+      sourceId: "gastrofun",
+      persistedRecipes: 0,
+      completedRequests: 1,
+      rejectedIncompleteWprm: 2,
+      rejectedMalformedWprm: 1,
+      discoveryComplete: true,
+    })).toEqual({
+      sourceId: "gastrofun",
+      outcome: "failed",
+      outcomeReasons: ["incomplete-wprm-rejected", "malformed-wprm-rejected"],
+    });
+  });
+
+  it("uses embedded-payload reasons for custom structured extraction evidence", () => {
+    expect(classifySourceOutcome({
+      sourceId: "spisbedre",
+      persistedRecipes: 0,
+      completedRequests: 1,
+      rejectedIncompleteCustom: 2,
+      rejectedMalformedCustom: 1,
+      discoveryComplete: true,
+    })).toEqual({
+      sourceId: "spisbedre",
+      outcome: "failed",
+      outcomeReasons: [
+        "incomplete-custom-recipe-rejected",
+        "malformed-custom-payload-rejected",
+      ],
+    });
   });
 
   it("classifies malformed JSON-LD with no persisted recipes as failed", () => {

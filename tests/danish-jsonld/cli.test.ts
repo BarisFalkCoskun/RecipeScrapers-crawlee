@@ -103,6 +103,56 @@ describe("crawl:danish-jsonld CLI", () => {
     expect(result.summary).toEqual(summary);
   });
 
+  it("records a WPRM-only run with its own discriminator", async () => {
+    const insertDanishJsonLdRun = vi.fn(async () => undefined);
+    const store = {
+      connect: async () => undefined,
+      close: async () => undefined,
+      insertDanishJsonLdRun,
+    };
+    const output: string[] = [];
+
+    await executeDanishJsonLdCli(["--sources", "gastrofun"], {
+      env: {},
+      now: () => new Date("2026-08-19T12:00:00.000Z"),
+      createStore: () => store as never,
+      runCrawl: async () => ({
+        summary: { robotsEnforced: false, sourceOutcomes: [] },
+        observations: [],
+      }),
+      output: (line) => output.push(line),
+    });
+
+    expect(insertDanishJsonLdRun).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: "danish-wprm-v2", sourceIds: ["gastrofun"] })
+    );
+    expect(JSON.parse(output[0])).toMatchObject({ kind: "danish-wprm-v2" });
+  });
+
+  it("records an embedded-recipe run with the general V2 discriminator", async () => {
+    const insertDanishJsonLdRun = vi.fn(async () => undefined);
+    const store = {
+      connect: async () => undefined,
+      close: async () => undefined,
+      insertDanishJsonLdRun,
+    };
+
+    await executeDanishJsonLdCli(["--sources", "spisbedre"], {
+      env: {},
+      now: () => new Date("2026-08-19T16:00:00.000Z"),
+      createStore: () => store as never,
+      runCrawl: async () => ({
+        summary: { robotsEnforced: false, sourceOutcomes: [] },
+        observations: [],
+      }),
+      output: () => undefined,
+    });
+
+    expect(insertDanishJsonLdRun).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: "danish-recipe-v2", sourceIds: ["spisbedre"] })
+    );
+  });
+
   it("fails visibly and still closes the store when dedicated run persistence fails", async () => {
     const close = vi.fn(async () => undefined);
     const store = {

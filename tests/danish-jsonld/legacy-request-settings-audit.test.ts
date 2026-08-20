@@ -1,5 +1,19 @@
 import { describe, expect, it } from "vitest";
 import { DANISH_JSONLD_SOURCES } from "../../src/danish-jsonld/source-registry.js";
+import { DANISH_WP_POSTS_SOURCE_DEFINITIONS } from "../../src/danish-jsonld/danish-wp-posts-sources.js";
+import {
+  DANISH_CUSTOM_JSONLD_SOURCE_DEFINITIONS,
+  DANISH_CUSTOM_LISTING_JSONLD_SOURCE_DEFINITIONS,
+  DANISH_CUSTOM_WPRM_SOURCE_DEFINITIONS,
+  DANISH_SHOPIFY_BLOG_SOURCE_DEFINITIONS,
+  DANISH_EMBEDDED_JSON_SOURCE_DEFINITIONS,
+  DANISH_HTML_RECIPE_SOURCE_DEFINITIONS,
+  DANISH_MULTI_RECIPE_HTML_SOURCE_DEFINITIONS,
+  DANISH_DR_GRAPHQL_SOURCE_DEFINITIONS,
+  DANISH_AUTHENTICATED_API_SOURCE_DEFINITIONS,
+  DANISH_DAGROFA_API_SOURCE_DEFINITIONS,
+  DANISH_SITECORE_API_SOURCE_DEFINITIONS,
+} from "../../src/danish-jsonld/custom-danish-sources.js";
 
 // Literal effective Scrapy values from the legacy project defaults plus per-spider overrides.
 const expectedSettings = {
@@ -119,6 +133,11 @@ const expectedSettings = {
     "maxRetries": 3
   },
   "fannetasticfood": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "femina": {
     "delaySeconds": 2,
     "maxConcurrency": 2,
     "maxRetries": 3
@@ -308,6 +327,11 @@ const expectedSettings = {
     "maxConcurrency": 2,
     "maxRetries": 3
   },
+  "thefoodclub": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
   "thehappierhomemaker": {
     "delaySeconds": 2,
     "maxConcurrency": 2,
@@ -329,6 +353,11 @@ const expectedSettings = {
     "maxRetries": 3
   },
   "withspice": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "alt": {
     "delaySeconds": 2,
     "maxConcurrency": 2,
     "maxRetries": 3
@@ -438,6 +467,11 @@ const expectedSettings = {
     "maxConcurrency": 2,
     "maxRetries": 3
   },
+  "dkkogebogen": {
+    "delaySeconds": 3,
+    "maxConcurrency": 1,
+    "maxRetries": 3
+  },
   "evatrio": {
     "delaySeconds": 2,
     "maxConcurrency": 2,
@@ -506,6 +540,11 @@ const expectedSettings = {
   "glyngoere": {
     "delaySeconds": 2,
     "maxConcurrency": 1,
+    "maxRetries": 3
+  },
+  "gocook": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
     "maxRetries": 3
   },
   "hannerobinson": {
@@ -673,6 +712,11 @@ const expectedSettings = {
     "maxConcurrency": 2,
     "maxRetries": 3
   },
+  "nipunijulie": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
   "nogetiovnen": {
     "delaySeconds": 3,
     "maxConcurrency": 1,
@@ -749,6 +793,11 @@ const expectedSettings = {
     "maxRetries": 3
   },
   "santamariaworld": {
+    "delaySeconds": 2,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "samvirke": {
     "delaySeconds": 2,
     "maxConcurrency": 2,
     "maxRetries": 3
@@ -947,18 +996,75 @@ const expectedSettings = {
     "delaySeconds": 2,
     "maxConcurrency": 2,
     "maxRetries": 3
+  },
+  "gastrofun": {
+    "delaySeconds": 1,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "groedgrisen": {
+    "delaySeconds": 1,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "ketoliv": {
+    "delaySeconds": 2,
+    "maxConcurrency": 1,
+    "maxRetries": 3
+  },
+  "madensverden": {
+    "delaySeconds": 1,
+    "maxConcurrency": 2,
+    "maxRetries": 3
+  },
+  "planteaederen": {
+    "delaySeconds": 2,
+    "maxConcurrency": 1,
+    "maxRetries": 3
   }
 } as const;
 
 describe("legacy request-settings audit", () => {
-  it("matches every legacy JSON-LD spider's effective delay, concurrency, and retries", () => {
-    expect(Object.fromEntries(DANISH_JSONLD_SOURCES.map((source) => [
+  it("matches every non-WPRM legacy spider's effective delay, concurrency, and retries", () => {
+    const wprmIds = new Set(DANISH_JSONLD_SOURCES
+      .filter((source) => source.legacyFamily === "WprmApiSpider")
+      .map((source) => source.id));
+    const newlyRegisteredWpPostsIds = new Set(
+      DANISH_WP_POSTS_SOURCE_DEFINITIONS.map(([sourceId]) => sourceId)
+    );
+    const customDanishIds = new Set(
+      [
+        ...DANISH_CUSTOM_JSONLD_SOURCE_DEFINITIONS,
+        ...DANISH_CUSTOM_LISTING_JSONLD_SOURCE_DEFINITIONS,
+        ...DANISH_CUSTOM_WPRM_SOURCE_DEFINITIONS,
+        ...DANISH_SHOPIFY_BLOG_SOURCE_DEFINITIONS,
+        ...DANISH_EMBEDDED_JSON_SOURCE_DEFINITIONS,
+        ...DANISH_HTML_RECIPE_SOURCE_DEFINITIONS,
+        ...DANISH_MULTI_RECIPE_HTML_SOURCE_DEFINITIONS,
+        ...DANISH_DR_GRAPHQL_SOURCE_DEFINITIONS,
+        ...DANISH_AUTHENTICATED_API_SOURCE_DEFINITIONS,
+        ...DANISH_DAGROFA_API_SOURCE_DEFINITIONS,
+        ...DANISH_SITECORE_API_SOURCE_DEFINITIONS,
+      ].map(({ id }) => id)
+    );
+    customDanishIds.add("meyers");
+    const expectedNonWprmSettings = Object.fromEntries(
+      Object.entries(expectedSettings).filter(([sourceId]) => !wprmIds.has(sourceId))
+    );
+
+    expect(Object.fromEntries(DANISH_JSONLD_SOURCES
+      .filter((source) =>
+        source.legacyFamily !== "WprmApiSpider" &&
+        !newlyRegisteredWpPostsIds.has(source.id) &&
+        !customDanishIds.has(source.id)
+      )
+      .map((source) => [
       source.id,
       {
         delaySeconds: source.requestSettings.delaySeconds,
         maxConcurrency: source.requestSettings.maxConcurrency,
         maxRetries: source.requestSettings.maxRetries,
       },
-    ]))).toEqual(expectedSettings);
+    ]))).toEqual(expectedNonWprmSettings);
   });
 });

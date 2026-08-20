@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 import { MONGODB_CONFIG } from "../config.js";
 import { RecipeStore } from "../storage/mongodb.js";
+import type { DanishJsonLdCrawlRunDocument } from "../types.js";
 
 config();
 
@@ -16,17 +17,41 @@ async function main() {
   await store.connect();
 
   try {
+    const danishRuns = (await store.listDanishRecipeRuns())
+      .sort((a, b) => b.finishedAt.getTime() - a.finishedAt.getTime())
+      .slice(0, limit);
     const runs = (await store.listCrawlRuns())
       .sort(
         (a, b) => b.finishedAt.getTime() - a.finishedAt.getTime()
       )
       .slice(0, limit);
 
-    if (runs.length === 0) {
+    if (runs.length === 0 && danishRuns.length === 0) {
       console.log("No crawl runs found.");
       return;
     }
 
+    if (danishRuns.length > 0) {
+      console.log("Danish RecipeDocument V2 runs");
+      console.log("Finished At                 Kind              Recipes  Sources / outcomes");
+      for (const run of danishRuns) {
+        console.log([
+          run.finishedAt.toISOString(),
+          run.kind.padEnd(17),
+          padLeft(persistedRecipeCount(run), 7),
+          run.summary.sourceOutcomes.map((outcome) =>
+            `${outcome.sourceId}=${outcome.outcome}${outcome.outcomeReasons.length > 0
+              ? `(${outcome.outcomeReasons.join(",")})`
+              : ""}`
+          ).join(" "),
+        ].join("  "));
+      }
+      console.log("");
+    }
+
+    if (runs.length === 0) return;
+
+    console.log("Generic seed crawler runs");
     console.log(
       "Finished At           Processed  Recipes  Yield   Fallback  OffDom  NewDom  Skips  Seeds"
     );
@@ -102,6 +127,16 @@ async function main() {
   } finally {
     await store.close();
   }
+}
+
+function persistedRecipeCount(run: DanishJsonLdCrawlRunDocument): number {
+  let total = 0;
+  for (const observation of run.observations) {
+    if (typeof observation !== "object" || observation === null) continue;
+    const count = (observation as Record<string, unknown>)["persistedRecipes"];
+    if (typeof count === "number" && Number.isFinite(count)) total += count;
+  }
+  return total;
 }
 
 function parseLimit(rawValue: string | undefined): number {

@@ -1,0 +1,43 @@
+services:
+  mongodb:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongodb-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "quit(db.adminCommand({ ping: 1 }).ok ? 0 : 2)"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  danish-scheduler:
+    build: .
+    init: true
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      MONGODB_URI: ${MONGODB_URI:-mongodb://mongodb:27017}
+      DB_NAME: ${DB_NAME:-crawlee}
+      CRAWLEE_SCHEDULER_ALLOWED_STATES: ${CRAWLEE_SCHEDULER_ALLOWED_STATES:-cutover}
+      CRAWLEE_SCHEDULED_SOURCES: ${CRAWLEE_SCHEDULED_SOURCES:-}
+      CRAWLEE_SCHEDULER_TIMEZONE: ${CRAWLEE_SCHEDULER_TIMEZONE:-Europe/Copenhagen}
+      CRAWLEE_SCRAPE_HOUR: ${CRAWLEE_SCRAPE_HOUR:-1}
+      CRAWLEE_SCHEDULE_CATCHUP_MINUTES: ${CRAWLEE_SCHEDULE_CATCHUP_MINUTES:-1800}
+      CRAWLEE_SCHEDULER_HEARTBEAT_PATH: /app/data/scheduler-heartbeat.json
+      CRAWLEE_SCHEDULER_LEDGER_PATH: /app/data/scheduler-ledger.json
+      CRAWLEE_SCHEDULER_EVIDENCE_DIR: /app/data/evidence
+      CRAWLEE_STORAGE_DIR: /app/data/storage
+    volumes:
+      - scheduler-data:/app/data
+    healthcheck:
+      test: ["CMD", "node", "dist/scripts/scheduler-healthcheck.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  mongodb-data:
+  scheduler-data:
