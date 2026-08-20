@@ -68,11 +68,14 @@ for(const [k,l] of L){
   if((l.total_time_minutes??null)!==(n.totalMinutes??null)) add("total",k,l.total_time_minutes,n.totalMinutes);
   const ly=norm(`${l.servings??""} ${l.servings_unit??""}`), cy=norm(n.yieldText);
   if(ly!==cy){
-    // Legacy reduces recipeYield to its leading integer and drops the unit, so
-    // "1.75 liter" becomes "1" and "4 personer" becomes "4". V2 keeps the
-    // published text, which is the same yield with more of it preserved.
-    const lead=/^(\d+)/u.exec(cy);
-    if(lead && lead[1]===ly) richerYield++;
+    // Legacy searches recipeYield for the first run of digits and keeps only
+    // that, dropping any fraction, range and unit: "1.75 liter" becomes "1",
+    // "4 personer" becomes "4", and "makes 20-22 muffins" becomes "20". The
+    // number need not lead the string, because legacy searches rather than
+    // anchors. V2 keeps the published text, which is the same yield with more
+    // of it preserved.
+    const first=/\d+/u.exec(cy);
+    if(first && first[0]===ly) richerYield++;
     else add("yield",k,ly,cy);
   }
   if(JSON.stringify((l.image_urls||[]).map(norm))!==JSON.stringify((n.imageUrls||[]).map(norm))) add("images",k,l.image_urls,n.imageUrls);

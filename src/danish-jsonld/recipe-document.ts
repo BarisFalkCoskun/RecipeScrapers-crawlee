@@ -548,6 +548,12 @@ function numericKeyValues(node: Record<string, unknown>): unknown[] {
 function parseIsoDurationMinutes(value: unknown): number | undefined {
   if (typeof value !== "string") return undefined;
   const normalized = value.trim().toLowerCase().replace(",", ".");
+  // A negative component in an ISO duration is a broken upstream value, most
+  // often a clock subtraction made the wrong way round, and it drifts with real
+  // time. The loose fallbacks below would scrape a huge positive number out of
+  // it — one source publishes PT-29787046.716667M, which reads as a 56-year
+  // prep time — so it is treated as no duration at all.
+  if (/^p/u.test(normalized) && /-\d/u.test(normalized)) return undefined;
   const iso = /^p(?:\d+y)?(?:\d+m)?(?:\d+d)?t(?:(\d+(?:\.\d+)?)h)?(?:(\d+(?:\.\d+)?)m)?(?:\d+(?:\.\d+)?s)?$/u.exec(normalized);
   if (iso) return positiveRoundedMinutes(
     Number(iso[1] ?? 0) * 60 + Number(iso[2] ?? 0)

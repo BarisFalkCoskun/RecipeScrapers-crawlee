@@ -107,6 +107,60 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
     expect(document.normalized).not.toHaveProperty("prepMinutes");
   });
 
+  it("treats a negative ISO duration as no duration rather than a huge one", () => {
+    // gatheranddine publishes prepTime "PT-29787046.716667M", a clock
+    // subtraction made the wrong way round that drifts with real time. The
+    // loose duration fallbacks would scrape 29,787,047 minutes out of it and
+    // store a 56-year prep time.
+    const document = buildRecipeDocumentV2({
+      sourceId: "example",
+      canonicalUrl: "https://example.dk/opskrift/spanakopita",
+      pageUrl: "https://example.dk/opskrift/spanakopita",
+      crawlRunId: "run-negative-duration",
+      crawlAttemptId: "attempt-negative-duration",
+      extractedAt: new Date("2026-08-20T08:00:00.000Z"),
+      rawRecipe: {
+        ...structuredClone(completeRecipe),
+        prepTime: "PT-29787046.716667M",
+        cookTime: "PT30M",
+        totalTime: "PT2H",
+      },
+      language: "da",
+      languageConfidence: 1,
+      languageSignals: [],
+      extractorVersion: "2.0.0",
+      extractionSignals: [],
+    });
+
+    expect(document.normalized).not.toHaveProperty("prepMinutes");
+    // The durations the source states correctly are still read.
+    expect(document.normalized).toMatchObject({ cookMinutes: 30, totalMinutes: 120 });
+  });
+
+  it("still reads ordinary ISO durations that carry no negative component", () => {
+    const build = (prepTime: string) => buildRecipeDocumentV2({
+      sourceId: "example",
+      canonicalUrl: "https://example.dk/opskrift/kage",
+      pageUrl: "https://example.dk/opskrift/kage",
+      crawlRunId: "run-durations",
+      crawlAttemptId: "attempt-durations",
+      extractedAt: new Date("2026-08-20T08:00:00.000Z"),
+      rawRecipe: { ...structuredClone(completeRecipe), prepTime },
+      language: "da",
+      languageConfidence: 1,
+      languageSignals: [],
+      extractorVersion: "2.0.0",
+      extractionSignals: [],
+    }).normalized.prepMinutes;
+
+    expect(build("PT1H30M")).toBe(90);
+    expect(build("PT45M")).toBe(45);
+    expect(build("P0DT2H")).toBe(120);
+    // A hyphen outside an ISO duration is a range, not a negative component:
+    // it still parses, reading the number the unit belongs to.
+    expect(build("1-2 timer")).toBe(120);
+  });
+
   it("preserves inline text adjacency while spacing HTML line breaks", () => {
     const document = buildRecipeDocumentV2({
       sourceId: "nutella",
