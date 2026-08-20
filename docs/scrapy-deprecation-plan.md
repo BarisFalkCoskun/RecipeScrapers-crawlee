@@ -198,16 +198,19 @@ without a durable deployment, run, dashboard, change, or approval reference.
   visible-anchor window and emitted 29 recipes; every overlapping recipe and
   material field matches exactly. Crawlee rejects one incomplete page.
 
-- [x] Twenty-seven WPRM sources cleared full shadow parity: `frukreativ`,
+- [x] Thirty-nine WPRM sources cleared full shadow parity: `frukreativ`,
   `minopskrift`, `nemlchf`, `madskribent`, `sundmor`, `jensensmadblog`,
   `johanjohansen`, `gastry`, `chilisauce`, `bondemad`, `twinfood`,
   `italienskvinogmad`, `airfryermad`, `camillemaja`, `cookingclub`, `altmad`,
   `fuldkorn`, `rigeligtsmor`, `veganernu`, `vielskermad`, `mariasilje`,
   `albertestengaard`, `juliebruun`, `planteaederen`, `pilenskoekken`, `drkoch`,
-  and `annamaddk`. Two uncapped Crawlee runs each emitted identical keys and
+  `annamaddk`, `newyorkerbyheart`, `muttionline`, `emmaolsen`, `hverdagsro`,
+  `frahaventilmaven`, `onekitchenblog`, `madogkaerlighed`, `gastromad`,
+  `opskriftorg`, `louisesmadblog`, `marialottes`, and `opskriftnet`. Two
+  uncapped Crawlee runs each emitted identical keys and
   normalized content with idempotent upserts, and the full isolated Scrapy run
   emitted the same recipes with every material field matching, from 9 records on
-  `minopskrift` to 662 on `annamaddk` — 4,032 records in total. Four differences are
+  `minopskrift` to 1,408 on `opskriftnet` — 13,193 records in total. Five differences are
   formatting rather than content and are intentional: Crawlee keeps the
   published cuisine in `cuisines` instead of folding it into legacy's flat tag
   list, decodes upstream HTML entities, and canonicalizes URLs by dropping the
@@ -219,6 +222,14 @@ without a durable deployment, run, dashboard, change, or approval reference.
   The legacy `pilenskoekken` spider emitted nothing on its first run after its
   robots preflight answered HTTP 403 and emitted all 71 on the repeat, so that
   comparison rests on the healthy legacy run.
+  The fifth difference is zero-width characters, which some sources embed
+  mid-string: Crawlee strips them and legacy keeps them, which is the same
+  visible text.
+- [ ] `airfryerkogebogen` is the one WPRM source still short of shadow parity.
+  Its uncapped Crawlee run persisted the whole 4,930-record catalog cleanly, but
+  the source then began answering HTTP 500 to every request at both page sizes
+  and two legacy runs gave up on page 1. The comparison waits for the source to
+  recover rather than being retried against it.
 
 ## Family sweeps
 
@@ -313,8 +324,8 @@ or production writes are not part of a probe.
 
 Scrapy cannot yet be deprecated. Crawlee covers all 235 Danish spiders at the
 registry level, every one of the 314 registered sources now carries evidence
-from a live run rather than an assumed state, and the registry stands at 74
-`shadow_passed`, 103 `canary_passed`, 117 `configured`, 11 `blocked`, and 9
+from a live run rather than an assumed state, and the registry stands at 86
+`shadow_passed`, 91 `canary_passed`, 117 `configured`, 11 `blocked`, and 9
 `deferred`. Full-catalog evidence is now recorded for Aperol, Beauvais,
 Bornholms, Campari, Cocktaily, Eva Trio, Ferrero Rocher, FoodFanatic, Foodnotes,
 Friluftslageret, Frøken Kræsen, Glutenfri Magi, Hanne Robinson, Kager og Sager,

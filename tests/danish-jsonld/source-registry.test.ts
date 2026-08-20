@@ -541,15 +541,19 @@ describe("Danish JSON-LD source registry", () => {
   it("records the WPRM family sweep with the evidence each run produced", () => {
     const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
 
-    // Clean uncapped runs.
-    for (const id of ["emmaolsen", "opskriftnet", "airfryerkogebogen", "gastromad"]) {
-      expect(byId.get(id)?.migrationState).toBe("canary_passed");
+    // Every source the sweep reached carries the run that produced its state.
+    for (const id of ["airfryerkogebogen", "emmaolsen", "opskriftnet", "madensverden"]) {
       expect(byId.get(id)?.latestCanary).toBeTruthy();
+      expect(byId.get(id)?.migrationState).not.toBe("not_started");
     }
     // airfryerkogebogen only completed once a transient HTTP 500 on page 46
     // cleared; the recorded run is the whole 4930-record catalog.
     expect(byId.get("airfryerkogebogen")?.deferOrBlockReason)
-      .toMatch(/4930 recipes/u);
+      .toMatch(/whole 4930-record catalog/u);
+    // Its legacy comparison is outstanding because the source began answering
+    // HTTP 500 to everything; that is recorded rather than retried against it.
+    expect(byId.get("airfryerkogebogen")?.deferOrBlockReason)
+      .toMatch(/wait for the source to recover/u);
     // koudahl discovered nothing until its page size came down.
     expect(byId.get("koudahl")?.migrationState).toBe("configured");
     expect(byId.get("koudahl")?.deferOrBlockReason).toMatch(/329 recipes/u);
@@ -572,7 +576,9 @@ describe("Danish JSON-LD source registry", () => {
       "italienskvinogmad", "airfryermad", "camillemaja", "cookingclub", "altmad",
       "fuldkorn", "rigeligtsmor", "veganernu", "vielskermad", "mariasilje",
       "albertestengaard", "juliebruun", "planteaederen", "pilenskoekken", "drkoch",
-      "annamaddk",
+      "annamaddk", "newyorkerbyheart", "muttionline", "emmaolsen", "hverdagsro",
+      "frahaventilmaven", "onekitchenblog", "madogkaerlighed", "gastromad",
+      "opskriftorg", "louisesmadblog", "marialottes", "opskriftnet",
     ];
 
     for (const id of shadowed) {
@@ -595,6 +601,10 @@ describe("Danish JSON-LD source registry", () => {
       .toMatch(/named-step prefixes on 136 records/u);
     expect(byId.get("drkoch")?.deferOrBlockReason)
       .toMatch(/named-step prefix on one record/u);
+    // One louisesmadblog ingredient carries zero-width characters mid-string.
+    // Stripping them is the same visible text, not a dropped field.
+    expect(byId.get("louisesmadblog")?.deferOrBlockReason)
+      .toMatch(/zero-width characters/u);
     // Legacy was unhealthy on its first pilenskoekken run; the parity rests on
     // the run where it emitted its whole catalog.
     expect(byId.get("pilenskoekken")?.deferOrBlockReason)
