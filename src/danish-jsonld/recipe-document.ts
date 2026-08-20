@@ -553,6 +553,10 @@ function parseIsoDurationMinutes(value: unknown): number | undefined {
   // time. The loose fallbacks below would scrape a huge positive number out of
   // it — one source publishes PT-29787046.716667M, which reads as a 56-year
   // prep time — so it is treated as no duration at all.
+  //
+  // Only the negative sign disqualifies a duration. A very long one can be
+  // real: a WPRM source states 129,620 minutes total for a plum liqueur, which
+  // is its ninety-day Trækketid, and that must survive.
   if (/^p/u.test(normalized) && /-\d/u.test(normalized)) return undefined;
   const iso = /^p(?:\d+y)?(?:\d+m)?(?:\d+d)?t(?:(\d+(?:\.\d+)?)h)?(?:(\d+(?:\.\d+)?)m)?(?:\d+(?:\.\d+)?s)?$/u.exec(normalized);
   if (iso) return positiveRoundedMinutes(

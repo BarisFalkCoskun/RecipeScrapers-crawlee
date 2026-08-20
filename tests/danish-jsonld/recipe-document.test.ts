@@ -154,6 +154,9 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
     }).normalized.prepMinutes;
 
     expect(build("PT1H30M")).toBe(90);
+    // A very long duration can be real: one source states a ninety-day
+    // Trækketid for a plum liqueur, so only the negative sign disqualifies one.
+    expect(build("PT129620M")).toBe(129620);
     expect(build("PT45M")).toBe(45);
     expect(build("P0DT2H")).toBe(120);
     // A hyphen outside an ISO duration is a range, not a negative component:
