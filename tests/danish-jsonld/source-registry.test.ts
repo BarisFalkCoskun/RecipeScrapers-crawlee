@@ -444,15 +444,18 @@ describe("Danish JSON-LD source registry", () => {
       DANISH_WPRM_SOURCE_DEFINITIONS.map(([id]) => id).sort()
     );
     for (const source of sources) {
+      // Page size is per-source: a site that cannot build the default page
+      // answers HTTP 500 rather than a short page, so the route is asserted
+      // without pinning the size.
       expect(source.startUrls[0]).toMatch(
-        /\/wp-json\/wp\/v2\/wprm_recipe\?per_page=100&page=1$/u
+        /\/wp-json\/wp\/v2\/wprm_recipe\?per_page=\d+&page=1$/u
       );
       expect(source.listingDiscovery?.payload).toMatchObject({
         expectedRoot: "array",
         recipePaths: ["[].link"],
         terminalPayload: { path: "code", equals: "rest_post_invalid_page_number" },
       });
-      expect(["not_started", "configured", "shadow_passed"])
+      expect(["not_started", "configured", "canary_passed", "shadow_passed", "blocked", "deferred"])
         .toContain(source.migrationState);
     }
     expect(sources.filter((source) => source.fetchMode === "playwright").map(
@@ -518,6 +521,90 @@ describe("Danish JSON-LD source registry", () => {
 
     // Parity work already took gunris past a canary; recording must not undo it.
     expect(byId.get("gunris")?.migrationState).toBe("shadow_passed");
+  });
+
+  it("records a live run for every Danish source", () => {
+    // The sweep covered the WPRM and WordPress-posts families, so no source is
+    // left claiming a state it never earned from a run.
+    const notStarted = DANISH_JSONLD_SOURCES.filter(
+      (source) => source.migrationState === "not_started"
+    );
+    expect(notStarted.map((source) => source.id)).toEqual([]);
+    // Every source states what its run found. Surdejsentusiasten predates the
+    // reason column and carries its evidence in the deprecation plan instead.
+    const unexplained = DANISH_JSONLD_SOURCES.filter(
+      (source) => !(source.deferOrBlockReason ?? "").trim()
+    );
+    expect(unexplained.map((source) => source.id)).toEqual(["surdejsentusiasten"]);
+  });
+
+  it("records the WPRM family sweep with the evidence each run produced", () => {
+    const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
+
+    // Clean uncapped runs.
+    for (const id of ["airfryermad", "emmaolsen", "opskriftnet", "airfryerkogebogen"]) {
+      expect(byId.get(id)?.migrationState).toBe("canary_passed");
+      expect(byId.get(id)?.latestCanary).toBeTruthy();
+    }
+    // airfryerkogebogen only completed once a transient HTTP 500 on page 46
+    // cleared; the recorded run is the whole 4930-record catalog.
+    expect(byId.get("airfryerkogebogen")?.deferOrBlockReason)
+      .toMatch(/4930 recipes/u);
+    // koudahl discovered nothing until its page size came down.
+    expect(byId.get("koudahl")?.migrationState).toBe("configured");
+    expect(byId.get("koudahl")?.deferOrBlockReason).toMatch(/329 recipes/u);
+    // Sources whose legacy API route no longer carries their recipes.
+    for (const id of ["grilltips", "karinabaagoe"]) {
+      expect(byId.get(id)?.migrationState).toBe("deferred");
+      expect(byId.get(id)?.deferOrBlockReason).toMatch(/collection is empty/u);
+    }
+    // Sources the site itself keeps unreachable.
+    for (const id of ["letmad", "madbanditten", "juliekarla"]) {
+      expect(byId.get(id)?.migrationState).toBe("blocked");
+    }
+  });
+
+  it("carries full shadow parity for the sources compared against Scrapy", () => {
+    const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
+    const shadowed = [
+      "frukreativ", "minopskrift", "nemlchf", "madskribent", "sundmor",
+      "jensensmadblog", "johanjohansen", "gastry", "chilisauce", "bondemad", "twinfood",
+    ];
+
+    for (const id of shadowed) {
+      const source = byId.get(id);
+      expect(source?.migrationState).toBe("shadow_passed");
+      expect(source?.latestScrapyOutcome).toBe("succeeded");
+      expect(source?.shadowParity).toMatch(/every material field match exactly/u);
+      // Each promotion rests on two uncapped runs, not one.
+      expect(source?.deferOrBlockReason).toMatch(/Two uncapped Crawlee runs/u);
+    }
+  });
+
+  it("records the browser-fetched WordPress posts sources the unwrap fix reached", () => {
+    const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
+
+    for (const id of ["madopskriften", "opskriftslageret", "veganermor", "hoerup", "nemmadplan"]) {
+      expect(byId.get(id)?.migrationState).toBe("canary_passed");
+    }
+    // Both remaining sources are closed at the source, not by extraction.
+    expect(byId.get("hverdagsgourmet")?.deferOrBlockReason)
+      .toMatch(/itsec_rest_api_access_restricted/u);
+    expect(byId.get("madopskriftertilairfryer")?.deferOrBlockReason)
+      .toMatch(/WordPress critical-error page/u);
+  });
+
+  it("requests koudahl's WPRM collection at a page size its server can build", () => {
+    const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
+
+    // koudahl answers per_page=100 with HTTP 500 and an empty body, so the
+    // whole source discovered nothing; 50 is served reliably.
+    expect(byId.get("koudahl")?.startUrls[0]).toContain("per_page=50");
+    // Every other WPRM source keeps the default page size.
+    for (const source of DANISH_JSONLD_SOURCES) {
+      if (source.legacyFamily !== "WprmApiSpider" || source.id === "koudahl") continue;
+      expect(source.startUrls[0]).toContain("per_page=100");
+    }
   });
 
   it("carries the WordPress posts sources on the strict JSON-LD contract", () => {

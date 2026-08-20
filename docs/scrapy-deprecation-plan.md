@@ -198,6 +198,60 @@ without a durable deployment, run, dashboard, change, or approval reference.
   visible-anchor window and emitted 29 recipes; every overlapping recipe and
   material field matches exactly. Crawlee rejects one incomplete page.
 
+- [x] `frukreativ`, `minopskrift`, `nemlchf`, `madskribent`, `sundmor`,
+  `jensensmadblog`, `johanjohansen`, `gastry`, `chilisauce`, `bondemad`, and
+  `twinfood`: two uncapped Crawlee runs each emitted identical keys and
+  normalized content with idempotent upserts, and the full isolated Scrapy run
+  emitted the same recipes with every material field matching — 15, 9, 12, 22,
+  40, 69, 92, 93, 19, 20, and 49 records respectively. Three differences are
+  formatting rather than content and are intentional: Crawlee keeps the
+  published cuisine in `cuisines` instead of folding it into legacy's flat tag
+  list, decodes upstream HTML entities, and canonicalizes URLs by dropping the
+  `www` prefix and the WPRM recipe-id fragment and sorting query parameters.
+  `bondemad` and `frukreativ` each carry a multi-recipe page, and both
+  implementations emit every sibling recipe from it.
+
+## Family sweeps
+
+Two families were swept uncapped end to end, which closed the last sources that
+had never been run. No Danish source is `not_started` any more.
+
+- [x] WPRM family (86 sources): 40 reached a clean uncapped canary and 11 of
+  those went on to full shadow parity against Scrapy; 41 are short of a canary
+  on records the sites themselves publish incomplete or malformed, 3 are
+  unreachable, and 2 have a `wprm_recipe` collection that is now empty while
+  the sites still publish posts carrying WPRM markup — for those two the legacy API route no longer
+  exposes the recipes, so a re-route is outstanding rather than a deferral for
+  lack of content.
+- [x] Danish WordPress-posts family (9 sources): 5 clean canaries, 2 short of
+  one, and 2 closed at the source — `hverdagsgourmet` restricts its REST API
+  (HTTP 401 `itsec_rest_api_access_restricted`) and
+  `madopskriftertilairfryer` answers HTTP 500 with the WordPress critical-error
+  page site-wide, homepage included. Both legacy spiders read the same
+  endpoints, so neither implementation can reach those sources today.
+
+Three defects surfaced during the sweep and were fixed with regression tests:
+
+1. Chromium renders a JSON URL inside its own viewer document, so the nine
+   browser-fetched WordPress-posts sources received HTML wrapping the payload
+   in a `<pre>` and rejected every listing as a malformed payload. All nine had
+   discovered nothing; unwrapping the viewer document recovered them, and
+   `madopskriften` and `opskriftslageret` went from 0 to 146 and 159 recipes.
+   The legacy spiders avoid the same trap by reading `document.body.innerText`.
+2. The simply.com WAF serves one interstitial under HTTP 454 and, intermittently,
+   under HTTP 500. Only 454/455 counted as a browser check, so the 500 spelling
+   was recorded as a failed request and never retried. The body now decides when
+   the status is a bare 5xx, bounded by the same retry budget, and a genuine
+   server error stays a failure.
+3. `koudahl` answers `per_page=100` with HTTP 500 and an empty body, so the
+   source discovered nothing. WPRM page size is now per-source; at 50 the run
+   persists 329 of 331 records.
+
+Two blocked runs cleared on a later attempt without any code change —
+`planteaederen` (36 recipes) and `dagenstallerken` (517) — and
+`airfryerkogebogen` completed its full 4930-record catalog once a transient
+HTTP 500 on page 46 cleared. One blocked run is not a source verdict.
+
 ## Source acceptance gate
 
 Each source must satisfy all of these conditions before its registry state can
@@ -249,7 +303,9 @@ or production writes are not part of a probe.
 ## Current retirement status
 
 Scrapy cannot yet be deprecated. Crawlee covers all 235 Danish spiders at the
-registry level and full-catalog evidence is now recorded for Aperol, Beauvais,
+registry level, every one of the 314 registered sources now carries evidence
+from a live run rather than an assumed state, and full-catalog evidence is now
+recorded for Aperol, Beauvais,
 Bornholms, Campari, Cocktaily, Eva Trio, Ferrero Rocher, FoodFanatic, Foodnotes,
 Friluftslageret, Frøken Kræsen, Glutenfri Magi, Hanne Robinson, Kager og Sager,
 Ketoliv, Mad for Fattigrøve, Ketomums, Knæhøj Karse, Kornkammeret, Nescafé,
