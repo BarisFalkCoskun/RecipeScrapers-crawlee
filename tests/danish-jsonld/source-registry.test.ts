@@ -580,6 +580,7 @@ describe("Danish JSON-LD source registry", () => {
       "frahaventilmaven", "onekitchenblog", "madogkaerlighed", "gastromad",
       "opskriftorg", "louisesmadblog", "marialottes", "opskriftnet",
       "hoerup", "madopskriften", "opskriftslageret", "nemmadplan", "veganermor",
+      "lundoaagaard", "smaagroenneskridt", "kokkeriermedpassion", "anicula", "babybite",
     ];
 
     for (const id of shadowed) {
@@ -590,6 +591,15 @@ describe("Danish JSON-LD source registry", () => {
       // Each promotion rests on two uncapped runs, not one.
       expect(source?.deferOrBlockReason).toMatch(/Two uncapped Crawlee runs/u);
     }
+  });
+
+  it("names the yield legacy reduces to a leading integer", () => {
+    const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
+
+    // Legacy takes the first integer out of recipeYield, so a published 1.75
+    // becomes 1 and the unit is lost. V2 keeps the yield as written.
+    expect(byId.get("smaagroenneskridt")?.deferOrBlockReason)
+      .toMatch(/1\.75 yield that legacy reduces to its leading integer/u);
   });
 
   it("names the WPRM named-step prefixes Crawlee keeps and legacy drops", () => {

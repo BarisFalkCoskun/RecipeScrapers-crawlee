@@ -6483,22 +6483,31 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1071 recipes from 1660 posts with complete discovery and no blocked, failed or rejected record",
   },
   lundoaagaard: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-20T02-57-48.980Z-attempt-53e3b917-dd5f-4bf5-8d22-161627db0d38",
+    shadowParity:
+      "1/1 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 1 recipes from 10 posts with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 1-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 1 recipes with every material field matching; the record keeps a cuisine legacy has no field for",
   },
   smaagroenneskridt: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-20T02-58-55.873Z-attempt-cfa591f9-d111-42d8-a9eb-0c6589c1df1a",
+    shadowParity:
+      "1/1 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 1 recipes from 2 posts with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 1-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 1 recipes with every material field matching; the record keeps the published 1.75 yield that legacy reduces to its leading integer 1",
   },
   babybite: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-20T02-27-20.482Z-attempt-6ed7b7c9-3175-4d13-97f8-e7b6c977dece",
+    shadowParity:
+      "14/14 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 14 recipes from 154 posts with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 14-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 14 recipes with every material field matching; 11 records keep a cuisine legacy has no field for",
   },
   cookiesandcups: {
     migrationState: "canary_passed",
@@ -6525,10 +6534,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 213 recipes from 669 posts with complete discovery and no blocked, failed or rejected record",
   },
   kokkeriermedpassion: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-20T02-58-42.024Z-attempt-4f0d1e9d-9336-4d3f-854f-41bc06c1f78f",
+    shadowParity:
+      "2/2 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 2 recipes from 3 posts with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 2-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 2 recipes with every material field matching; every taxonomy value matches as published",
   },
   abakershouse: {
     migrationState: "canary_passed",
@@ -6597,10 +6609,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 655 recipes from 823 posts with complete discovery and no blocked, failed or rejected record",
   },
   anicula: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-20T02-58-21.065Z-attempt-4d5e350b-8a85-40fd-a990-177979e360bd",
+    shadowParity:
+      "6/6 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 6 recipes from 6 posts with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 6-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 6 recipes with every material field matching; every taxonomy value matches as published",
   },
   choosingchia: {
     migrationState: "canary_passed",
