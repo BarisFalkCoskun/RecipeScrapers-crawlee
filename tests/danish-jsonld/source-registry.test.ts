@@ -583,6 +583,7 @@ describe("Danish JSON-LD source registry", () => {
       "lundoaagaard", "smaagroenneskridt", "kokkeriermedpassion", "anicula", "babybite",
       "nannapretzmann", "coupleinthekitchen", "bakerella", "abakershouse",
       "thecakeblog", "basisvarer", "moderncrumb", "breadtopia",
+      "skalvibage", "kokke", "ingridhornshoj",
     ];
 
     for (const id of shadowed) {
@@ -593,6 +594,17 @@ describe("Danish JSON-LD source registry", () => {
       // Each promotion rests on two uncapped runs, not one.
       expect(source?.deferOrBlockReason).toMatch(/Two uncapped Crawlee runs/u);
     }
+  });
+
+  it("credits the percent-encoded URL fix where it changed the count", () => {
+    const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
+
+    // ingridhornshoj came back 160 against legacy's 161 until the encoded
+    // spelling was matched; the reason names the record so the link between
+    // the fix and the count is not lost.
+    expect(byId.get("ingridhornshoj")?.deferOrBlockReason)
+      .toMatch(/percent-encoded URL fix recovered/u);
+    expect(byId.get("ingridhornshoj")?.shadowParity).toMatch(/161\/161/u);
   });
 
   it("routes madrejsen past the legacy start URL the site turned into a hub", () => {

@@ -6845,10 +6845,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Sitemap resolves but yields zero recipe candidates; the inherited recipe URL patterns do not match this site's routes",
   },
   ingridhornshoj: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-16T07-57-42.724Z-attempt-cc9d33b4-376e-401c-8d21-5a1fc8d4c89b",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
+    latestCanary: "2026-08-20T14-00-00.000Z",
+    shadowParity:
+      "161/161 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 159 recipes with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 161-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 161 recipes with every material field matching; the record at /opskrift/pok%C3%A9-bowl-med-torpedorejer is the one the percent-encoded URL fix recovered, without which the run came back one short",
   },
   christinaskoekken: {
     migrationState: "canary_passed",
@@ -6857,16 +6860,22 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 168 recipes with complete discovery and no blocked, failed or rejected record",
   },
   skalvibage: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-16T08-10-49.446Z-attempt-0c4e7904-65bc-41b7-afe5-993835a42619",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
+    latestCanary: "2026-08-20T14-00-00.000Z",
+    shadowParity:
+      "175/175 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 175 recipes with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 175-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 175 recipes with every material field matching; 175 records keep a yield legacy reduces to its first integer",
   },
   kokke: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-16T08-17-59.514Z-attempt-4627bee1-e611-4f9c-acb1-8fb8ee7cf2da",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
+    latestCanary: "2026-08-20T14-00-00.000Z",
+    shadowParity:
+      "200/200 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 200 recipes with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 200-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 200 recipes with every material field matching; 200 records keep a cuisine legacy has no field for and the same 200 keep a yield legacy reduces to its first integer",
   },
   lurpak: {
     migrationState: "canary_passed",
