@@ -57,6 +57,24 @@ rather than as a diverging record set.
 The comparison exits non-zero when either side produced no records, so a failed
 legacy run cannot be mistaken for a clean match.
 
+## When the legacy spider is unhealthy
+
+A legacy run that is being blocked, or that is pointed at a domain the site has
+since left, is not a sound comparison — its lower count says nothing about what
+the site publishes. Those sources take the documented legacy-unhealthy route
+instead of parity: discovery proven complete against the live listing contract,
+two complete uncapped runs whose second upserts rather than duplicates, and a
+manual read of stored records.
+
+```bash
+node tools/parity/read-stored.cjs <database> <source-id> [count]
+```
+
+It reports how many records were read and how many are clean, and names what is
+wrong with any that are not. It flags a duration over 69 days for checking
+rather than rejecting it, because a long one can be real: one source states a
+ninety-day steeping time.
+
 ## Runs that get cut short
 
 Legacy items are written as JSON Lines and flushed per item, so a run killed by
