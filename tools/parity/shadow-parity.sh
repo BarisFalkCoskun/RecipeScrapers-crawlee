@@ -26,9 +26,16 @@ PARITY_CAPTURE_PATH="$OUT/$SRC.json" \
 PYTHONPATH="$REPO/tools/parity${PYTHONPATH:+:$PYTHONPATH}" \
 timeout "${PARITY_SCRAPY_TIMEOUT:-2400}" .venv/bin/scrapy crawl "$SRC" \
   -s ITEM_PIPELINES='{"capture_pipeline.CaptureJsonPipeline": 100}' \
-  -s LOG_LEVEL="${PARITY_LOG_LEVEL:-ERROR}" \
+  -s LOG_LEVEL="${PARITY_LOG_LEVEL:-WARNING}" \
   > "$OUT/$SRC.scrapy.log" 2>&1
 echo "scrapy exit=$? for $SRC"
+
+# A legacy spider that is being blocked records each block as a page without a
+# recipe, which is invisible in its output. Counting the statuses it saw is the
+# only way to tell that apart from a site that genuinely has fewer recipes.
+blocked=$(grep -oE "No Recipe JSON-LD at [^ ]+ \(status=[0-9]+" "$OUT/$SRC.scrapy.log" 2>/dev/null \
+  | grep -oE "status=[0-9]+" | grep -vc "status=200" || true)
+[ "${blocked:-0}" -gt 0 ] && echo "legacy recorded $blocked non-200 pages as having no recipe"
 
 cd "$REPO"
 node tools/parity/dump-crawlee.cjs "$DB" "$SRC" "$OUT/$SRC-crawlee.json" >/dev/null

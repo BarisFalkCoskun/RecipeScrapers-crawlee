@@ -6749,10 +6749,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the only advertised sitemap, https://www.ricardocuisine.com/sitemap.xml, times out, so discovery never started",
   },
   nordmad: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-18T14-55-50.641Z-attempt-d734001e-4e9c-42fc-807a-9047ccf5a977",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
+    latestCanary: "2026-08-20T16-34-42.000Z",
+    shadowParity:
+      "722/722 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 719 recipes with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 722-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 722 recipes with every material field matching; all 722 keep a cuisine legacy has no field for and all 722 keep a yield legacy reduces to its first integer",
   },
   oetker: {
     migrationState: "canary_passed",
