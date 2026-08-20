@@ -44,6 +44,7 @@ console.log("only crawlee:",onlyC.length,onlyC.slice(0,4));
 let namedSteps=0;
 let cuisineDropped=0;
 let richerYield=0;
+let negativeDurations=0;
 const diffs={}; const add=(f,u,a,b)=>{(diffs[f]=diffs[f]||[]).push({u,legacy:a,crawlee:b});};
 for(const [k,l] of L){
   const c=C.get(k); if(!c) continue; const n=c.normalized||{};
@@ -63,9 +64,24 @@ for(const [k,l] of L){
     if(JSON.stringify(ls)===JSON.stringify(stripped)) namedSteps++;
     else add("instructions",k,ls,cs);
   }
-  if((l.prep_time_minutes??null)!==(n.prepMinutes??null)) add("prep",k,l.prep_time_minutes,n.prepMinutes);
-  if((l.cook_time_minutes??null)!==(n.cookMinutes??null)) add("cook",k,l.cook_time_minutes,n.cookMinutes);
-  if((l.total_time_minutes??null)!==(n.totalMinutes??null)) add("total",k,l.total_time_minutes,n.totalMinutes);
+  // A negative ISO duration is a broken upstream value. V2 reads it as no
+  // duration; legacy's fallback search turns it into a huge positive number,
+  // so legacy holding a value where V2 holds none is legacy keeping garbage.
+  const negativeUpstream = (field) => {
+    const raw = l.raw_json_ld && l.raw_json_ld[field];
+    return typeof raw === "string" && /^p/iu.test(raw.trim()) && /-\d/u.test(raw);
+  };
+  const time = (label, legacyValue, crawleeValue, field) => {
+    if ((legacyValue ?? null) === (crawleeValue ?? null)) return;
+    if (crawleeValue == null && legacyValue != null && negativeUpstream(field)) {
+      negativeDurations++;
+      return;
+    }
+    add(label, k, legacyValue, crawleeValue);
+  };
+  time("prep", l.prep_time_minutes, n.prepMinutes, "prepTime");
+  time("cook", l.cook_time_minutes, n.cookMinutes, "cookTime");
+  time("total", l.total_time_minutes, n.totalMinutes, "totalTime");
   const ly=norm(`${l.servings??""} ${l.servings_unit??""}`), cy=norm(n.yieldText);
   if(ly!==cy){
     // Legacy searches recipeYield for the first run of digits and keeps only
@@ -110,5 +126,5 @@ if(!legacy.length || !crawlee.length){
   console.log("\nMISMATCH: field differences above");
   process.exitCode=2;
 } else {
-  console.log(`\nALL MATERIAL FIELDS MATCH (${cuisineDropped?`${cuisineDropped} records keep a cuisine legacy has no field for`:"tags == keywords + cuisines"}${namedSteps?`; ${namedSteps} records keep WPRM named-step prefixes legacy drops`:""}${richerYield?`; ${richerYield} records keep a fuller yield than legacy leading-integer`:""}${siblings.length?`; ${siblings.length} sibling recipes recovered`:""})`);
+  console.log(`\nALL MATERIAL FIELDS MATCH (${cuisineDropped?`${cuisineDropped} records keep a cuisine legacy has no field for`:"tags == keywords + cuisines"}${namedSteps?`; ${namedSteps} records keep WPRM named-step prefixes legacy drops`:""}${richerYield?`; ${richerYield} records keep a fuller yield than legacy leading-integer`:""}${negativeDurations?`; ${negativeDurations} negative upstream durations V2 rejects and legacy keeps`:""}${siblings.length?`; ${siblings.length} sibling recipes recovered`:""})`);
 }

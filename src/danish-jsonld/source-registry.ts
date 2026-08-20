@@ -6636,16 +6636,22 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 730 recipes from 821 posts with complete discovery and no blocked, failed or rejected record",
   },
   thecakeblog: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-19T22-35-18.108Z-attempt-6fdfc236-15a5-4ddf-8169-d476d995681a",
+    shadowParity:
+      "74/74 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 74 recipes from 951 posts with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 74-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 74 recipes with every material field matching; 27 records keep a cuisine legacy has no field for",
   },
   basisvarer: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-20T02-33-43.716Z-attempt-8281ca52-7461-46e9-9efe-e424c8884e37",
+    shadowParity:
+      "82/82 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 82 recipes from 82 posts with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 82-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 82 recipes with every material field matching; 14 records keep a cuisine legacy has no field for",
   },
   sweetsimplevegan: {
     migrationState: "canary_passed",
