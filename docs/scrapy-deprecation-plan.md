@@ -394,8 +394,8 @@ or production writes are not part of a probe.
 
 Scrapy cannot yet be deprecated. Crawlee covers all 235 Danish spiders at the
 registry level, every one of the 314 registered sources now carries evidence
-from a live run rather than an assumed state, and the registry stands at 100
-`shadow_passed`, 77 `canary_passed`, 117 `configured`, 11 `blocked`, and 9
+from a live run rather than an assumed state, and the registry stands at 107
+`shadow_passed`, 70 `canary_passed`, 117 `configured`, 11 `blocked`, and 9
 `deferred`. Full-catalog evidence is now recorded for Aperol, Beauvais,
 Bornholms, Campari, Cocktaily, Eva Trio, Ferrero Rocher, FoodFanatic, Foodnotes,
 Friluftslageret, Frøken Kræsen, Glutenfri Magi, Hanne Robinson, Kager og Sager,
