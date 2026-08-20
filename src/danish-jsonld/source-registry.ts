@@ -7096,10 +7096,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
    * why an otherwise clean run reported one rejection per page.
    */
   puredansk: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-18T09-06-20.859Z-attempt-6838e4c6-586c-4e74-8529-3e6a63fb77a8",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
+    latestCanary: "2026-08-20T16-06-27.000Z",
+    shadowParity:
+      "365/365 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped rerun persisted all 365 discovered recipes with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 365-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 365 recipes with every material field matching; 147 records keep a cuisine legacy has no field for and 347 keep a yield legacy reduces to its first integer. The source states some section headings as double-escaped markup, which both implementations carry and which renders to the same text",
   },
   kenwoodworld: {
     migrationState: "configured",
