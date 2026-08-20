@@ -7503,11 +7503,17 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
     deferOrBlockReason:
       "Two uncapped Crawlee runs emitted identical 392-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 392 recipes with every material field matching; Crawlee intentionally keeps the published cuisine in its own field instead of folding it into legacy's tag list.",
   },
+  /**
+   * Cloudflare on this source gates browsers rather than clients: the WPRM
+   * collection answers a plain client HTTP 200 with the full payload and a
+   * browser user agent HTTP 403. Crawlee's generated headers therefore have
+   * to come off for it, which is the inverse of the usual arrangement.
+   */
   juliekarla: {
     migrationState: "blocked",
     latestCanary: "2026-08-20T07-08-06.457Z-attempt-0fe28461-f50e-4cd0-9c34-65b662b91ca9",
     deferOrBlockReason:
-      "Three uncapped runs across two cooldowns each reached the discovery request and stayed on an HTTP 454 browser check that the in-session browser retries did not clear, so no candidate was ever admitted",
+      "Cloudflare on this source gates clients by fingerprint rather than by user agent, and gates them the opposite way round from usual: curl with its own default user agent is answered HTTP 200 with the full 51 KB WPRM payload, while a browser user agent, an empty one, and Crawlee with header generation disabled are all answered HTTP 403. Matching it needs the HTTP client itself to present differently, not a header change, so the source stays blocked",
   },
   kagefest: {
     migrationState: "configured",
