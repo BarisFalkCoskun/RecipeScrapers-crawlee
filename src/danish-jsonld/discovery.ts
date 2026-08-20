@@ -103,7 +103,7 @@ export function discoverListingPage(input: {
   if (payload || input.contentType?.toLowerCase().includes("json")) {
     let parsed: unknown;
     try {
-      parsed = JSON.parse(input.body);
+      parsed = JSON.parse(unwrapBrowserJsonDocument(input.body));
     } catch {
       increment(result.rejectedByReason, "malformed-listing-payload");
       result.complete = false;
@@ -468,4 +468,42 @@ export function looksLikeHttp200BlockShell(body: string): boolean {
   if (shellText.length > 4_000 || $("a[href]").length > 20) return false;
   return /\bcaptcha\b|access denied|checking your browser|cloudflare challenge|temporarily blocked|unusual traffic/iu
     .test(shellText);
+}
+
+/**
+ * Recover the JSON a browser was pointed at directly. Chromium renders a JSON
+ * response inside its own viewer document, so the body arrives as HTML wrapping
+ * the payload in a single `<pre>` rather than as the payload itself. The legacy
+ * spiders read `document.body.innerText` for exactly this reason; taking the
+ * text back out here keeps a browser-fetched API listing parseable on the same
+ * path as a plain one. A body that already is JSON is returned untouched.
+ */
+export function unwrapBrowserJsonDocument(body: string): string {
+  const trimmed = body.trim();
+  if (!trimmed || trimmed.startsWith("{") || trimmed.startsWith("[")) return body;
+  if (!/^<(?:!doctype\s+html|html\b)/iu.test(trimmed)) return body;
+
+  const $ = cheerio.load(body);
+  const text = ($("pre").first().text() || $("body").text()).trim();
+  return text.startsWith("{") || text.startsWith("[") ? text : body;
+}
+
+/**
+ * A WAF interstitial that a real browser clears by running its challenge
+ * script. The status code alone cannot identify one: simply.com serves this
+ * document under HTTP 454 and, intermittently, under HTTP 500, and a bare 500
+ * is otherwise a genuine server error that must not be retried as a challenge.
+ * The wording identifies it, and the check stays cheap because an interstitial
+ * is always a small document carrying no real navigation.
+ */
+export function looksLikeBrowserCheckDocument(body: string): boolean {
+  if (!body || body.length > 40_000) return false;
+  const $ = cheerio.load(body);
+  $("script, style, noscript, template").remove();
+  const title = $("title").first().text().trim();
+  const visibleBody = $("body").text().replace(/\s+/gu, " ").trim();
+  const text = `${title} ${visibleBody}`.trim();
+  if (text.length > 4_000 || $("a[href]").length > 20) return false;
+  return /checking your browser|browser check failed|automatic security check|website application firewall/iu
+    .test(text);
 }

@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { readFileSync } from "node:fs";
 import { randomUUID } from "node:crypto";
 import { Readable } from "node:stream";
 import { CheerioCrawler, Configuration, ProxyConfiguration, RequestQueue } from "crawlee";
@@ -94,6 +95,63 @@ describe("dedicated Danish JSON-LD runner", () => {
       statusCode: 403,
       fetchMode: "cheerio",
       vpnEnabled: false,
+    })).toBe(false);
+  });
+
+  it("treats a WAF challenge served under a 5xx status as a browser check", () => {
+    // simply.com alternates between 454 and 500 for the same interstitial, so
+    // the status alone cannot separate a challenge from a server error.
+    const challenge = readFileSync(
+      new URL("../fixtures/simply-waf-browser-check.html", import.meta.url),
+      "utf-8"
+    );
+
+    expect(shouldRetryBrowserCheck({
+      statusCode: 500,
+      retryCount: 0,
+      maxRetries: 3,
+      body: challenge,
+    })).toBe(true);
+    expect(shouldEscalateBrowserCheck({
+      statusCode: 500,
+      fetchMode: "cheerio",
+      vpnEnabled: false,
+      body: challenge,
+    })).toBe(true);
+    // The retry budget still bounds it, so a challenge cannot loop forever.
+    expect(shouldRetryBrowserCheck({
+      statusCode: 500,
+      retryCount: 3,
+      maxRetries: 3,
+      body: challenge,
+    })).toBe(false);
+  });
+
+  it("leaves a genuine server error a failure rather than a browser check", () => {
+    const wpFatal = "<!DOCTYPE html><html><head><title>Error</title></head><body>"
+      + "<p>There has been a critical error on this website.</p></body></html>";
+
+    expect(shouldRetryBrowserCheck({
+      statusCode: 500,
+      retryCount: 0,
+      maxRetries: 3,
+      body: wpFatal,
+    })).toBe(false);
+    expect(shouldEscalateBrowserCheck({
+      statusCode: 500,
+      fetchMode: "cheerio",
+      vpnEnabled: false,
+      body: wpFatal,
+    })).toBe(false);
+    // Without a body there is nothing to distinguish it, so it stays a failure.
+    expect(shouldRetryBrowserCheck({ statusCode: 500, retryCount: 0, maxRetries: 3 }))
+      .toBe(false);
+    // A 4xx that is not a declared challenge status stays a failure too.
+    expect(shouldRetryBrowserCheck({
+      statusCode: 404,
+      retryCount: 0,
+      maxRetries: 3,
+      body: wpFatal,
     })).toBe(false);
   });
 

@@ -34,6 +34,7 @@ import {
   type DanishJsonLdVpnTransport,
 } from "./vpn-transport.js";
 import { createDrListRequest } from "../custom/dr.js";
+import { looksLikeBrowserCheckDocument } from "./discovery.js";
 
 export interface DanishJsonLdCrawlSelection extends DanishJsonLdCrawlOptions {
   sourceIds: string[];
@@ -65,6 +66,18 @@ const QUEUE_RECLAIM_GRACE_BUFFER_MS = 100;
 const BROWSER_CHECK_STATUS_CODES = [454, 455];
 
 /**
+ * Some hosts answer the same interstitial under an ordinary error status
+ * instead of 454/455 — simply.com alternates between 454 and 500 for it — so a
+ * challenge is recognised by its status or, failing that, by its body. Reading
+ * the body only when the status is unhelpful keeps a genuine server error a
+ * failure rather than an endlessly retried challenge.
+ */
+function isBrowserCheck(statusCode: number, body?: string): boolean {
+  if (BROWSER_CHECK_STATUS_CODES.includes(statusCode)) return true;
+  return statusCode >= 500 && body !== undefined && looksLikeBrowserCheckDocument(body);
+}
+
+/**
  * A rendered browser check is worth re-requesting: the browser clears the
  * challenge once, so the retry lands on the real page. Only the rendered path
  * qualifies, because a plain HTTP client never clears it.
@@ -73,9 +86,10 @@ export function shouldRetryBrowserCheck(input: {
   statusCode: number;
   retryCount: number;
   maxRetries: number;
+  body?: string;
 }): boolean {
   return (
-    BROWSER_CHECK_STATUS_CODES.includes(input.statusCode) &&
+    isBrowserCheck(input.statusCode, input.body) &&
     input.retryCount < input.maxRetries
   );
 }
@@ -85,11 +99,12 @@ export function shouldEscalateBrowserCheck(input: {
   statusCode: number;
   fetchMode: "cheerio" | "playwright";
   vpnEnabled: boolean;
+  body?: string;
 }): boolean {
   return (
     input.fetchMode === "cheerio" &&
     !input.vpnEnabled &&
-    BROWSER_CHECK_STATUS_CODES.includes(input.statusCode)
+    isBrowserCheck(input.statusCode, input.body)
   );
 }
 
@@ -351,6 +366,7 @@ export async function executeDanishJsonLdSource(
         statusCode: response.statusCode,
         fetchMode: response.fetchMode,
         vpnEnabled: Boolean(input.vpnTransport),
+        body,
       })) {
         session.recordRetriedResponseDiagnostic(response);
         await route({
@@ -467,6 +483,7 @@ export async function executeDanishJsonLdSource(
           statusCode: response.statusCode,
           retryCount: context.request.retryCount,
           maxRetries: input.source.requestSettings.maxRetries,
+          body,
         })
       ) {
         session.recordRetriedResponseDiagnostic(response);

@@ -3,6 +3,7 @@ import {
   discoverListingPage,
   discoverSitemapDocument,
   looksLikeHttp200BlockShell,
+  unwrapBrowserJsonDocument,
 } from "../../src/danish-jsonld/discovery.js";
 import {
   DANISH_JSONLD_SOURCES,
@@ -693,4 +694,85 @@ describe("Danish JSON-LD discovery", () => {
       "<html><title>Checking your browser</title><body>Cloudflare challenge</body></html>"
     )).toBe(true);
   });
+
+  it("reads a WordPress posts listing that a browser rendered in its JSON viewer", () => {
+    const dittejulie = DANISH_JSONLD_SOURCES.find(
+      (entry) => entry.id === "dittejulie"
+    )!;
+    const posts = JSON.stringify([
+      { link: "https://dittejulie.dk/donuts-med-vanilje/" },
+      { link: "https://dittejulie.dk/boller-med-kanel/" },
+    ]);
+    const result = discoverListingPage({
+      source: dittejulie,
+      pageUrl: dittejulie.startUrls[0],
+      // Chromium serves a JSON URL through its viewer document, so a
+      // browser-fetched posts API arrives wrapped in <pre> rather than raw.
+      body: `<html><head><meta name="color-scheme" content="light dark">`
+        + `<meta charset="utf-8"></head><body><pre>${posts}</pre></body></html>`,
+      contentType: "text/html",
+    });
+
+    expect(result.recipeUrls).toEqual([
+      "https://dittejulie.dk/donuts-med-vanilje/",
+      "https://dittejulie.dk/boller-med-kanel/",
+    ]);
+    expect(result.complete).toBe(true);
+    expect(result.incompleteReasons).toEqual([]);
+  });
+
+  it("decodes entities the JSON viewer escaped and still rejects genuinely malformed bodies", () => {
+    const dittejulie = DANISH_JSONLD_SOURCES.find(
+      (entry) => entry.id === "dittejulie"
+    )!;
+    const escaped = discoverListingPage({
+      source: dittejulie,
+      pageUrl: dittejulie.startUrls[0],
+      body: "<html><body><pre>[{&quot;link&quot;:"
+        + "&quot;https://dittejulie.dk/aeb%C3%A6r/&quot;}]</pre></body></html>",
+      contentType: "text/html",
+    });
+    const notJson = discoverListingPage({
+      source: dittejulie,
+      pageUrl: dittejulie.startUrls[0],
+      body: "<html><body><pre>Service Unavailable</pre></body></html>",
+      contentType: "text/html",
+    });
+
+    expect(escaped.recipeUrls).toEqual(["https://dittejulie.dk/aeb%C3%A6r/"]);
+    expect(notJson).toMatchObject({
+      complete: false,
+      incompleteReasons: ["malformed-listing-payload"],
+    });
+  });
+
+  it("leaves a raw JSON body untouched when unwrapping a browser document", () => {
+    expect(unwrapBrowserJsonDocument('[{"link":"https://example.dk/a"}]'))
+      .toBe('[{"link":"https://example.dk/a"}]');
+    expect(unwrapBrowserJsonDocument('  {"code":"rest_post_invalid_page_number"}  '))
+      .toBe('  {"code":"rest_post_invalid_page_number"}  ');
+    // An HTML listing page is not a viewer document and must stay HTML so the
+    // cheerio branch keeps handling it.
+    expect(unwrapBrowserJsonDocument("<html><body><a href=\"/opskrifter/kage\">Kage</a></body></html>"))
+      .toBe("<html><body><a href=\"/opskrifter/kage\">Kage</a></body></html>");
+  });
+
+  it("ends browser-rendered posts pagination on the terminal payload", () => {
+    const dittejulie = DANISH_JSONLD_SOURCES.find(
+      (entry) => entry.id === "dittejulie"
+    )!;
+    const result = discoverListingPage({
+      source: dittejulie,
+      pageUrl: dittejulie.startUrls[0],
+      body: '<html><body><pre>{"code":"rest_post_invalid_page_number",'
+        + '"message":"The page number requested is larger than the number of pages available."}'
+        + "</pre></body></html>",
+      contentType: "text/html",
+    });
+
+    expect(result.terminal).toBe(true);
+    expect(result.complete).toBe(true);
+    expect(result.recipeUrls).toEqual([]);
+  });
+
 });
