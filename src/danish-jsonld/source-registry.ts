@@ -7851,10 +7851,13 @@ const DANISH_WP_POSTS_EVIDENCE_OVERRIDES: Record<
       "Uncapped run persisted 386 recipes from 547 candidates; 14 records the source publishes incomplete or malformed and 5 failed requests keeps it short of a canary",
   },
   hoerup: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-20T06-32-51.851Z-attempt-c1d1e7c0-eae0-4e78-b684-703558694690",
+    shadowParity:
+      "38/38 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 38 recipes over 240 requests with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 38-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 38 recipes with every material field matching; 3 records keep a cuisine legacy has no field for, and Crawlee recovers 4 sibling recipes from a five-recipe New Year's menu page that legacy reduces to one. This source discovered nothing at all until the browser's rendered JSON viewer document was unwrapped, so the parity run is what confirms the fix",
   },
   hverdagsgourmet: {
     migrationState: "blocked",
@@ -7869,10 +7872,13 @@ const DANISH_WP_POSTS_EVIDENCE_OVERRIDES: Record<
       "Uncapped run persisted 55 recipes from 62 candidates; 3 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   madopskriften: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-20T06-10-47.857Z-attempt-973ff000-3430-4220-8a99-48f9a830d437",
+    shadowParity:
+      "146/146 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 146 recipes over 149 requests with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 146-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 146 recipes with every material field matching; 143 records keep a cuisine legacy has no field for. This source discovered nothing at all until the browser's rendered JSON viewer document was unwrapped, so the parity run is what confirms the fix",
   },
   madopskriftertilairfryer: {
     migrationState: "blocked",
@@ -7881,16 +7887,22 @@ const DANISH_WP_POSTS_EVIDENCE_OVERRIDES: Record<
       "The whole site answers HTTP 500 with the WordPress critical-error page, homepage included, behind a simply.com browser check; the source is down rather than misconfigured",
   },
   nemmadplan: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-20T06-53-15.094Z-attempt-47c96967-a58f-42ef-806e-8f2735eae4bd",
+    shadowParity:
+      "32/32 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 32 recipes over 35 requests with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 32-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 32 recipes with every material field matching; 3 records keep a cuisine legacy has no field for. This source discovered nothing at all until the browser's rendered JSON viewer document was unwrapped, so the parity run is what confirms the fix",
   },
   opskriftslageret: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-20T06-10-47.809Z-attempt-3ce6368c-f076-4157-a511-a70982654308",
+    shadowParity:
+      "159/159 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 159 recipes over 162 requests with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 159-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 159 recipes with every material field matching; one record keeps a cuisine legacy has no field for. This source discovered nothing at all until the browser's rendered JSON viewer document was unwrapped, so the parity run is what confirms the fix",
   },
   veganermor: {
     migrationState: "canary_passed",
