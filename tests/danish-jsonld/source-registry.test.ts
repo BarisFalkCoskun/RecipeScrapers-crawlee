@@ -595,6 +595,20 @@ describe("Danish JSON-LD source registry", () => {
     }
   });
 
+  it("routes madrejsen past the legacy start URL the site turned into a hub", () => {
+    const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
+    const madrejsen = byId.get("madrejsen");
+
+    // /opskrifter/ answers 200 with a page listing the five categories and no
+    // recipes, so the legacy spider starts somewhere that cannot yield any.
+    expect(madrejsen?.migrationState).toBe("shadow_passed");
+    expect(madrejsen?.latestScrapyOutcome).toBe("failed");
+    expect(madrejsen?.deferOrBlockReason).toMatch(/category hub carrying no recipe links/u);
+    // Crawlee starts from the five category routes instead.
+    expect(madrejsen?.startUrls).toHaveLength(5);
+    expect(madrejsen?.startUrls.every((url) => !url.endsWith("/opskrifter/"))).toBe(true);
+  });
+
   it("takes the blocked-legacy sources through the legacy-unhealthy route", () => {
     const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
 

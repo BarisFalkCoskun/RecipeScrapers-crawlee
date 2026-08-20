@@ -5858,11 +5858,20 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Three uncapped browser-backed Crawlee runs and the full Scrapy run traversed the same 13 candidates, emitted the same 12 recipes, excluded the same non-recipe page, and matched every material field with no failed or blocked request",
   },
+  /**
+   * The site moved its recipes under five category routes and turned
+   * /opskrifter/ into a hub that lists those categories rather than any
+   * recipes, which is where the legacy spider still starts and why it emits
+   * nothing. The categories are the current authoritative route.
+   */
   madrejsen: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-14T19-38-50.433Z-attempt-1f798f5f-9220-44bf-93af-19824fa1e326",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "failed",
+    latestCanary: "2026-08-20T13-57-00.000Z",
+    shadowParity:
+      "legacy-unhealthy; 149 stable records over two uncapped runs against the five current category routes",
     deferOrBlockReason:
-      "Uncapped run persisted 149 recipes with complete discovery and no blocked or failed request",
+      "The legacy spider cannot produce a comparison for this source: its only start URL, /opskrifter/, now answers 200 with a category hub carrying no recipe links at all, and the full legacy run emitted nothing. Parity rests on the documented legacy-unhealthy route instead - two uncapped runs over the five current category routes emitted identical 149-record keys and normalized content with complete discovery, idempotent upserts, and no failed, blocked, rejected, storage or domain record, and a manual read of 25 stored records found every one complete. The source sits behind the simply.com browser check, which the rendered path now waits out rather than recording as a block",
   },
   parcelhuslykke: {
     migrationState: "shadow_passed",
