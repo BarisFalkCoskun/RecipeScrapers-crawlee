@@ -20,3 +20,5 @@ vpn/mullvad.json
 /run-lane7.sh
 /run-lane8.sh
 /run-lane9.sh
+
+__pycache__/
