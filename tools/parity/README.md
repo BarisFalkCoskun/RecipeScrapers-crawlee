@@ -44,6 +44,12 @@ normalizing them reports false mismatches:
    space, or the text reads as different.
 6. **Inline markup.** Legacy keeps tags inside text fields where V2 stores the
    rendered text; a `<strong>` around a title is presentation, not content.
+   Markup may be literal or entity-escaped, and a source can double-escape it —
+   puredansk states a section heading as `&lt;strong&gt;Dej&lt;/strong&gt;` —
+   so decoding and stripping run twice.
+7. **Spacing left by punctuation and stripped tags.** Legacy joins a WPRM step
+   name as `Name : body` where V2 uses `Name: body`, and removing an inline tag
+   leaves a space before the punctuation or bracket that followed it.
 7. **Yield.** Legacy reduces `recipeYield` to its leading integer and drops the
    unit, so `1.75 liter` becomes `1`. V2 keeps the published text. Where
    legacy's value is exactly the leading integer of V2's, it is the same yield

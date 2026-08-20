@@ -41,12 +41,20 @@ const {decodeHTML}=require("entities");
 // Legacy keeps inline markup inside text fields where V2 stores the rendered
 // text, so tags are stripped before comparing; a <strong> around a title is
 // presentation, not content.
-const norm=s=>decodeHTML(String(s??"").replace(/<[^>]+>/gu," "))
+// Markup may be literal or entity-escaped, and a source can double-escape it:
+// puredansk states a section heading as "&lt;strong&gt;Dej&lt;/strong&gt;",
+// which legacy keeps as written and V2 renders down to "Dej". Decoding and
+// stripping twice reaches the same rendered text from either spelling.
+const stripMarkup=t=>decodeHTML(t).replace(/<[^>]+>/gu," ");
+const norm=s=>stripMarkup(stripMarkup(String(s??"")))
   .replace(/[\u200B-\u200D\uFEFF]/gu,"").replace(/\s+/gu," ")
   // Legacy joins a WPRM step name to its body as "Name : body" where V2 uses
   // "Name: body", and leaves the same stray space before other punctuation.
   // The space is a join artifact on either side, not different text.
-  .replace(/\s+([:.,;!?])/gu,"$1").trim();
+  .replace(/\s+([:.,;!?)\]])/gu,"$1")
+  // Stripping an inline tag can leave a space before a closing bracket the
+  // same way it does before other punctuation.
+  .replace(/([(\[])\s+/gu,"$1").trim();
 // V2 canonicalizes: it drops the www host prefix, the recipe-id fragment, and
 // sorts query parameters. Comparing the canonical form keeps those formatting
 // choices out of the field comparison.
