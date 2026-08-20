@@ -6275,6 +6275,390 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted 415 recipes from 2975 posts with no blocked request and no rejected JSON-LD; 53 requests timed out at the source and one syndicated post carries an off-domain canonical, which keeps it short of a canary",
   },
+  cookingwithruthie: {
+    migrationState: "blocked",
+    latestCanary: "2026-08-19T15-14-32.823Z-attempt-60781b43-861d-40e1-8466-79000944db29",
+    deferOrBlockReason:
+      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+  },
+  smittenkitchen: {
+    migrationState: "blocked",
+    latestCanary: "2026-08-19T21-18-51.440Z-attempt-14b8f394-6bdf-40aa-b4d9-2015d9af785e",
+    deferOrBlockReason:
+      "Uncapped run persisted no recipes: 42 requests were blocked, so discovery could not complete",
+  },
+  allergylicious: {
+    migrationState: "configured",
+    latestCanary: "2026-08-19T15-14-26.506Z-attempt-e41f5546-983c-4a46-b9da-18d6f608bff7",
+    deferOrBlockReason:
+      "Uncapped run persisted 0 recipes from 0 posts; discovery that did not complete keeps it short of a canary",
+  },
+  brownedbutterblondie: {
+    migrationState: "configured",
+    latestCanary: "2026-08-20T02-57-16.585Z-attempt-cb557f16-0fdc-49e1-bef3-f5f19c91ab49",
+    deferOrBlockReason:
+      "Uncapped run persisted 0 recipes from 0 posts; discovery that did not complete keeps it short of a canary",
+  },
+  lowcarbdelish: {
+    migrationState: "configured",
+    latestCanary: "2026-08-20T02-57-36.011Z-attempt-945cf29e-2d9a-41bf-9136-8e925972f606",
+    deferOrBlockReason:
+      "Uncapped run persisted 0 recipes from 0 posts; discovery that did not complete keeps it short of a canary",
+  },
+  therealfoodrds: {
+    migrationState: "configured",
+    latestCanary: "2026-08-19T23-34-02.982Z-attempt-3364f3ca-81dd-4034-9766-df79bc1d33ac",
+    deferOrBlockReason:
+      "Uncapped run persisted 0 recipes from 0 posts; discovery that did not complete keeps it short of a canary",
+  },
+  artfuldishes: {
+    migrationState: "configured",
+    latestCanary: "2026-08-19T15-09-49.512Z-attempt-3927fda5-a2bc-4bac-a576-cbc506fad67a",
+    deferOrBlockReason:
+      "Uncapped run persisted 0 recipes from 0 posts; 1 failed request and discovery that did not complete keeps it short of a canary",
+  },
+  projectmealplan: {
+    migrationState: "configured",
+    latestCanary: "2026-08-20T01-49-27.334Z-attempt-c2fabda1-ad6e-40f2-ae4e-0a4d3942cb8e",
+    deferOrBlockReason:
+      "Uncapped run persisted 0 recipes from 0 posts; 1 failed request and discovery that did not complete keeps it short of a canary",
+  },
+  closetcooking: {
+    migrationState: "deferred",
+    latestCanary: "2026-08-19T13-38-24.850Z-attempt-fd9985b7-e7dc-469a-9251-7d1be9f7d051",
+    deferOrBlockReason:
+      "Uncapped run processed all 1400 posts with complete discovery and no blocked or failed request, and none carried Recipe JSON-LD, so there is nothing for a strict JSON-LD crawl to extract",
+  },
+  asweetspoonful: {
+    migrationState: "deferred",
+    latestCanary: "2026-08-20T02-26-56.332Z-attempt-561591a5-f8e8-41d4-90e5-4a5bf56d3342",
+    deferOrBlockReason:
+      "Uncapped run processed all 388 posts with complete discovery and no blocked or failed request, and none carried Recipe JSON-LD, so there is nothing for a strict JSON-LD crawl to extract",
+  },
+  joyfulhealthyeats: {
+    migrationState: "configured",
+    latestCanary: "2026-08-19T21-40-46.724Z-attempt-3f1f02c8-a8d5-4357-a76b-9ef980cb67d2",
+    deferOrBlockReason:
+      "Uncapped run persisted 1078 recipes from 1191 posts; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  lavenderandlovage: {
+    migrationState: "configured",
+    latestCanary: "2026-08-19T16-42-48.471Z-attempt-1400462b-cccf-4d0d-99e9-5823f79c2316",
+    deferOrBlockReason:
+      "Uncapped run persisted 1079 recipes from 1765 posts; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  pinchofyum: {
+    migrationState: "configured",
+    latestCanary: "2026-08-19T20-10-56.360Z-attempt-96d2c5ca-c273-4013-9244-4f97bb464ea8",
+    deferOrBlockReason:
+      "Uncapped run persisted 1160 recipes from 1590 posts; discovery that did not complete keeps it short of a canary",
+  },
+  gimmesomeoven: {
+    migrationState: "configured",
+    latestCanary: "2026-08-19T20-04-01.468Z-attempt-3dfc888d-4547-4938-b601-75a753c7bbdc",
+    deferOrBlockReason:
+      "Uncapped run persisted 1237 recipes from 1361 posts; 19 failed requests keeps it short of a canary",
+  },
+  stegeso: {
+    migrationState: "configured",
+    latestCanary: "2026-08-19T15-11-54.184Z-attempt-127d9565-aea8-400d-ba09-bad52f84535e",
+    deferOrBlockReason:
+      "Uncapped run persisted 1 recipes from 26 posts; 50 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  rachlmansfield: {
+    migrationState: "configured",
+    latestCanary: "2026-08-19T18-57-04.004Z-attempt-a52c65fb-427c-4cbd-8a7b-0dfe00ac99a1",
+    deferOrBlockReason:
+      "Uncapped run persisted 1369 recipes from 1571 posts; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  orwhateveryoudo: {
+    migrationState: "configured",
+    latestCanary: "2026-08-19T20-39-24.554Z-attempt-876ed245-a332-48e1-be6b-6d8836b289cf",
+    deferOrBlockReason:
+      "Uncapped run persisted 1378 recipes from 1510 posts; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thatskinnychickcanbake: {
+    migrationState: "configured",
+    latestCanary: "2026-08-19T19-34-51.297Z-attempt-e10f9b86-eb95-4ea2-96c2-27acf694c944",
+    deferOrBlockReason:
+      "Uncapped run persisted 1522 recipes from 1615 posts; 1 failed request keeps it short of a canary",
+  },
+  rockrecipes: {
+    migrationState: "configured",
+    latestCanary: "2026-08-19T17-10-44.450Z-attempt-803e2ab7-6591-4e32-b57c-af4caaaba5ea",
+    deferOrBlockReason:
+      "Uncapped run persisted 1646 recipes from 1917 posts; 6 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  aggieskitchen: {
+    migrationState: "configured",
+    latestCanary: "2026-08-19T23-50-16.550Z-attempt-27b6c415-e4b9-4501-b4e4-d04d55085a2a",
+    deferOrBlockReason:
+      "Uncapped run persisted 215 recipes from 892 posts; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  grownupdish: {
+    migrationState: "configured",
+    latestCanary: "2026-08-20T01-02-34.609Z-attempt-a3ff64e8-034e-4651-a138-41ebde5d90e6",
+    deferOrBlockReason:
+      "Uncapped run persisted 229 recipes from 539 posts; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  acouplecooks: {
+    migrationState: "configured",
+    latestCanary: "2026-08-19T13-38-24.768Z-attempt-255791ab-755e-4bad-b9ec-6d52d4b6a113",
+    deferOrBlockReason:
+      "Uncapped run persisted 3197 recipes from 4022 posts; 53 failed requests keeps it short of a canary",
+  },
+  nyssaskitchen: {
+    migrationState: "configured",
+    latestCanary: "2026-08-20T02-42-35.608Z-attempt-64b34f70-1282-4378-b57c-12980e8c34fc",
+    deferOrBlockReason:
+      "Uncapped run persisted 344 recipes from 350 posts; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  carrotstick: {
+    migrationState: "configured",
+    latestCanary: "2026-08-20T00-38-40.345Z-attempt-c7147cd9-b95a-4658-9f84-e6f81a1c1fe5",
+    deferOrBlockReason:
+      "Uncapped run persisted 381 recipes from 595 posts; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  peaceloveandlowcarb: {
+    migrationState: "configured",
+    latestCanary: "2026-08-20T01-23-36.166Z-attempt-a62f74b6-9859-4511-8a49-dd78c64e227c",
+    deferOrBlockReason:
+      "Uncapped run persisted 431 recipes from 500 posts; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  bellalimento: {
+    migrationState: "configured",
+    latestCanary: "2026-08-20T00-56-43.296Z-attempt-3d6d79a8-4143-4c87-acea-555f090a4247",
+    deferOrBlockReason:
+      "Uncapped run persisted 478 recipes from 645 posts; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  withspice: {
+    migrationState: "configured",
+    latestCanary: "2026-08-20T01-28-54.536Z-attempt-fdc1b130-f422-4ba0-92f8-129128e0d46b",
+    deferOrBlockReason:
+      "Uncapped run persisted 490 recipes from 491 posts; 12 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  perrysplate: {
+    migrationState: "configured",
+    latestCanary: "2026-08-20T01-24-27.517Z-attempt-ce8914a9-890d-4810-8a22-7af8b2fd424d",
+    deferOrBlockReason:
+      "Uncapped run persisted 499 recipes from 581 posts; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  greedygourmet: {
+    migrationState: "configured",
+    latestCanary: "2026-08-19T22-30-31.254Z-attempt-88af4181-4d11-41f1-8994-062bb6f55302",
+    deferOrBlockReason:
+      "Uncapped run persisted 57 recipes from 100 posts; 1 failed request and discovery that did not complete keeps it short of a canary",
+  },
+  joythebaker: {
+    migrationState: "configured",
+    latestCanary: "2026-08-19T18-25-11.630Z-attempt-452ea23c-85ce-48bf-8bab-1296ffa3bccb",
+    deferOrBlockReason:
+      "Uncapped run persisted 609 recipes from 1748 posts; 27 blocked requests and 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thehealthymaven: {
+    migrationState: "configured",
+    latestCanary: "2026-08-19T21-44-21.936Z-attempt-63207f43-7e6a-4579-afb8-84c193befabb",
+    deferOrBlockReason:
+      "Uncapped run persisted 662 recipes from 1036 posts; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  goodlifeeats: {
+    migrationState: "configured",
+    latestCanary: "2026-08-19T21-26-49.446Z-attempt-5be79d7f-5baa-43de-8af4-68e332010d26",
+    deferOrBlockReason:
+      "Uncapped run persisted 927 recipes from 1102 posts; 1 failed request keeps it short of a canary",
+  },
+  shelikesfood: {
+    migrationState: "configured",
+    latestCanary: "2026-08-19T20-59-30.448Z-attempt-8f712af5-ee34-4ddc-9a62-36fbccc9de9e",
+    deferOrBlockReason:
+      "Uncapped run persisted 935 recipes from 1090 posts; 23 failed requests and 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  kalynskitchen: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-19T19-04-02.228Z-attempt-ab086a4d-f681-4032-ae44-c639b3a96ec0",
+    deferOrBlockReason:
+      "Uncapped run persisted 1071 recipes from 1660 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  lundoaagaard: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-20T02-57-48.980Z-attempt-53e3b917-dd5f-4bf5-8d22-161627db0d38",
+    deferOrBlockReason:
+      "Uncapped run persisted 1 recipes from 10 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  smaagroenneskridt: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-20T02-58-55.873Z-attempt-cfa591f9-d111-42d8-a9eb-0c6589c1df1a",
+    deferOrBlockReason:
+      "Uncapped run persisted 1 recipes from 2 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  babybite: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-20T02-27-20.482Z-attempt-6ed7b7c9-3175-4d13-97f8-e7b6c977dece",
+    deferOrBlockReason:
+      "Uncapped run persisted 14 recipes from 154 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  cookiesandcups: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-19T17-51-43.918Z-attempt-ed5ddaac-20f8-4ab2-a5a2-87a0aee110b1",
+    deferOrBlockReason:
+      "Uncapped run persisted 1474 recipes from 1632 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  afamilyfeast: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-19T16-30-26.970Z-attempt-e245d57e-29ff-4693-a304-c404d47ea324",
+    deferOrBlockReason:
+      "Uncapped run persisted 1977 recipes from 2060 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  coupleinthekitchen: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-20T01-07-15.917Z-attempt-84bc9ed4-2e22-4ea7-9e61-8ff89c472bd8",
+    deferOrBlockReason:
+      "Uncapped run persisted 206 recipes from 529 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  bakerella: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-20T00-09-06.438Z-attempt-6d889840-1d5d-437a-96dd-d173caf168bf",
+    deferOrBlockReason:
+      "Uncapped run persisted 213 recipes from 669 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  kokkeriermedpassion: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-20T02-58-42.024Z-attempt-4f0d1e9d-9336-4d3f-854f-41bc06c1f78f",
+    deferOrBlockReason:
+      "Uncapped run persisted 2 recipes from 3 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  abakershouse: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-20T02-02-50.107Z-attempt-576cbb40-471f-4e53-858a-fbf7f264c47e",
+    deferOrBlockReason:
+      "Uncapped run persisted 230 recipes from 287 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  gatheranddine: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-20T02-17-55.597Z-attempt-c9a21778-fa46-4728-8a3e-2d9b1db320a7",
+    deferOrBlockReason:
+      "Uncapped run persisted 243 recipes from 225 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  moderncrumb: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-20T01-51-32.159Z-attempt-bf8dd063-7eee-4129-ae25-f12daedf63de",
+    deferOrBlockReason:
+      "Uncapped run persisted 290 recipes from 292 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  breadtopia: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-20T01-47-17.589Z-attempt-4da2795a-7294-42af-b4f9-39187059a32d",
+    deferOrBlockReason:
+      "Uncapped run persisted 353 recipes from 501 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  thecastawaykitchen: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-20T01-44-10.244Z-attempt-d2a2eae9-a45d-4adf-804a-96cbd8f8d315",
+    deferOrBlockReason:
+      "Uncapped run persisted 367 recipes from 452 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  butternutbakeryblog: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-20T02-02-14.600Z-attempt-794c2d48-c249-4c0f-ade0-5075636c9577",
+    deferOrBlockReason:
+      "Uncapped run persisted 369 recipes from 388 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  tasteandsee: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-20T02-08-33.437Z-attempt-f3ef8a1f-368d-4dc8-803e-a21e80c81133",
+    deferOrBlockReason:
+      "Uncapped run persisted 411 recipes from 458 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  nannapretzmann: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-20T00-43-21.459Z-attempt-eae81eb9-758f-445f-bec9-61aa3d3f2fc0",
+    deferOrBlockReason:
+      "Uncapped run persisted 41 recipes from 592 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  annsentitledlife: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-19T15-23-05.567Z-attempt-eba71083-16e0-4282-a8df-ede1473f6d54",
+    deferOrBlockReason:
+      "Uncapped run persisted 457 recipes from 2054 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  thecookful: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-20T00-12-02.988Z-attempt-7346b12e-67c3-4095-aefe-c23e878f35f3",
+    deferOrBlockReason:
+      "Uncapped run persisted 540 recipes from 799 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  thehappierhomemaker: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-19T23-39-29.465Z-attempt-8ba048ef-ea77-4860-b0b7-e7993eaebdae",
+    deferOrBlockReason:
+      "Uncapped run persisted 655 recipes from 823 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  anicula: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-20T02-58-21.065Z-attempt-4d5e350b-8a85-40fd-a990-177979e360bd",
+    deferOrBlockReason:
+      "Uncapped run persisted 6 recipes from 6 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  choosingchia: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-20T00-23-59.362Z-attempt-1737d4cc-945f-40d2-8626-070f757a1e6c",
+    deferOrBlockReason:
+      "Uncapped run persisted 730 recipes from 821 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  thecakeblog: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-19T22-35-18.108Z-attempt-6fdfc236-15a5-4ddf-8169-d476d995681a",
+    deferOrBlockReason:
+      "Uncapped run persisted 74 recipes from 951 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  basisvarer: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-20T02-33-43.716Z-attempt-8281ca52-7461-46e9-9efe-e424c8884e37",
+    deferOrBlockReason:
+      "Uncapped run persisted 82 recipes from 82 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  sweetsimplevegan: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-19T23-34-16.053Z-attempt-8726aa0c-d13f-424b-b8fa-e3bbf8e84fe1",
+    deferOrBlockReason:
+      "Uncapped run persisted 838 recipes from 879 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  tidymom: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-19T17-51-25.388Z-attempt-5cb21c6a-2b7b-466d-95ac-255b8ab29620",
+    deferOrBlockReason:
+      "Uncapped run persisted 842 recipes from 1852 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  cookieandkate: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-19T23-02-56.177Z-attempt-b6a88566-8e2d-409f-ab59-44edbb93339d",
+    deferOrBlockReason:
+      "Uncapped run persisted 851 recipes from 924 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  pickledplum: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-19T22-11-04.771Z-attempt-5299ca8e-88ec-49ed-bed2-879b481d04d3",
+    deferOrBlockReason:
+      "Uncapped run persisted 889 recipes from 1018 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  inspiredtaste: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-19T22-26-00.841Z-attempt-0778054c-70da-4b64-bf93-1878e41bf3bd",
+    deferOrBlockReason:
+      "Uncapped run persisted 891 recipes from 938 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  lazycatkitchen: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-19T22-52-58.737Z-attempt-3dbd16c9-fa56-47ba-83b1-817b736baec2",
+    deferOrBlockReason:
+      "Uncapped run persisted 933 recipes from 941 posts with complete discovery and no blocked, failed or rejected record",
+  },
+  opskrifterforalle: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-19T23-12-00.704Z-attempt-8449e358-a32f-46f6-b474-efa64307fd35",
+    deferOrBlockReason:
+      "Uncapped run persisted 939 recipes from 939 posts with complete discovery and no blocked, failed or rejected record",
+  },
   gunris: {
     migrationState: "shadow_passed",
     numericYieldOnly: true,

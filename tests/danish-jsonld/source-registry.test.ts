@@ -490,6 +490,27 @@ describe("Danish JSON-LD source registry", () => {
       .toMatch(/named-step prefixes on 69 records/u);
   });
 
+  it("records the WordPress posts family canary run for every source it reached", () => {
+    const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
+
+    // Sources whose uncapped run came back clean.
+    for (const id of ["afamilyfeast", "cookiesandcups", "opskrifterforalle", "inspiredtaste"]) {
+      expect(byId.get(id)?.migrationState).toBe("canary_passed");
+      expect(byId.get(id)?.latestCanary).toBeTruthy();
+    }
+    // Short of a canary on records the source itself publishes badly.
+    expect(byId.get("acouplecooks")?.migrationState).toBe("configured");
+    expect(byId.get("withspice")?.deferOrBlockReason).toMatch(
+      /12 records the source publishes incomplete or malformed/u
+    );
+    // Whole-crawl evidence that the site publishes no Recipe JSON-LD at all.
+    for (const id of ["closetcooking", "asweetspoonful"]) {
+      expect(byId.get(id)?.migrationState).toBe("deferred");
+    }
+    // Parity work already took gunris past a canary; recording must not undo it.
+    expect(byId.get("gunris")?.migrationState).toBe("shadow_passed");
+  });
+
   it("carries the WordPress posts sources on the strict JSON-LD contract", () => {
     const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
     const wpPosts = DANISH_JSONLD_SOURCES.filter(
