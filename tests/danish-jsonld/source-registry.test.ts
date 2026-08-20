@@ -583,7 +583,7 @@ describe("Danish JSON-LD source registry", () => {
       "lundoaagaard", "smaagroenneskridt", "kokkeriermedpassion", "anicula", "babybite",
       "nannapretzmann", "coupleinthekitchen", "bakerella", "abakershouse",
       "thecakeblog", "basisvarer", "moderncrumb", "breadtopia",
-      "skalvibage", "kokke", "ingridhornshoj", "madsvin",
+      "skalvibage", "kokke", "ingridhornshoj", "madsvin", "madfolket",
     ];
 
     for (const id of shadowed) {

@@ -6915,10 +6915,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 203-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 203 recipes with every material field matching; 56 records keep a cuisine legacy has no field for, and 59 of the 262 sitemap candidates carry no Recipe JSON-LD in either implementation",
   },
   madfolket: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-16T20-54-15.391Z-attempt-e5e15d29-2aac-43b7-9825-300a410530f3",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
+    latestCanary: "2026-08-20T14-00-00.000Z",
+    shadowParity:
+      "283/283 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 283 recipes with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 283-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 283 recipes with every material field matching; all 283 keep a cuisine legacy has no field for and all 283 keep a yield legacy reduces to its first integer",
   },
   /**
    * Recipe nodes carry name, url, image, prepTime and rating but neither
