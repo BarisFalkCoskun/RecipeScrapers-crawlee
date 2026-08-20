@@ -581,6 +581,7 @@ describe("Danish JSON-LD source registry", () => {
       "opskriftorg", "louisesmadblog", "marialottes", "opskriftnet",
       "hoerup", "madopskriften", "opskriftslageret", "nemmadplan", "veganermor",
       "lundoaagaard", "smaagroenneskridt", "kokkeriermedpassion", "anicula", "babybite",
+      "nannapretzmann", "coupleinthekitchen", "bakerella", "abakershouse",
     ];
 
     for (const id of shadowed) {

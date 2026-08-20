@@ -6522,16 +6522,22 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1977 recipes from 2060 posts with complete discovery and no blocked, failed or rejected record",
   },
   coupleinthekitchen: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-20T01-07-15.917Z-attempt-84bc9ed4-2e22-4ea7-9e61-8ff89c472bd8",
+    shadowParity:
+      "206/206 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 206 recipes from 529 posts with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 206-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 206 recipes with every material field matching; 181 records keep a cuisine legacy has no field for",
   },
   bakerella: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-20T00-09-06.438Z-attempt-6d889840-1d5d-437a-96dd-d173caf168bf",
+    shadowParity:
+      "213/213 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 213 recipes from 669 posts with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 213-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 213 recipes with every material field matching; every taxonomy value matches as published",
   },
   kokkeriermedpassion: {
     migrationState: "shadow_passed",
@@ -6543,10 +6549,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 2-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 2 recipes with every material field matching; every taxonomy value matches as published",
   },
   abakershouse: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-20T02-02-50.107Z-attempt-576cbb40-471f-4e53-858a-fbf7f264c47e",
+    shadowParity:
+      "230/230 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 230 recipes from 287 posts with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 230-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 230 recipes with every material field matching; 230 records keep a cuisine legacy has no field for",
   },
   gatheranddine: {
     migrationState: "canary_passed",
@@ -6585,10 +6594,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 411 recipes from 458 posts with complete discovery and no blocked, failed or rejected record",
   },
   nannapretzmann: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-20T00-43-21.459Z-attempt-eae81eb9-758f-445f-bec9-61aa3d3f2fc0",
+    shadowParity:
+      "41/41 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 41 recipes from 592 posts with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 41-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 41 recipes with every material field matching; 3 records keep a cuisine legacy has no field for and 2 keep a yield legacy reduces to its first integer",
   },
   annsentitledlife: {
     migrationState: "canary_passed",

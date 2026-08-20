@@ -243,6 +243,15 @@ without a durable deployment, run, dashboard, change, or approval reference.
   carry one — and `hoerup` additionally recovers four sibling recipes from a
   five-recipe New Year's menu page that legacy reduces to one.
 
+- [x] Nine WordPress-posts sources cleared full shadow parity beyond the Danish
+  ones: `lundoaagaard`, `smaagroenneskridt`, `kokkeriermedpassion`, `anicula`,
+  `babybite`, `nannapretzmann`, `coupleinthekitchen`, `bakerella`, and
+  `abakershouse`. Legacy has no cuisine field for this family, so V2's cuisines
+  are purely additive — 230 of `abakershouse`'s records carry one — and
+  `smaagroenneskridt` is the source that first showed legacy's yield rule
+  losing data: the site publishes `["1.75", "1.75 liter"]` and legacy's
+  first-integer search reduces that to `1`.
+
 ## Family sweeps
 
 Two families were swept uncapped end to end, which closed the last sources that
@@ -336,8 +345,8 @@ or production writes are not part of a probe.
 
 Scrapy cannot yet be deprecated. Crawlee covers all 235 Danish spiders at the
 registry level, every one of the 314 registered sources now carries evidence
-from a live run rather than an assumed state, and the registry stands at 91
-`shadow_passed`, 86 `canary_passed`, 117 `configured`, 11 `blocked`, and 9
+from a live run rather than an assumed state, and the registry stands at 100
+`shadow_passed`, 77 `canary_passed`, 117 `configured`, 11 `blocked`, and 9
 `deferred`. Full-catalog evidence is now recorded for Aperol, Beauvais,
 Bornholms, Campari, Cocktaily, Eva Trio, Ferrero Rocher, FoodFanatic, Foodnotes,
 Friluftslageret, Frøken Kræsen, Glutenfri Magi, Hanne Robinson, Kager og Sager,
