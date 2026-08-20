@@ -282,16 +282,38 @@ export function matchesSourceRecipeUrl(
   } catch {
     return false;
   }
+  // The patterns are written against readable Danish characters, while a
+  // sitemap may publish the same URL percent-encoded — ingridhornshoj lists
+  // /opskrift/pok%C3%A9-bowl-med-torpedorejer, which no [a-zæøåé-] class can
+  // match. Both spellings are the same URL, so both are offered to the pattern.
+  const candidates = [
+    url.toString(),
+    `${url.pathname}${url.search}`,
+    url.pathname,
+  ];
+  const spellings = new Set(candidates);
+  for (const candidate of candidates) {
+    const decoded = safeDecodeUri(candidate);
+    if (decoded !== undefined) spellings.add(decoded);
+  }
   return source.recipeUrlPatterns.some((pattern) => {
     try {
       const regex = new RegExp(pattern, "iu");
-      return regex.test(url.toString()) ||
-        regex.test(`${url.pathname}${url.search}`) ||
-        regex.test(url.pathname);
+      return [...spellings].some((spelling) => regex.test(spelling));
     } catch {
       return false;
     }
   });
+}
+
+/** Percent-decoding fails on a malformed sequence; that is not a match. */
+function safeDecodeUri(value: string): string | undefined {
+  try {
+    const decoded = decodeURI(value);
+    return decoded === value ? undefined : decoded;
+  } catch {
+    return undefined;
+  }
 }
 
 function recipeRejectionReason(

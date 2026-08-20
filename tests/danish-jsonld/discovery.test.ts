@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   discoverListingPage,
   discoverSitemapDocument,
+  matchesSourceRecipeUrl,
   looksLikeHttp200BlockShell,
   unwrapBrowserJsonDocument,
 } from "../../src/danish-jsonld/discovery.js";
@@ -773,6 +774,47 @@ describe("Danish JSON-LD discovery", () => {
     expect(result.terminal).toBe(true);
     expect(result.complete).toBe(true);
     expect(result.recipeUrls).toEqual([]);
+  });
+
+
+  it("matches a recipe URL the sitemap published percent-encoded", () => {
+    const ingrid = DANISH_JSONLD_SOURCES.find((entry) => entry.id === "ingridhornshoj")!;
+
+    // The pattern is written against readable Danish characters; the sitemap
+    // publishes the same URL encoded, and both are the same page.
+    expect(matchesSourceRecipeUrl(
+      ingrid,
+      "https://ingridhornshoj.dk/opskrift/pok%C3%A9-bowl-med-torpedorejer"
+    )).toBe(true);
+    expect(matchesSourceRecipeUrl(
+      ingrid,
+      "https://ingridhornshoj.dk/opskrift/poké-bowl-med-torpedorejer"
+    )).toBe(true);
+    // Plain ASCII paths are unaffected.
+    expect(matchesSourceRecipeUrl(
+      ingrid,
+      "https://ingridhornshoj.dk/opskrift/poke-bowl-med-tun"
+    )).toBe(true);
+    // Decoding does not widen the pattern to paths it should still reject.
+    expect(matchesSourceRecipeUrl(
+      ingrid,
+      "https://ingridhornshoj.dk/blog/pok%C3%A9-bowl-med-torpedorejer"
+    )).toBe(false);
+  });
+
+  it("keeps a malformed percent sequence out of the match", () => {
+    const ingrid = DANISH_JSONLD_SOURCES.find((entry) => entry.id === "ingridhornshoj")!;
+
+    // decodeURI throws on this; a URL that cannot be decoded is simply not
+    // offered in its decoded spelling rather than failing the whole check.
+    expect(matchesSourceRecipeUrl(
+      ingrid,
+      "https://ingridhornshoj.dk/opskrift/pok%ZZ-bowl"
+    )).toBe(false);
+    expect(matchesSourceRecipeUrl(
+      ingrid,
+      "https://ingridhornshoj.dk/opskrift/gulerodskage"
+    )).toBe(true);
   });
 
 });
