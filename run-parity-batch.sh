@@ -8,7 +8,10 @@ TMP=/home/scraper/.claude/jobs/68df68ae/tmp
 for s in $(cat "$TMP/parity-lane$LANE.txt"); do
   [ -f "evidence/parity-$s.txt" ] && continue
   echo "=== $s start $(date -u +%H:%M:%S) ==="
-  timeout 1800 bash tools/parity/shadow-parity.sh "$s" crawlee_wprm_sweep_20260821 \
+  # The harness prints nothing until the legacy run finishes, so a shorter
+  # timeout here kills it before any output is written and loses the whole
+  # comparison. Stay above its own scrapy timeout.
+  timeout "${PARITY_TIMEOUT:-3000}" bash tools/parity/shadow-parity.sh "$s" ${PARITY_DB:-crawlee_wprm_sweep_20260821} \
     > "evidence/parity-$s.txt" 2>&1
   echo "=== $s exit=$? $(date -u +%H:%M:%S) ==="
 done
