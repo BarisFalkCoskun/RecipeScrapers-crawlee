@@ -135,4 +135,37 @@ describe("WPRM API recipe extraction", () => {
     expect(result.recipes).toEqual([]);
     expect(result.malformedCount).toBe(1);
   });
+
+  it("orders taxonomy terms by name so two runs store the same record", () => {
+    // The WordPress API does not guarantee an order for a taxonomy's terms.
+    // giangiskitchen returned the same keywords in a different sequence on
+    // consecutive requests, which made 473 of its 549 records look changed
+    // between two runs that had extracted exactly the same data.
+    const term = (name: string) => ({ name, slug: name.toLowerCase() });
+    const withTags = (keyword: string[], course: string[], cuisine: string[]) => {
+      const entry = structuredClone(fixture[0]) as Record<string, any>;
+      entry.recipe.tags = {
+        keyword: keyword.map(term),
+        course: course.map(term),
+        cuisine: cuisine.map(term),
+      };
+      return [entry];
+    };
+
+    const [first] = extractWprmRecipes(
+      withTags(["lemon", "chives", "appetizer", "butter"], ["Frokost", "Forret"], ["Italiensk", "Dansk"])
+    ).recipes;
+    const [second] = extractWprmRecipes(
+      withTags(["butter", "lemon", "appetizer", "chives"], ["Forret", "Frokost"], ["Dansk", "Italiensk"])
+    ).recipes;
+
+    expect(first.normalized.keywords).toEqual(["appetizer", "butter", "chives", "lemon"]);
+    expect(first.normalized.categories).toEqual(["Forret", "Frokost"]);
+    expect(first.normalized.cuisines).toEqual(["Dansk", "Italiensk"]);
+    // Whatever order the API used, the stored record is the same.
+    expect(second.normalized.keywords).toEqual(first.normalized.keywords);
+    expect(second.normalized.categories).toEqual(first.normalized.categories);
+    expect(second.normalized.cuisines).toEqual(first.normalized.cuisines);
+  });
+
 });

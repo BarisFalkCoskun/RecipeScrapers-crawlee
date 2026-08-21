@@ -127,11 +127,20 @@ function normalize(recipe: Record<string, unknown>): NormalizedRecipeV2 {
   };
 }
 
+/**
+ * WPRM taxonomies are unordered term sets, and the WordPress API does not
+ * guarantee an order for them: giangiskitchen returned the same keywords in a
+ * different sequence on consecutive requests, so 473 of its 549 records looked
+ * changed between two runs that had extracted exactly the same data. Sorting
+ * makes the stored record depend on what the source says rather than on the
+ * order it happened to say it in.
+ */
 function tagNames(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
   return value
     .map((entry) => isRecord(entry) ? text(entry.name) : "")
-    .filter((entry) => entry !== "");
+    .filter((entry) => entry !== "")
+    .sort((left, right) => left.localeCompare(right, "da"));
 }
 
 /** Chromium renders JSON documents inside a `<pre>` element. */
