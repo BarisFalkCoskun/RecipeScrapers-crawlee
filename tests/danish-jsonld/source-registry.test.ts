@@ -222,7 +222,7 @@ describe("Danish JSON-LD source registry", () => {
 ];
 
   it("contains the migrated legacy source families and every Danish WPRM source", () => {
-    expect(DANISH_JSONLD_SOURCES).toHaveLength(544);
+    expect(DANISH_JSONLD_SOURCES).toHaveLength(784);
     expect(DANISH_JSONLD_SOURCES.filter(
       (source) => source.legacyFamily === "JsonLdSitemapRecipeSpider"
     )).toHaveLength(89);
@@ -231,7 +231,7 @@ describe("Danish JSON-LD source registry", () => {
     )).toHaveLength(34);
     expect(DANISH_JSONLD_SOURCES.filter(
       (source) => source.legacyFamily === "WprmApiSpider"
-    )).toHaveLength(318);
+    )).toHaveLength(558);
     expect(DANISH_JSONLD_SOURCES.filter(
       (source) => source.legacyFamily === "WpPostsJsonLdSpider"
     )).toHaveLength(76);

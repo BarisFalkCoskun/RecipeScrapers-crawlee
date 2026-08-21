@@ -8,7 +8,7 @@ describe("Danish JSON-LD migration status", () => {
   it("reports all required checklist fields in JSON", () => {
     const report = createMigrationStatusReport();
 
-    expect(report.sources).toHaveLength(544);
+    expect(report.sources).toHaveLength(784);
     const unevidenced = report.sources.find((entry) => entry.latestCanary === null);
     expect(unevidenced).toMatchObject({
       source: expect.any(String),
