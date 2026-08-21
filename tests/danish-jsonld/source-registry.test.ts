@@ -712,6 +712,21 @@ describe("Danish JSON-LD source registry", () => {
     }
   });
 
+  it("names why a blocked source is blocked rather than only that it was", () => {
+    const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
+
+    // A Cloudflare managed challenge is not a crawler defect, and no amount of
+    // retrying or browser hardening from this host clears it.
+    expect(byId.get("natashaskitchen")?.deferOrBlockReason).toMatch(
+      /Cloudflare managed challenge/u
+    );
+    expect(byId.get("natashaskitchen")?.migrationState).toBe("blocked");
+    // A gated endpoint is a different problem from a challenged one.
+    expect(byId.get("drizzleanddip")?.deferOrBlockReason).toMatch(
+      /HTTP 401 and a Security Verification interstitial/u
+    );
+  });
+
   it("carries the WordPress posts sources on the strict JSON-LD contract", () => {
     const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
     const wpPosts = DANISH_JSONLD_SOURCES.filter(

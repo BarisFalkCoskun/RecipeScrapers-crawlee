@@ -27186,7 +27186,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T10-28-28.655Z-attempt-543c5741-a12c-4306-a7a1-8137991fee71",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   athomewithshay: {
     migrationState: "configured",
@@ -27198,7 +27198,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T10-29-07.165Z-attempt-9f3b9dc8-fe3e-4cd7-a78a-c2abc7510503",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   bakedambrosia: {
     migrationState: "configured",
@@ -27288,7 +27288,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T10-31-27.219Z-attempt-aac264cf-d8b6-436a-b759-f026d765406a",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   barleyandsage: {
     migrationState: "configured",
@@ -27348,7 +27348,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T10-33-04.790Z-attempt-2e66bd3a-929d-4e30-a056-07406fc20f55",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   bigrecipe: {
     migrationState: "blocked",
@@ -27450,7 +27450,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T10-35-42.283Z-attempt-3c3c99bb-6894-4556-ad53-e6db0986cb0d",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   butteryourbiscuit: {
     migrationState: "configured",
@@ -27684,7 +27684,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T10-42-52.385Z-attempt-2015497c-5b48-46dc-a77f-5cafa27c0002",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   cookrepublic: {
     migrationState: "configured",
@@ -27954,7 +27954,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T10-50-16.262Z-attempt-da5ddbad-2625-4760-adc5-d425b71ea6d2",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   downredbuddrive: {
     migrationState: "configured",
@@ -27966,13 +27966,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T10-48-39.590Z-attempt-2018057b-f1d3-4a4a-bfdb-0d804e39f081",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   drizzleanddip: {
     migrationState: "blocked",
     latestCanary: "2026-08-21T10-50-22.005Z-attempt-11469035-00e7-4ddf-83a8-87b230bb00f3",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with HTTP 401 and a Security Verification interstitial, so the endpoint is gated rather than public",
   },
   easyanddelish: {
     migrationState: "configured",
@@ -28278,7 +28278,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T10-57-29.979Z-attempt-8d557882-3efc-4568-8c77-396080740620",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   foodwithfeeling: {
     migrationState: "configured",
@@ -28344,7 +28344,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T11-00-22.184Z-attempt-7b57fd11-b5d2-40e0-bb90-25b685f4197c",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   funfoodfrolic: {
     migrationState: "canary_passed",
@@ -28422,7 +28422,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T11-11-29.253Z-attempt-6004eb5a-fcbf-4fce-a509-76b477969f7c",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   godairyfree: {
     migrationState: "configured",
@@ -29022,7 +29022,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T11-29-28.122Z-attempt-ac3692cc-9e0d-4b91-b7e2-60958aca2ea9",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   littlesunnykitchen: {
     migrationState: "configured",
@@ -29196,7 +29196,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T11-30-25.339Z-attempt-dbc35822-6d74-4b1d-b82a-1bbda91a88fe",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   melskitchencafe: {
     migrationState: "configured",
@@ -29214,7 +29214,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T11-30-30.844Z-attempt-871d2ce2-f0ab-49e7-b03b-60baeff7542f",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   mightymrs: {
     migrationState: "canary_passed",
@@ -29382,7 +29382,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T11-37-34.060Z-attempt-2ab9d039-8b33-40f3-aa24-187aeca87c57",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   naturallyella: {
     migrationState: "configured",
@@ -29436,7 +29436,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T11-38-13.093Z-attempt-4b370446-b277-40ba-813d-4abb56da949c",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   olivetomato: {
     migrationState: "canary_passed",
@@ -29652,7 +29652,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T11-41-33.739Z-attempt-c09ffd56-60d3-4170-93d4-9858c5034e83",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   practicalselfreliance: {
     migrationState: "canary_passed",
@@ -29772,7 +29772,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T11-47-58.157Z-attempt-5d15b95b-2fff-4438-acc4-16dce1f32f3a",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   recipethis: {
     migrationState: "configured",
@@ -29868,7 +29868,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T11-53-17.146Z-attempt-6f04a396-1eb0-44ca-b9d5-e0b667f705a4",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   savorynothings: {
     migrationState: "canary_passed",
@@ -29988,13 +29988,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T11-56-53.978Z-attempt-f61ee8ce-8c7b-4e21-aa13-cf14026454bd",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   skinnyms: {
     migrationState: "blocked",
     latestCanary: "2026-08-21T11-55-31.832Z-attempt-a509d3cd-7619-490e-9a34-addb93e52b0a",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   skinnytaste: {
     migrationState: "canary_passed",
@@ -30180,7 +30180,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T12-04-22.362Z-attempt-d2204855-6683-4923-8df3-d398b4b1366b",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   sweetcsdesigns: {
     migrationState: "configured",
@@ -30360,7 +30360,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T12-09-28.713Z-attempt-1f0d232d-1406-46c6-b85d-3cad4f80a86c",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   thecozyplum: {
     migrationState: "canary_passed",
@@ -30426,7 +30426,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T12-07-12.499Z-attempt-9764dcf6-af91-4b2b-9eb3-8c035e955184",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   theflexitarian: {
     migrationState: "configured",
@@ -30594,7 +30594,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T12-15-05.009Z-attempt-bbb01e85-01a6-476b-b1e6-12bcc4bcd41a",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   thenaturalnurturer: {
     migrationState: "configured",
@@ -30732,7 +30732,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T12-15-39.335Z-attempt-9b9a6049-a691-4384-b7c8-058f9941e098",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with HTTP 401 and a Security Verification interstitial, so the endpoint is gated rather than public",
   },
   thesouthernladycooks: {
     migrationState: "configured",
@@ -30828,7 +30828,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T12-21-06.547Z-attempt-644fe395-93f9-46e0-b274-5b1f1665dc9e",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   throughherlookingglass: {
     migrationState: "canary_passed",
@@ -30924,7 +30924,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T12-23-19.655Z-attempt-8e0becb7-89fb-4c94-a584-1992bcbe6a88",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   vanillaandbean: {
     migrationState: "canary_passed",
@@ -30948,7 +30948,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T12-20-56.874Z-attempt-56e208ed-23a2-4af9-b7ff-99b4cf72d107",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   vegkitchen: {
     migrationState: "configured",
@@ -30984,7 +30984,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T12-22-02.946Z-attempt-5c7d3b9a-9757-47d2-abea-8e1965a2efde",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   whatgreatgrandmaate: {
     migrationState: "canary_passed",
@@ -30996,7 +30996,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T12-24-08.768Z-attempt-9df579ba-6adb-4eba-bd7d-cab43d176ec0",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   whatmollymade: {
     migrationState: "configured",
@@ -31032,7 +31032,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T12-24-55.394Z-attempt-f5c0b7e9-f097-4e5e-b352-6a1723c38b02",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: the site answers the recipe API with HTTP 401 and a Security Verification interstitial, so the endpoint is gated rather than public",
   },
   whiteonricecouple: {
     migrationState: "canary_passed",
@@ -32002,7 +32002,7 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
     migrationState: "blocked",
     latestCanary: "2026-08-20T07-08-06.457Z-attempt-0fe28461-f50e-4cd0-9c34-65b662b91ca9",
     deferOrBlockReason:
-      "Cloudflare on this source gates clients by fingerprint rather than by user agent, and gates them the opposite way round from usual: curl with its own default user agent is answered HTTP 200 with the full 51 KB WPRM payload, while a browser user agent, an empty one, and Crawlee with header generation disabled are all answered HTTP 403. Matching it needs the HTTP client itself to present differently, not a header change, so the source stays blocked",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   kagefest: {
     migrationState: "configured",
