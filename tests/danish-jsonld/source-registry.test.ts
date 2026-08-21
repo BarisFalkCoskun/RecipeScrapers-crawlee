@@ -597,7 +597,7 @@ describe("Danish JSON-LD source registry", () => {
       "nannapretzmann", "coupleinthekitchen", "bakerella", "abakershouse",
       "thecakeblog", "basisvarer", "moderncrumb", "breadtopia",
       "skalvibage", "kokke", "ingridhornshoj", "madsvin", "madfolket", "puredansk",
-      "nordmad",
+      "nordmad", "gastrotools", "gastrologik",
     ];
 
     for (const id of shadowed) {
@@ -641,7 +641,7 @@ describe("Danish JSON-LD source registry", () => {
     // A legacy run that is being blocked, or pointed at an abandoned domain, is
     // not a sound comparison, so these cannot be promoted on parity. They carry
     // the alternative evidence instead and say why.
-    for (const id of ["butternutbakeryblog", "tasteandsee", "brownedbutterblondie"]) {
+    for (const id of ["butternutbakeryblog", "tasteandsee", "brownedbutterblondie", "choosingchia"]) {
       const source = byId.get(id);
       expect(source?.migrationState).toBe("shadow_passed");
       expect(source?.latestScrapyOutcome).toBe("failed");

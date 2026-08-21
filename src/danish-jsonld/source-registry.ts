@@ -26916,10 +26916,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 6-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 6 recipes with every material field matching; every taxonomy value matches as published",
   },
   choosingchia: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-20T00-23-59.362Z-attempt-1737d4cc-945f-40d2-8626-070f757a1e6c",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "failed",
+    latestCanary: "2026-08-20T23-00-00.000Z",
+    shadowParity:
+      "legacy-unhealthy; 730 stable records over two uncapped runs, and every recipe the legacy run did emit matches on every material field",
     deferOrBlockReason:
-      "Uncapped run persisted 730 recipes from 821 posts with complete discovery and no blocked, failed or rejected record",
+      "The legacy spider cannot produce a sound comparison for this source: it emitted 413 of the site's recipes against Crawlee's 730, a strict subset with no material field differing, because the site answers a large share of its detail requests with HTTP 403 and the spider records each block as a page without a recipe. Parity rests on the documented legacy-unhealthy route instead - two uncapped runs emitted identical 730-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
   },
   thecakeblog: {
     migrationState: "shadow_passed",
@@ -31232,10 +31235,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 2867 recipes with complete discovery and no blocked or failed request; 30 incomplete pages keep it short of a canary",
   },
   gastrotools: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-15T21-55-50.447Z-attempt-ed8926bc-e8c3-4ebf-bdfd-5b60dcd6a759",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
+    latestCanary: "2026-08-20T23-00-00.000Z",
+    shadowParity:
+      "223/223 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 222 recipes with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 223-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 223 recipes with every material field matching; 33 records carry a duration the source spells loosely, which legacy gives up on and Crawlee reads, and this is the source whose Danish hour designator was being read as minutes until it was corrected",
   },
   gigtforeningen: {
     discovery: "listing",
@@ -31404,10 +31410,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 307 recipes with complete discovery and no blocked, failed or rejected record",
   },
   gastrologik: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-16T22-50-44.665Z-attempt-a553d41f-f674-4742-bbe1-da3ca5ce024d",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
+    latestCanary: "2026-08-20T23-00-00.000Z",
+    shadowParity:
+      "312/312 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 312 recipes with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 312-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 312 recipes with every material field matching; all 312 keep a cuisine legacy has no field for, 3 carry a duration written as PT 60M that legacy gives up on, and one recipe is served under either capitalisation of its path",
   },
   hverdagskoekken: {
     migrationState: "canary_passed",

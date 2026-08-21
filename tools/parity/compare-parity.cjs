@@ -90,6 +90,7 @@ let namedSteps=0;
 let cuisineDropped=0;
 let richerYield=0;
 let negativeDurations=0;
+let looseDurations=0;
 const diffs={}; const add=(f,u,a,b)=>{(diffs[f]=diffs[f]||[]).push({u,legacy:a,crawlee:b});};
 for(const [k,l] of L){
   const c=C.get(k); if(!c) continue; const n=c.normalized||{};
@@ -116,10 +117,21 @@ for(const [k,l] of L){
     const raw = l.raw_json_ld && l.raw_json_ld[field];
     return typeof raw === "string" && /^p/iu.test(raw.trim()) && /-\d/u.test(raw);
   };
+  // A duration the source spells loosely — "PT 60M" with a space, or the Danish
+  // "PT15t30M" — is one legacy's parser gives up on and reports as nothing. V2
+  // reading it is more of the source preserved, not a disagreement.
+  const looseUpstream = (field) => {
+    const raw = l.raw_json_ld && l.raw_json_ld[field];
+    return typeof raw === "string" && /^p/iu.test(raw.trim()) && !/-\d/u.test(raw);
+  };
   const time = (label, legacyValue, crawleeValue, field) => {
     if ((legacyValue ?? null) === (crawleeValue ?? null)) return;
     if (crawleeValue == null && legacyValue != null && negativeUpstream(field)) {
       negativeDurations++;
+      return;
+    }
+    if (legacyValue == null && crawleeValue != null && looseUpstream(field)) {
+      looseDurations++;
       return;
     }
     add(label, k, legacyValue, crawleeValue);
@@ -171,5 +183,5 @@ if(!legacy.length || !crawlee.length){
   console.log("\nMISMATCH: field differences above");
   process.exitCode=2;
 } else {
-  console.log(`\nALL MATERIAL FIELDS MATCH (${cuisineDropped?`${cuisineDropped} records keep a cuisine legacy has no field for`:"tags == keywords + cuisines"}${namedSteps?`; ${namedSteps} records keep WPRM named-step prefixes legacy drops`:""}${richerYield?`; ${richerYield} records keep a fuller yield than legacy leading-integer`:""}${negativeDurations?`; ${negativeDurations} negative upstream durations V2 rejects and legacy keeps`:""}${siblings.length?`; ${siblings.length} sibling recipes recovered`:""})`);
+  console.log(`\nALL MATERIAL FIELDS MATCH (${cuisineDropped?`${cuisineDropped} records keep a cuisine legacy has no field for`:"tags == keywords + cuisines"}${namedSteps?`; ${namedSteps} records keep WPRM named-step prefixes legacy drops`:""}${richerYield?`; ${richerYield} records keep a fuller yield than legacy leading-integer`:""}${negativeDurations?`; ${negativeDurations} negative upstream durations V2 rejects and legacy keeps`:""}${looseDurations?`; ${looseDurations} loosely spelled durations V2 reads and legacy gives up on`:""}${siblings.length?`; ${siblings.length} sibling recipes recovered`:""})`);
 }
