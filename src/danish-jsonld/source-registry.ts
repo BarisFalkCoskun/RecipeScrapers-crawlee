@@ -18605,6 +18605,6398 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
     "requireCompleteJsonLd": true,
     "migrationState": "not_started",
     "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "rhiansrecipes",
+    "domain": "rhiansrecipes.com",
+    "allowedDomains": [
+      "rhiansrecipes.com",
+      "www.rhiansrecipes.com"
+    ],
+    "legacySpider": "RhiansrecipesSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.rhiansrecipes.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "roseclearfield",
+    "domain": "roseclearfield.com",
+    "allowedDomains": [
+      "roseclearfield.com",
+      "www.roseclearfield.com"
+    ],
+    "legacySpider": "RoseclearfieldSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.roseclearfield.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "runningonrealfood",
+    "domain": "runningonrealfood.com",
+    "allowedDomains": [
+      "runningonrealfood.com",
+      "www.runningonrealfood.com"
+    ],
+    "legacySpider": "RunningonrealfoodSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.runningonrealfood.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "runningtothekitchen",
+    "domain": "runningtothekitchen.com",
+    "allowedDomains": [
+      "runningtothekitchen.com",
+      "www.runningtothekitchen.com"
+    ],
+    "legacySpider": "RunningtothekitchenSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.runningtothekitchen.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "salads4lunch",
+    "domain": "salads4lunch.com",
+    "allowedDomains": [
+      "salads4lunch.com",
+      "www.salads4lunch.com"
+    ],
+    "legacySpider": "Salads4lunchSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.salads4lunch.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "saltandlavender",
+    "domain": "saltandlavender.com",
+    "allowedDomains": [
+      "saltandlavender.com",
+      "www.saltandlavender.com"
+    ],
+    "legacySpider": "SaltandlavenderSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.saltandlavender.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "saltpepperskillet",
+    "domain": "saltpepperskillet.com",
+    "allowedDomains": [
+      "saltpepperskillet.com",
+      "www.saltpepperskillet.com"
+    ],
+    "legacySpider": "SaltpepperskilletSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.saltpepperskillet.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "saltysidedish",
+    "domain": "saltysidedish.com",
+    "allowedDomains": [
+      "saltysidedish.com",
+      "www.saltysidedish.com"
+    ],
+    "legacySpider": "SaltysidedishSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.saltysidedish.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "savorandsavvy",
+    "domain": "savorandsavvy.com",
+    "allowedDomains": [
+      "savorandsavvy.com",
+      "www.savorandsavvy.com"
+    ],
+    "legacySpider": "SavorandsavvySpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.savorandsavvy.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "savortheflavour",
+    "domain": "savortheflavour.com",
+    "allowedDomains": [
+      "savortheflavour.com",
+      "www.savortheflavour.com"
+    ],
+    "legacySpider": "SavortheflavourSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://savortheflavour.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "savoryexperiments",
+    "domain": "savoryexperiments.com",
+    "allowedDomains": [
+      "savoryexperiments.com",
+      "www.savoryexperiments.com"
+    ],
+    "legacySpider": "SavoryexperimentsSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.savoryexperiments.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "savorynothings",
+    "domain": "savorynothings.com",
+    "allowedDomains": [
+      "savorynothings.com",
+      "www.savorynothings.com"
+    ],
+    "legacySpider": "SavorynothingsSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.savorynothings.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "savvybites",
+    "domain": "savvybites.co.uk",
+    "allowedDomains": [
+      "savvybites.co.uk",
+      "www.savvybites.co.uk"
+    ],
+    "legacySpider": "SavvybitesSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.savvybites.co.uk/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "savvysavingcouple",
+    "domain": "savvysavingcouple.net",
+    "allowedDomains": [
+      "savvysavingcouple.net",
+      "www.savvysavingcouple.net"
+    ],
+    "legacySpider": "SavvysavingcoupleSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.savvysavingcouple.net/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "scrummylane",
+    "domain": "scrummylane.com",
+    "allowedDomains": [
+      "scrummylane.com",
+      "www.scrummylane.com"
+    ],
+    "legacySpider": "ScrummylaneSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://scrummylane.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "searchingforspice",
+    "domain": "searchingforspice.com",
+    "allowedDomains": [
+      "searchingforspice.com",
+      "www.searchingforspice.com"
+    ],
+    "legacySpider": "SearchingforspiceSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.searchingforspice.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "seasonalcravings",
+    "domain": "seasonalcravings.com",
+    "allowedDomains": [
+      "seasonalcravings.com",
+      "www.seasonalcravings.com"
+    ],
+    "legacySpider": "SeasonalcravingsSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.seasonalcravings.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "shelovesbiscotti",
+    "domain": "shelovesbiscotti.com",
+    "allowedDomains": [
+      "shelovesbiscotti.com",
+      "www.shelovesbiscotti.com"
+    ],
+    "legacySpider": "ShelovesbiscottiSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.shelovesbiscotti.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "showmetheyummy",
+    "domain": "showmetheyummy.com",
+    "allowedDomains": [
+      "showmetheyummy.com",
+      "www.showmetheyummy.com"
+    ],
+    "legacySpider": "ShowmetheyummySpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.showmetheyummy.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "shugarysweets",
+    "domain": "shugarysweets.com",
+    "allowedDomains": [
+      "shugarysweets.com",
+      "www.shugarysweets.com"
+    ],
+    "legacySpider": "ShugarysweetsSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.shugarysweets.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "simplejoy",
+    "domain": "simplejoy.com",
+    "allowedDomains": [
+      "simplejoy.com",
+      "www.simplejoy.com"
+    ],
+    "legacySpider": "SimplejoySpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.simplejoy.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "simpleveganblog",
+    "domain": "simpleveganblog.com",
+    "allowedDomains": [
+      "simpleveganblog.com",
+      "www.simpleveganblog.com"
+    ],
+    "legacySpider": "SimpleveganblogSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.simpleveganblog.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "simplylakita",
+    "domain": "simplylakita.com",
+    "allowedDomains": [
+      "simplylakita.com",
+      "www.simplylakita.com"
+    ],
+    "legacySpider": "SimplylakitaSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.simplylakita.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "simplyquinoa",
+    "domain": "simplyquinoa.com",
+    "allowedDomains": [
+      "simplyquinoa.com",
+      "www.simplyquinoa.com"
+    ],
+    "legacySpider": "SimplyquinoaSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.simplyquinoa.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "simplyscratch",
+    "domain": "simplyscratch.com",
+    "allowedDomains": [
+      "simplyscratch.com",
+      "www.simplyscratch.com"
+    ],
+    "legacySpider": "SimplyscratchSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.simplyscratch.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "simplysogood",
+    "domain": "simplysogood.com",
+    "allowedDomains": [
+      "simplysogood.com",
+      "www.simplysogood.com"
+    ],
+    "legacySpider": "SimplysogoodSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.simplysogood.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "simplystacie",
+    "domain": "simplystacie.net",
+    "allowedDomains": [
+      "simplystacie.net",
+      "www.simplystacie.net"
+    ],
+    "legacySpider": "SimplystacieSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.simplystacie.net/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "simplyvegetarian777",
+    "domain": "simplyvegetarian777.com",
+    "allowedDomains": [
+      "simplyvegetarian777.com",
+      "www.simplyvegetarian777.com"
+    ],
+    "legacySpider": "Simplyvegetarian777Spider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.simplyvegetarian777.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "sipandspice",
+    "domain": "sipandspice.com",
+    "allowedDomains": [
+      "sipandspice.com",
+      "www.sipandspice.com"
+    ],
+    "legacySpider": "SipandspiceSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://sipandspice.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "sixsistersstuff",
+    "domain": "sixsistersstuff.com",
+    "allowedDomains": [
+      "sixsistersstuff.com",
+      "www.sixsistersstuff.com"
+    ],
+    "legacySpider": "SixsistersstuffSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.sixsistersstuff.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "skinnykitchen",
+    "domain": "skinnykitchen.com",
+    "allowedDomains": [
+      "skinnykitchen.com",
+      "www.skinnykitchen.com"
+    ],
+    "legacySpider": "SkinnykitchenSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.skinnykitchen.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "skinnyms",
+    "domain": "skinnyms.com",
+    "allowedDomains": [
+      "skinnyms.com",
+      "www.skinnyms.com"
+    ],
+    "legacySpider": "SkinnymsSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.skinnyms.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "skinnytaste",
+    "domain": "skinnytaste.com",
+    "allowedDomains": [
+      "skinnytaste.com",
+      "www.skinnytaste.com"
+    ],
+    "legacySpider": "SkinnyTasteSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.skinnytaste.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "slapdashmom",
+    "domain": "slapdashmom.com",
+    "allowedDomains": [
+      "slapdashmom.com",
+      "www.slapdashmom.com"
+    ],
+    "legacySpider": "SlapdashmomSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.slapdashmom.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "slowcookerkitchen",
+    "domain": "slowcookerkitchen.com",
+    "allowedDomains": [
+      "slowcookerkitchen.com",
+      "www.slowcookerkitchen.com"
+    ],
+    "legacySpider": "SlowcookerkitchenSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.slowcookerkitchen.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "slowthecookdown",
+    "domain": "slowthecookdown.com",
+    "allowedDomains": [
+      "slowthecookdown.com",
+      "www.slowthecookdown.com"
+    ],
+    "legacySpider": "SlowthecookdownSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.slowthecookdown.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "smalltownwoman",
+    "domain": "smalltownwoman.com",
+    "allowedDomains": [
+      "smalltownwoman.com",
+      "www.smalltownwoman.com"
+    ],
+    "legacySpider": "SmalltownwomanSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.smalltownwoman.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "smartlittlecookie",
+    "domain": "smartlittlecookie.net",
+    "allowedDomains": [
+      "smartlittlecookie.net",
+      "www.smartlittlecookie.net",
+      "mydominicankitchen.com",
+      "www.mydominicankitchen.com"
+    ],
+    "legacySpider": "SmartlittlecookieSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.smartlittlecookie.net/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "snappygourmet",
+    "domain": "snappygourmet.com",
+    "allowedDomains": [
+      "snappygourmet.com",
+      "www.snappygourmet.com"
+    ],
+    "legacySpider": "SnappygourmetSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.snappygourmet.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "somewhatsimple",
+    "domain": "somewhatsimple.com",
+    "allowedDomains": [
+      "somewhatsimple.com",
+      "www.somewhatsimple.com"
+    ],
+    "legacySpider": "SomewhatsimpleSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.somewhatsimple.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "southernbite",
+    "domain": "southernbite.com",
+    "allowedDomains": [
+      "southernbite.com",
+      "www.southernbite.com"
+    ],
+    "legacySpider": "SouthernbiteSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.southernbite.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "spainonafork",
+    "domain": "spainonafork.com",
+    "allowedDomains": [
+      "spainonafork.com",
+      "www.spainonafork.com"
+    ],
+    "legacySpider": "SpainonaforkSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.spainonafork.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "spendwithpennies",
+    "domain": "spendwithpennies.com",
+    "allowedDomains": [
+      "spendwithpennies.com",
+      "www.spendwithpennies.com"
+    ],
+    "legacySpider": "SpendwithpenniesSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.spendwithpennies.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "spiceeats",
+    "domain": "spiceeats.com",
+    "allowedDomains": [
+      "spiceeats.com",
+      "www.spiceeats.com"
+    ],
+    "legacySpider": "SpiceeatsSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.spiceeats.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "spiceupthecurry",
+    "domain": "spiceupthecurry.com",
+    "allowedDomains": [
+      "spiceupthecurry.com",
+      "www.spiceupthecurry.com"
+    ],
+    "legacySpider": "SpiceupthecurrySpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.spiceupthecurry.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "spicysouthernkitchen",
+    "domain": "spicysouthernkitchen.com",
+    "allowedDomains": [
+      "spicysouthernkitchen.com",
+      "www.spicysouthernkitchen.com"
+    ],
+    "legacySpider": "SpicysouthernkitchenSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.spicysouthernkitchen.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "spoonforkbacon",
+    "domain": "spoonforkbacon.com",
+    "allowedDomains": [
+      "spoonforkbacon.com",
+      "www.spoonforkbacon.com"
+    ],
+    "legacySpider": "SpoonforkbaconSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.spoonforkbacon.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "spoonnest",
+    "domain": "spoonnest.com",
+    "allowedDomains": [
+      "spoonnest.com",
+      "www.spoonnest.com"
+    ],
+    "legacySpider": "SpoonnestSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.spoonnest.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "spoonrecipes",
+    "domain": "spoonrecipes.com",
+    "allowedDomains": [
+      "spoonrecipes.com",
+      "www.spoonrecipes.com"
+    ],
+    "legacySpider": "SpoonrecipesSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.spoonrecipes.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "staysnatched",
+    "domain": "staysnatched.com",
+    "allowedDomains": [
+      "staysnatched.com",
+      "www.staysnatched.com"
+    ],
+    "legacySpider": "StaysnatchedSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.staysnatched.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "steamykitchen",
+    "domain": "steamykitchen.com",
+    "allowedDomains": [
+      "steamykitchen.com",
+      "www.steamykitchen.com"
+    ],
+    "legacySpider": "SteamykitchenSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.steamykitchen.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "stephgaudreau",
+    "domain": "stephgaudreau.com",
+    "allowedDomains": [
+      "stephgaudreau.com",
+      "www.stephgaudreau.com"
+    ],
+    "legacySpider": "StephgaudreauSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.stephgaudreau.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "stockpilingmoms",
+    "domain": "stockpilingmoms.com",
+    "allowedDomains": [
+      "stockpilingmoms.com",
+      "www.stockpilingmoms.com"
+    ],
+    "legacySpider": "StockpilingmomsSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.stockpilingmoms.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "sugarandsoul",
+    "domain": "sugarandsoul.co",
+    "allowedDomains": [
+      "sugarandsoul.co",
+      "www.sugarandsoul.co"
+    ],
+    "legacySpider": "SugarandsoulSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.sugarandsoul.co/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "sugarfreelondoner",
+    "domain": "sugarfreelondoner.com",
+    "allowedDomains": [
+      "sugarfreelondoner.com",
+      "www.sugarfreelondoner.com"
+    ],
+    "legacySpider": "SugarfreelondonerSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.sugarfreelondoner.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "sugarfreemom",
+    "domain": "sugarfreemom.com",
+    "allowedDomains": [
+      "sugarfreemom.com",
+      "www.sugarfreemom.com"
+    ],
+    "legacySpider": "SugarfreemomSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.sugarfreemom.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "sugarsaltmagic",
+    "domain": "sugarsaltmagic.com",
+    "allowedDomains": [
+      "sugarsaltmagic.com",
+      "www.sugarsaltmagic.com"
+    ],
+    "legacySpider": "SugarsaltmagicSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.sugarsaltmagic.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "sugarspunrun",
+    "domain": "sugarspunrun.com",
+    "allowedDomains": [
+      "sugarspunrun.com",
+      "www.sugarspunrun.com"
+    ],
+    "legacySpider": "SugarspunrunSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.sugarspunrun.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "sundaysuppermovement",
+    "domain": "sundaysuppermovement.com",
+    "allowedDomains": [
+      "sundaysuppermovement.com",
+      "www.sundaysuppermovement.com"
+    ],
+    "legacySpider": "SundaysuppermovementSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.sundaysuppermovement.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "sunkissedkitchen",
+    "domain": "sunkissedkitchen.com",
+    "allowedDomains": [
+      "sunkissedkitchen.com",
+      "www.sunkissedkitchen.com"
+    ],
+    "legacySpider": "SunkissedkitchenSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.sunkissedkitchen.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "supergoldenbakes",
+    "domain": "supergoldenbakes.com",
+    "allowedDomains": [
+      "supergoldenbakes.com",
+      "www.supergoldenbakes.com"
+    ],
+    "legacySpider": "SupergoldenbakesSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.supergoldenbakes.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "sustainablecooks",
+    "domain": "sustainablecooks.com",
+    "allowedDomains": [
+      "sustainablecooks.com",
+      "www.sustainablecooks.com"
+    ],
+    "legacySpider": "SustainablecooksSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.sustainablecooks.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "sweetandsavorymeals",
+    "domain": "sweetandsavorymeals.com",
+    "allowedDomains": [
+      "sweetandsavorymeals.com",
+      "www.sweetandsavorymeals.com"
+    ],
+    "legacySpider": "SweetandsavorymealsSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.sweetandsavorymeals.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "sweetcsdesigns",
+    "domain": "sweetcsdesigns.com",
+    "allowedDomains": [
+      "sweetcsdesigns.com",
+      "www.sweetcsdesigns.com"
+    ],
+    "legacySpider": "SweetcsdesignsSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.sweetcsdesigns.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "sweetlysplendid",
+    "domain": "sweetlysplendid.com",
+    "allowedDomains": [
+      "sweetlysplendid.com",
+      "www.sweetlysplendid.com"
+    ],
+    "legacySpider": "SweetlysplendidSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.sweetlysplendid.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "sweetmouthjoy",
+    "domain": "sweetmouthjoy.com",
+    "allowedDomains": [
+      "sweetmouthjoy.com",
+      "www.sweetmouthjoy.com"
+    ],
+    "legacySpider": "SweetmouthjoySpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.sweetmouthjoy.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "sweetpeasandsaffron",
+    "domain": "sweetpeasandsaffron.com",
+    "allowedDomains": [
+      "sweetpeasandsaffron.com",
+      "www.sweetpeasandsaffron.com"
+    ],
+    "legacySpider": "SweetpeasandsaffronSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.sweetpeasandsaffron.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "sweetpeaskitchen",
+    "domain": "sweetpeaskitchen.com",
+    "allowedDomains": [
+      "sweetpeaskitchen.com",
+      "www.sweetpeaskitchen.com"
+    ],
+    "legacySpider": "SweetpeaskitchenSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.sweetpeaskitchen.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "sweetphi",
+    "domain": "sweetphi.com",
+    "allowedDomains": [
+      "sweetphi.com",
+      "www.sweetphi.com"
+    ],
+    "legacySpider": "SweetphiSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.sweetphi.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "sweetpotatosoul",
+    "domain": "sweetpotatosoul.com",
+    "allowedDomains": [
+      "sweetpotatosoul.com",
+      "www.sweetpotatosoul.com"
+    ],
+    "legacySpider": "SweetpotatosoulSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.sweetpotatosoul.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "sweetteaandthyme",
+    "domain": "sweetteaandthyme.com",
+    "allowedDomains": [
+      "sweetteaandthyme.com",
+      "www.sweetteaandthyme.com"
+    ],
+    "legacySpider": "SweetteaandthymeSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.sweetteaandthyme.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "tablefortwoblog",
+    "domain": "tablefortwoblog.com",
+    "allowedDomains": [
+      "tablefortwoblog.com",
+      "www.tablefortwoblog.com"
+    ],
+    "legacySpider": "TablefortwoblogSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.tablefortwoblog.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "tamingtwins",
+    "domain": "tamingtwins.com",
+    "allowedDomains": [
+      "tamingtwins.com",
+      "www.tamingtwins.com"
+    ],
+    "legacySpider": "TamingtwinsSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.tamingtwins.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "tasteandtellblog",
+    "domain": "tasteandtellblog.com",
+    "allowedDomains": [
+      "tasteandtellblog.com",
+      "www.tasteandtellblog.com"
+    ],
+    "legacySpider": "TasteandtellblogSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.tasteandtellblog.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "tastesbetterfromscratch",
+    "domain": "tastesbetterfromscratch.com",
+    "allowedDomains": [
+      "tastesbetterfromscratch.com",
+      "www.tastesbetterfromscratch.com"
+    ],
+    "legacySpider": "TastesbetterfromscratchSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.tastesbetterfromscratch.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "tasteslovely",
+    "domain": "tasteslovely.com",
+    "allowedDomains": [
+      "tasteslovely.com",
+      "www.tasteslovely.com"
+    ],
+    "legacySpider": "TasteslovelySpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.tasteslovely.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "tastesofhomemade",
+    "domain": "tastesofhomemade.com",
+    "allowedDomains": [
+      "tastesofhomemade.com",
+      "www.tastesofhomemade.com"
+    ],
+    "legacySpider": "TastesofhomemadeSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.tastesofhomemade.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thatgirlcookshealthy",
+    "domain": "thatgirlcookshealthy.com",
+    "allowedDomains": [
+      "thatgirlcookshealthy.com",
+      "www.thatgirlcookshealthy.com"
+    ],
+    "legacySpider": "ThatgirlcookshealthySpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thatgirlcookshealthy.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thatlowcarblife",
+    "domain": "thatlowcarblife.com",
+    "allowedDomains": [
+      "thatlowcarblife.com",
+      "www.thatlowcarblife.com"
+    ],
+    "legacySpider": "ThatlowcarblifeSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thatlowcarblife.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thebeachhousekitchen",
+    "domain": "thebeachhousekitchen.com",
+    "allowedDomains": [
+      "thebeachhousekitchen.com",
+      "www.thebeachhousekitchen.com"
+    ],
+    "legacySpider": "ThebeachhousekitchenSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thebeachhousekitchen.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thebigmansworld",
+    "domain": "thebigmansworld.com",
+    "allowedDomains": [
+      "thebigmansworld.com",
+      "www.thebigmansworld.com"
+    ],
+    "legacySpider": "ThebigmansworldSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thebigmansworld.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "theblackpeppercorn",
+    "domain": "theblackpeppercorn.com",
+    "allowedDomains": [
+      "theblackpeppercorn.com",
+      "www.theblackpeppercorn.com"
+    ],
+    "legacySpider": "TheblackpeppercornSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.theblackpeppercorn.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "theblondcook",
+    "domain": "theblondcook.com",
+    "allowedDomains": [
+      "theblondcook.com",
+      "www.theblondcook.com"
+    ],
+    "legacySpider": "TheblondcookSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.theblondcook.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thebusybaker",
+    "domain": "thebusybaker.ca",
+    "allowedDomains": [
+      "thebusybaker.ca",
+      "www.thebusybaker.ca"
+    ],
+    "legacySpider": "ThebusybakerSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thebusybaker.ca/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thebutterhalf",
+    "domain": "thebutterhalf.com",
+    "allowedDomains": [
+      "thebutterhalf.com",
+      "www.thebutterhalf.com"
+    ],
+    "legacySpider": "ThebutterhalfSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thebutterhalf.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thecafesucrefarine",
+    "domain": "thecafesucrefarine.com",
+    "allowedDomains": [
+      "thecafesucrefarine.com",
+      "www.thecafesucrefarine.com"
+    ],
+    "legacySpider": "ThecafesucrefarineSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thecafesucrefarine.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thecheekychickpea",
+    "domain": "thecheekychickpea.com",
+    "allowedDomains": [
+      "thecheekychickpea.com",
+      "www.thecheekychickpea.com"
+    ],
+    "legacySpider": "ThecheekychickpeaSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thecheekychickpea.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thechunkychef",
+    "domain": "thechunkychef.com",
+    "allowedDomains": [
+      "thechunkychef.com",
+      "www.thechunkychef.com"
+    ],
+    "legacySpider": "ThechunkychefSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thechunkychef.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thecleaneatingcouple",
+    "domain": "thecleaneatingcouple.com",
+    "allowedDomains": [
+      "thecleaneatingcouple.com",
+      "www.thecleaneatingcouple.com"
+    ],
+    "legacySpider": "ThecleaneatingcoupleSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thecleaneatingcouple.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thecookierookie",
+    "domain": "thecookierookie.com",
+    "allowedDomains": [
+      "thecookierookie.com",
+      "www.thecookierookie.com"
+    ],
+    "legacySpider": "ThecookierookieSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thecookierookie.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thecookingfoodie",
+    "domain": "thecookingfoodie.com",
+    "allowedDomains": [
+      "thecookingfoodie.com",
+      "www.thecookingfoodie.com"
+    ],
+    "legacySpider": "ThecookingfoodieSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thecookingfoodie.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thecookreport",
+    "domain": "thecookreport.co.uk",
+    "allowedDomains": [
+      "thecookreport.co.uk",
+      "www.thecookreport.co.uk"
+    ],
+    "legacySpider": "ThecookreportSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thecookreport.co.uk/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thecountrycook",
+    "domain": "thecountrycook.net",
+    "allowedDomains": [
+      "thecountrycook.net",
+      "www.thecountrycook.net"
+    ],
+    "legacySpider": "ThecountrycookSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thecountrycook.net/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thecozyplum",
+    "domain": "thecozyplum.com",
+    "allowedDomains": [
+      "thecozyplum.com",
+      "www.thecozyplum.com"
+    ],
+    "legacySpider": "ThecozyplumSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thecozyplum.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thecreativebite",
+    "domain": "thecreativebite.com",
+    "allowedDomains": [
+      "thecreativebite.com",
+      "www.thecreativebite.com"
+    ],
+    "legacySpider": "ThecreativebiteSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thecreativebite.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thecuriousplate",
+    "domain": "thecuriousplate.com",
+    "allowedDomains": [
+      "thecuriousplate.com",
+      "www.thecuriousplate.com"
+    ],
+    "legacySpider": "ThecuriousplateSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thecuriousplate.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thedefineddish",
+    "domain": "thedefineddish.com",
+    "allowedDomains": [
+      "thedefineddish.com",
+      "www.thedefineddish.com"
+    ],
+    "legacySpider": "ThedefineddishSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thedefineddish.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thedizzycook",
+    "domain": "thedizzycook.com",
+    "allowedDomains": [
+      "thedizzycook.com",
+      "www.thedizzycook.com"
+    ],
+    "legacySpider": "ThedizzycookSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thedizzycook.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thedomesticrebel",
+    "domain": "thedomesticrebel.com",
+    "allowedDomains": [
+      "thedomesticrebel.com",
+      "www.thedomesticrebel.com"
+    ],
+    "legacySpider": "ThedomesticrebelSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thedomesticrebel.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "theendlessmeal",
+    "domain": "theendlessmeal.com",
+    "allowedDomains": [
+      "theendlessmeal.com",
+      "www.theendlessmeal.com"
+    ],
+    "legacySpider": "TheendlessmealSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.theendlessmeal.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thefeatherednester",
+    "domain": "thefeatherednester.com",
+    "allowedDomains": [
+      "thefeatherednester.com",
+      "www.thefeatherednester.com"
+    ],
+    "legacySpider": "ThefeatherednesterSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thefeatherednester.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thefedupfoodie",
+    "domain": "thefedupfoodie.com",
+    "allowedDomains": [
+      "thefedupfoodie.com",
+      "www.thefedupfoodie.com"
+    ],
+    "legacySpider": "ThefedupfoodieSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thefedupfoodie.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "theflavorbender",
+    "domain": "theflavorbender.com",
+    "allowedDomains": [
+      "theflavorbender.com",
+      "www.theflavorbender.com"
+    ],
+    "legacySpider": "TheflavorbenderSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.theflavorbender.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "theflavoursofkitchen",
+    "domain": "theflavoursofkitchen.com",
+    "allowedDomains": [
+      "theflavoursofkitchen.com",
+      "www.theflavoursofkitchen.com"
+    ],
+    "legacySpider": "TheflavoursofkitchenSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.theflavoursofkitchen.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "theflexitarian",
+    "domain": "theflexitarian.co.uk",
+    "allowedDomains": [
+      "theflexitarian.co.uk",
+      "www.theflexitarian.co.uk"
+    ],
+    "legacySpider": "TheflexitarianSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.theflexitarian.co.uk/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "theflexitarian_ir",
+    "domain": "theflexitarian.co.uk",
+    "allowedDomains": [
+      "theflexitarian.co.uk",
+      "www.theflexitarian.co.uk"
+    ],
+    "legacySpider": "TheflexitarianSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.theflexitarian.co.uk/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thefoodblog",
+    "domain": "thefoodblog.net",
+    "allowedDomains": [
+      "thefoodblog.net",
+      "www.thefoodblog.net"
+    ],
+    "legacySpider": "ThefoodblogSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thefoodblog.net/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thefoodcharlatan",
+    "domain": "thefoodcharlatan.com",
+    "allowedDomains": [
+      "thefoodcharlatan.com",
+      "www.thefoodcharlatan.com"
+    ],
+    "legacySpider": "ThefoodcharlatanSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://thefoodcharlatan.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thefoodietakesflight",
+    "domain": "thefoodietakesflight.com",
+    "allowedDomains": [
+      "thefoodietakesflight.com",
+      "www.thefoodietakesflight.com"
+    ],
+    "legacySpider": "ThefoodietakesflightSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thefoodietakesflight.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "theforkedspoon",
+    "domain": "theforkedspoon.com",
+    "allowedDomains": [
+      "theforkedspoon.com",
+      "www.theforkedspoon.com"
+    ],
+    "legacySpider": "TheforkedspoonSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.theforkedspoon.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thegardengrazer",
+    "domain": "thegardengrazer.com",
+    "allowedDomains": [
+      "thegardengrazer.com",
+      "www.thegardengrazer.com"
+    ],
+    "legacySpider": "ThegardengrazerSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thegardengrazer.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thegestationaldiabetic",
+    "domain": "thegestationaldiabetic.com",
+    "allowedDomains": [
+      "thegestationaldiabetic.com",
+      "www.thegestationaldiabetic.com"
+    ],
+    "legacySpider": "ThegestationaldiabeticSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thegestationaldiabetic.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thegingeredwhisk",
+    "domain": "thegingeredwhisk.com",
+    "allowedDomains": [
+      "thegingeredwhisk.com",
+      "www.thegingeredwhisk.com"
+    ],
+    "legacySpider": "ThegingeredwhiskSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thegingeredwhisk.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thegirlonbloor",
+    "domain": "thegirlonbloor.com",
+    "allowedDomains": [
+      "thegirlonbloor.com",
+      "www.thegirlonbloor.com"
+    ],
+    "legacySpider": "ThegirlonbloorSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thegirlonbloor.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thegirlwhoateeverything",
+    "domain": "the-girl-who-ate-everything.com",
+    "allowedDomains": [
+      "the-girl-who-ate-everything.com",
+      "www.the-girl-who-ate-everything.com"
+    ],
+    "legacySpider": "TheGirlWhoAteEverythingSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.the-girl-who-ate-everything.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thegoodheartedwoman",
+    "domain": "thegoodheartedwoman.com",
+    "allowedDomains": [
+      "thegoodheartedwoman.com",
+      "www.thegoodheartedwoman.com"
+    ],
+    "legacySpider": "ThegoodheartedwomanSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thegoodheartedwoman.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thegraciouspantry",
+    "domain": "thegraciouspantry.com",
+    "allowedDomains": [
+      "thegraciouspantry.com",
+      "www.thegraciouspantry.com"
+    ],
+    "legacySpider": "ThegraciouspantrySpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thegraciouspantry.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thegunnysack",
+    "domain": "thegunnysack.com",
+    "allowedDomains": [
+      "thegunnysack.com",
+      "www.thegunnysack.com"
+    ],
+    "legacySpider": "ThegunnysackSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thegunnysack.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thehealthyfoodie",
+    "domain": "thehealthyfoodie.com",
+    "allowedDomains": [
+      "thehealthyfoodie.com",
+      "www.thehealthyfoodie.com"
+    ],
+    "legacySpider": "ThehealthyfoodieSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thehealthyfoodie.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "theheirloompantry",
+    "domain": "theheirloompantry.com",
+    "allowedDomains": [
+      "theheirloompantry.com",
+      "www.theheirloompantry.com",
+      "theheirloompantry.co",
+      "www.theheirloompantry.co"
+    ],
+    "legacySpider": "TheheirloompantrySpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.theheirloompantry.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "theholymess",
+    "domain": "theholymess.com",
+    "allowedDomains": [
+      "theholymess.com",
+      "www.theholymess.com"
+    ],
+    "legacySpider": "TheholymessSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.theholymess.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "theinspiredhome",
+    "domain": "theinspiredhome.com",
+    "allowedDomains": [
+      "theinspiredhome.com",
+      "www.theinspiredhome.com"
+    ],
+    "legacySpider": "TheinspiredhomeSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.theinspiredhome.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thekitchenmagpie",
+    "domain": "thekitchenmagpie.com",
+    "allowedDomains": [
+      "thekitchenmagpie.com",
+      "www.thekitchenmagpie.com"
+    ],
+    "legacySpider": "ThekitchenmagpieSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thekitchenmagpie.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thekittchen",
+    "domain": "thekittchen.com",
+    "allowedDomains": [
+      "thekittchen.com",
+      "www.thekittchen.com"
+    ],
+    "legacySpider": "ThekittchenSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thekittchen.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thekoreanvegan",
+    "domain": "thekoreanvegan.com",
+    "allowedDomains": [
+      "thekoreanvegan.com",
+      "www.thekoreanvegan.com"
+    ],
+    "legacySpider": "ThekoreanveganSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thekoreanvegan.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thelittleepicurean",
+    "domain": "thelittleepicurean.com",
+    "allowedDomains": [
+      "thelittleepicurean.com",
+      "www.thelittleepicurean.com"
+    ],
+    "legacySpider": "ThelittleepicureanSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thelittleepicurean.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "theliveinkitchen",
+    "domain": "theliveinkitchen.com",
+    "allowedDomains": [
+      "theliveinkitchen.com",
+      "www.theliveinkitchen.com"
+    ],
+    "legacySpider": "TheliveinkitchenSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.theliveinkitchen.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "themagicalslowcooker",
+    "domain": "themagicalslowcooker.com",
+    "allowedDomains": [
+      "themagicalslowcooker.com",
+      "www.themagicalslowcooker.com"
+    ],
+    "legacySpider": "ThemagicalslowcookerSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.themagicalslowcooker.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "themamasgirls",
+    "domain": "themamasgirls.com",
+    "allowedDomains": [
+      "themamasgirls.com",
+      "www.themamasgirls.com"
+    ],
+    "legacySpider": "ThemamasgirlsSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.themamasgirls.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "themediterraneandish",
+    "domain": "themediterraneandish.com",
+    "allowedDomains": [
+      "themediterraneandish.com",
+      "www.themediterraneandish.com"
+    ],
+    "legacySpider": "ThemediterraneandishSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.themediterraneandish.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "themerrythought",
+    "domain": "themerrythought.com",
+    "allowedDomains": [
+      "themerrythought.com",
+      "www.themerrythought.com"
+    ],
+    "legacySpider": "ThemerrythoughtSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.themerrythought.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "themodernnonna",
+    "domain": "themodernnonna.com",
+    "allowedDomains": [
+      "themodernnonna.com",
+      "www.themodernnonna.com"
+    ],
+    "legacySpider": "ThemodernnonnaSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.themodernnonna.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thenaturalnurturer",
+    "domain": "thenaturalnurturer.com",
+    "allowedDomains": [
+      "thenaturalnurturer.com",
+      "www.thenaturalnurturer.com"
+    ],
+    "legacySpider": "ThenaturalnurturerSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thenaturalnurturer.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thenovicechefblog",
+    "domain": "thenovicechefblog.com",
+    "allowedDomains": [
+      "thenovicechefblog.com",
+      "www.thenovicechefblog.com"
+    ],
+    "legacySpider": "ThenovicechefblogSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thenovicechefblog.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "theorganickitchen",
+    "domain": "theorganickitchen.org",
+    "allowedDomains": [
+      "theorganickitchen.org",
+      "www.theorganickitchen.org"
+    ],
+    "legacySpider": "TheorganickitchenSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.theorganickitchen.org/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thepalatablelife",
+    "domain": "thepalatablelife.com",
+    "allowedDomains": [
+      "thepalatablelife.com",
+      "www.thepalatablelife.com"
+    ],
+    "legacySpider": "ThepalatablelifeSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thepalatablelife.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thepancakeprincess",
+    "domain": "thepancakeprincess.com",
+    "allowedDomains": [
+      "thepancakeprincess.com",
+      "www.thepancakeprincess.com"
+    ],
+    "legacySpider": "ThepancakeprincessSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thepancakeprincess.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thepetitecook",
+    "domain": "thepetitecook.com",
+    "allowedDomains": [
+      "thepetitecook.com",
+      "www.thepetitecook.com"
+    ],
+    "legacySpider": "ThepetitecookSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thepetitecook.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thepinningmama",
+    "domain": "thepinningmama.com",
+    "allowedDomains": [
+      "thepinningmama.com",
+      "www.thepinningmama.com"
+    ],
+    "legacySpider": "ThepinningmamaSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thepinningmama.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "theplantbasedschool",
+    "domain": "theplantbasedschool.com",
+    "allowedDomains": [
+      "theplantbasedschool.com",
+      "www.theplantbasedschool.com"
+    ],
+    "legacySpider": "TheplantbasedschoolSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.theplantbasedschool.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "theppk",
+    "domain": "theppk.com",
+    "allowedDomains": [
+      "theppk.com",
+      "www.theppk.com"
+    ],
+    "legacySpider": "TheppkSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.theppk.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "theprettybee",
+    "domain": "theprettybee.com",
+    "allowedDomains": [
+      "theprettybee.com",
+      "www.theprettybee.com"
+    ],
+    "legacySpider": "TheprettybeeSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.theprettybee.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "theproteinchef",
+    "domain": "theproteinchef.co",
+    "allowedDomains": [
+      "theproteinchef.co",
+      "www.theproteinchef.co"
+    ],
+    "legacySpider": "TheproteinchefSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.theproteinchef.co/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "therealfoodgeek",
+    "domain": "therealfoodgeek.com",
+    "allowedDomains": [
+      "therealfoodgeek.com",
+      "www.therealfoodgeek.com",
+      "quepasamexicanfood.com",
+      "www.quepasamexicanfood.com"
+    ],
+    "legacySpider": "TherealfoodgeekSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.therealfoodgeek.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "therecipecritic",
+    "domain": "therecipecritic.com",
+    "allowedDomains": [
+      "therecipecritic.com",
+      "www.therecipecritic.com"
+    ],
+    "legacySpider": "TherecipecriticSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.therecipecritic.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thereciperebel",
+    "domain": "thereciperebel.com",
+    "allowedDomains": [
+      "thereciperebel.com",
+      "www.thereciperebel.com"
+    ],
+    "legacySpider": "ThereciperebelSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thereciperebel.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "therecipewell",
+    "domain": "therecipewell.com",
+    "allowedDomains": [
+      "therecipewell.com",
+      "www.therecipewell.com"
+    ],
+    "legacySpider": "TherecipewellSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.therecipewell.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "theroastedroot",
+    "domain": "theroastedroot.net",
+    "allowedDomains": [
+      "theroastedroot.net",
+      "www.theroastedroot.net"
+    ],
+    "legacySpider": "TheroastedrootSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.theroastedroot.net/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "therusticfoodie",
+    "domain": "therusticfoodie.com",
+    "allowedDomains": [
+      "therusticfoodie.com",
+      "www.therusticfoodie.com"
+    ],
+    "legacySpider": "TherusticfoodieSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.therusticfoodie.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thesaltymarshmallow",
+    "domain": "thesaltymarshmallow.com",
+    "allowedDomains": [
+      "thesaltymarshmallow.com",
+      "www.thesaltymarshmallow.com"
+    ],
+    "legacySpider": "ThesaltymarshmallowSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thesaltymarshmallow.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thesavory",
+    "domain": "thesavory.com",
+    "allowedDomains": [
+      "thesavory.com",
+      "www.thesavory.com"
+    ],
+    "legacySpider": "ThesavorySpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thesavory.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "theseasonedmom",
+    "domain": "theseasonedmom.com",
+    "allowedDomains": [
+      "theseasonedmom.com",
+      "www.theseasonedmom.com"
+    ],
+    "legacySpider": "TheseasonedmomSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.theseasonedmom.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thesimpleparent",
+    "domain": "thesimpleparent.com",
+    "allowedDomains": [
+      "thesimpleparent.com",
+      "www.thesimpleparent.com"
+    ],
+    "legacySpider": "ThesimpleparentSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thesimpleparent.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "theskinnyishdish",
+    "domain": "theskinnyishdish.com",
+    "allowedDomains": [
+      "theskinnyishdish.com",
+      "www.theskinnyishdish.com"
+    ],
+    "legacySpider": "TheskinnyishdishSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.theskinnyishdish.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thesophisticatedcaveman",
+    "domain": "thesophisticatedcaveman.com",
+    "allowedDomains": [
+      "thesophisticatedcaveman.com",
+      "www.thesophisticatedcaveman.com"
+    ],
+    "legacySpider": "ThesophisticatedcavemanSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thesophisticatedcaveman.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thesouthernladycooks",
+    "domain": "thesouthernladycooks.com",
+    "allowedDomains": [
+      "thesouthernladycooks.com",
+      "www.thesouthernladycooks.com"
+    ],
+    "legacySpider": "ThesouthernladycooksSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thesouthernladycooks.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thestayathomechef",
+    "domain": "thestayathomechef.com",
+    "allowedDomains": [
+      "thestayathomechef.com",
+      "www.thestayathomechef.com"
+    ],
+    "legacySpider": "ThestayathomechefSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thestayathomechef.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thestonesoup",
+    "domain": "thestonesoup.com",
+    "allowedDomains": [
+      "thestonesoup.com",
+      "www.thestonesoup.com"
+    ],
+    "legacySpider": "ThestonesoupSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thestonesoup.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thesuburbansoapbox",
+    "domain": "thesuburbansoapbox.com",
+    "allowedDomains": [
+      "thesuburbansoapbox.com",
+      "www.thesuburbansoapbox.com"
+    ],
+    "legacySpider": "ThesuburbansoapboxSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thesuburbansoapbox.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thesugarkitchen",
+    "domain": "thesugarkitchen.com",
+    "allowedDomains": [
+      "thesugarkitchen.com",
+      "www.thesugarkitchen.com"
+    ],
+    "legacySpider": "ThesugarkitchenSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thesugarkitchen.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thetoastykitchen",
+    "domain": "thetoastykitchen.com",
+    "allowedDomains": [
+      "thetoastykitchen.com",
+      "www.thetoastykitchen.com"
+    ],
+    "legacySpider": "ThetoastykitchenSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thetoastykitchen.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thevanillabeanblog",
+    "domain": "thevanillabeanblog.com",
+    "allowedDomains": [
+      "thevanillabeanblog.com",
+      "www.thevanillabeanblog.com"
+    ],
+    "legacySpider": "ThevanillabeanblogSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thevanillabeanblog.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thevegspace",
+    "domain": "thevegspace.co.uk",
+    "allowedDomains": [
+      "thevegspace.co.uk",
+      "www.thevegspace.co.uk"
+    ],
+    "legacySpider": "ThevegspaceSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thevegspace.co.uk/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thevietvegan",
+    "domain": "thevietvegan.com",
+    "allowedDomains": [
+      "thevietvegan.com",
+      "www.thevietvegan.com"
+    ],
+    "legacySpider": "ThevietveganSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thevietvegan.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "theviewfromgreatisland",
+    "domain": "theviewfromgreatisland.com",
+    "allowedDomains": [
+      "theviewfromgreatisland.com",
+      "www.theviewfromgreatisland.com"
+    ],
+    "legacySpider": "TheviewfromgreatislandSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.theviewfromgreatisland.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thevintagemixer",
+    "domain": "thevintagemixer.com",
+    "allowedDomains": [
+      "thevintagemixer.com",
+      "www.thevintagemixer.com"
+    ],
+    "legacySpider": "ThevintagemixerSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thevintagemixer.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thewanderlustkitchen",
+    "domain": "thewanderlustkitchen.com",
+    "allowedDomains": [
+      "thewanderlustkitchen.com",
+      "www.thewanderlustkitchen.com"
+    ],
+    "legacySpider": "ThewanderlustkitchenSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thewanderlustkitchen.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thewholecook",
+    "domain": "thewholecook.com",
+    "allowedDomains": [
+      "thewholecook.com",
+      "www.thewholecook.com"
+    ],
+    "legacySpider": "ThewholecookSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thewholecook.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thewholesomedish",
+    "domain": "thewholesomedish.com",
+    "allowedDomains": [
+      "thewholesomedish.com",
+      "www.thewholesomedish.com"
+    ],
+    "legacySpider": "ThewholesomedishSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thewholesomedish.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thewoksoflife",
+    "domain": "thewoksoflife.com",
+    "allowedDomains": [
+      "thewoksoflife.com",
+      "www.thewoksoflife.com"
+    ],
+    "legacySpider": "ThewoksoflifeSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thewoksoflife.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "thiswifecooks",
+    "domain": "thiswifecooks.com",
+    "allowedDomains": [
+      "thiswifecooks.com",
+      "www.thiswifecooks.com"
+    ],
+    "legacySpider": "ThiswifecooksSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.thiswifecooks.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "throughherlookingglass",
+    "domain": "throughherlookingglass.com",
+    "allowedDomains": [
+      "throughherlookingglass.com",
+      "www.throughherlookingglass.com"
+    ],
+    "legacySpider": "ThroughherlookingglassSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.throughherlookingglass.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "throughthefibrofog",
+    "domain": "throughthefibrofog.com",
+    "allowedDomains": [
+      "throughthefibrofog.com",
+      "www.throughthefibrofog.com"
+    ],
+    "legacySpider": "ThroughthefibrofogSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.throughthefibrofog.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "tiffinandteaofficial",
+    "domain": "tiffinandteaofficial.com",
+    "allowedDomains": [
+      "tiffinandteaofficial.com",
+      "www.tiffinandteaofficial.com"
+    ],
+    "legacySpider": "TiffinandteaofficialSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.tiffinandteaofficial.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "tiffycooks",
+    "domain": "tiffycooks.com",
+    "allowedDomains": [
+      "tiffycooks.com",
+      "www.tiffycooks.com"
+    ],
+    "legacySpider": "TiffycooksSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.tiffycooks.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "todaysdelight",
+    "domain": "todaysdelight.com",
+    "allowedDomains": [
+      "todaysdelight.com",
+      "www.todaysdelight.com"
+    ],
+    "legacySpider": "TodaysdelightSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.todaysdelight.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "togetherasfamily",
+    "domain": "togetherasfamily.com",
+    "allowedDomains": [
+      "togetherasfamily.com",
+      "www.togetherasfamily.com"
+    ],
+    "legacySpider": "TogetherasfamilySpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.togetherasfamily.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "toriavey",
+    "domain": "toriavey.com",
+    "allowedDomains": [
+      "toriavey.com",
+      "www.toriavey.com"
+    ],
+    "legacySpider": "ToriaveySpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.toriavey.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "tornadoughalli",
+    "domain": "tornadoughalli.com",
+    "allowedDomains": [
+      "tornadoughalli.com",
+      "www.tornadoughalli.com"
+    ],
+    "legacySpider": "TornadoughalliSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.tornadoughalli.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "traditionallymodernfood",
+    "domain": "traditionallymodernfood.com",
+    "allowedDomains": [
+      "traditionallymodernfood.com",
+      "www.traditionallymodernfood.com"
+    ],
+    "legacySpider": "TraditionallymodernfoodSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.traditionallymodernfood.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "triedandtruerecipe",
+    "domain": "triedandtruerecipe.com",
+    "allowedDomains": [
+      "triedandtruerecipe.com",
+      "www.triedandtruerecipe.com"
+    ],
+    "legacySpider": "TriedandtruerecipeSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.triedandtruerecipe.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "twocupsflour",
+    "domain": "twocupsflour.com",
+    "allowedDomains": [
+      "twocupsflour.com",
+      "www.twocupsflour.com"
+    ],
+    "legacySpider": "TwocupsflourSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.twocupsflour.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "twohealthykitchens",
+    "domain": "twohealthykitchens.com",
+    "allowedDomains": [
+      "twohealthykitchens.com",
+      "www.twohealthykitchens.com"
+    ],
+    "legacySpider": "TwohealthykitchensSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.twohealthykitchens.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "twopeasandtheirpod",
+    "domain": "twopeasandtheirpod.com",
+    "allowedDomains": [
+      "twopeasandtheirpod.com",
+      "www.twopeasandtheirpod.com"
+    ],
+    "legacySpider": "TwopeasandtheirpodSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.twopeasandtheirpod.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "twosleevers",
+    "domain": "twosleevers.com",
+    "allowedDomains": [
+      "twosleevers.com",
+      "www.twosleevers.com"
+    ],
+    "legacySpider": "TwosleeversSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.twosleevers.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "urbancowgirllife",
+    "domain": "urbancowgirllife.com",
+    "allowedDomains": [
+      "urbancowgirllife.com",
+      "www.urbancowgirllife.com"
+    ],
+    "legacySpider": "UrbancowgirllifeSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.urbancowgirllife.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "valentinascorner",
+    "domain": "valentinascorner.com",
+    "allowedDomains": [
+      "valentinascorner.com",
+      "www.valentinascorner.com"
+    ],
+    "legacySpider": "ValentinascornerSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.valentinascorner.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "vanillaandbean",
+    "domain": "vanillaandbean.com",
+    "allowedDomains": [
+      "vanillaandbean.com",
+      "www.vanillaandbean.com"
+    ],
+    "legacySpider": "VanillaandbeanSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.vanillaandbean.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "veganricha",
+    "domain": "veganricha.com",
+    "allowedDomains": [
+      "veganricha.com",
+      "www.veganricha.com"
+    ],
+    "legacySpider": "VeganrichaSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.veganricha.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "veggieinspired",
+    "domain": "veggieinspired.com",
+    "allowedDomains": [
+      "veggieinspired.com",
+      "www.veggieinspired.com"
+    ],
+    "legacySpider": "VeggieinspiredSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.veggieinspired.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "veggiesdontbite",
+    "domain": "veggiesdontbite.com",
+    "allowedDomains": [
+      "veggiesdontbite.com",
+      "www.veggiesdontbite.com"
+    ],
+    "legacySpider": "VeggiesdontbiteSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.veggiesdontbite.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "vegkitchen",
+    "domain": "vegkitchen.com",
+    "allowedDomains": [
+      "vegkitchen.com",
+      "www.vegkitchen.com"
+    ],
+    "legacySpider": "VegkitchenSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.vegkitchen.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "vietworldkitchen",
+    "domain": "vietworldkitchen.com",
+    "allowedDomains": [
+      "vietworldkitchen.com",
+      "www.vietworldkitchen.com"
+    ],
+    "legacySpider": "VietworldkitchenSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.vietworldkitchen.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "walkingonsunshinerecipes",
+    "domain": "walkingonsunshinerecipes.com",
+    "allowedDomains": [
+      "walkingonsunshinerecipes.com",
+      "www.walkingonsunshinerecipes.com"
+    ],
+    "legacySpider": "WalkingonsunshinerecipesSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.walkingonsunshinerecipes.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "wandercooks",
+    "domain": "wandercooks.com",
+    "allowedDomains": [
+      "wandercooks.com",
+      "www.wandercooks.com"
+    ],
+    "legacySpider": "WandercooksSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.wandercooks.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "watchwhatueat",
+    "domain": "watchwhatueat.com",
+    "allowedDomains": [
+      "watchwhatueat.com",
+      "www.watchwhatueat.com"
+    ],
+    "legacySpider": "WatchwhatueatSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.watchwhatueat.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "wellplated",
+    "domain": "wellplated.com",
+    "allowedDomains": [
+      "wellplated.com",
+      "www.wellplated.com"
+    ],
+    "legacySpider": "WellplatedSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.wellplated.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "whatgreatgrandmaate",
+    "domain": "whatgreatgrandmaate.com",
+    "allowedDomains": [
+      "whatgreatgrandmaate.com",
+      "www.whatgreatgrandmaate.com"
+    ],
+    "legacySpider": "WhatgreatgrandmaateSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.whatgreatgrandmaate.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "whatjessicabakednext",
+    "domain": "whatjessicabakednext.com",
+    "allowedDomains": [
+      "whatjessicabakednext.com",
+      "www.whatjessicabakednext.com"
+    ],
+    "legacySpider": "WhatjessicabakednextSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.whatjessicabakednext.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "whatmollymade",
+    "domain": "whatmollymade.com",
+    "allowedDomains": [
+      "whatmollymade.com",
+      "www.whatmollymade.com"
+    ],
+    "legacySpider": "WhatmollymadeSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.whatmollymade.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "whatsgabycooking",
+    "domain": "whatsgabycooking.com",
+    "allowedDomains": [
+      "whatsgabycooking.com",
+      "www.whatsgabycooking.com"
+    ],
+    "legacySpider": "WhatsgabycookingSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.whatsgabycooking.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "whereismyspoon",
+    "domain": "whereismyspoon.co",
+    "allowedDomains": [
+      "whereismyspoon.co",
+      "www.whereismyspoon.co"
+    ],
+    "legacySpider": "WhereismyspoonSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.whereismyspoon.co/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "whiskaffair",
+    "domain": "whiskaffair.com",
+    "allowedDomains": [
+      "whiskaffair.com",
+      "www.whiskaffair.com"
+    ],
+    "legacySpider": "WhiskaffairSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.whiskaffair.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "whiskbite",
+    "domain": "whiskbite.com",
+    "allowedDomains": [
+      "whiskbite.com",
+      "www.whiskbite.com",
+      "whiskandbite.com",
+      "www.whiskandbite.com"
+    ],
+    "legacySpider": "WhiskbiteSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.whiskbite.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "whiskrecipes",
+    "domain": "whiskrecipes.com",
+    "allowedDomains": [
+      "whiskrecipes.com",
+      "www.whiskrecipes.com"
+    ],
+    "legacySpider": "WhiskrecipesSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.whiskrecipes.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "whiteonricecouple",
+    "domain": "whiteonricecouple.com",
+    "allowedDomains": [
+      "whiteonricecouple.com",
+      "www.whiteonricecouple.com"
+    ],
+    "legacySpider": "WhiteonricecoupleSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.whiteonricecouple.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "wholeandheavenlyoven",
+    "domain": "wholeandheavenlyoven.com",
+    "allowedDomains": [
+      "wholeandheavenlyoven.com",
+      "www.wholeandheavenlyoven.com"
+    ],
+    "legacySpider": "WholeandheavenlyovenSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://wholeandheavenlyoven.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "wholegirl",
+    "domain": "wholegirl.com",
+    "allowedDomains": [
+      "wholegirl.com",
+      "www.wholegirl.com"
+    ],
+    "legacySpider": "WholegirlSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.wholegirl.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "wholelottayum",
+    "domain": "wholelottayum.com",
+    "allowedDomains": [
+      "wholelottayum.com",
+      "www.wholelottayum.com"
+    ],
+    "legacySpider": "WholelottayumSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.wholelottayum.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "wholesomelicious",
+    "domain": "wholesomelicious.com",
+    "allowedDomains": [
+      "wholesomelicious.com",
+      "www.wholesomelicious.com"
+    ],
+    "legacySpider": "WholesomeliciousSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.wholesomelicious.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "wholesomepatisserie",
+    "domain": "wholesomepatisserie.com",
+    "allowedDomains": [
+      "wholesomepatisserie.com",
+      "www.wholesomepatisserie.com"
+    ],
+    "legacySpider": "WholesomepatisserieSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.wholesomepatisserie.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "wholesomerecipebox",
+    "domain": "wholesomerecipebox.com",
+    "allowedDomains": [
+      "wholesomerecipebox.com",
+      "www.wholesomerecipebox.com"
+    ],
+    "legacySpider": "WholesomerecipeboxSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.wholesomerecipebox.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "wholesomeyum",
+    "domain": "wholesomeyum.com",
+    "allowedDomains": [
+      "wholesomeyum.com",
+      "www.wholesomeyum.com"
+    ],
+    "legacySpider": "WholesomeyumSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.wholesomeyum.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "willcookforsmiles",
+    "domain": "willcookforsmiles.com",
+    "allowedDomains": [
+      "willcookforsmiles.com",
+      "www.willcookforsmiles.com"
+    ],
+    "legacySpider": "WillcookforsmilesSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.willcookforsmiles.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "wishesndishes",
+    "domain": "wishesndishes.com",
+    "allowedDomains": [
+      "wishesndishes.com",
+      "www.wishesndishes.com"
+    ],
+    "legacySpider": "WishesndishesSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.wishesndishes.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "withfoodandlove",
+    "domain": "withfoodandlove.com",
+    "allowedDomains": [
+      "withfoodandlove.com",
+      "www.withfoodandlove.com"
+    ],
+    "legacySpider": "WithfoodandloveSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.withfoodandlove.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "wokandkin",
+    "domain": "wokandkin.com",
+    "allowedDomains": [
+      "wokandkin.com",
+      "www.wokandkin.com"
+    ],
+    "legacySpider": "WokandkinSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.wokandkin.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "wokandskillet",
+    "domain": "wokandskillet.com",
+    "allowedDomains": [
+      "wokandskillet.com",
+      "www.wokandskillet.com"
+    ],
+    "legacySpider": "WokandskilletSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.wokandskillet.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "woonheng",
+    "domain": "woonheng.com",
+    "allowedDomains": [
+      "woonheng.com",
+      "www.woonheng.com"
+    ],
+    "legacySpider": "WoonhengSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.woonheng.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "worldofvegan",
+    "domain": "worldofvegan.com",
+    "allowedDomains": [
+      "worldofvegan.com",
+      "www.worldofvegan.com"
+    ],
+    "legacySpider": "WorldofveganSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.worldofvegan.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "yellowblissroad",
+    "domain": "yellowblissroad.com",
+    "allowedDomains": [
+      "yellowblissroad.com",
+      "www.yellowblissroad.com"
+    ],
+    "legacySpider": "YellowblissroadSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.yellowblissroad.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "yellowthyme",
+    "domain": "yellowthyme.com",
+    "allowedDomains": [
+      "yellowthyme.com",
+      "www.yellowthyme.com"
+    ],
+    "legacySpider": "YellowthymeSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.yellowthyme.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "yourhomebasedmom",
+    "domain": "yourhomebasedmom.com",
+    "allowedDomains": [
+      "yourhomebasedmom.com",
+      "www.yourhomebasedmom.com"
+    ],
+    "legacySpider": "YourhomebasedmomSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.yourhomebasedmom.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "yummyeats",
+    "domain": "yummyeats.com",
+    "allowedDomains": [
+      "yummyeats.com",
+      "www.yummyeats.com"
+    ],
+    "legacySpider": "YummyeatsSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.yummyeats.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "yummyhealthyeasy",
+    "domain": "yummyhealthyeasy.com",
+    "allowedDomains": [
+      "yummyhealthyeasy.com",
+      "www.yummyhealthyeasy.com"
+    ],
+    "legacySpider": "YummyhealthyeasySpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.yummyhealthyeasy.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "yummytoddlerfood",
+    "domain": "yummytoddlerfood.com",
+    "allowedDomains": [
+      "yummytoddlerfood.com",
+      "www.yummytoddlerfood.com"
+    ],
+    "legacySpider": "YummytoddlerfoodSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.yummytoddlerfood.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "yupitsvegan",
+    "domain": "yupitsvegan.com",
+    "allowedDomains": [
+      "yupitsvegan.com",
+      "www.yupitsvegan.com"
+    ],
+    "legacySpider": "YupitsveganSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.yupitsvegan.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
+  },
+  {
+    "id": "zestfulkitchen",
+    "domain": "zestfulkitchen.com",
+    "allowedDomains": [
+      "zestfulkitchen.com",
+      "www.zestfulkitchen.com"
+    ],
+    "legacySpider": "ZestfulkitchenSpider",
+    "legacyFamily": "WprmApiSpider",
+    "discovery": "listing",
+    "sitemapUrls": [],
+    "startUrls": [
+      "https://www.zestfulkitchen.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+    ],
+    "recipeUrlPatterns": [
+      "^https?://"
+    ],
+    "fetchMode": "cheerio",
+    "requestSettings": {
+      "delaySeconds": 1,
+      "rateLimitPerMinute": null,
+      "maxConcurrency": 2,
+      "maxRetries": 3
+    },
+    "requireCompleteJsonLd": true,
+    "migrationState": "not_started",
+    "latestScrapyOutcome": "not_audited"
   }
 ] as DanishJsonLdSource[];
 
@@ -19252,6 +25644,234 @@ const LEGACY_LISTING_DISCOVERY_OVERRIDES: Record<
   redhousespice: WP_POSTS_LISTING_DISCOVERY,
   reluctantentertainer: WP_POSTS_LISTING_DISCOVERY,
   reluctantgourmet: WP_POSTS_LISTING_DISCOVERY,
+  rhiansrecipes: WP_POSTS_LISTING_DISCOVERY,
+  roseclearfield: WP_POSTS_LISTING_DISCOVERY,
+  runningonrealfood: WP_POSTS_LISTING_DISCOVERY,
+  runningtothekitchen: WP_POSTS_LISTING_DISCOVERY,
+  salads4lunch: WP_POSTS_LISTING_DISCOVERY,
+  saltandlavender: WP_POSTS_LISTING_DISCOVERY,
+  saltpepperskillet: WP_POSTS_LISTING_DISCOVERY,
+  saltysidedish: WP_POSTS_LISTING_DISCOVERY,
+  savorandsavvy: WP_POSTS_LISTING_DISCOVERY,
+  savortheflavour: WP_POSTS_LISTING_DISCOVERY,
+  savoryexperiments: WP_POSTS_LISTING_DISCOVERY,
+  savorynothings: WP_POSTS_LISTING_DISCOVERY,
+  savvybites: WP_POSTS_LISTING_DISCOVERY,
+  savvysavingcouple: WP_POSTS_LISTING_DISCOVERY,
+  scrummylane: WP_POSTS_LISTING_DISCOVERY,
+  searchingforspice: WP_POSTS_LISTING_DISCOVERY,
+  seasonalcravings: WP_POSTS_LISTING_DISCOVERY,
+  shelovesbiscotti: WP_POSTS_LISTING_DISCOVERY,
+  showmetheyummy: WP_POSTS_LISTING_DISCOVERY,
+  shugarysweets: WP_POSTS_LISTING_DISCOVERY,
+  simplejoy: WP_POSTS_LISTING_DISCOVERY,
+  simpleveganblog: WP_POSTS_LISTING_DISCOVERY,
+  simplylakita: WP_POSTS_LISTING_DISCOVERY,
+  simplyquinoa: WP_POSTS_LISTING_DISCOVERY,
+  simplyscratch: WP_POSTS_LISTING_DISCOVERY,
+  simplysogood: WP_POSTS_LISTING_DISCOVERY,
+  simplystacie: WP_POSTS_LISTING_DISCOVERY,
+  simplyvegetarian777: WP_POSTS_LISTING_DISCOVERY,
+  sipandspice: WP_POSTS_LISTING_DISCOVERY,
+  sixsistersstuff: WP_POSTS_LISTING_DISCOVERY,
+  skinnykitchen: WP_POSTS_LISTING_DISCOVERY,
+  skinnyms: WP_POSTS_LISTING_DISCOVERY,
+  skinnytaste: WP_POSTS_LISTING_DISCOVERY,
+  slapdashmom: WP_POSTS_LISTING_DISCOVERY,
+  slowcookerkitchen: WP_POSTS_LISTING_DISCOVERY,
+  slowthecookdown: WP_POSTS_LISTING_DISCOVERY,
+  smalltownwoman: WP_POSTS_LISTING_DISCOVERY,
+  smartlittlecookie: WP_POSTS_LISTING_DISCOVERY,
+  snappygourmet: WP_POSTS_LISTING_DISCOVERY,
+  somewhatsimple: WP_POSTS_LISTING_DISCOVERY,
+  southernbite: WP_POSTS_LISTING_DISCOVERY,
+  spainonafork: WP_POSTS_LISTING_DISCOVERY,
+  spendwithpennies: WP_POSTS_LISTING_DISCOVERY,
+  spiceeats: WP_POSTS_LISTING_DISCOVERY,
+  spiceupthecurry: WP_POSTS_LISTING_DISCOVERY,
+  spicysouthernkitchen: WP_POSTS_LISTING_DISCOVERY,
+  spoonforkbacon: WP_POSTS_LISTING_DISCOVERY,
+  spoonnest: WP_POSTS_LISTING_DISCOVERY,
+  spoonrecipes: WP_POSTS_LISTING_DISCOVERY,
+  staysnatched: WP_POSTS_LISTING_DISCOVERY,
+  steamykitchen: WP_POSTS_LISTING_DISCOVERY,
+  stephgaudreau: WP_POSTS_LISTING_DISCOVERY,
+  stockpilingmoms: WP_POSTS_LISTING_DISCOVERY,
+  sugarandsoul: WP_POSTS_LISTING_DISCOVERY,
+  sugarfreelondoner: WP_POSTS_LISTING_DISCOVERY,
+  sugarfreemom: WP_POSTS_LISTING_DISCOVERY,
+  sugarsaltmagic: WP_POSTS_LISTING_DISCOVERY,
+  sugarspunrun: WP_POSTS_LISTING_DISCOVERY,
+  sundaysuppermovement: WP_POSTS_LISTING_DISCOVERY,
+  sunkissedkitchen: WP_POSTS_LISTING_DISCOVERY,
+  supergoldenbakes: WP_POSTS_LISTING_DISCOVERY,
+  sustainablecooks: WP_POSTS_LISTING_DISCOVERY,
+  sweetandsavorymeals: WP_POSTS_LISTING_DISCOVERY,
+  sweetcsdesigns: WP_POSTS_LISTING_DISCOVERY,
+  sweetlysplendid: WP_POSTS_LISTING_DISCOVERY,
+  sweetmouthjoy: WP_POSTS_LISTING_DISCOVERY,
+  sweetpeasandsaffron: WP_POSTS_LISTING_DISCOVERY,
+  sweetpeaskitchen: WP_POSTS_LISTING_DISCOVERY,
+  sweetphi: WP_POSTS_LISTING_DISCOVERY,
+  sweetpotatosoul: WP_POSTS_LISTING_DISCOVERY,
+  sweetteaandthyme: WP_POSTS_LISTING_DISCOVERY,
+  tablefortwoblog: WP_POSTS_LISTING_DISCOVERY,
+  tamingtwins: WP_POSTS_LISTING_DISCOVERY,
+  tasteandtellblog: WP_POSTS_LISTING_DISCOVERY,
+  tastesbetterfromscratch: WP_POSTS_LISTING_DISCOVERY,
+  tasteslovely: WP_POSTS_LISTING_DISCOVERY,
+  tastesofhomemade: WP_POSTS_LISTING_DISCOVERY,
+  thatgirlcookshealthy: WP_POSTS_LISTING_DISCOVERY,
+  thatlowcarblife: WP_POSTS_LISTING_DISCOVERY,
+  thebeachhousekitchen: WP_POSTS_LISTING_DISCOVERY,
+  thebigmansworld: WP_POSTS_LISTING_DISCOVERY,
+  theblackpeppercorn: WP_POSTS_LISTING_DISCOVERY,
+  theblondcook: WP_POSTS_LISTING_DISCOVERY,
+  thebusybaker: WP_POSTS_LISTING_DISCOVERY,
+  thebutterhalf: WP_POSTS_LISTING_DISCOVERY,
+  thecafesucrefarine: WP_POSTS_LISTING_DISCOVERY,
+  thecheekychickpea: WP_POSTS_LISTING_DISCOVERY,
+  thechunkychef: WP_POSTS_LISTING_DISCOVERY,
+  thecleaneatingcouple: WP_POSTS_LISTING_DISCOVERY,
+  thecookierookie: WP_POSTS_LISTING_DISCOVERY,
+  thecookingfoodie: WP_POSTS_LISTING_DISCOVERY,
+  thecookreport: WP_POSTS_LISTING_DISCOVERY,
+  thecountrycook: WP_POSTS_LISTING_DISCOVERY,
+  thecozyplum: WP_POSTS_LISTING_DISCOVERY,
+  thecreativebite: WP_POSTS_LISTING_DISCOVERY,
+  thecuriousplate: WP_POSTS_LISTING_DISCOVERY,
+  thedefineddish: WP_POSTS_LISTING_DISCOVERY,
+  thedizzycook: WP_POSTS_LISTING_DISCOVERY,
+  thedomesticrebel: WP_POSTS_LISTING_DISCOVERY,
+  theendlessmeal: WP_POSTS_LISTING_DISCOVERY,
+  thefeatherednester: WP_POSTS_LISTING_DISCOVERY,
+  thefedupfoodie: WP_POSTS_LISTING_DISCOVERY,
+  theflavorbender: WP_POSTS_LISTING_DISCOVERY,
+  theflavoursofkitchen: WP_POSTS_LISTING_DISCOVERY,
+  theflexitarian: WP_POSTS_LISTING_DISCOVERY,
+  theflexitarian_ir: WP_POSTS_LISTING_DISCOVERY,
+  thefoodblog: WP_POSTS_LISTING_DISCOVERY,
+  thefoodcharlatan: WP_POSTS_LISTING_DISCOVERY,
+  thefoodietakesflight: WP_POSTS_LISTING_DISCOVERY,
+  theforkedspoon: WP_POSTS_LISTING_DISCOVERY,
+  thegardengrazer: WP_POSTS_LISTING_DISCOVERY,
+  thegestationaldiabetic: WP_POSTS_LISTING_DISCOVERY,
+  thegingeredwhisk: WP_POSTS_LISTING_DISCOVERY,
+  thegirlonbloor: WP_POSTS_LISTING_DISCOVERY,
+  thegirlwhoateeverything: WP_POSTS_LISTING_DISCOVERY,
+  thegoodheartedwoman: WP_POSTS_LISTING_DISCOVERY,
+  thegraciouspantry: WP_POSTS_LISTING_DISCOVERY,
+  thegunnysack: WP_POSTS_LISTING_DISCOVERY,
+  thehealthyfoodie: WP_POSTS_LISTING_DISCOVERY,
+  theheirloompantry: WP_POSTS_LISTING_DISCOVERY,
+  theholymess: WP_POSTS_LISTING_DISCOVERY,
+  theinspiredhome: WP_POSTS_LISTING_DISCOVERY,
+  thekitchenmagpie: WP_POSTS_LISTING_DISCOVERY,
+  thekittchen: WP_POSTS_LISTING_DISCOVERY,
+  thekoreanvegan: WP_POSTS_LISTING_DISCOVERY,
+  thelittleepicurean: WP_POSTS_LISTING_DISCOVERY,
+  theliveinkitchen: WP_POSTS_LISTING_DISCOVERY,
+  themagicalslowcooker: WP_POSTS_LISTING_DISCOVERY,
+  themamasgirls: WP_POSTS_LISTING_DISCOVERY,
+  themediterraneandish: WP_POSTS_LISTING_DISCOVERY,
+  themerrythought: WP_POSTS_LISTING_DISCOVERY,
+  themodernnonna: WP_POSTS_LISTING_DISCOVERY,
+  thenaturalnurturer: WP_POSTS_LISTING_DISCOVERY,
+  thenovicechefblog: WP_POSTS_LISTING_DISCOVERY,
+  theorganickitchen: WP_POSTS_LISTING_DISCOVERY,
+  thepalatablelife: WP_POSTS_LISTING_DISCOVERY,
+  thepancakeprincess: WP_POSTS_LISTING_DISCOVERY,
+  thepetitecook: WP_POSTS_LISTING_DISCOVERY,
+  thepinningmama: WP_POSTS_LISTING_DISCOVERY,
+  theplantbasedschool: WP_POSTS_LISTING_DISCOVERY,
+  theppk: WP_POSTS_LISTING_DISCOVERY,
+  theprettybee: WP_POSTS_LISTING_DISCOVERY,
+  theproteinchef: WP_POSTS_LISTING_DISCOVERY,
+  therealfoodgeek: WP_POSTS_LISTING_DISCOVERY,
+  therecipecritic: WP_POSTS_LISTING_DISCOVERY,
+  thereciperebel: WP_POSTS_LISTING_DISCOVERY,
+  therecipewell: WP_POSTS_LISTING_DISCOVERY,
+  theroastedroot: WP_POSTS_LISTING_DISCOVERY,
+  therusticfoodie: WP_POSTS_LISTING_DISCOVERY,
+  thesaltymarshmallow: WP_POSTS_LISTING_DISCOVERY,
+  thesavory: WP_POSTS_LISTING_DISCOVERY,
+  theseasonedmom: WP_POSTS_LISTING_DISCOVERY,
+  thesimpleparent: WP_POSTS_LISTING_DISCOVERY,
+  theskinnyishdish: WP_POSTS_LISTING_DISCOVERY,
+  thesophisticatedcaveman: WP_POSTS_LISTING_DISCOVERY,
+  thesouthernladycooks: WP_POSTS_LISTING_DISCOVERY,
+  thestayathomechef: WP_POSTS_LISTING_DISCOVERY,
+  thestonesoup: WP_POSTS_LISTING_DISCOVERY,
+  thesuburbansoapbox: WP_POSTS_LISTING_DISCOVERY,
+  thesugarkitchen: WP_POSTS_LISTING_DISCOVERY,
+  thetoastykitchen: WP_POSTS_LISTING_DISCOVERY,
+  thevanillabeanblog: WP_POSTS_LISTING_DISCOVERY,
+  thevegspace: WP_POSTS_LISTING_DISCOVERY,
+  thevietvegan: WP_POSTS_LISTING_DISCOVERY,
+  theviewfromgreatisland: WP_POSTS_LISTING_DISCOVERY,
+  thevintagemixer: WP_POSTS_LISTING_DISCOVERY,
+  thewanderlustkitchen: WP_POSTS_LISTING_DISCOVERY,
+  thewholecook: WP_POSTS_LISTING_DISCOVERY,
+  thewholesomedish: WP_POSTS_LISTING_DISCOVERY,
+  thewoksoflife: WP_POSTS_LISTING_DISCOVERY,
+  thiswifecooks: WP_POSTS_LISTING_DISCOVERY,
+  throughherlookingglass: WP_POSTS_LISTING_DISCOVERY,
+  throughthefibrofog: WP_POSTS_LISTING_DISCOVERY,
+  tiffinandteaofficial: WP_POSTS_LISTING_DISCOVERY,
+  tiffycooks: WP_POSTS_LISTING_DISCOVERY,
+  todaysdelight: WP_POSTS_LISTING_DISCOVERY,
+  togetherasfamily: WP_POSTS_LISTING_DISCOVERY,
+  toriavey: WP_POSTS_LISTING_DISCOVERY,
+  tornadoughalli: WP_POSTS_LISTING_DISCOVERY,
+  traditionallymodernfood: WP_POSTS_LISTING_DISCOVERY,
+  triedandtruerecipe: WP_POSTS_LISTING_DISCOVERY,
+  twocupsflour: WP_POSTS_LISTING_DISCOVERY,
+  twohealthykitchens: WP_POSTS_LISTING_DISCOVERY,
+  twopeasandtheirpod: WP_POSTS_LISTING_DISCOVERY,
+  twosleevers: WP_POSTS_LISTING_DISCOVERY,
+  urbancowgirllife: WP_POSTS_LISTING_DISCOVERY,
+  valentinascorner: WP_POSTS_LISTING_DISCOVERY,
+  vanillaandbean: WP_POSTS_LISTING_DISCOVERY,
+  veganricha: WP_POSTS_LISTING_DISCOVERY,
+  veggieinspired: WP_POSTS_LISTING_DISCOVERY,
+  veggiesdontbite: WP_POSTS_LISTING_DISCOVERY,
+  vegkitchen: WP_POSTS_LISTING_DISCOVERY,
+  vietworldkitchen: WP_POSTS_LISTING_DISCOVERY,
+  walkingonsunshinerecipes: WP_POSTS_LISTING_DISCOVERY,
+  wandercooks: WP_POSTS_LISTING_DISCOVERY,
+  watchwhatueat: WP_POSTS_LISTING_DISCOVERY,
+  wellplated: WP_POSTS_LISTING_DISCOVERY,
+  whatgreatgrandmaate: WP_POSTS_LISTING_DISCOVERY,
+  whatjessicabakednext: WP_POSTS_LISTING_DISCOVERY,
+  whatmollymade: WP_POSTS_LISTING_DISCOVERY,
+  whatsgabycooking: WP_POSTS_LISTING_DISCOVERY,
+  whereismyspoon: WP_POSTS_LISTING_DISCOVERY,
+  whiskaffair: WP_POSTS_LISTING_DISCOVERY,
+  whiskbite: WP_POSTS_LISTING_DISCOVERY,
+  whiskrecipes: WP_POSTS_LISTING_DISCOVERY,
+  whiteonricecouple: WP_POSTS_LISTING_DISCOVERY,
+  wholeandheavenlyoven: WP_POSTS_LISTING_DISCOVERY,
+  wholegirl: WP_POSTS_LISTING_DISCOVERY,
+  wholelottayum: WP_POSTS_LISTING_DISCOVERY,
+  wholesomelicious: WP_POSTS_LISTING_DISCOVERY,
+  wholesomepatisserie: WP_POSTS_LISTING_DISCOVERY,
+  wholesomerecipebox: WP_POSTS_LISTING_DISCOVERY,
+  wholesomeyum: WP_POSTS_LISTING_DISCOVERY,
+  willcookforsmiles: WP_POSTS_LISTING_DISCOVERY,
+  wishesndishes: WP_POSTS_LISTING_DISCOVERY,
+  withfoodandlove: WP_POSTS_LISTING_DISCOVERY,
+  wokandkin: WP_POSTS_LISTING_DISCOVERY,
+  wokandskillet: WP_POSTS_LISTING_DISCOVERY,
+  woonheng: WP_POSTS_LISTING_DISCOVERY,
+  worldofvegan: WP_POSTS_LISTING_DISCOVERY,
+  yellowblissroad: WP_POSTS_LISTING_DISCOVERY,
+  yellowthyme: WP_POSTS_LISTING_DISCOVERY,
+  yourhomebasedmom: WP_POSTS_LISTING_DISCOVERY,
+  yummyeats: WP_POSTS_LISTING_DISCOVERY,
+  yummyhealthyeasy: WP_POSTS_LISTING_DISCOVERY,
+  yummytoddlerfood: WP_POSTS_LISTING_DISCOVERY,
+  yupitsvegan: WP_POSTS_LISTING_DISCOVERY,
+  zestfulkitchen: WP_POSTS_LISTING_DISCOVERY,
 };
 
 const LEGACY_SITEMAP_DISCOVERY_OVERRIDES: Record<
@@ -23180,6 +29800,1374 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     latestCanary: "2026-08-21T11-49-16.586Z-attempt-20c9c5d5-0f12-4a09-bcd7-a0c614d348c6",
     deferOrBlockReason:
       "Uncapped run persisted 886 recipes from 889 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  rhiansrecipes: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-52-12.275Z-attempt-f608f6e8-3c0c-4add-8328-5eb6978392c1",
+    deferOrBlockReason:
+      "Uncapped run persisted 576 recipes from 579 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  roseclearfield: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-52-18.111Z-attempt-76402f80-126a-47fe-ac42-a23cbb671c30",
+    deferOrBlockReason:
+      "Uncapped run persisted 21 recipes from 22 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  runningonrealfood: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-52-24.147Z-attempt-3a09d156-8f07-4878-a513-1ec9bfcfd59f",
+    deferOrBlockReason:
+      "Uncapped run persisted 727 recipes from 732 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  runningtothekitchen: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T11-52-33.895Z-attempt-2dc1f336-828e-4a47-ac9a-c8d14be608f5",
+    deferOrBlockReason:
+      "Uncapped run persisted 1343 recipes from 1343 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  salads4lunch: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-52-25.555Z-attempt-09e852ba-b066-4d81-9354-c8c052a0ca5d",
+    deferOrBlockReason:
+      "Uncapped run persisted 401 recipes from 406 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  saltandlavender: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T11-52-49.182Z-attempt-2b9ec610-8470-46d2-9767-9b7f18546143",
+    deferOrBlockReason:
+      "Uncapped run persisted 1313 recipes from 1313 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  saltpepperskillet: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T11-53-10.405Z-attempt-6553efa9-940e-464a-96c9-6090a1e6b94a",
+    deferOrBlockReason:
+      "Uncapped run persisted 283 recipes from 283 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  saltysidedish: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-52-44.235Z-attempt-2e0ca83d-0938-457c-9544-7d9b268999c0",
+    deferOrBlockReason:
+      "Uncapped run persisted 1146 recipes from 1149 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  savorandsavvy: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-53-37.576Z-attempt-8fb8e1ed-d7ff-49e5-8bb5-4772545eee72",
+    deferOrBlockReason:
+      "Uncapped run persisted 289 recipes from 292 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  savortheflavour: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T11-53-23.558Z-attempt-c608fb9e-394d-4320-bdf1-dc744bbee44e",
+    deferOrBlockReason:
+      "Uncapped run persisted 405 recipes from 405 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  savoryexperiments: {
+    migrationState: "blocked",
+    latestCanary: "2026-08-21T11-53-17.146Z-attempt-6f04a396-1eb0-44ca-b9d5-e0b667f705a4",
+    deferOrBlockReason:
+      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+  },
+  savorynothings: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T11-53-50.537Z-attempt-cef75340-e0a5-450a-a7cd-9eeb5c23d4ac",
+    deferOrBlockReason:
+      "Uncapped run persisted 849 recipes from 849 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  savvybites: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T11-53-47.420Z-attempt-a32c106e-88ea-46f2-a288-cdf96384997a",
+    deferOrBlockReason:
+      "Uncapped run persisted 246 recipes from 246 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  savvysavingcouple: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-53-22.647Z-attempt-2bef3f2a-86ea-4ebd-a62e-9a959129f0de",
+    deferOrBlockReason:
+      "Uncapped run persisted 539 recipes from 544 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  scrummylane: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-54-25.351Z-attempt-8df8e330-646a-44eb-bb9f-1ce1f794f5bc",
+    deferOrBlockReason:
+      "Uncapped run persisted 361 recipes from 363 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  searchingforspice: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T11-54-01.130Z-attempt-6c16bdb8-626b-4663-b306-76f337345c37",
+    deferOrBlockReason:
+      "Uncapped run persisted 573 recipes from 573 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  seasonalcravings: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-53-42.718Z-attempt-ca3013bb-8d85-400f-a5c8-73e33a3ba4bb",
+    deferOrBlockReason:
+      "Uncapped run persisted 572 recipes from 582 API records; 10 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  shelovesbiscotti: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T11-54-40.824Z-attempt-24055a04-382d-487c-a524-29004fe63f5d",
+    deferOrBlockReason:
+      "Uncapped run persisted 476 recipes from 476 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  showmetheyummy: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T11-54-22.453Z-attempt-0b84f152-9d0f-4715-8b48-8b06fcab6ca6",
+    deferOrBlockReason:
+      "Uncapped run persisted 1224 recipes from 1224 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  shugarysweets: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T11-54-03.606Z-attempt-766426d5-ba3c-473f-95b7-1ce4e4a42726",
+    deferOrBlockReason:
+      "Uncapped run persisted 1609 recipes from 1609 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  simplejoy: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-55-08.895Z-attempt-850d3c1e-6598-4cac-a709-052b6f3c7687",
+    deferOrBlockReason:
+      "Uncapped run persisted 1556 recipes from 1558 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  simpleveganblog: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T11-54-56.522Z-attempt-760dbe7d-aef3-4eb3-a747-539343759870",
+    deferOrBlockReason:
+      "Uncapped run persisted 501 recipes from 501 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  simplylakita: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T11-54-49.549Z-attempt-d5718c11-23c5-4962-a157-a056f0637003",
+    deferOrBlockReason:
+      "Uncapped run persisted 313 recipes from 313 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  simplyquinoa: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T11-55-53.372Z-attempt-b15e15a7-0494-428e-8cc6-113b026bfe47",
+    deferOrBlockReason:
+      "Uncapped run persisted 969 recipes from 969 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  simplyscratch: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-55-16.868Z-attempt-9655c73a-6ef0-4620-a825-6e06212f2fa3",
+    deferOrBlockReason:
+      "Uncapped run persisted 1770 recipes from 1787 API records; 17 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  simplysogood: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-55-04.909Z-attempt-85997fdd-1fc2-4ccd-8d4e-bdf91df5ccea",
+    deferOrBlockReason:
+      "Uncapped run persisted 289 recipes from 295 API records; 6 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  simplystacie: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-56-23.018Z-attempt-9fab3170-1ce4-49d3-a256-cde6d5ab7896",
+    deferOrBlockReason:
+      "Uncapped run persisted 1484 recipes from 1494 API records; 10 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  simplyvegetarian777: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-56-34.137Z-attempt-a3287209-5b3b-4bfc-b305-678a1a9f1342",
+    deferOrBlockReason:
+      "Uncapped run persisted 378 recipes from 379 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  sipandspice: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-55-17.845Z-attempt-d2ba5e3f-4d7f-4562-a4a7-18a4c7fa5727",
+    deferOrBlockReason:
+      "Uncapped run persisted 201 recipes from 203 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  sixsistersstuff: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-57-02.744Z-attempt-0b95fb50-107c-460f-aeb4-b2341cf45a1f",
+    deferOrBlockReason:
+      "Uncapped run persisted 3386 recipes from 3390 API records; 4 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  skinnykitchen: {
+    migrationState: "blocked",
+    latestCanary: "2026-08-21T11-56-53.978Z-attempt-f61ee8ce-8c7b-4e21-aa13-cf14026454bd",
+    deferOrBlockReason:
+      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+  },
+  skinnyms: {
+    migrationState: "blocked",
+    latestCanary: "2026-08-21T11-55-31.832Z-attempt-a509d3cd-7619-490e-9a34-addb93e52b0a",
+    deferOrBlockReason:
+      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+  },
+  skinnytaste: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T11-58-24.646Z-attempt-84ed1421-30d0-40c8-af67-c843872dbde3",
+    deferOrBlockReason:
+      "Uncapped run persisted 2228 recipes from 2228 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  slapdashmom: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-56-59.763Z-attempt-2675abf6-13b6-4d3a-9ad1-4dcfbb118b6f",
+    deferOrBlockReason:
+      "Uncapped run persisted 331 recipes from 333 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  slowcookerkitchen: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-55-37.481Z-attempt-f7f5d2b0-3dd5-482e-9060-5a20beaa2616",
+    deferOrBlockReason:
+      "Uncapped run persisted 172 recipes from 175 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  slowthecookdown: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T11-59-21.917Z-attempt-cc54ad13-e3a8-4375-bd36-47c7cc5aebd1",
+    deferOrBlockReason:
+      "Uncapped run persisted 362 recipes from 362 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  smalltownwoman: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-57-15.063Z-attempt-58e19897-21c8-4edb-995a-645b4be3f721",
+    deferOrBlockReason:
+      "Uncapped run persisted 1930 recipes from 1949 API records; 19 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  smartlittlecookie: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-55-48.266Z-attempt-ed089e3c-8cfb-4a7f-b86a-b1c8074adca2",
+    deferOrBlockReason:
+      "Uncapped run persisted 207 recipes from 287 API records; 2 records the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary",
+  },
+  snappygourmet: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T11-59-39.568Z-attempt-179399f1-5ae2-451b-841a-43196bdf183f",
+    deferOrBlockReason:
+      "Uncapped run persisted 557 recipes from 557 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  somewhatsimple: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-58-05.695Z-attempt-3e4176b2-e7e3-4a2a-a6d5-e675043fc7f5",
+    deferOrBlockReason:
+      "Uncapped run persisted 847 recipes from 848 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  southernbite: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T11-56-04.390Z-attempt-d3b09533-79a2-4c87-b961-dae40abfb23e",
+    deferOrBlockReason:
+      "Uncapped run persisted 715 recipes from 715 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  spainonafork: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T11-59-59.211Z-attempt-5aaa438b-f575-40cf-96fb-642b94404ce7",
+    deferOrBlockReason:
+      "Uncapped run persisted 1171 recipes from 1171 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  spendwithpennies: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-58-32.961Z-attempt-f96c88b7-b104-4095-83f3-1db612a7dfcd",
+    deferOrBlockReason:
+      "Uncapped run persisted 2822 recipes from 2834 API records; 12 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  spiceeats: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T11-56-28.544Z-attempt-ebeaf5cc-d1c4-4af7-8250-ed33e49a8041",
+    deferOrBlockReason:
+      "Uncapped run persisted 54 recipes from 54 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  spiceupthecurry: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-00-40.596Z-attempt-762cf477-392b-4bf3-b70a-a679251f9a95",
+    deferOrBlockReason:
+      "Uncapped run persisted 919 recipes from 919 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  spicysouthernkitchen: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-59-42.220Z-attempt-e5161c3b-4c56-4402-8732-8cd0e9900f2d",
+    deferOrBlockReason:
+      "Uncapped run persisted 2432 recipes from 2433 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  spoonforkbacon: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T11-56-37.456Z-attempt-fc8416fa-c5be-491f-a821-3ed3999c0bcd",
+    deferOrBlockReason:
+      "Uncapped run persisted 857 recipes from 857 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  spoonnest: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-01-14.389Z-attempt-40548ea2-4d4b-4e24-ac0d-658d8256aaeb",
+    deferOrBlockReason:
+      "Uncapped run persisted 1168 recipes from 1168 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  spoonrecipes: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-00-44.824Z-attempt-6c308d33-5933-454b-92b4-4db07de9c901",
+    deferOrBlockReason:
+      "Uncapped run persisted 1898 recipes from 1900 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  staysnatched: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-57-08.485Z-attempt-6557381a-9ae3-4100-ad7f-cb67b8e3d08d",
+    deferOrBlockReason:
+      "Uncapped run persisted 958 recipes from 960 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  steamykitchen: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-01-56.965Z-attempt-e5a21782-e7ef-443c-a05d-0670925c7342",
+    deferOrBlockReason:
+      "Uncapped run persisted 538 recipes from 540 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  stephgaudreau: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-01-32.023Z-attempt-2c0ea581-c99a-4126-a205-f5746b2b33e8",
+    deferOrBlockReason:
+      "Uncapped run persisted 1 recipes from 1 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  stockpilingmoms: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-57-45.559Z-attempt-40b2ee88-b8a8-4ebd-8dac-6a147da12115",
+    deferOrBlockReason:
+      "Uncapped run persisted 2068 recipes from 2156 API records; 88 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  sugarandsoul: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-02-16.768Z-attempt-d69e9106-e2cc-4b62-a412-24cfe1583558",
+    deferOrBlockReason:
+      "Uncapped run persisted 1437 recipes from 1439 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  sugarfreelondoner: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-01-40.473Z-attempt-60f54ac1-1104-4ab0-a8f6-e56ea57f712d",
+    deferOrBlockReason:
+      "Uncapped run persisted 480 recipes from 481 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  sugarfreemom: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-58-41.472Z-attempt-4ec5f4c0-86b6-4538-8feb-a6f9e267eee7",
+    deferOrBlockReason:
+      "Uncapped run persisted 1153 recipes from 1156 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  sugarsaltmagic: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-03-15.071Z-attempt-87f40442-9a44-4b1f-b83c-96d835e08139",
+    deferOrBlockReason:
+      "Uncapped run persisted 890 recipes from 891 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  sugarspunrun: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-02-00.503Z-attempt-da36eaf0-abf9-4496-907e-5b2f41925518",
+    deferOrBlockReason:
+      "Uncapped run persisted 1109 recipes from 1109 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  sundaysuppermovement: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T11-59-15.901Z-attempt-9dcaf640-a558-4c76-a3a6-127c3c8b55a5",
+    deferOrBlockReason:
+      "Uncapped run persisted 701 recipes from 701 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  sunkissedkitchen: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-03-50.977Z-attempt-0f4200fd-12f0-4558-b9c3-22abe3c27152",
+    deferOrBlockReason:
+      "Uncapped run persisted 559 recipes from 566 API records; 7 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  supergoldenbakes: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-02-37.353Z-attempt-5ef6fe79-ee32-47f8-ba05-77b1fc3dd536",
+    deferOrBlockReason:
+      "Uncapped run persisted 1177 recipes from 1177 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  sustainablecooks: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T11-59-40.973Z-attempt-073d86bd-f879-47eb-a1b7-03714221df69",
+    deferOrBlockReason:
+      "Uncapped run persisted 612 recipes from 613 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  sweetandsavorymeals: {
+    migrationState: "blocked",
+    latestCanary: "2026-08-21T12-04-22.362Z-attempt-d2204855-6683-4923-8df3-d398b4b1366b",
+    deferOrBlockReason:
+      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+  },
+  sweetcsdesigns: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-03-15.409Z-attempt-5e6a0696-9aa6-4a1d-a6e4-44b361600a83",
+    deferOrBlockReason:
+      "Uncapped run persisted 2240 recipes from 2777 API records; 537 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  sweetlysplendid: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-00-05.539Z-attempt-40b3e9f8-bfbf-4d5e-b4c3-89066d38a775",
+    deferOrBlockReason:
+      "Uncapped run persisted 415 recipes from 419 API records; 4 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  sweetmouthjoy: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-04-27.861Z-attempt-09b2f5fc-124f-4099-8c51-9875ea53152a",
+    deferOrBlockReason:
+      "Uncapped run persisted 125 recipes from 125 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  sweetpeasandsaffron: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-04-42.406Z-attempt-93ae972d-1d64-4f3b-9c4d-ada65684f3dd",
+    deferOrBlockReason:
+      "Uncapped run persisted 850 recipes from 862 API records; 12 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  sweetpeaskitchen: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-00-27.931Z-attempt-082cd3c2-4ad8-43c3-bcb1-7c1e5704f806",
+    deferOrBlockReason:
+      "Uncapped run persisted 2288 recipes from 2347 API records; 59 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  sweetphi: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-04-39.808Z-attempt-46841d0f-584d-4791-8ae7-17308aee30c6",
+    deferOrBlockReason:
+      "Uncapped run persisted 979 recipes from 1011 API records; 32 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  sweetpotatosoul: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-05-20.476Z-attempt-5dc55d73-25ea-40f7-915f-8af88afeac72",
+    deferOrBlockReason:
+      "Uncapped run persisted 512 recipes from 512 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  sweetteaandthyme: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-01-29.865Z-attempt-79e868ad-8180-437e-b367-2303182cfeb4",
+    deferOrBlockReason:
+      "Uncapped run persisted 649 recipes from 680 API records; 31 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  tablefortwoblog: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-05-20.700Z-attempt-774a3024-90a0-4e29-b212-5a63699cd5bb",
+    deferOrBlockReason:
+      "Uncapped run persisted 1195 recipes from 1195 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  tamingtwins: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-05-41.650Z-attempt-3fe26e33-26c0-4e0e-99b7-81ce1e74c36a",
+    deferOrBlockReason:
+      "Uncapped run persisted 534 recipes from 534 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  tasteandtellblog: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-01-55.908Z-attempt-2072cd3f-1ffc-48cc-bfc9-09bfa843094a",
+    deferOrBlockReason:
+      "Uncapped run persisted 1600 recipes from 1601 API records; 1 record the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary",
+  },
+  tastesbetterfromscratch: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-06-00.078Z-attempt-ebd999ac-ea6a-4010-82da-a11ea212ba39",
+    deferOrBlockReason:
+      "Uncapped run persisted 1099 recipes from 1108 API records; 9 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  tasteslovely: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-06-10.965Z-attempt-640fa092-360c-4acd-9090-4c8b1b63e694",
+    deferOrBlockReason:
+      "Uncapped run persisted 547 recipes from 547 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  tastesofhomemade: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-03-05.215Z-attempt-a1c464f1-58f3-4059-8f31-af7166005e75",
+    deferOrBlockReason:
+      "Uncapped run persisted 337 recipes from 337 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thatgirlcookshealthy: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-06-37.264Z-attempt-3075f594-eb93-4c15-9a66-915530ddb9f5",
+    deferOrBlockReason:
+      "Uncapped run persisted 658 recipes from 671 API records; 13 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thatlowcarblife: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-06-32.604Z-attempt-1b416231-08a4-4ec6-a24b-5365b4fa960e",
+    deferOrBlockReason:
+      "Uncapped run persisted 462 recipes from 462 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thebeachhousekitchen: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-03-20.678Z-attempt-c89486bc-9e28-4bda-b1e4-fe5eb1727ea2",
+    deferOrBlockReason:
+      "Uncapped run persisted 873 recipes from 884 API records; 11 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thebigmansworld: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-07-06.404Z-attempt-32458a76-14a2-4706-bac0-a6feb8f05cfb",
+    deferOrBlockReason:
+      "Uncapped run persisted 1553 recipes from 1553 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  theblackpeppercorn: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-06-50.294Z-attempt-255a286d-118d-4b56-8bb0-ac37763b4de3",
+    deferOrBlockReason:
+      "Uncapped run persisted 885 recipes from 899 API records; 14 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  theblondcook: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-03-47.674Z-attempt-a4e849c3-fdce-4c90-a540-c13b61665fe0",
+    deferOrBlockReason:
+      "Uncapped run persisted 331 recipes from 331 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thebusybaker: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-07-49.427Z-attempt-f233f0a2-9349-4bde-912f-6eceabdb726c",
+    deferOrBlockReason:
+      "Uncapped run persisted 1004 recipes from 1006 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thebutterhalf: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-07-16.782Z-attempt-dc6fdc2b-073f-4865-94b4-21588ec7add4",
+    deferOrBlockReason:
+      "Uncapped run persisted 231 recipes from 233 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thecafesucrefarine: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-04-04.567Z-attempt-088b19ae-911f-45e8-9843-69537782488f",
+    deferOrBlockReason:
+      "Uncapped run persisted 2195 recipes from 2198 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thecheekychickpea: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-08-20.947Z-attempt-04581f37-61b7-4388-96d4-7f96350ec04c",
+    deferOrBlockReason:
+      "Uncapped run persisted 86 recipes from 86 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thechunkychef: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-07-33.274Z-attempt-cfd3bf70-201d-43e3-b8c0-52d43109ac87",
+    deferOrBlockReason:
+      "Uncapped run persisted 300 recipes from 301 API records; 1 record the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary",
+  },
+  thecleaneatingcouple: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-05-11.349Z-attempt-a3bd08d6-28b1-4747-b1ee-96f67cb0d5a2",
+    deferOrBlockReason:
+      "Uncapped run persisted 597 recipes from 597 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thecookierookie: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-08-29.586Z-attempt-628645c1-b5c8-479e-977c-67d4c8cba523",
+    deferOrBlockReason:
+      "Uncapped run persisted 2180 recipes from 2182 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thecookingfoodie: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-07-48.302Z-attempt-9b0718c5-57f5-4018-aa8d-8eb334021ebc",
+    deferOrBlockReason:
+      "Uncapped run persisted 696 recipes from 718 API records; 22 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thecookreport: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-05-31.815Z-attempt-d046369d-d6a1-4f73-b3d1-44875b7ef35b",
+    deferOrBlockReason:
+      "Uncapped run persisted 432 recipes from 432 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thecountrycook: {
+    migrationState: "blocked",
+    latestCanary: "2026-08-21T12-09-28.713Z-attempt-1f0d232d-1406-46c6-b85d-3cad4f80a86c",
+    deferOrBlockReason:
+      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+  },
+  thecozyplum: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-08-26.419Z-attempt-866ae8e0-a83f-4959-a6c2-6497f49a9123",
+    deferOrBlockReason:
+      "Uncapped run persisted 312 recipes from 312 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thecreativebite: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-05-48.902Z-attempt-9d5d0b38-35e1-411b-8983-900b7a405d8f",
+    deferOrBlockReason:
+      "Uncapped run persisted 1286 recipes from 1292 API records; 6 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thecuriousplate: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-09-34.295Z-attempt-cd66e53f-a487-427f-a8e3-4815926a2e3e",
+    deferOrBlockReason:
+      "Uncapped run persisted 325 recipes from 325 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thedefineddish: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-08-47.623Z-attempt-3425b7a5-a4fc-49dc-a3a9-355f3039fbb6",
+    deferOrBlockReason:
+      "Uncapped run persisted 697 recipes from 707 API records; 10 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thedizzycook: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-06-29.410Z-attempt-9a8fa2b8-9911-4b1f-97c1-91e200c9b2fa",
+    deferOrBlockReason:
+      "Uncapped run persisted 372 recipes from 372 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thedomesticrebel: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-09-55.942Z-attempt-0779a2ef-af0e-41eb-aaeb-9079072084a0",
+    deferOrBlockReason:
+      "Uncapped run persisted 707 recipes from 707 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  theendlessmeal: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-09-14.387Z-attempt-9d92feb3-8781-4b55-8836-8a6fb5593325",
+    deferOrBlockReason:
+      "Uncapped run persisted 1357 recipes from 1387 API records; 30 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thefeatherednester: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-06-45.995Z-attempt-f68e3087-fd29-42c7-a101-24afb4c786c2",
+    deferOrBlockReason:
+      "Uncapped run persisted 428 recipes from 428 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thefedupfoodie: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-10-24.570Z-attempt-88458136-c4ed-4ae7-be33-a8441ea739f3",
+    deferOrBlockReason:
+      "Uncapped run persisted 439 recipes from 439 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  theflavorbender: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-09-52.456Z-attempt-9d9ff7d8-d612-4792-b08c-205739a28d19",
+    deferOrBlockReason:
+      "Uncapped run persisted 673 recipes from 673 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  theflavoursofkitchen: {
+    migrationState: "blocked",
+    latestCanary: "2026-08-21T12-07-12.499Z-attempt-9764dcf6-af91-4b2b-9eb3-8c035e955184",
+    deferOrBlockReason:
+      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+  },
+  theflexitarian: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-10-47.425Z-attempt-77b6d3f8-28fd-4935-ba10-62e7bcb01abc",
+    deferOrBlockReason:
+      "Uncapped run reached no recipe candidates, so the route needs review before a canary",
+  },
+  theflexitarian_ir: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-10-20.205Z-attempt-87f5fe63-dfd9-405a-af14-4a4909e92949",
+    deferOrBlockReason:
+      "Uncapped run reached no recipe candidates, so the route needs review before a canary",
+  },
+  thefoodblog: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-07-18.419Z-attempt-d4eecdaa-1275-4ce4-a9bd-ba50575fdc74",
+    deferOrBlockReason:
+      "Uncapped run persisted 384 recipes from 384 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thefoodcharlatan: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-11-05.694Z-attempt-0794ee40-7270-4d06-9e3c-2aef63b279bc",
+    deferOrBlockReason:
+      "Uncapped run persisted 819 recipes from 820 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thefoodietakesflight: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-10-38.979Z-attempt-2e64b2b0-6e8e-4774-8020-dac1be35d8f8",
+    deferOrBlockReason:
+      "Uncapped run persisted 421 recipes from 421 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  theforkedspoon: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-07-35.707Z-attempt-5e81e315-2a70-459d-b8c1-4269b4b026fa",
+    deferOrBlockReason:
+      "Uncapped run persisted 1150 recipes from 1151 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thegardengrazer: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-11-35.772Z-attempt-aeb7c0f6-97ef-423c-874c-03e9e9d33a7d",
+    deferOrBlockReason:
+      "Uncapped run persisted 309 recipes from 309 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thegestationaldiabetic: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-11-03.624Z-attempt-ab3487a8-057a-4e3a-9971-c3a2b97ae039",
+    deferOrBlockReason:
+      "Uncapped run persisted 74 recipes from 76 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thegingeredwhisk: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-08-20.471Z-attempt-13403cdc-8d61-4c28-ba1e-939f7be91403",
+    deferOrBlockReason:
+      "Uncapped run persisted 600 recipes from 600 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thegirlonbloor: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-11-53.273Z-attempt-50af56a4-0418-4978-9483-93ed693d8bb4",
+    deferOrBlockReason:
+      "Uncapped run persisted 648 recipes from 677 API records; 29 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thegirlwhoateeverything: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-11-14.873Z-attempt-92b5f96b-d356-41fb-823b-ecdef3a3ab85",
+    deferOrBlockReason:
+      "Uncapped run persisted 1466 recipes from 1506 API records; 40 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thegoodheartedwoman: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-08-43.380Z-attempt-4ae17988-647c-441a-99ac-c37341e8e4c6",
+    deferOrBlockReason:
+      "Uncapped run persisted 308 recipes from 308 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thegraciouspantry: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-12-25.258Z-attempt-5cd83aa7-c0bc-4c89-805c-73d81ca2b4c0",
+    deferOrBlockReason:
+      "Uncapped run persisted 1531 recipes from 1533 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thegunnysack: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-11-57.499Z-attempt-793c107b-21bc-403e-bfb2-8f647e666b58",
+    deferOrBlockReason:
+      "Uncapped run persisted 1376 recipes from 1399 API records; 23 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thehealthyfoodie: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-09-03.880Z-attempt-2c8a0180-5d47-47af-b7d4-e457cc1b74b3",
+    deferOrBlockReason:
+      "Uncapped run persisted 1057 recipes from 1057 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  theheirloompantry: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-13-06.869Z-attempt-2a3b769b-6896-43f5-88e1-554baf38a91e",
+    deferOrBlockReason:
+      "Uncapped run persisted 429 recipes from 433 API records; 4 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  theholymess: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-12-36.195Z-attempt-1a960d70-953c-48c0-94af-303ae8c799e5",
+    deferOrBlockReason:
+      "Uncapped run persisted 302 recipes from 303 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  theinspiredhome: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-09-43.233Z-attempt-59bfba3d-83a6-4e68-9a73-c734895403de",
+    deferOrBlockReason:
+      "Uncapped run persisted 456 recipes from 1117 API records; 661 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thekitchenmagpie: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-13-24.511Z-attempt-ea97140b-51e9-409b-9aa3-509a16aee39a",
+    deferOrBlockReason:
+      "Uncapped run persisted 2094 recipes from 2121 API records; 27 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thekittchen: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-12-51.783Z-attempt-d700e597-7fe1-4b6e-a311-1d9788e67e93",
+    deferOrBlockReason:
+      "Uncapped run persisted 465 recipes from 465 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thekoreanvegan: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-10-56.907Z-attempt-cc19faad-12a6-4b68-8918-9ecfbcbeb531",
+    deferOrBlockReason:
+      "Uncapped run persisted 111 recipes from 111 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thelittleepicurean: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-14-19.853Z-attempt-fd3feb36-5ac1-4f9c-a7a2-027177067cee",
+    deferOrBlockReason:
+      "Uncapped run persisted 899 recipes from 901 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  theliveinkitchen: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-13-09.706Z-attempt-f1d0b1dc-2388-464a-9627-7e1b7c036fb8",
+    deferOrBlockReason:
+      "Uncapped run persisted 525 recipes from 525 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  themagicalslowcooker: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-11-09.274Z-attempt-99da67aa-a546-40d3-9f2a-8695456bd899",
+    deferOrBlockReason:
+      "Uncapped run persisted 875 recipes from 876 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  themamasgirls: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-14-56.221Z-attempt-52867710-83b1-4514-8ca0-2e1e71194588",
+    deferOrBlockReason:
+      "Uncapped run persisted 21 recipes from 21 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  themediterraneandish: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-13-43.812Z-attempt-9aaa3aac-b557-458b-9a27-9c5d3aaa9f7e",
+    deferOrBlockReason:
+      "Uncapped run persisted 1182 recipes from 1185 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  themerrythought: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-11-35.844Z-attempt-bc6a0381-3182-4bbe-92cf-df23ace8b4f8",
+    deferOrBlockReason:
+      "Uncapped run persisted 184 recipes from 185 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  themodernnonna: {
+    migrationState: "blocked",
+    latestCanary: "2026-08-21T12-15-05.009Z-attempt-bbb01e85-01a6-476b-b1e6-12bcc4bcd41a",
+    deferOrBlockReason:
+      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+  },
+  thenaturalnurturer: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-14-21.157Z-attempt-deb1fc64-62a5-4db0-a221-a6a459bf5c89",
+    deferOrBlockReason:
+      "Uncapped run persisted 684 recipes from 685 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thenovicechefblog: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-11-45.990Z-attempt-58a6188c-7ef9-4d33-9ab4-aac4ebc9aca6",
+    deferOrBlockReason:
+      "Uncapped run persisted 1187 recipes from 1196 API records; 9 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  theorganickitchen: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-15-10.652Z-attempt-8beb8395-49ff-4213-aa9c-3b9ea9fc026b",
+    deferOrBlockReason:
+      "Uncapped run persisted 699 recipes from 718 API records; 19 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thepalatablelife: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-14-55.623Z-attempt-acff0b6a-ead3-492a-a044-778573de9566",
+    deferOrBlockReason:
+      "Uncapped run persisted 439 recipes from 440 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thepancakeprincess: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-12-18.697Z-attempt-28ac614d-51b7-4fe1-b45c-5cd379f5af5f",
+    deferOrBlockReason:
+      "Uncapped run persisted 105 recipes from 105 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thepetitecook: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-15-34.720Z-attempt-45e9cbb2-e63d-4591-b3da-479dec715d69",
+    deferOrBlockReason:
+      "Uncapped run persisted 459 recipes from 459 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thepinningmama: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-15-13.859Z-attempt-d8be11c9-5711-4fec-805b-9a6fd33f8a82",
+    deferOrBlockReason:
+      "Uncapped run persisted 367 recipes from 370 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  theplantbasedschool: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-12-29.024Z-attempt-ce573734-f0d0-4220-956b-919bfb3a7846",
+    deferOrBlockReason:
+      "Uncapped run persisted 1033 recipes from 1096 API records; 63 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  theppk: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-15-53.695Z-attempt-553f449e-6782-4c05-95ea-20ead3319dcd",
+    deferOrBlockReason:
+      "Uncapped run persisted 401 recipes from 403 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  theprettybee: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-15-29.944Z-attempt-2ceb22b9-fbe6-4347-8e02-cfaa5ec0d15f",
+    deferOrBlockReason:
+      "Uncapped run persisted 872 recipes from 872 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  theproteinchef: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-13-17.905Z-attempt-c413d63e-8454-46aa-aa5f-5cb0e2810464",
+    deferOrBlockReason:
+      "Uncapped run persisted 609 recipes from 609 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  therealfoodgeek: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-16-19.867Z-attempt-2baa7c21-9e24-44f4-89bc-f233d0694c1f",
+    deferOrBlockReason:
+      "Uncapped run reached no recipe candidates (loaded-url-domain-not-allowed), so the route needs review before a canary",
+  },
+  therecipecritic: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-16-13.296Z-attempt-7db419d3-668e-40ee-8955-4bf65d477b1b",
+    deferOrBlockReason:
+      "Uncapped run persisted 3376 recipes from 3821 API records; 445 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thereciperebel: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-13-52.288Z-attempt-cea813a2-29a2-467f-8183-cebfae4cc7f0",
+    deferOrBlockReason:
+      "Uncapped run persisted 1198 recipes from 1204 API records; 6 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  therecipewell: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-16-26.447Z-attempt-60d87760-e0ab-4cf4-bc82-5852300ae37e",
+    deferOrBlockReason:
+      "Uncapped run persisted 141 recipes from 141 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  theroastedroot: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-17-50.485Z-attempt-f82c7e1a-f9ee-4905-9f3a-95397c35f37f",
+    deferOrBlockReason:
+      "Uncapped run persisted 2098 recipes from 2099 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  therusticfoodie: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-14-27.242Z-attempt-46c9d579-ff91-4e2c-8976-5e50e08d6fde",
+    deferOrBlockReason:
+      "Uncapped run persisted 305 recipes from 305 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thesaltymarshmallow: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-16-38.147Z-attempt-a336ddc3-1c8d-4d6a-8d88-5dbe6d081b3b",
+    deferOrBlockReason:
+      "Uncapped run persisted 933 recipes from 933 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thesavory: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-18-52.811Z-attempt-93180089-17b1-4874-9136-0109ff713393",
+    deferOrBlockReason:
+      "Uncapped run reached no recipe candidates, so the route needs review before a canary",
+  },
+  theseasonedmom: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-14-44.465Z-attempt-e877c589-455b-4988-aef3-5d8386f518e2",
+    deferOrBlockReason:
+      "Uncapped run persisted 2066 recipes from 2076 API records; 10 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thesimpleparent: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-17-12.042Z-attempt-de23fa11-2048-4575-92ed-9edb78f7a084",
+    deferOrBlockReason:
+      "Uncapped run persisted 459 recipes from 466 API records; 7 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  theskinnyishdish: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-19-05.372Z-attempt-543946e1-2a38-4892-9aea-1a101d49cd38",
+    deferOrBlockReason:
+      "Uncapped run persisted 215 recipes from 215 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thesophisticatedcaveman: {
+    migrationState: "blocked",
+    latestCanary: "2026-08-21T12-15-39.335Z-attempt-9b9a6049-a691-4384-b7c8-058f9941e098",
+    deferOrBlockReason:
+      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+  },
+  thesouthernladycooks: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-17-58.701Z-attempt-fa37de7a-83a4-47d6-a5af-3f75a9e6f17f",
+    deferOrBlockReason:
+      "Uncapped run persisted 1453 recipes from 1454 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thestayathomechef: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-19-22.445Z-attempt-1763fd6e-4515-47f4-8caa-60ec962d2a8e",
+    deferOrBlockReason:
+      "Uncapped run persisted 1458 recipes from 1458 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thestonesoup: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-15-45.184Z-attempt-fe6e34ea-2ec8-43e5-a573-8867c08b8179",
+    deferOrBlockReason:
+      "Uncapped run persisted 300 recipes from 300 API records; 1 blocked request and discovery that did not complete keeps it short of a canary",
+  },
+  thesuburbansoapbox: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-18-38.595Z-attempt-3ddfde1d-cef2-44a7-8238-6848c1efe42d",
+    deferOrBlockReason:
+      "Uncapped run persisted 2099 recipes from 2101 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thesugarkitchen: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-20-14.514Z-attempt-050aec54-c10c-4594-8211-86d0ee791200",
+    deferOrBlockReason:
+      "Uncapped run reached no recipe candidates, so the route needs review before a canary",
+  },
+  thetoastykitchen: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-16-03.520Z-attempt-6bf320a0-9e1e-440b-88e8-4e3a85b7afdd",
+    deferOrBlockReason:
+      "Uncapped run persisted 676 recipes from 676 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thevanillabeanblog: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-19-36.223Z-attempt-3ae27d0c-8dbc-4777-91f7-7e03018611e8",
+    deferOrBlockReason:
+      "Uncapped run persisted 226 recipes from 230 API records; 4 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thevegspace: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-20-21.466Z-attempt-52f0c674-a73d-4975-855c-f4a7aea4ec3d",
+    deferOrBlockReason:
+      "Uncapped run persisted 256 recipes from 256 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thevietvegan: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-16-27.172Z-attempt-f42d0e24-05d0-42f1-81e9-b1eb3d5f42ab",
+    deferOrBlockReason:
+      "Uncapped run persisted 482 recipes from 489 API records; 7 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  theviewfromgreatisland: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-19-51.036Z-attempt-f7cd9bb9-b687-47f8-a0c5-2d1e92fca1d6",
+    deferOrBlockReason:
+      "Uncapped run persisted 2208 recipes from 2208 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thevintagemixer: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-20-34.673Z-attempt-fd0d9339-1c5c-457a-b687-3a9eec8a5b7d",
+    deferOrBlockReason:
+      "Uncapped run persisted 0 recipes from 1 API records; 1 record the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary",
+  },
+  thewanderlustkitchen: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-16-45.671Z-attempt-16c09a7e-627a-40be-82f6-6d1245d5d2d9",
+    deferOrBlockReason:
+      "Uncapped run persisted 653 recipes from 660 API records; 7 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thewholecook: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-20-49.485Z-attempt-639ef7a2-bf03-4492-988f-8be730d5598e",
+    deferOrBlockReason:
+      "Uncapped run persisted 432 recipes from 432 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thewholesomedish: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-20-40.326Z-attempt-617f52a3-4774-46ac-a89c-df5466cf6c05",
+    deferOrBlockReason:
+      "Uncapped run persisted 159 recipes from 159 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  thewoksoflife: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-17-12.873Z-attempt-d6563b54-14b6-44e4-b758-772a4daed6bb",
+    deferOrBlockReason:
+      "Uncapped run persisted 1394 recipes from 1395 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  thiswifecooks: {
+    migrationState: "blocked",
+    latestCanary: "2026-08-21T12-21-06.547Z-attempt-644fe395-93f9-46e0-b274-5b1f1665dc9e",
+    deferOrBlockReason:
+      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+  },
+  throughherlookingglass: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-20-50.578Z-attempt-9bd3ed07-b222-4894-ba9b-b9808c053eda",
+    deferOrBlockReason:
+      "Uncapped run persisted 223 recipes from 223 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  throughthefibrofog: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-17-53.913Z-attempt-2559e140-d0d1-481d-8404-48d99cab311b",
+    deferOrBlockReason:
+      "Uncapped run persisted 523 recipes from 523 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  tiffinandteaofficial: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-21-12.239Z-attempt-266273af-1bb5-4f1c-a1a2-a449a917f4e6",
+    deferOrBlockReason:
+      "Uncapped run persisted 525 recipes from 527 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  tiffycooks: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-21-03.914Z-attempt-0b280632-8ba0-437e-98d1-b3ea3325ed28",
+    deferOrBlockReason:
+      "Uncapped run persisted 668 recipes from 669 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  todaysdelight: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-18-12.636Z-attempt-83d0b4ce-1431-415d-8b9e-cbeb5bd0e48b",
+    deferOrBlockReason:
+      "Uncapped run persisted 396 recipes from 397 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  togetherasfamily: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-21-40.026Z-attempt-d50d8e76-2f93-495c-8806-d69631af7ce4",
+    deferOrBlockReason:
+      "Uncapped run persisted 1637 recipes from 1640 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  toriavey: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-21-41.647Z-attempt-6a7bd55a-59c8-47b0-bcab-4418d737da1b",
+    deferOrBlockReason:
+      "Uncapped run persisted 0 recipes from 1 API records; 1 record the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary",
+  },
+  tornadoughalli: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-18-27.880Z-attempt-63ca67c6-d53e-4611-bcd3-a95c29739db4",
+    deferOrBlockReason:
+      "Uncapped run persisted 1448 recipes from 1451 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  traditionallymodernfood: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-22-37.070Z-attempt-7823e7a0-17da-44fb-9fc1-a1a83d8b15dc",
+    deferOrBlockReason:
+      "Uncapped run persisted 1029 recipes from 1148 API records; 119 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  triedandtruerecipe: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-21-47.196Z-attempt-0189b79c-603b-4609-beec-922df9d2e843",
+    deferOrBlockReason:
+      "Uncapped run persisted 1037 recipes from 1037 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  twocupsflour: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-19-23.863Z-attempt-17599482-f52b-40cf-9b9a-1fcd4c661c56",
+    deferOrBlockReason:
+      "Uncapped run persisted 204 recipes from 204 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  twohealthykitchens: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-23-53.241Z-attempt-f02fc51f-dc36-478d-a197-fa5eef15f37d",
+    deferOrBlockReason:
+      "Uncapped run persisted 54 recipes from 54 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  twopeasandtheirpod: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-22-25.100Z-attempt-91ed36c3-bd61-47f5-9232-2cac923a205c",
+    deferOrBlockReason:
+      "Uncapped run persisted 2060 recipes from 2060 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  twosleevers: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-19-38.998Z-attempt-570be689-35b6-454d-bc11-f77e4ffc2bde",
+    deferOrBlockReason:
+      "Uncapped run persisted 1621 recipes from 1631 API records; 10 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  urbancowgirllife: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-24-03.969Z-attempt-0fbe348b-adca-435a-bdce-e69fd0276477",
+    deferOrBlockReason:
+      "Uncapped run persisted 201 recipes from 205 API records; 4 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  valentinascorner: {
+    migrationState: "blocked",
+    latestCanary: "2026-08-21T12-23-19.655Z-attempt-8e0becb7-89fb-4c94-a584-1992bcbe6a88",
+    deferOrBlockReason:
+      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+  },
+  vanillaandbean: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-20-28.579Z-attempt-8c5c4e3d-56a7-4fd2-a8de-f9461adc1954",
+    deferOrBlockReason:
+      "Uncapped run persisted 424 recipes from 424 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  veganricha: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-24-18.768Z-attempt-acd62827-6605-48d8-a21d-02d350661758",
+    deferOrBlockReason:
+      "Uncapped run persisted 1669 recipes from 1670 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  veggieinspired: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-23-25.279Z-attempt-616850ad-6dbd-4834-ae77-d1cee701e692",
+    deferOrBlockReason:
+      "Uncapped run persisted 514 recipes from 515 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  veggiesdontbite: {
+    migrationState: "blocked",
+    latestCanary: "2026-08-21T12-20-56.874Z-attempt-56e208ed-23a2-4af9-b7ff-99b4cf72d107",
+    deferOrBlockReason:
+      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+  },
+  vegkitchen: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-25-06.994Z-attempt-15934564-abfc-4d5c-b05b-79e5b8fc9ebe",
+    deferOrBlockReason:
+      "Uncapped run persisted 641 recipes from 650 API records; 9 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  vietworldkitchen: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-23-45.341Z-attempt-3cbcf1a4-0eb5-41b0-b20a-9b43ab00fb1f",
+    deferOrBlockReason:
+      "Uncapped run persisted 245 recipes from 245 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  walkingonsunshinerecipes: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-21-02.440Z-attempt-8e6363a6-770c-4ece-90bb-916f4ed22be7",
+    deferOrBlockReason:
+      "Uncapped run persisted 1277 recipes from 1292 API records; 15 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  wandercooks: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-25-30.629Z-attempt-943546d4-4fdb-47ea-bddd-50ad6e95078b",
+    deferOrBlockReason:
+      "Uncapped run persisted 355 recipes from 356 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  watchwhatueat: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-23-57.590Z-attempt-bb5776a7-1ee0-4b43-af35-321437982d54",
+    deferOrBlockReason:
+      "Uncapped run persisted 178 recipes from 178 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  wellplated: {
+    migrationState: "blocked",
+    latestCanary: "2026-08-21T12-22-02.946Z-attempt-5c7d3b9a-9757-47d2-abea-8e1965a2efde",
+    deferOrBlockReason:
+      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+  },
+  whatgreatgrandmaate: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-25-46.348Z-attempt-968f1672-55f7-412f-9a5a-ca1391e6a221",
+    deferOrBlockReason:
+      "Uncapped run persisted 751 recipes from 751 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  whatjessicabakednext: {
+    migrationState: "blocked",
+    latestCanary: "2026-08-21T12-24-08.768Z-attempt-9df579ba-6adb-4eba-bd7d-cab43d176ec0",
+    deferOrBlockReason:
+      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+  },
+  whatmollymade: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-22-08.452Z-attempt-a8675088-7a81-4518-84fc-b46bf28fee87",
+    deferOrBlockReason:
+      "Uncapped run persisted 853 recipes from 854 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  whatsgabycooking: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-26-13.225Z-attempt-49a9c4db-fb31-48c3-8c65-74f5f39d0ac5",
+    deferOrBlockReason:
+      "Uncapped run persisted 1292 recipes from 1292 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  whereismyspoon: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-24-14.791Z-attempt-9d5013f4-5d07-499e-a946-7eb80f6c645d",
+    deferOrBlockReason:
+      "Uncapped run persisted 1243 recipes from 1265 API records; 22 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  whiskaffair: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-22-37.413Z-attempt-a2daaf05-c077-4c55-9234-3a8cb7b0ac29",
+    deferOrBlockReason:
+      "Uncapped run persisted 1183 recipes from 1197 API records; 14 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  whiskbite: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-26-50.091Z-attempt-295894b6-cbaa-48e6-aeba-aadddf77f87f",
+    deferOrBlockReason:
+      "Uncapped run persisted 60 recipes from 60 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  whiskrecipes: {
+    migrationState: "blocked",
+    latestCanary: "2026-08-21T12-24-55.394Z-attempt-f5c0b7e9-f097-4e5e-b352-6a1723c38b02",
+    deferOrBlockReason:
+      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+  },
+  whiteonricecouple: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-23-13.399Z-attempt-c07ad151-77f4-46f8-b8b9-7ce67ee4206a",
+    deferOrBlockReason:
+      "Uncapped run persisted 571 recipes from 571 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  wholeandheavenlyoven: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-26-58.555Z-attempt-ecc1f71c-a9f5-48b3-a047-54f3b44a66d8",
+    deferOrBlockReason:
+      "Uncapped run persisted 1783 recipes from 1783 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  wholegirl: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-25-01.304Z-attempt-13f0430f-fb17-48a9-b139-2ed3b73770e2",
+    deferOrBlockReason:
+      "Uncapped run persisted 1 recipes from 1 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  wholelottayum: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-23-38.456Z-attempt-1d5579eb-29ae-41de-b1e8-8548a1ce49ea",
+    deferOrBlockReason:
+      "Uncapped run persisted 645 recipes from 689 API records; 44 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  wholesomelicious: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-27-50.302Z-attempt-377667ed-0cb7-417e-8ab4-4d011faaf803",
+    deferOrBlockReason:
+      "Uncapped run persisted 696 recipes from 696 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  wholesomepatisserie: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-25-11.235Z-attempt-985b7d40-357e-432b-b61c-6d97c0f9487e",
+    deferOrBlockReason:
+      "Uncapped run persisted 478 recipes from 478 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  wholesomerecipebox: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-24-07.194Z-attempt-9a51df69-c58c-47a5-9dce-dec80e5aefa3",
+    deferOrBlockReason:
+      "Uncapped run persisted 58 recipes from 58 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  wholesomeyum: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-28-13.525Z-attempt-ea05f4ee-fd25-44a0-832c-50f185ababcc",
+    deferOrBlockReason:
+      "Uncapped run persisted 800 recipes from 800 API records; 1 blocked request and discovery that did not complete keeps it short of a canary",
+  },
+  willcookforsmiles: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-25-30.870Z-attempt-06318932-dda8-4aac-9d49-643a8ea65593",
+    deferOrBlockReason:
+      "Uncapped run persisted 1465 recipes from 1465 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  wishesndishes: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-24-16.268Z-attempt-6fafdf5c-3859-4e2e-8dcb-8fc788e19d35",
+    deferOrBlockReason:
+      "Uncapped run persisted 97 recipes from 99 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  withfoodandlove: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-29-15.555Z-attempt-b07f10a2-9273-4249-96f8-3468054abbce",
+    deferOrBlockReason:
+      "Uncapped run persisted 119 recipes from 120 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  wokandkin: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-26-14.356Z-attempt-e7d84a30-a0c0-4ce9-99e7-865c802c3abe",
+    deferOrBlockReason:
+      "Uncapped run persisted 212 recipes from 212 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  wokandskillet: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-24-28.360Z-attempt-c4ee9a1c-f059-4702-a124-06079742d170",
+    deferOrBlockReason:
+      "Uncapped run persisted 265 recipes from 309 API records; 44 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  woonheng: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-29-26.321Z-attempt-0fb39b33-8c50-4b7b-95b9-65ca992fd7db",
+    deferOrBlockReason:
+      "Uncapped run persisted 183 recipes from 183 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  worldofvegan: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-26-29.124Z-attempt-ded24293-75d0-4d6f-9259-337fa3d04418",
+    deferOrBlockReason:
+      "Uncapped run persisted 556 recipes from 556 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  yellowblissroad: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-24-43.007Z-attempt-c656ada0-ddd8-4442-b7f5-7722a16da133",
+    deferOrBlockReason:
+      "Uncapped run persisted 1766 recipes from 1771 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  yellowthyme: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-29-38.226Z-attempt-173cab58-e0aa-41fb-a23f-833a0d71447c",
+    deferOrBlockReason:
+      "Uncapped run persisted 653 recipes from 714 API records; 61 records the source publishes incomplete or malformed keeps it short of a canary",
+  },
+  yourhomebasedmom: {
+    migrationState: "configured",
+    latestCanary: "2026-08-21T12-26-53.615Z-attempt-214ed272-2122-469a-b325-233fd54793b6",
+    deferOrBlockReason:
+      "Uncapped run persisted 300 recipes from 301 API records; 1 record the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary",
+  },
+  yummyeats: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-25-31.973Z-attempt-c8457bf5-af6e-4bf5-b7c5-e7685592a7c6",
+    deferOrBlockReason:
+      "Uncapped run persisted 13 recipes from 13 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  yummyhealthyeasy: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-30-02.046Z-attempt-fa14920a-7bf8-4798-ba18-482e8ea4022a",
+    deferOrBlockReason:
+      "Uncapped run persisted 612 recipes from 612 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  yummytoddlerfood: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-27-08.736Z-attempt-194267f3-07a6-4d41-adb1-2928ca92b25c",
+    deferOrBlockReason:
+      "Uncapped run persisted 973 recipes from 973 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  yupitsvegan: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-25-40.759Z-attempt-b33eee75-4c8b-486e-8332-58ae08f42d3b",
+    deferOrBlockReason:
+      "Uncapped run persisted 325 recipes from 325 API records with complete discovery and no blocked, failed or rejected record",
+  },
+  zestfulkitchen: {
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-21T12-30-23.699Z-attempt-ddb3343f-36be-4f3a-af4f-67064b6cf2fa",
+    deferOrBlockReason:
+      "Uncapped run persisted 835 recipes from 835 API records with complete discovery and no blocked, failed or rejected record",
   },
   gunris: {
     migrationState: "shadow_passed",
