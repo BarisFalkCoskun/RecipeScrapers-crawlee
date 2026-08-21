@@ -28972,8 +28972,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 370 recipes from 371 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   itsavegworldafterall: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-21-49.558Z-attempt-39aba889-74a0-4f44-8ff4-5b382b653481",
+    shadowParity:
+      "770/770 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 769 recipes from 769 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29257,8 +29259,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 419 recipes from 428 API records; 9 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   lilluna: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-28-10.667Z-attempt-6f86a36b-f13c-41dc-bac7-9fcada44a363",
+    shadowParity:
+      "2263/2263 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 2263 recipes from 2263 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -30432,8 +30436,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 715 recipes from 715 API records with complete discovery and no blocked, failed or rejected record",
   },
   spainonafork: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-59-59.211Z-attempt-5aaa438b-f575-40cf-96fb-642b94404ce7",
+    shadowParity:
+      "1172/1172 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 1171 recipes from 1171 API records with complete discovery and no blocked, failed or rejected record",
   },
