@@ -712,6 +712,17 @@ describe("Danish JSON-LD source registry", () => {
     }
   });
 
+  it("carries shadow parity for the swept WPRM sources it was proven on", () => {
+    const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
+
+    for (const id of ["dobbyssignature", "eatwithohashi"]) {
+      const source = byId.get(id);
+      expect(source?.migrationState).toBe("shadow_passed");
+      // Parity is only meaningful with the comparison behind it.
+      expect(source?.shadowParity).toBeTruthy();
+    }
+  });
+
   it("names why a blocked source is blocked rather than only that it was", () => {
     const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
 

@@ -27039,14 +27039,18 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 410 recipes from 410 API records with complete discovery and no blocked, failed or rejected record",
   },
   aimadeitforyou: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-22-37.164Z-attempt-a727d347-fa3b-4b7b-bcf4-c4dbc4051233",
+    shadowParity:
+      "195/195 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 195 recipes from 195 API records with complete discovery and no blocked, failed or rejected record",
   },
   airfryeryum: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-21-53.705Z-attempt-d9a9f4e2-fb42-4863-9c56-f71cfe623cfd",
+    shadowParity:
+      "221/221 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 221 recipes from 221 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -27087,8 +27091,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 947 recipes from 947 API records with complete discovery and no blocked, failed or rejected record",
   },
   alwaysusebutter: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-23-44.368Z-attempt-fc3e7463-fb93-4525-a852-439fe97ac2ef",
+    shadowParity:
+      "379/379 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 379 recipes from 379 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -27117,8 +27123,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 71 recipes from 72 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   amyshealthybaking: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-23-47.138Z-attempt-f78ec68b-6671-45da-97c6-c8e298c1d96c",
+    shadowParity:
+      "371/371 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 371 recipes from 371 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -27147,8 +27155,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 500 recipes from 501 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   apeachyplate: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-24-50.340Z-attempt-e53bf3fa-3bd8-403b-a87a-141cdf79d04e",
+    shadowParity:
+      "157/157 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 157 recipes from 157 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -27165,14 +27175,18 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 808 recipes from 809 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   aseasyasapplepie: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-28-17.791Z-attempt-538f67ad-9583-4622-8d21-6e9712feb27d",
+    shadowParity:
+      "156/156 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 156 recipes from 156 API records with complete discovery and no blocked, failed or rejected record",
   },
   asimplepalate: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-28-23.650Z-attempt-17bfa713-5089-414b-af38-b7746d362026",
+    shadowParity:
+      "257/257 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 257 recipes from 257 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -27231,8 +27245,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 936 recipes from 950 API records; 14 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   bakeplate: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-30-09.780Z-attempt-645a8a33-b44e-4c57-9fb7-543041cc3630",
+    shadowParity:
+      "178/178 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 178 recipes from 178 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -27255,8 +27271,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1574 recipes from 1577 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   bakesbybrownsugar: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-30-34.152Z-attempt-334c3502-ab6d-41cf-97f9-e42333143dd2",
+    shadowParity:
+      "306/306 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 306 recipes from 306 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -27315,8 +27333,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1518 recipes from 1518 API records with complete discovery and no blocked, failed or rejected record",
   },
   berrymaple: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-32-49.933Z-attempt-d51f6eac-2a0e-4188-83dc-b7638552dcaf",
+    shadowParity:
+      "265/265 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 265 recipes from 265 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -27375,8 +27395,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 590 recipes from 601 API records; 11 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   blackpeoplesrecipes: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-34-04.870Z-attempt-87c342ec-88f1-4736-8734-ff5572733eab",
+    shadowParity:
+      "342/342 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 342 recipes from 342 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -27411,8 +27433,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 672 recipes from 673 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   brighteyedbaker: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-35-05.718Z-attempt-dd809143-a7d9-4568-8efa-eb20aeaa9ed1",
+    shadowParity:
+      "51/51 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 51 recipes from 51 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -27513,8 +27537,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1474 recipes from 1478 API records; 4 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   casuallypeckish: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-37-58.613Z-attempt-3fe2e2e8-27c8-4f69-b460-cdadd23fcaa9",
+    shadowParity:
+      "126/126 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 126 recipes from 126 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -27573,8 +27599,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 858 recipes from 903 API records; 45 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   chicagojogger: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-39-51.183Z-attempt-e316bee3-054c-48c4-8138-7c553c5c53dd",
+    shadowParity:
+      "103/103 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 103 recipes from 103 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -27759,8 +27787,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 358 recipes from 358 API records with complete discovery and no blocked, failed or rejected record",
   },
   cuisineandtravel: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-47-20.854Z-attempt-32f64bdc-2cf3-4c26-a885-69080e306c9b",
+    shadowParity:
+      "134/134 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 134 recipes from 134 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -27813,8 +27843,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 914 recipes from 916 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   damnspicy: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-48-31.620Z-attempt-8b971dac-406f-4944-bf98-2be76a7121bf",
+    shadowParity:
+      "270/270 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 270 recipes from 270 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -27837,8 +27869,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 700 recipes from 707 API records; 7 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   deliciousfromscratch: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-46-22.024Z-attempt-a5bd3015-c184-48b6-8183-75b90a1ddf34",
+    shadowParity:
+      "130/130 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 130 recipes from 130 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -27855,8 +27889,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 488 recipes from 488 API records with complete discovery and no blocked, failed or rejected record",
   },
   delicioustable: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-46-31.772Z-attempt-5d7c4c6d-d448-4ffb-bba0-0b499756295d",
+    shadowParity:
+      "277/277 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 277 recipes from 277 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -27921,8 +27957,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 519 recipes from 519 API records with complete discovery and no blocked, failed or rejected record",
   },
   dobbyssignature: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-52-12.639Z-attempt-3ba27188-f676-47f7-b4d0-bc340f1ff3a4",
+    shadowParity:
+      "19/19 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 19 recipes from 19 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -27993,8 +28031,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 626 recipes from 626 API records with complete discovery and no blocked, failed or rejected record",
   },
   easyrecipedepot: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-53-25.541Z-attempt-982efc87-7d84-44aa-908f-6a3e237b1588",
+    shadowParity:
+      "219/219 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 219 recipes from 219 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -28011,8 +28051,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1647 recipes from 1647 API records with complete discovery and no blocked, failed or rejected record",
   },
   eatingeuropean: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-53-39.543Z-attempt-f54c502c-5ff6-411e-9ea4-fb76a3c5324d",
+    shadowParity:
+      "254/254 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 254 recipes from 254 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -28035,8 +28077,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 703 recipes from 705 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   eatwithohashi: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-49-44.685Z-attempt-41ac7297-a348-4e57-8628-caa9860cc924",
+    shadowParity:
+      "13/13 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 13 recipes from 13 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -28071,8 +28115,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 523 recipes from 523 API records with complete discovery and no blocked, failed or rejected record",
   },
   elephantasticvegan: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-50-13.381Z-attempt-056da79a-82ce-42e5-aa55-3c1456d6eb0e",
+    shadowParity:
+      "273/273 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 273 recipes from 273 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -28107,8 +28153,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 742 recipes from 744 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   evergreenkitchen: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-50-46.246Z-attempt-5dce2ae5-ee24-4f44-861e-79bd056ebe72",
+    shadowParity:
+      "268/268 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 268 recipes from 268 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -28155,8 +28203,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 469 recipes from 469 API records with complete discovery and no blocked, failed or rejected record",
   },
   farmgirlgourmet: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-57-01.250Z-attempt-d297b05b-de93-498e-9b9b-31451ce8face",
+    shadowParity:
+      "338/338 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 338 recipes from 338 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -28191,14 +28241,18 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1524 recipes from 1524 API records with complete discovery and no blocked, failed or rejected record",
   },
   feistytapas: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-57-39.600Z-attempt-fcb925d6-0f10-47a4-93b2-3ad34714e8d4",
+    shadowParity:
+      "176/176 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 176 recipes from 176 API records with complete discovery and no blocked, failed or rejected record",
   },
   firstdayofhome: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-52-29.533Z-attempt-1643a1a4-0181-493a-a393-1889aef404f5",
+    shadowParity:
+      "81/81 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 81 recipes from 81 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -28293,8 +28347,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 757 recipes from 757 API records with complete discovery and no blocked, failed or rejected record",
   },
   forkandtwist: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-57-35.707Z-attempt-46033acf-20bc-41c1-9f82-23ed50e50c70",
+    shadowParity:
+      "64/64 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 64 recipes from 64 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -28329,8 +28385,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 418 recipes from 418 API records with complete discovery and no blocked, failed or rejected record",
   },
   fromscratchfast: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-58-04.911Z-attempt-0cd7d3d5-4fea-4d22-bc83-0c551d094221",
+    shadowParity:
+      "391/391 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 391 recipes from 391 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -28437,8 +28495,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 406 recipes from 412 API records; 6 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   graceandgoodeats: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-11-35.211Z-attempt-8231efdf-6ef4-4554-9073-e10f442caf38",
+    shadowParity:
+      "282/282 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 282 recipes from 282 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -28449,8 +28509,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 795 recipes from 795 API records with complete discovery and no blocked, failed or rejected record",
   },
   gratefulgrazer: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-12-05.819Z-attempt-87273d0d-5258-4495-9137-98d1d9f2cefb",
+    shadowParity:
+      "153/153 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 153 recipes from 153 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -28473,14 +28535,18 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 921 recipes from 921 API records with complete discovery and no blocked, failed or rejected record",
   },
   gritsandgouda: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-12-42.320Z-attempt-333512f1-3b84-4d60-9b59-e0491d48cd7c",
+    shadowParity:
+      "296/296 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 296 recipes from 296 API records with complete discovery and no blocked, failed or rejected record",
   },
   growagoodlife: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-12-22.315Z-attempt-e8c3f2a4-e468-4478-bed4-4bdd7d1f2fc3",
+    shadowParity:
+      "211/211 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 211 recipes from 211 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -28503,14 +28569,18 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 671 recipes from 671 API records with complete discovery and no blocked, failed or rejected record",
   },
   happyketo: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-14-25.831Z-attempt-ad31a38b-3a91-4a6c-a6f1-3d0f4b662f0d",
+    shadowParity:
+      "20/20 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 20 recipes from 20 API records with complete discovery and no blocked, failed or rejected record",
   },
   happykidskitchen: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-13-20.596Z-attempt-37787507-1d07-4dfd-96c0-38324b628c9c",
+    shadowParity:
+      "167/167 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 167 recipes from 167 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -28527,8 +28597,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 410 recipes from 419 API records; 9 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   healthmylifestyle: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-13-33.622Z-attempt-e1f5ead8-3ba7-4059-9f9e-ffba68e102a8",
+    shadowParity:
+      "245/245 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 245 recipes from 245 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -28551,8 +28623,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 411 recipes from 423 API records; 12 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   healthylittlefoodies: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-15-58.660Z-attempt-717958f1-43c6-41cf-9868-b3bc5631e986",
+    shadowParity:
+      "357/357 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 357 recipes from 357 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -28575,8 +28649,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 385 recipes from 386 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   heatherlikesfood: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-16-07.648Z-attempt-d90577d7-06cb-48e1-a1f4-b1afc19534f4",
+    shadowParity:
+      "290/290 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 290 recipes from 290 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -28617,8 +28693,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 343 recipes from 345 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   homeinthekitchen: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-16-05.059Z-attempt-60bad261-d164-4a4c-b472-ece136ee7b41",
+    shadowParity:
+      "5/5 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 5 recipes from 5 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -28635,8 +28713,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 376 recipes from 377 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   hotchocolatehits: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-16-13.067Z-attempt-6b1f6722-6d94-4ba1-8c3a-a5fbc35eed16",
+    shadowParity:
+      "161/161 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 161 recipes from 161 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -28725,8 +28805,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 720 recipes from 720 API records with complete discovery and no blocked, failed or rejected record",
   },
   irishamericanmom: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-19-28.061Z-attempt-cf488c0b-d72e-49e0-97d6-3191a21d3a9a",
+    shadowParity:
+      "248/248 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 248 recipes from 248 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -28821,8 +28903,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 980 recipes from 983 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   justaddglam: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-24-02.701Z-attempt-1475883a-96ae-468c-ae2b-cb697b8030a8",
+    shadowParity:
+      "4/4 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 4 recipes from 4 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -28845,14 +28929,18 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1044 recipes from 1046 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   katiebirdbakes: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-22-56.500Z-attempt-54899fac-e50a-436c-929a-40567c681634",
+    shadowParity:
+      "117/117 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 117 recipes from 117 API records with complete discovery and no blocked, failed or rejected record",
   },
   kellyneil: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-22-09.179Z-attempt-9fe5458a-9e46-4766-9b88-7fbbea7a1385",
+    shadowParity:
+      "125/125 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 125 recipes from 125 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -28887,8 +28975,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 730 recipes from 733 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   kitchenfrau: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-22-47.512Z-attempt-688ce13a-7712-43e5-b056-d862e509ba06",
+    shadowParity:
+      "165/165 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 165 recipes from 165 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -28911,8 +29001,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 856 recipes from 861 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   knifeandsoul: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-26-16.551Z-attempt-e980a4bd-e287-4482-b412-717c0ae44bca",
+    shadowParity:
+      "184/184 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 184 recipes from 184 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -28935,8 +29027,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1005 recipes from 1005 API records with complete discovery and no blocked, failed or rejected record",
   },
   laraclevenger: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-25-57.230Z-attempt-ada6d417-68c1-419b-b8a9-3600cd41a080",
+    shadowParity:
+      "293/293 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 293 recipes from 293 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -28959,8 +29053,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1457 recipes from 1507 API records; 50 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   layersofhappiness: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-24-40.726Z-attempt-7ee64e15-d4fc-484c-bc55-2aa6e6f046e4",
+    shadowParity:
+      "224/224 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 224 recipes from 224 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29049,8 +29145,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 561 recipes from 561 API records with complete discovery and no blocked, failed or rejected record",
   },
   livforcake: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-27-00.058Z-attempt-974bc152-dc56-46db-a23b-c52fa85585f9",
+    shadowParity:
+      "237/237 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 237 recipes from 237 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29073,8 +29171,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1029 recipes from 1029 API records with complete discovery and no blocked, failed or rejected record",
   },
   loveandoliveoil: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-30-23.971Z-attempt-0718303c-abf5-4591-bd75-4babc7841a0b",
+    shadowParity:
+      "296/296 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 296 recipes from 296 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29133,8 +29233,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 221 recipes from 223 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   mandysrecipeboxblog: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-32-58.463Z-attempt-375ab106-d73c-4691-a841-01973faf9ad6",
+    shadowParity:
+      "3/3 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 3 recipes from 3 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29145,8 +29247,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 598 recipes from 600 API records; 1 blocked request, 2 records the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary",
   },
   maplewoodroad: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-31-54.610Z-attempt-ccc42bd6-4da4-4ebd-8175-71a50bb7c278",
+    shadowParity:
+      "225/225 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 225 recipes from 225 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29205,8 +29309,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1787 recipes from 1813 API records; 26 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   merryboosters: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-34-35.623Z-attempt-99ee75de-5f3b-4778-bdff-49e8fbe9d856",
+    shadowParity:
+      "170/170 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 170 recipes from 170 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29223,8 +29329,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 524 recipes from 524 API records with complete discovery and no blocked, failed or rejected record",
   },
   milkandpop: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-34-46.807Z-attempt-03b0881e-1ec1-4ddc-b07f-78efed65cab1",
+    shadowParity:
+      "163/163 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 163 recipes from 163 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29241,14 +29349,18 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 474 recipes from 474 API records with complete discovery and no blocked, failed or rejected record",
   },
   mississippivegan: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-34-58.228Z-attempt-12fab757-4f92-4961-8175-00c33f839aac",
+    shadowParity:
+      "138/138 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 138 recipes from 138 API records with complete discovery and no blocked, failed or rejected record",
   },
   modernbites: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-31-55.211Z-attempt-31201a15-34eb-4de8-b68f-6dc247e770d3",
+    shadowParity:
+      "164/164 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 164 recipes from 164 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29259,8 +29371,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1093 recipes from 1098 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   modernyum: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-35-09.100Z-attempt-c4178c34-0f82-43de-b53f-79de41b05bfb",
+    shadowParity:
+      "50/50 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 50 recipes from 50 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29283,8 +29397,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 537 recipes from 541 API records; 4 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   muydelish: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-33-21.635Z-attempt-41f19970-87af-4806-bb35-73e648d81177",
+    shadowParity:
+      "301/301 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 301 recipes from 301 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29325,14 +29441,18 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 406 recipes from 409 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   mynewroots: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-36-50.240Z-attempt-5344da42-67aa-49d0-b18f-089428818b7a",
+    shadowParity:
+      "20/20 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 20 recipes from 20 API records with complete discovery and no blocked, failed or rejected record",
   },
   mypocketkitchen: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-36-17.141Z-attempt-a69161d4-2d52-44b2-8274-22c3d29308be",
+    shadowParity:
+      "163/163 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 163 recipes from 163 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29361,8 +29481,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 590 recipes from 597 API records; 7 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   myveganminimalist: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-37-21.136Z-attempt-ae72aaa1-84bf-4306-9afd-03078501c507",
+    shadowParity:
+      "193/193 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 193 recipes from 193 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29409,8 +29531,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 717 recipes from 717 API records with complete discovery and no blocked, failed or rejected record",
   },
   nourishplate: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-36-29.256Z-attempt-a12289cb-0091-416c-97a1-09aa5275daa6",
+    shadowParity:
+      "178/178 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 178 recipes from 178 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29421,8 +29545,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 120 recipes from 121 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   ohmyfoodrecipes: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-38-16.246Z-attempt-44c67704-fbfe-4d41-8365-6202dd46add3",
+    shadowParity:
+      "223/223 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 223 recipes from 223 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29439,8 +29565,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   olivetomato: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-38-31.375Z-attempt-5588228b-5a21-424e-a865-7dae20fc99e8",
+    shadowParity:
+      "260/260 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 260 recipes from 260 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29451,8 +29579,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 556 recipes from 562 API records; 6 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   omgyummy: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-38-18.820Z-attempt-afbbc805-3e6f-48c7-abd2-23d32853dc11",
+    shadowParity:
+      "159/159 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 159 recipes from 159 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29463,20 +29593,26 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 967 recipes from 1017 API records; 50 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   onehotoven: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-37-53.476Z-attempt-db467b61-94a9-4c07-89f0-11ce6cab0d3d",
+    shadowParity:
+      "244/244 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 244 recipes from 244 API records with complete discovery and no blocked, failed or rejected record",
   },
   onelovelylife: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-38-35.727Z-attempt-076915cd-57df-46a7-be78-541014d710fe",
+    shadowParity:
+      "211/211 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 211 recipes from 211 API records with complete discovery and no blocked, failed or rejected record",
   },
   onepotrecipes: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-39-15.499Z-attempt-34a019f5-029c-411e-b444-b39666ca639b",
+    shadowParity:
+      "390/390 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 390 recipes from 390 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29583,8 +29719,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 568 recipes from 568 API records with complete discovery and no blocked, failed or rejected record",
   },
   pepperbowl: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-43-30.080Z-attempt-c3e04f73-ecbe-41e6-9d1c-3f4e353c4918",
+    shadowParity:
+      "277/277 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 277 recipes from 277 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29595,8 +29733,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 723 recipes from 724 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   pinkowlkitchen: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-40-36.198Z-attempt-c7f2611c-c23f-4087-9312-c6098351610f",
+    shadowParity:
+      "272/272 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 272 recipes from 272 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29637,8 +29777,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 592 recipes from 595 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   platedcravings: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-44-53.415Z-attempt-6b537c7f-69e0-457b-ab4d-4e31a3d3b183",
+    shadowParity:
+      "350/350 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 350 recipes from 350 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29655,8 +29797,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   practicalselfreliance: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-45-10.314Z-attempt-55641826-777b-4619-b53c-979e782efc6c",
+    shadowParity:
+      "342/342 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 342 recipes from 342 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29673,8 +29817,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 525 recipes from 537 API records; 12 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   prettydeliciouslife: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-45-30.363Z-attempt-12d068c4-dc87-4cf1-a947-d7953686f1ad",
+    shadowParity:
+      "319/319 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 319 recipes from 319 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29691,8 +29837,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1821 recipes from 1822 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   profusioncurry: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-45-46.589Z-attempt-05b854d3-3916-4fde-a37a-cbf64a28ec37",
+    shadowParity:
+      "391/391 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 391 recipes from 391 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29709,14 +29857,18 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 345 recipes from 345 API records with complete discovery and no blocked, failed or rejected record",
   },
   rachelcooksthai: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-46-02.599Z-attempt-6da4fc48-2555-4b4d-97dd-628b1e1b19bd",
+    shadowParity:
+      "135/135 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 135 recipes from 135 API records with complete discovery and no blocked, failed or rejected record",
   },
   rachnaskitchen: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-46-02.612Z-attempt-023bffbc-7895-498a-b700-af1bb3b8603b",
+    shadowParity:
+      "207/207 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 207 recipes from 207 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29733,8 +29885,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1471 recipes from 1476 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   ramonascuisine: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-46-15.043Z-attempt-6811d4bd-5134-47a2-b3ae-82da375683c9",
+    shadowParity:
+      "336/336 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 336 recipes from 336 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29787,8 +29941,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1535 recipes from 1536 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   redhousespice: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-48-03.697Z-attempt-33e8fd31-164f-494c-8b75-da4d5d2e1791",
+    shadowParity:
+      "295/295 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 295 recipes from 295 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29841,8 +29997,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1313 recipes from 1313 API records with complete discovery and no blocked, failed or rejected record",
   },
   saltpepperskillet: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-53-10.405Z-attempt-6553efa9-940e-464a-96c9-6090a1e6b94a",
+    shadowParity:
+      "283/283 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 283 recipes from 283 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -30015,8 +30173,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 172 recipes from 175 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   slowthecookdown: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-59-21.917Z-attempt-cc54ad13-e3a8-4375-bd36-47c7cc5aebd1",
+    shadowParity:
+      "362/362 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 362 recipes from 362 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -30063,8 +30223,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 2822 recipes from 2834 API records; 12 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   spiceeats: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-56-28.544Z-attempt-ebeaf5cc-d1c4-4af7-8250-ed33e49a8041",
+    shadowParity:
+      "54/54 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 54 recipes from 54 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -30111,8 +30273,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 538 recipes from 540 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   stephgaudreau: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-01-32.023Z-attempt-2c0ea581-c99a-4126-a205-f5746b2b33e8",
+    shadowParity:
+      "1/1 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 1 recipes from 1 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -30195,8 +30359,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 415 recipes from 419 API records; 4 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   sweetmouthjoy: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-04-27.861Z-attempt-09b2f5fc-124f-4099-8c51-9875ea53152a",
+    shadowParity:
+      "125/125 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 125 recipes from 125 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -30261,8 +30427,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 547 recipes from 547 API records with complete discovery and no blocked, failed or rejected record",
   },
   tastesofhomemade: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-03-05.215Z-attempt-a1c464f1-58f3-4059-8f31-af7166005e75",
+    shadowParity:
+      "337/337 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 337 recipes from 337 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -30297,8 +30465,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 885 recipes from 899 API records; 14 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   theblondcook: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-03-47.674Z-attempt-a4e849c3-fdce-4c90-a540-c13b61665fe0",
+    shadowParity:
+      "331/331 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 331 recipes from 331 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -30321,8 +30491,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 2195 recipes from 2198 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   thecheekychickpea: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-08-20.947Z-attempt-04581f37-61b7-4388-96d4-7f96350ec04c",
+    shadowParity:
+      "86/86 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 86 recipes from 86 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -30363,8 +30535,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   thecozyplum: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-08-26.419Z-attempt-866ae8e0-a83f-4959-a6c2-6497f49a9123",
+    shadowParity:
+      "312/312 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 312 recipes from 312 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -30387,8 +30561,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 697 recipes from 707 API records; 10 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   thedizzycook: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-06-29.410Z-attempt-9a8fa2b8-9911-4b1f-97c1-91e200c9b2fa",
+    shadowParity:
+      "372/372 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 372 recipes from 372 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -30465,8 +30641,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1150 recipes from 1151 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   thegardengrazer: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-11-35.772Z-attempt-aeb7c0f6-97ef-423c-874c-03e9e9d33a7d",
+    shadowParity:
+      "309/309 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 309 recipes from 309 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -30495,8 +30673,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1466 recipes from 1506 API records; 40 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   thegoodheartedwoman: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-08-43.380Z-attempt-4ae17988-647c-441a-99ac-c37341e8e4c6",
+    shadowParity:
+      "308/308 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 308 recipes from 308 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -30549,8 +30729,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 465 recipes from 465 API records with complete discovery and no blocked, failed or rejected record",
   },
   thekoreanvegan: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-10-56.907Z-attempt-cc19faad-12a6-4b68-8918-9ecfbcbeb531",
+    shadowParity:
+      "111/111 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 111 recipes from 111 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -30573,8 +30755,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 875 recipes from 876 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   themamasgirls: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-14-56.221Z-attempt-52867710-83b1-4514-8ca0-2e1e71194588",
+    shadowParity:
+      "21/21 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 21 recipes from 21 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -30621,8 +30805,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 439 recipes from 440 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   thepancakeprincess: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-12-18.697Z-attempt-28ac614d-51b7-4fe1-b45c-5cd379f5af5f",
+    shadowParity:
+      "105/105 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 105 recipes from 105 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -30681,8 +30867,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1198 recipes from 1204 API records; 6 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   therecipewell: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-16-26.447Z-attempt-60d87760-e0ab-4cf4-bc82-5852300ae37e",
+    shadowParity:
+      "141/141 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 141 recipes from 141 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -30693,8 +30881,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 2098 recipes from 2099 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   therusticfoodie: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-14-27.242Z-attempt-46c9d579-ff91-4e2c-8976-5e50e08d6fde",
+    shadowParity:
+      "305/305 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 305 recipes from 305 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -30723,8 +30913,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 459 recipes from 466 API records; 7 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   theskinnyishdish: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-19-05.372Z-attempt-543946e1-2a38-4892-9aea-1a101d49cd38",
+    shadowParity:
+      "215/215 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 215 recipes from 215 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -30777,8 +30969,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 226 recipes from 230 API records; 4 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   thevegspace: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-20-21.466Z-attempt-52f0c674-a73d-4975-855c-f4a7aea4ec3d",
+    shadowParity:
+      "256/256 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 256 recipes from 256 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -30813,8 +31007,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 432 recipes from 432 API records with complete discovery and no blocked, failed or rejected record",
   },
   thewholesomedish: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-20-40.326Z-attempt-617f52a3-4774-46ac-a89c-df5466cf6c05",
+    shadowParity:
+      "159/159 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 159 recipes from 159 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -30831,8 +31027,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   throughherlookingglass: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-20-50.578Z-attempt-9bd3ed07-b222-4894-ba9b-b9808c053eda",
+    shadowParity:
+      "223/223 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 223 recipes from 223 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -30957,8 +31155,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 641 recipes from 650 API records; 9 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   vietworldkitchen: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-23-45.341Z-attempt-3cbcf1a4-0eb5-41b0-b20a-9b43ab00fb1f",
+    shadowParity:
+      "245/245 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 245 recipes from 245 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -30975,8 +31175,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 355 recipes from 356 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   watchwhatueat: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-23-57.590Z-attempt-bb5776a7-1ee0-4b43-af35-321437982d54",
+    shadowParity:
+      "178/178 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 178 recipes from 178 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -31047,8 +31249,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1783 recipes from 1783 API records with complete discovery and no blocked, failed or rejected record",
   },
   wholegirl: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-25-01.304Z-attempt-13f0430f-fb17-48a9-b139-2ed3b73770e2",
+    shadowParity:
+      "1/1 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 1 recipes from 1 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -31071,8 +31275,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 478 recipes from 478 API records with complete discovery and no blocked, failed or rejected record",
   },
   wholesomerecipebox: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-24-07.194Z-attempt-9a51df69-c58c-47a5-9dce-dec80e5aefa3",
+    shadowParity:
+      "58/58 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 58 recipes from 58 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -31101,8 +31307,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 119 recipes from 120 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   wokandkin: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-26-14.356Z-attempt-e7d84a30-a0c0-4ce9-99e7-865c802c3abe",
+    shadowParity:
+      "212/212 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 212 recipes from 212 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -31113,8 +31321,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 265 recipes from 309 API records; 44 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   woonheng: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-29-26.321Z-attempt-0fb39b33-8c50-4b7b-95b9-65ca992fd7db",
+    shadowParity:
+      "183/183 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 183 recipes from 183 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -31143,8 +31353,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 300 recipes from 301 API records; 1 record the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary",
   },
   yummyeats: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-25-31.973Z-attempt-c8457bf5-af6e-4bf5-b7c5-e7685592a7c6",
+    shadowParity:
+      "13/13 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 13 recipes from 13 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -31161,8 +31373,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 973 recipes from 973 API records with complete discovery and no blocked, failed or rejected record",
   },
   yupitsvegan: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-25-40.759Z-attempt-b33eee75-4c8b-486e-8332-58ae08f42d3b",
+    shadowParity:
+      "325/325 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 325 recipes from 325 API records with complete discovery and no blocked, failed or rejected record",
   },
