@@ -92,8 +92,10 @@ function flattenInstructions(groups: unknown): NormalizedRecipeInstruction[] {
       const body = plainText(entry.text);
       if (body === "") continue;
       // A named step is a section heading in the rendered recipe; keeping it
-      // in the step text is the only way to carry it in this shape.
-      const heading = text(entry.name);
+      // in the step text is the only way to carry it in this shape. Headings
+      // are authored both with and without a trailing separator, and the
+      // rendered recipe shows one either way.
+      const heading = text(entry.name).replace(/[:\s]+$/u, "");
       steps.push({
         position: steps.length + 1,
         text: heading === "" ? body : `${heading}: ${body}`,

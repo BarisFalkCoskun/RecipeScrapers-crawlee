@@ -89,6 +89,23 @@ describe("WPRM API recipe extraction", () => {
     expect(recipe.rawRecipe).toEqual((fixture[0] as { recipe: unknown }).recipe);
   });
 
+  it("does not double the separator on a heading that already ends in one", () => {
+    const post = JSON.parse(JSON.stringify(fixture[0])) as Record<string, any>;
+    post.recipe.instructions = [
+      { name: "", instructions: [
+        { name: "Soak Fruit:", text: "Finely chop the prunes." },
+        { name: "Melt Fats", text: "Stir together the milk and butter." },
+      ] },
+    ];
+
+    const [recipe] = extractWprmRecipes([post]).recipes;
+
+    // WPRM headings are authored with and without a trailing colon, and the
+    // rendered recipe shows one separator either way.
+    expect(recipe.normalized.instructions[0].text).toBe("Soak Fruit: Finely chop the prunes.");
+    expect(recipe.normalized.instructions[1].text).toBe("Melt Fats: Stir together the milk and butter.");
+  });
+
   it("rejects a recipe missing any of name, ingredients or instructions", () => {
     const base = JSON.parse(JSON.stringify(fixture[0])) as Record<string, any>;
     const withoutName = JSON.parse(JSON.stringify(base));
