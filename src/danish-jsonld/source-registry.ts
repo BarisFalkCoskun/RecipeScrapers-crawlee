@@ -27355,8 +27355,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 112 recipes from 112 API records with complete discovery and no blocked, failed or rejected record",
   },
   bestrecipebox: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-32-39.093Z-attempt-1a9fa944-0167-450a-a988-abd906d1f4e5",
+    shadowParity:
+      "529/529 recipes and every material legacy field match exactly, after the named-step separator fix",
     deferOrBlockReason:
       "Uncapped run persisted 529 recipes from 529 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -27901,8 +27903,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 358 recipes from 361 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   deliciousmeetshealthy: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-49-10.469Z-attempt-dfb7ccbe-5ea3-4061-8b62-8629c835c655",
+    shadowParity:
+      "488/488 recipes and every material legacy field match exactly, after the named-step separator fix",
     deferOrBlockReason:
       "Uncapped run persisted 488 recipes from 488 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -28351,8 +28355,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 4848 recipes from 4854 API records; 6 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   foodieandwine: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-57-10.016Z-attempt-084c5713-f08a-40d9-a74e-0bb0a8b10004",
+    shadowParity:
+      "478/478 recipes and every material legacy field match exactly, after the named-step separator fix",
     deferOrBlockReason:
       "Uncapped run persisted 478 recipes from 478 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -28413,8 +28419,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 587 recipes from 587 API records with complete discovery and no blocked, failed or rejected record",
   },
   fromachefskitchen: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-00-59.462Z-attempt-cc956a31-6f7e-4df9-8b5c-4ee19a694def",
+    shadowParity:
+      "596/596 recipes and every material legacy field match exactly, after the named-step separator fix",
     deferOrBlockReason:
       "Uncapped run persisted 596 recipes from 596 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -29527,8 +29535,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 334 recipes from 336 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   myquietkitchen: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-36-58.904Z-attempt-76faa820-44d2-4edc-9846-4dc2676a69f3",
+    shadowParity:
+      "499/499 recipes and every material legacy field match exactly, after the named-step separator fix",
     deferOrBlockReason:
       "Uncapped run persisted 499 recipes from 499 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -30087,8 +30097,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 289 recipes from 292 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   savortheflavour: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-53-23.558Z-attempt-c608fb9e-394d-4320-bdf1-dc744bbee44e",
+    shadowParity:
+      "405/405 recipes and every material legacy field match exactly, after the named-step separator fix",
     deferOrBlockReason:
       "Uncapped run persisted 405 recipes from 405 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -30105,8 +30117,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 849 recipes from 849 API records with complete discovery and no blocked, failed or rejected record",
   },
   savvybites: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-53-47.420Z-attempt-a32c106e-88ea-46f2-a288-cdf96384997a",
+    shadowParity:
+      "246/246 recipes and every material legacy field match exactly, after the named-step separator fix",
     deferOrBlockReason:
       "Uncapped run persisted 246 recipes from 246 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -31187,8 +31201,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1037 recipes from 1037 API records with complete discovery and no blocked, failed or rejected record",
   },
   twocupsflour: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-19-23.863Z-attempt-17599482-f52b-40cf-9b9a-1fcd4c661c56",
+    shadowParity:
+      "204/204 recipes and every material legacy field match exactly, after the named-step separator fix",
     deferOrBlockReason:
       "Uncapped run persisted 204 recipes from 204 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -31337,8 +31353,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the site answers the recipe API with HTTP 401 and a Security Verification interstitial, so the endpoint is gated rather than public",
   },
   whiteonricecouple: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-23-13.399Z-attempt-c07ad151-77f4-46f8-b8b9-7ce67ee4206a",
+    shadowParity:
+      "571/571 recipes and every material legacy field match exactly, after the named-step separator fix",
     deferOrBlockReason:
       "Uncapped run persisted 571 recipes from 571 API records with complete discovery and no blocked, failed or rejected record",
   },
