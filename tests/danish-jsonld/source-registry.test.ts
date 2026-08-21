@@ -222,7 +222,7 @@ describe("Danish JSON-LD source registry", () => {
 ];
 
   it("contains the migrated legacy source families and every Danish WPRM source", () => {
-    expect(DANISH_JSONLD_SOURCES).toHaveLength(314);
+    expect(DANISH_JSONLD_SOURCES).toHaveLength(544);
     expect(DANISH_JSONLD_SOURCES.filter(
       (source) => source.legacyFamily === "JsonLdSitemapRecipeSpider"
     )).toHaveLength(89);
@@ -231,11 +231,15 @@ describe("Danish JSON-LD source registry", () => {
     )).toHaveLength(34);
     expect(DANISH_JSONLD_SOURCES.filter(
       (source) => source.legacyFamily === "WprmApiSpider"
-    )).toHaveLength(88);
+    )).toHaveLength(318);
     expect(DANISH_JSONLD_SOURCES.filter(
       (source) => source.legacyFamily === "WpPostsJsonLdSpider"
     )).toHaveLength(76);
-    expect(DANISH_JSONLD_SOURCES.map((source) => source.id).sort()).toEqual(
+    // The Danish definitions must all be registered. They stopped being the
+    // whole registry once the sweep reached the rest of the legacy WPRM
+    // catalogue, so this asserts containment rather than equality.
+    const registeredIds = new Set(DANISH_JSONLD_SOURCES.map((source) => source.id));
+    expect(
       [...new Set([
         ...expectedLegacySourceIds,
         ...DANISH_WPRM_SOURCE_DEFINITIONS.map(([id]) => id),
@@ -259,8 +263,8 @@ describe("Danish JSON-LD source registry", () => {
         ...DANISH_EMBEDDED_JSON_SOURCE_DEFINITIONS.map(({ id }) => id),
         ...DANISH_HTML_RECIPE_SOURCE_DEFINITIONS.map(({ id }) => id),
         "meyers",
-      ])].sort()
-    );
+      ])].every((id) => registeredIds.has(id))
+    ).toBe(true);
   });
 
   it("keeps source ids unique and preserves the required migration metadata", () => {
@@ -446,9 +450,12 @@ describe("Danish JSON-LD source registry", () => {
       (source) => source.legacyFamily === "WprmApiSpider"
     );
 
-    expect(sources.map((source) => source.id).sort()).toEqual(
-      DANISH_WPRM_SOURCE_DEFINITIONS.map(([id]) => id).sort()
-    );
+    // The Danish definitions are a subset now that the sweep reaches the rest
+    // of the legacy WPRM catalogue; every Danish one must still be present.
+    const registered = new Set(sources.map((source) => source.id));
+    for (const [id] of DANISH_WPRM_SOURCE_DEFINITIONS) {
+      expect(registered.has(id)).toBe(true);
+    }
     for (const source of sources) {
       // Page size is per-source: a site that cannot build the default page
       // answers HTTP 500 rather than a short page, so the route is asserted
