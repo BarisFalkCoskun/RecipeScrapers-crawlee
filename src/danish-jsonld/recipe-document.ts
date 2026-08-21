@@ -558,10 +558,19 @@ function parseIsoDurationMinutes(value: unknown): number | undefined {
   // real: a WPRM source states 129,620 minutes total for a plum liqueur, which
   // is its ninety-day Trækketid, and that must survive.
   if (/^p/u.test(normalized) && /-\d/u.test(normalized)) return undefined;
-  const iso = /^p(?:\d+y)?(?:\d+m)?(?:\d+d)?t(?:(\d+(?:\.\d+)?)h)?(?:(\d+(?:\.\d+)?)m)?(?:\d+(?:\.\d+)?s)?$/u.exec(normalized);
+  // Some sources write the hour designator in Danish — gastrotools states
+  // "PT15t30M" for fifteen timer thirty, and its own totals confirm it: 15t30M
+  // prep plus 1t45M cooking is the 17t15M it gives as the total. Whitespace
+  // inside a duration is likewise a formatting slip rather than a new meaning.
+  const isoLike = normalized.replace(/\s+/gu, "").replace(/(\d)t(?=\d|$)/gu, "$1h");
+  const iso = /^p(?:\d+y)?(?:\d+m)?(?:\d+d)?t(?:(\d+(?:\.\d+)?)h)?(?:(\d+(?:\.\d+)?)m)?(?:\d+(?:\.\d+)?s)?$/u.exec(isoLike);
   if (iso) return positiveRoundedMinutes(
     Number(iso[1] ?? 0) * 60 + Number(iso[2] ?? 0)
   );
+  // Anything else falls through to the loose patterns below. They recover more
+  // than they lose on the malformed durations these sources actually publish —
+  // "PT20 minM", "P10M" and "PTH1H30M" all read correctly there — so rejecting
+  // every unparseable ISO string outright would discard good values.
   const hours = /(\d+(?:\.\d+)?)\s*(?:timer?|hours?|hrs?|h)\s*(?:(\d+(?:\.\d+)?)\s*(?:min(?:ut(?:ter)?)?|minutes?|mins?|m))?/u.exec(normalized);
   if (hours) return positiveRoundedMinutes(
     Number(hours[1]) * 60 + Number(hours[2] ?? 0)

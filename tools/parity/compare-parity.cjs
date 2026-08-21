@@ -64,8 +64,24 @@ const url=u=>{
   catch{ return raw; }
 };
 const K=(u,t)=>url(u)+" :: "+norm(t);
-const L=new Map(legacy.map(r=>[K(r.url,r.title),r]));
-const C=new Map(crawlee.map(r=>[K(r.canonicalUrl,r.normalized&&r.normalized.title),r]));
+// A path that differs only in case is the same page where the site redirects
+// either spelling, as gastrologik does for /Asiatiske%20laksefrikadeller. The
+// keys are lowered only when doing so collapses nothing on either side, so a
+// site that really does serve case-distinct URLs still reports them apart.
+const lowerK=(u,t)=>K(u,t).toLowerCase();
+const keysOf=(rows,fn)=>rows.map(r=>fn(r));
+const legacyKey=r=>K(r.url,r.title);
+const crawleeKey=r=>K(r.canonicalUrl,r.normalized&&r.normalized.title);
+const lowerLegacyKey=r=>lowerK(r.url,r.title);
+const lowerCrawleeKey=r=>lowerK(r.canonicalUrl,r.normalized&&r.normalized.title);
+const noCollapse=(rows,fn,lowFn)=>
+  new Set(keysOf(rows,fn)).size===new Set(keysOf(rows,lowFn)).size;
+const caseInsensitive =
+  noCollapse(legacy,legacyKey,lowerLegacyKey) && noCollapse(crawlee,crawleeKey,lowerCrawleeKey);
+const lk=caseInsensitive?lowerLegacyKey:legacyKey;
+const ck=caseInsensitive?lowerCrawleeKey:crawleeKey;
+const L=new Map(legacy.map(r=>[lk(r),r]));
+const C=new Map(crawlee.map(r=>[ck(r),r]));
 console.log("legacy:",legacy.length,"(unique keys",L.size,")  crawlee:",crawlee.length,"(unique keys",C.size,")");
 const onlyL=[...L.keys()].filter(k=>!C.has(k)), onlyC=[...C.keys()].filter(k=>!L.has(k));
 console.log("only legacy:",onlyL.length,onlyL.slice(0,4));
@@ -140,8 +156,8 @@ for(const [f,v] of Object.entries(diffs)){console.log(`\n### ${f}: ${v.length}`)
 // A page can carry several sibling Recipe nodes. Legacy stops at the first, so
 // extra V2 records that share a URL with a matched legacy record are additional
 // recipes recovered from that page rather than a diverging record set.
-const legacyUrls=new Set(legacy.map(r=>url(r.url)));
-const siblings=onlyC.filter(k=>legacyUrls.has(url(k.split(" :: ")[0])));
+const legacyUrls=new Set(legacy.map(r=>caseInsensitive?url(r.url).toLowerCase():url(r.url)));
+const siblings=onlyC.filter(k=>legacyUrls.has(k.split(" :: ")[0]));
 const strayC=onlyC.filter(k=>!siblings.includes(k));
 const countsAgree = !onlyL.length && !strayC.length;
 if(siblings.length) console.log(`\nsibling recipes V2 recovered from multi-recipe pages: ${siblings.length}`);

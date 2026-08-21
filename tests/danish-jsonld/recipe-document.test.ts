@@ -137,6 +137,36 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
     expect(document.normalized).toMatchObject({ cookMinutes: 30, totalMinutes: 120 });
   });
 
+  it("reports no duration rather than a fragment of a malformed one", () => {
+    const build = (prepTime: string) => buildRecipeDocumentV2({
+      sourceId: "example",
+      canonicalUrl: "https://example.dk/opskrift/kage",
+      pageUrl: "https://example.dk/opskrift/kage",
+      crawlRunId: "run-malformed",
+      crawlAttemptId: "attempt-malformed",
+      extractedAt: new Date("2026-08-21T08:00:00.000Z"),
+      rawRecipe: { ...structuredClone(completeRecipe), prepTime },
+      language: "da",
+      languageConfidence: 1,
+      languageSignals: [],
+      extractorVersion: "2.0.0",
+      extractionSignals: [],
+    }).normalized.prepMinutes;
+
+    // These are the malformed spellings the sources actually publish, and the
+    // loose patterns read every one of them correctly. Rejecting unparseable
+    // ISO outright would turn all four into no duration at all.
+    expect(build("PT20 minM")).toBe(20);
+    expect(build("P10M")).toBe(10);
+    expect(build("PTH1H30M")).toBe(90);
+    expect(build("P20M")).toBe(20);
+    // An empty duration stays empty.
+    expect(build("P")).toBeUndefined();
+    // Human-written durations are not ISO and still parse.
+    expect(build("1 time 30 minutter")).toBe(90);
+    expect(build("45 min")).toBe(45);
+  });
+
   it("still reads ordinary ISO durations that carry no negative component", () => {
     const build = (prepTime: string) => buildRecipeDocumentV2({
       sourceId: "example",
@@ -157,6 +187,15 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
     // A very long duration can be real: one source states a ninety-day
     // Trækketid for a plum liqueur, so only the negative sign disqualifies one.
     expect(build("PT129620M")).toBe(129620);
+    // gastrotools writes the hour designator in Danish. Its own totals confirm
+    // the reading: 15t30M prep plus 1t45M cooking is the 17t15M it states.
+    expect(build("PT15t30M")).toBe(930);
+    expect(build("PT1t45M")).toBe(105);
+    expect(build("PT17t15M")).toBe(1035);
+    // A trailing Danish designator carries hours too: PT2t is two timer.
+    expect(build("PT2t")).toBe(120);
+    // Whitespace inside a duration is a formatting slip, not a new meaning.
+    expect(build("PT 1H 30M")).toBe(90);
     expect(build("PT45M")).toBe(45);
     expect(build("P0DT2H")).toBe(120);
     // A hyphen outside an ISO duration is a range, not a negative component:
