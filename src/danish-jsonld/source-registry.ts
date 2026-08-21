@@ -31473,8 +31473,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   whatgreatgrandmaate: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-25-46.348Z-attempt-968f1672-55f7-412f-9a5a-ca1391e6a221",
+    shadowParity:
+      "751/751 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 751 recipes from 751 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -31491,8 +31493,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 853 recipes from 854 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   whatsgabycooking: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-26-13.225Z-attempt-49a9c4db-fb31-48c3-8c65-74f5f39d0ac5",
+    shadowParity:
+      "1292/1292 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 1292 recipes from 1292 API records with complete discovery and no blocked, failed or rejected record",
   },
@@ -31680,8 +31684,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 325 recipes from 325 API records with complete discovery and no blocked, failed or rejected record",
   },
   zestfulkitchen: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-30-23.699Z-attempt-ddb3343f-36be-4f3a-af4f-67064b6cf2fa",
+    shadowParity:
+      "835/835 recipes and every material legacy field match exactly",
     deferOrBlockReason:
       "Uncapped run persisted 835 recipes from 835 API records with complete discovery and no blocked, failed or rejected record",
   },
