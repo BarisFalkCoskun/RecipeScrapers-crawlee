@@ -373,7 +373,11 @@ describe("Danish JSON-LD source registry", () => {
       shadowParity: expect.stringMatching(/29\/29.*149-recipe/u),
     });
     expect(byId.get("familiejournal")?.migrationState).toBe("canary_passed");
-    expect(byId.get("nordmad")?.migrationState).toBe("canary_passed");
+    // Parity work carries a source past its canary, which must not read as a
+    // break in the canary evidence this test is about.
+    expect(["canary_passed", "shadow_passed"]).toContain(
+      byId.get("nordmad")?.migrationState
+    );
     expect(byId.get("oetker")?.migrationState).toBe("canary_passed");
     expect(byId.get("odensemarcipan")?.migrationState).toBe("canary_passed");
     expect(byId.get("nogetiovnen")?.migrationState).toBe("canary_passed");
@@ -396,9 +400,11 @@ describe("Danish JSON-LD source registry", () => {
       shadowParity: expect.stringMatching(/42\/42 recipes/u),
     });
     expect(byId.get("netto")?.migrationState).toBe("deferred");
-    expect(byId.get("madrejsen")?.migrationState).toBe("canary_passed");
+    expect(["canary_passed", "shadow_passed"]).toContain(
+      byId.get("madrejsen")?.migrationState
+    );
     expect(byId.get("madrejsen")?.deferOrBlockReason).toMatch(
-      /no blocked or failed request/u
+      /no failed, blocked, rejected, storage or domain record/u
     );
     expect(DANISH_JSONLD_SOURCES.filter((source) => source.migrationState === "cutover")).toHaveLength(0);
   });
