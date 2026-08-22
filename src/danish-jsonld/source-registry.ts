@@ -26982,8 +26982,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 933 recipes from 941 posts with complete discovery and no blocked, failed or rejected record",
   },
   opskrifterforalle: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-19T23-12-00.704Z-attempt-8449e358-a32f-46f6-b474-efa64307fd35",
+    shadowParity:
+      "964/964 recipes and every material legacy field match exactly; V2 additionally keeps a cuisine legacy has no field for and a fuller yield than legacy's leading integer",
     deferOrBlockReason:
       "Uncapped run persisted 939 recipes from 939 posts with complete discovery and no blocked, failed or rejected record",
   },

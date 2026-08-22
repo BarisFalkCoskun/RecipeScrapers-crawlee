@@ -509,9 +509,10 @@ describe("Danish JSON-LD source registry", () => {
   it("records the WordPress posts family canary run for every source it reached", () => {
     const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
 
-    // Sources whose uncapped run came back clean.
+    // Sources whose uncapped run came back clean. Parity work can carry one
+    // past its canary, which is progress rather than a break.
     for (const id of ["afamilyfeast", "cookiesandcups", "opskrifterforalle", "inspiredtaste"]) {
-      expect(byId.get(id)?.migrationState).toBe("canary_passed");
+      expect(["canary_passed", "shadow_passed"]).toContain(byId.get(id)?.migrationState);
       expect(byId.get(id)?.latestCanary).toBeTruthy();
     }
     // Short of a canary on records the source itself publishes badly.
@@ -721,6 +722,14 @@ describe("Danish JSON-LD source registry", () => {
       // Parity is only meaningful with the comparison behind it.
       expect(source?.shadowParity).toBeTruthy();
     }
+  });
+
+  it("carries WordPress-posts parity for the source it was proven on", () => {
+    const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
+    const source = byId.get("opskrifterforalle");
+
+    expect(source?.migrationState).toBe("shadow_passed");
+    expect(source?.shadowParity).toMatch(/964\/964/u);
   });
 
   it("names why a blocked source is blocked rather than only that it was", () => {
