@@ -149,6 +149,10 @@ for(const [k,l] of L){
     // of it preserved.
     const first=/\d+/u.exec(cy);
     if(first && first[0]===ly) richerYield++;
+    // Legacy keeps only the digits it finds, so a yield stated in words alone
+    // — afamilyfeast says "Individual servings" — leaves it with nothing at
+    // all while V2 keeps what the source wrote.
+    else if(ly==="" && cy!=="" && !first) richerYield++;
     else add("yield",k,ly,cy);
   }
   if(JSON.stringify((l.image_urls||[]).map(norm))!==JSON.stringify((n.imageUrls||[]).map(norm))) add("images",k,l.image_urls,n.imageUrls);
