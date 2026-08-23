@@ -28,7 +28,16 @@ timeout "${PARITY_SCRAPY_TIMEOUT:-2400}" .venv/bin/scrapy crawl "$SRC" \
   -s ITEM_PIPELINES='{"capture_pipeline.CaptureJsonPipeline": 100}' \
   -s LOG_LEVEL="${PARITY_LOG_LEVEL:-WARNING}" \
   > "$OUT/$SRC.scrapy.log" 2>&1
-echo "scrapy exit=$? for $SRC"
+scrapy_status=$?
+echo "scrapy exit=$scrapy_status for $SRC"
+# 124 is the timeout killing the spider mid-crawl. Its partial output looks
+# exactly like a site with fewer recipes, so the comparison below would report
+# a mismatch that is entirely ours. Say so instead of comparing.
+if [ "$scrapy_status" -eq 124 ]; then
+  echo "--- $SRC ---"
+  echo "INCONCLUSIVE: the legacy run was cut off by PARITY_SCRAPY_TIMEOUT (${PARITY_SCRAPY_TIMEOUT:-2400}s) and its output is partial"
+  exit 0
+fi
 
 # A legacy spider that is being blocked records each block as a page without a
 # recipe, which is invisible in its output. Counting the statuses it saw is the

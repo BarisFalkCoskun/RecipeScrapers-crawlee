@@ -87,6 +87,19 @@ The repeat-run pool is not affected the same way: those are Crawlee crawls at
 each source's own configured delay and concurrency, and they bind on memory
 rather than on what a site will serve one address.
 
+## A cut-off legacy run is not a short one
+
+`PARITY_SCRAPY_TIMEOUT` kills the spider mid-crawl, and its partial output is
+indistinguishable from a site that simply has fewer recipes. nogetiovnen looked
+like it had been blocked down to 374 records against Crawlee's 3,102; run on
+its own it made 829 requests, every one of them HTTP 200, and was still going
+when the timeout stopped it at 734. There was no block at all — only a large
+catalogue and a deadline.
+
+The harness now reports a timed-out run as inconclusive rather than comparing
+its partial output, and the timeout should be raised for a source whose
+catalogue is large rather than left to truncate it.
+
 ## When the legacy spider is unhealthy
 
 A legacy run that is being blocked, or that is pointed at a domain the site has

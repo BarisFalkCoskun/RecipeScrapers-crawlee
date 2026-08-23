@@ -27375,10 +27375,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 265 recipes from 265 API records with complete discovery and no blocked, failed or rejected record",
   },
   bessiebakes: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-21T10-32-25.560Z-attempt-cbdf419a-4bd5-4b7d-9242-5d3c2c141f9f",
+    shadowParity:
+      "112/112 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 112 recipes from 112 API records with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 112-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 112 recipes with every material field matching",
   },
   bestrecipebox: {
     migrationState: "shadow_passed",
@@ -27972,10 +27975,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 305 recipes from 305 API records with complete discovery and no blocked, failed or rejected record",
   },
   dessertfortwo: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-21T10-49-37.004Z-attempt-08d526e3-a971-4608-8a4b-7d57e3b28170",
+    shadowParity:
+      "55/55 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 55 recipes from 55 API records with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 55-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 55 recipes with every material field matching",
   },
   dessertswithbenefits: {
     migrationState: "configured",
