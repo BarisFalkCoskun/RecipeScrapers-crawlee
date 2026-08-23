@@ -26871,7 +26871,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     shadowParity:
       "legacy-unhealthy; 369 stable records over two uncapped runs, and every recipe the legacy run did emit matches on every material field",
     deferOrBlockReason:
-      "The legacy spider cannot produce a sound comparison for this source: 188 of the site's detail requests answered HTTP 403 to the legacy spider on a comparable source, which it records as pages without a recipe. Parity therefore rests on the documented legacy-unhealthy route instead — discovery reached all 388 posts the site's API reports, two uncapped runs emitted identical 369-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete. Legacy's output is a strict subset of Crawlee's and every overlapping record matches on every material field",
+      "The legacy spider cannot produce a sound comparison for this source: 188 of the site's detail requests answered HTTP 403 to the legacy spider on a comparable source, which it records as pages without a recipe. Parity therefore rests on the documented legacy-unhealthy route instead — discovery reached all 388 posts the site's API reports, two uncapped runs emitted identical 369-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete. Legacy's output is a strict subset of Crawlee's and every overlapping record matches on every material field. Confirmed serially: 178 of its 388 detail requests answered HTTP 403 and json_ld_missing_no_script_count is exactly 178, measured on a run with nothing else competing for the address",
   },
   tasteandsee: {
     migrationState: "shadow_passed",
@@ -26880,7 +26880,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     shadowParity:
       "legacy-unhealthy; 411 stable records over two uncapped runs, and every recipe the legacy run did emit matches on every material field",
     deferOrBlockReason:
-      "The legacy spider cannot produce a sound comparison for this source: the legacy run emitted 222 of the site's recipes because the site answered a large share of its detail requests with HTTP 403, which it records as pages without a recipe. Parity therefore rests on the documented legacy-unhealthy route instead — discovery reached all 458 posts the site's API reports, two uncapped runs emitted identical 411-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete. Legacy's output is a strict subset of Crawlee's and every overlapping record matches on every material field",
+      "The legacy spider cannot produce a sound comparison for this source: the legacy run emitted 222 of the site's recipes because the site answered a large share of its detail requests with HTTP 403, which it records as pages without a recipe. Parity therefore rests on the documented legacy-unhealthy route instead — discovery reached all 458 posts the site's API reports, two uncapped runs emitted identical 411-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete. Legacy's output is a strict subset of Crawlee's and every overlapping record matches on every material field. Confirmed serially: 199 of its 458 detail requests answered HTTP 403 and json_ld_missing_no_script_count is exactly 199, measured on a run with nothing else competing for the address",
   },
   nannapretzmann: {
     migrationState: "shadow_passed",
