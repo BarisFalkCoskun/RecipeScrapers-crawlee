@@ -26925,7 +26925,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     shadowParity:
       "legacy-unhealthy; 730 stable records over two uncapped runs, and every recipe the legacy run did emit matches on every material field",
     deferOrBlockReason:
-      "The legacy spider cannot produce a sound comparison for this source: it emitted 413 of the site's recipes against Crawlee's 730, a strict subset with no material field differing, because the site answers a large share of its detail requests with HTTP 403 and the spider records each block as a page without a recipe. Parity rests on the documented legacy-unhealthy route instead - two uncapped runs emitted identical 730-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
+      "The legacy spider cannot produce a sound comparison for this source: it emitted a strict subset of Crawlee's 730 recipes with no material field differing, because the site blocks it. Measured on a run with nothing else competing for the address, 320 of its 821 detail requests answered HTTP 403 and json_ld_missing_no_script_count is exactly 320, so the spider records every blocked page as one without a recipe. Parity rests on the documented legacy-unhealthy route instead - two uncapped runs emitted identical 730-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
   },
   thecakeblog: {
     migrationState: "shadow_passed",
