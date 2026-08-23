@@ -26892,10 +26892,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 41-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 41 recipes with every material field matching; 3 records keep a cuisine legacy has no field for and 2 keep a yield legacy reduces to its first integer",
   },
   annsentitledlife: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-19T15-23-05.567Z-attempt-eba71083-16e0-4282-a8df-ede1473f6d54",
+    shadowParity:
+      "458/458 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 457 recipes from 2054 posts with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 458-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 458 recipes with every material field matching; 441 records keep a cuisine legacy has no field for",
   },
   thecookful: {
     migrationState: "canary_passed",
