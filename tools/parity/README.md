@@ -87,6 +87,18 @@ The repeat-run pool is not affected the same way: those are Crawlee crawls at
 each source's own configured delay and concurrency, and they bind on memory
 rather than on what a site will serve one address.
 
+## Records V2 refuses and legacy keeps
+
+V2 holds a completeness contract most legacy spiders do not: a recipe needs a
+name, ingredients and instructions to be stored at all. Legacy emits a Recipe
+node missing any of them. mariavestergaard publishes five recipes with no
+instructions and eight with no title, and legacy stores all thirteen — so its
+598 against V2's 585 is the contract working, not a discovery gap.
+
+These are reported as records legacy accepts without a name, ingredients or
+instructions, rather than counted as loss. Anything V2 is missing that does not
+fall in that category is a real gap and still fails the comparison.
+
 ## A cut-off legacy run is not a short one
 
 `PARITY_SCRAPY_TIMEOUT` kills the spider mid-crawl, and its partial output is

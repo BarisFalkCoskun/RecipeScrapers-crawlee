@@ -171,7 +171,23 @@ for(const [f,v] of Object.entries(diffs)){console.log(`\n### ${f}: ${v.length}`)
 const legacyUrls=new Set(legacy.map(r=>caseInsensitive?url(r.url).toLowerCase():url(r.url)));
 const siblings=onlyC.filter(k=>legacyUrls.has(k.split(" :: ")[0]));
 const strayC=onlyC.filter(k=>!siblings.includes(k));
-const countsAgree = !onlyL.length && !strayC.length;
+// V2 holds a completeness contract that most legacy spiders do not: a recipe
+// needs a name, ingredients and instructions to be stored at all. Legacy
+// emits a Recipe node that is missing any of them — mariavestergaard has five
+// with no instructions and eight with no title — so those records are named
+// rather than counted as a loss.
+const legacyByKey=new Map(legacy.map(r=>[lk(r),r]));
+const incompleteOnlyLegacy=onlyL.filter(k=>{
+  const r=legacyByKey.get(k);
+  if(!r) return false;
+  const steps=(r.instructions||[]).filter(x=>String((x&&x.text)||x||"").trim());
+  const items=(r.ingredients||[]).filter(x=>String((x&&(x.original||x.name))||x||"").trim());
+  return steps.length===0 || items.length===0 || norm(r.title)==="";
+});
+const strayL=onlyL.filter(k=>!incompleteOnlyLegacy.includes(k));
+if(incompleteOnlyLegacy.length)
+  console.log(`\nrecords legacy accepts without ingredients or instructions, which the completeness contract rejects: ${incompleteOnlyLegacy.length}`);
+const countsAgree = !strayL.length && !strayC.length;
 if(siblings.length) console.log(`\nsibling recipes V2 recovered from multi-recipe pages: ${siblings.length}`);
 if(!legacy.length || !crawlee.length){
   console.log(`\nINCONCLUSIVE: legacy=${legacy.length} crawlee=${crawlee.length} - one side produced no records`);
@@ -183,5 +199,5 @@ if(!legacy.length || !crawlee.length){
   console.log("\nMISMATCH: field differences above");
   process.exitCode=2;
 } else {
-  console.log(`\nALL MATERIAL FIELDS MATCH (${cuisineDropped?`${cuisineDropped} records keep a cuisine legacy has no field for`:"tags == keywords + cuisines"}${namedSteps?`; ${namedSteps} records keep WPRM named-step prefixes legacy drops`:""}${richerYield?`; ${richerYield} records keep a fuller yield than legacy leading-integer`:""}${negativeDurations?`; ${negativeDurations} negative upstream durations V2 rejects and legacy keeps`:""}${looseDurations?`; ${looseDurations} loosely spelled durations V2 reads and legacy gives up on`:""}${siblings.length?`; ${siblings.length} sibling recipes recovered`:""})`);
+  console.log(`\nALL MATERIAL FIELDS MATCH (${cuisineDropped?`${cuisineDropped} records keep a cuisine legacy has no field for`:"tags == keywords + cuisines"}${namedSteps?`; ${namedSteps} records keep WPRM named-step prefixes legacy drops`:""}${richerYield?`; ${richerYield} records keep a fuller yield than legacy leading-integer`:""}${negativeDurations?`; ${negativeDurations} negative upstream durations V2 rejects and legacy keeps`:""}${looseDurations?`; ${looseDurations} loosely spelled durations V2 reads and legacy gives up on`:""}${siblings.length?`; ${siblings.length} sibling recipes recovered`:""}${incompleteOnlyLegacy.length?`; ${incompleteOnlyLegacy.length} records legacy accepts without a name, ingredients or instructions`:""})`);
 }
