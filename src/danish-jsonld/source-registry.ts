@@ -32018,10 +32018,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Cloudflare returned HTTP 403 on 7724 requests across 530 processed pages and nothing was persisted",
   },
   madogdrikke: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-17T15-07-04.733Z-attempt-d21edf83-5518-40a1-9f1b-4dda2bdf7236",
+    shadowParity:
+      "2483/2483 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 4966 recipes with complete discovery and no blocked or failed request; 24 pages carry Recipe JSON-LD without required fields and stay rejected",
+      "Two uncapped Crawlee runs emitted identical 2483-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 2483 recipes with every material field matching; tags == keywords + cuisines; 1856 records keep a fuller yield than legacy leading-integer; 6 records legacy accepts without a name, ingredients or instructions",
   },
   landolakes: {
     migrationState: "canary_passed",
@@ -32030,10 +32033,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted all 2782 discovered recipes with complete discovery and no blocked, failed or rejected record",
   },
   mariavestergaard: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-17T18-08-07.752Z-attempt-806f9d5e-cd86-4d2e-b94b-f6efbdf5e387",
+    shadowParity:
+      "585/585 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 585 recipes with complete discovery and no blocked or failed request; 26 pages carry Recipe JSON-LD without required fields and stay rejected",
+      "Two uncapped Crawlee runs emitted identical 585-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 585 recipes with every material field matching; tags == keywords + cuisines; 13 records legacy accepts without a name, ingredients or instructions",
   },
   madenimitliv: {
     migrationState: "canary_passed",
