@@ -26790,10 +26790,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1474 recipes from 1632 posts with complete discovery and no blocked, failed or rejected record",
   },
   afamilyfeast: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-19T16-30-26.970Z-attempt-e245d57e-29ff-4693-a304-c404d47ea324",
+    shadowParity:
+      "1977/1977 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 1977 recipes from 2060 posts with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 1977-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 1977 recipes with every material field matching; 1805 records keep a cuisine legacy has no field for; 1 records keep a fuller yield than legacy leading-integer; 78 negative upstream durations V2 rejects and legacy keeps",
   },
   coupleinthekitchen: {
     migrationState: "shadow_passed",
@@ -26967,10 +26970,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 851 recipes from 924 posts with complete discovery and no blocked, failed or rejected record",
   },
   pickledplum: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-19T22-11-04.771Z-attempt-5299ca8e-88ec-49ed-bed2-879b481d04d3",
+    shadowParity:
+      "889/889 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 889 recipes from 1018 posts with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 889-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 889 recipes with every material field matching; 886 records keep a cuisine legacy has no field for; 29 negative upstream durations V2 rejects and legacy keeps",
   },
   inspiredtaste: {
     migrationState: "canary_passed",
