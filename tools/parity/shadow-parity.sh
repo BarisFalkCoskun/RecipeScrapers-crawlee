@@ -40,12 +40,17 @@ if [ "$scrapy_status" -eq 124 ]; then
 fi
 
 # A legacy spider that is being blocked records each block as a page without a
-# recipe, which is invisible in its output. Counting the statuses it saw is the
-# only way to tell that apart from a site that genuinely has fewer recipes.
-blocked=$(grep -oE "No Recipe JSON-LD at [^ ]+ \(status=[0-9]+" "$OUT/$SRC.scrapy.log" 2>/dev/null \
-  | grep -oE "status=[0-9]+" | grep -vc "status=200" || true)
-[ "${blocked:-0}" -gt 0 ] && echo "legacy recorded $blocked non-200 pages as having no recipe"
-
+# recipe, which is invisible in its output. The spider only logs a sample of
+# those warnings, so the counters it dumps at close are the honest source: a
+# json_ld_missing_no_script_count tracking the 403 count is a blocked run, not
+# a site with fewer recipes.
+stat_of() { grep -oE "'$1': [0-9]+" "$OUT/$SRC.scrapy.log" 2>/dev/null | tail -1 | grep -oE "[0-9]+$"; }
+forbidden=$(stat_of "downloader/response_status_count/403")
+no_script=$(stat_of "recipe/json_ld_missing_no_script_count")
+links=$(stat_of "recipe/post_link_count")
+if [ -n "${forbidden:-}" ] && [ "${forbidden:-0}" -gt 0 ]; then
+  echo "legacy answered HTTP 403 on $forbidden of ${links:-?} requests, recording ${no_script:-?} pages as having no recipe"
+fi
 cd "$REPO"
 node tools/parity/dump-crawlee.cjs "$DB" "$SRC" "$OUT/$SRC-crawlee.json" >/dev/null
 echo "--- $SRC ---"
