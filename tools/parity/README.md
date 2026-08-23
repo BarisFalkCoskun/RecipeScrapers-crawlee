@@ -63,6 +63,30 @@ rather than as a diverging record set.
 The comparison exits non-zero when either side produced no records, so a failed
 legacy run cannot be mistaken for a clean match.
 
+## Concurrency changes the answer
+
+Worker width is not free. Every worker shares one egress IP, and sites fronted
+by a shared WAF rate-limit that IP across their whole customer base, so lanes
+running against *different* domains still throttle each other. A throttled
+legacy spider does not report a block: it records each blocked page as having
+no recipe, or gives up after one redirect, and comes back looking simply
+smaller.
+
+The effect is large enough to invert a conclusion. `cakebycourtney` produced
+**zero** records inside a ten-worker pool and **452** run on its own, minutes
+apart. A sweep at that width scored 2 matches against 96 failures, which
+described the pool rather than the sources.
+
+So a legacy run that comes back empty or short is not evidence until it has
+been repeated on its own. Treat a pooled result as a screen, and confirm every
+failure serially at `LOG_LEVEL=INFO` before recording it — the block accounting
+the harness prints is only meaningful when nothing else is competing for the
+same IP.
+
+The repeat-run pool is not affected the same way: those are Crawlee crawls at
+each source's own configured delay and concurrency, and they bind on memory
+rather than on what a site will serve one address.
+
 ## When the legacy spider is unhealthy
 
 A legacy run that is being blocked, or that is pointed at a domain the site has
