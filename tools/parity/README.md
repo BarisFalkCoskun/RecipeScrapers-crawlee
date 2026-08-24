@@ -78,10 +78,15 @@ Two records differing that way also split into four phantoms, because records
 are keyed by URL *and* title, so a renamed recipe appears as one missing on
 each side rather than one changed.
 
-Re-crawl the source before comparing it, or treat a small delta on an otherwise
-clean run as suspect and re-crawl before concluding anything from it. A
-comparison is only evidence about the implementations if both sides saw the
-same site.
+`tools/parity/fresh-parity.sh` does this properly: it re-crawls the source,
+then runs the legacy spider, then compares, so both sides see the same site. Use
+it rather than comparing against whatever is already stored.
+
+The cost of not doing so is not subtle. culinaryginger moved its ingredient
+amounts from `{amount:"2", unit:"teaspoons"}` to
+`{amount:"2 teaspoons (8 grams)", unit:""}` three days after its crawl, and the
+comparison reported seven differing ingredients that were nothing of the kind.
+A whole batch of 31 near-equal sources came back mismatched for this reason.
 
 ## Concurrency changes the answer
 
