@@ -31970,10 +31970,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Recipe JSON-LD carries ingredients but omits instructions: 592 of 593 crawled pages rejected as incomplete and nothing persisted",
   },
   amo: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-16T22-08-10.261Z-attempt-ef57339f-1f89-4d73-a389-8d94d0643f39",
+    shadowParity:
+      "307/307 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 307 recipes with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 307-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 307 recipes with every material field matching; tags == keywords + cuisines; 286 records keep a fuller yield than legacy leading-integer",
   },
   gastrologik: {
     migrationState: "shadow_passed",

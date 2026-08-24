@@ -91,6 +91,7 @@ let cuisineDropped=0;
 let richerYield=0;
 let negativeDurations=0;
 let looseDurations=0;
+let relativeImages=0;
 const diffs={}; const add=(f,u,a,b)=>{(diffs[f]=diffs[f]||[]).push({u,legacy:a,crawlee:b});};
 for(const [k,l] of L){
   const c=C.get(k); if(!c) continue; const n=c.normalized||{};
@@ -155,7 +156,14 @@ for(const [k,l] of L){
     else if(ly==="" && cy!=="" && !first) richerYield++;
     else add("yield",k,ly,cy);
   }
-  if(JSON.stringify((l.image_urls||[]).map(norm))!==JSON.stringify((n.imageUrls||[]).map(norm))) add("images",k,l.image_urls,n.imageUrls);
+  const limg=(l.image_urls||[]).map(norm), cimg=(n.imageUrls||[]).map(norm);
+  if(JSON.stringify(limg)!==JSON.stringify(cimg)){
+    // Legacy keeps only absolute image URLs, so a source that states its images
+    // as rooted paths — bornemenuen serves /sites/default/files/... — leaves it
+    // with none at all while V2 keeps what the page points at.
+    if(limg.length===0 && cimg.length>0 && cimg.every(u=>u.startsWith("/") && !u.startsWith("//"))) relativeImages++;
+    else add("images",k,l.image_urls,n.imageUrls);
+  }
   if(JSON.stringify((l.categories||[]).map(norm).sort())!==JSON.stringify((n.categories||[]).map(norm).sort())) add("categories",k,l.categories,n.categories);
   const lt=(l.tags||[]).map(norm).sort();
   const kw=(n.keywords||[]).map(norm).sort();
@@ -203,5 +211,5 @@ if(!legacy.length || !crawlee.length){
   console.log("\nMISMATCH: field differences above");
   process.exitCode=2;
 } else {
-  console.log(`\nALL MATERIAL FIELDS MATCH (${cuisineDropped?`${cuisineDropped} records keep a cuisine legacy has no field for`:"tags == keywords + cuisines"}${namedSteps?`; ${namedSteps} records keep WPRM named-step prefixes legacy drops`:""}${richerYield?`; ${richerYield} records keep a fuller yield than legacy leading-integer`:""}${negativeDurations?`; ${negativeDurations} negative upstream durations V2 rejects and legacy keeps`:""}${looseDurations?`; ${looseDurations} loosely spelled durations V2 reads and legacy gives up on`:""}${siblings.length?`; ${siblings.length} sibling recipes recovered`:""}${incompleteOnlyLegacy.length?`; ${incompleteOnlyLegacy.length} records legacy accepts without a name, ingredients or instructions`:""})`);
+  console.log(`\nALL MATERIAL FIELDS MATCH (${cuisineDropped?`${cuisineDropped} records keep a cuisine legacy has no field for`:"tags == keywords + cuisines"}${namedSteps?`; ${namedSteps} records keep WPRM named-step prefixes legacy drops`:""}${richerYield?`; ${richerYield} records keep a fuller yield than legacy leading-integer`:""}${negativeDurations?`; ${negativeDurations} negative upstream durations V2 rejects and legacy keeps`:""}${looseDurations?`; ${looseDurations} loosely spelled durations V2 reads and legacy gives up on`:""}${relativeImages?`; ${relativeImages} records keep a rooted image path legacy discards`:""}${siblings.length?`; ${siblings.length} sibling recipes recovered`:""}${incompleteOnlyLegacy.length?`; ${incompleteOnlyLegacy.length} records legacy accepts without a name, ingredients or instructions`:""})`);
 }
