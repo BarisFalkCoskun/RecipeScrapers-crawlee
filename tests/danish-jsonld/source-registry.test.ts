@@ -636,6 +636,25 @@ describe("Danish JSON-LD source registry", () => {
     expect(madrejsen?.startUrls.every((url) => !url.endsWith("/opskrifter/"))).toBe(true);
   });
 
+  it("records the WPRM spiders that stop paging on one challenged page", () => {
+    const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
+
+    // These spiders walk the recipe API a page at a time and stop for good when
+    // one page is challenged, reporting finish_reason finished either way.
+    // budgetbytes fetched three of nineteen pages and stored 300 of 1867.
+    for (const id of ["budgetbytes", "plainchicken", "eatingbirdfood", "willcookforsmiles"]) {
+      const source = byId.get(id);
+      expect(source?.migrationState).toBe("shadow_passed");
+      expect(source?.latestScrapyOutcome).toBe("failed");
+      expect(source?.deferOrBlockReason).toMatch(/stops for good when one page is challenged/u);
+      expect(source?.deferOrBlockReason).toMatch(/finish_reason finished/u);
+    }
+    // Five of them stored nothing at all and still reported a finished run.
+    for (const id of ["plainchicken", "willcookforsmiles", "kitchensanctuary"]) {
+      expect(byId.get(id)?.deferOrBlockReason).toMatch(/stored 0 recipes/u);
+    }
+  });
+
   it("takes the blocked-legacy sources through the legacy-unhealthy route", () => {
     const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
 
