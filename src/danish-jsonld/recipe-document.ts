@@ -579,7 +579,9 @@ function parseIsoDurationMinutes(value: unknown): number | undefined {
   // "PT15t30M" for fifteen timer thirty, and its own totals confirm it: 15t30M
   // prep plus 1t45M cooking is the 17t15M it gives as the total. Whitespace
   // inside a duration is likewise a formatting slip rather than a new meaning.
-  const isoLike = normalized.replace(/\s+/gu, "").replace(/(\d)t(?=\d|$)/gu, "$1h");
+  const isoLike = expandFractions(normalized)
+    .replace(/\s+/gu, "")
+    .replace(/(\d)t(?=\d|$)/gu, "$1h");
   const iso = /^p(?:\d+y)?(?:\d+m)?(?:\d+d)?t(?:(\d+(?:\.\d+)?)h)?(?:(\d+(?:\.\d+)?)m)?(?:\d+(?:\.\d+)?s)?$/u.exec(isoLike);
   if (iso) return positiveRoundedMinutes(
     Number(iso[1] ?? 0) * 60 + Number(iso[2] ?? 0)
@@ -596,6 +598,29 @@ function parseIsoDurationMinutes(value: unknown): number | undefined {
   if (minutes) return positiveRoundedMinutes(Number(minutes[1]));
   if (/^\d+$/u.test(normalized)) return positiveRoundedMinutes(Number(normalized));
   return undefined;
+}
+
+/**
+ * Sources write durations with the vulgar fraction characters a keyboard
+ * offers: iform states a total of "P0Y0M0DT2½H0M0S", meaning two and a half
+ * hours. The numeric patterns below only accept digits, so the whole duration
+ * was dropped and 150 minutes became nothing.
+ */
+const FRACTION_VALUES: Record<string, string> = {
+  "¼": ".25", "½": ".5", "¾": ".75",
+  "⅐": ".142857", "⅑": ".111111", "⅒": ".1",
+  "⅓": ".333333", "⅔": ".666667",
+  "⅕": ".2", "⅖": ".4", "⅗": ".6", "⅘": ".8",
+  "⅙": ".166667", "⅚": ".833333",
+  "⅛": ".125", "⅜": ".375", "⅝": ".625", "⅞": ".875",
+};
+
+function expandFractions(value: string): string {
+  return value.replace(
+    /(\d*)([¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞])/gu,
+    (_match, whole: string, fraction: string) =>
+      `${whole === "" ? "0" : whole}${FRACTION_VALUES[fraction] ?? ""}`
+  );
 }
 
 function positiveRoundedMinutes(value: number): number | undefined {

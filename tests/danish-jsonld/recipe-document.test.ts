@@ -249,6 +249,13 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
     expect(build("PT17t15M")).toBe(1035);
     // A trailing Danish designator carries hours too: PT2t is two timer.
     expect(build("PT2t")).toBe(120);
+    // Sources write durations with the fraction characters a keyboard offers.
+    // iform states a total of "P0Y0M0DT2½H0M0S" - two and a half hours - which
+    // the digit-only patterns dropped entirely.
+    expect(build("P0Y0M0DT2\u00bdH0M0S")).toBe(150);
+    expect(build("PT1\u00bdH")).toBe(90);
+    expect(build("PT\u00bdH")).toBe(30);
+    expect(build("PT2\u00bcH")).toBe(135);
     // Whitespace inside a duration is a formatting slip, not a new meaning.
     expect(build("PT 1H 30M")).toBe(90);
     expect(build("PT45M")).toBe(45);
