@@ -27395,10 +27395,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 529 recipes from 529 API records with complete discovery and no blocked, failed or rejected record",
   },
   beyondkimchee: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-21T10-33-04.893Z-attempt-b50a23bc-361e-4885-8a9d-440e8c876e76",
+    shadowParity:
+      "525/525 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 525 recipes from 525 API records with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 525-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 525 recipes with every material field matching",
   },
   biancazapatka: {
     migrationState: "shadow_passed",
@@ -28536,10 +28539,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   funfoodfrolic: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-21T10-58-22.093Z-attempt-3f4021f8-da6e-4625-8c0a-745ac3aa1efd",
+    shadowParity:
+      "592/592 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 592 recipes from 592 API records with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 592-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 592 recipes with every material field matching; tags == keywords + cuisines; 5 records keep WPRM named-step prefixes legacy drops",
   },
   garnishandglaze: {
     migrationState: "configured",
@@ -29883,10 +29889,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1007 recipes from 1008 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   pancakerecipes: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-21T11-39-45.153Z-attempt-ed74a8b9-82c5-467f-9817-d9ad0b1455b5",
+    shadowParity:
+      "301/301 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 301 recipes from 301 API records with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 301-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 301 recipes with every material field matching; tags == keywords + cuisines; 158 records keep WPRM named-step prefixes legacy drops",
   },
   panlasangpinoy: {
     migrationState: "shadow_passed",
@@ -30453,10 +30462,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 847 recipes from 848 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   southernbite: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-21T11-56-04.390Z-attempt-d3b09533-79a2-4c87-b961-dae40abfb23e",
+    shadowParity:
+      "715/715 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 715 recipes from 715 API records with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 715-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 715 recipes with every material field matching",
   },
   spainonafork: {
     migrationState: "shadow_passed",
@@ -30567,10 +30579,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 890 recipes from 891 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   sugarspunrun: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-21T12-02-00.503Z-attempt-da36eaf0-abf9-4496-907e-5b2f41925518",
+    shadowParity:
+      "1109/1109 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 1109 recipes from 1109 API records with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 1109-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 1109 recipes with every material field matching",
   },
   sundaysuppermovement: {
     migrationState: "shadow_passed",
@@ -30792,10 +30807,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 696 recipes from 718 API records; 22 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   thecookreport: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-21T12-05-31.815Z-attempt-d046369d-d6a1-4f73-b3d1-44875b7ef35b",
+    shadowParity:
+      "432/432 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 432 recipes from 432 API records with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 432-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 432 recipes with every material field matching; tags == keywords + cuisines; 2 records keep WPRM named-step prefixes legacy drops",
   },
   thecountrycook: {
     migrationState: "blocked",
@@ -30977,10 +30995,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1376 recipes from 1399 API records; 23 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   thehealthyfoodie: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-21T12-09-03.880Z-attempt-2c8a0180-5d47-47af-b7d4-e457cc1b74b3",
+    shadowParity:
+      "1057/1057 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 1057 recipes from 1057 API records with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 1057-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 1057 recipes with every material field matching",
   },
   theheirloompantry: {
     migrationState: "configured",
@@ -32021,11 +32042,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Cloudflare returned HTTP 403 on 7724 requests across 530 processed pages and nothing was persisted",
   },
   madogdrikke: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-17T15-07-04.733Z-attempt-d21edf83-5518-40a1-9f1b-4dda2bdf7236",
+    shadowParity:
+      "2483/2483 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Shadow comparison passed: 2483/2483 recipes and every material field match exactly. The full isolated Scrapy run matched every material field. The second uncapped run is outstanding: it was killed by the harness timeout before completing, and the harness read the resulting unchanged records as stability. Recorded counts are from one uncapped run and the incomplete second, which emitted identical 2483-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 2483 recipes with every material field matching; tags == keywords + cuisines; 1856 records keep a fuller yield than legacy leading-integer; 6 records legacy accepts without a name, ingredients or instructions",
+      "Two uncapped Crawlee runs emitted identical 2483-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 2483 recipes with every material field matching; tags == keywords + cuisines; 1856 records keep a fuller yield than legacy leading-integer; 6 records legacy accepts without a name, ingredients or instructions",
   },
   landolakes: {
     migrationState: "canary_passed",
@@ -32034,7 +32057,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted all 2782 discovered recipes with complete discovery and no blocked, failed or rejected record",
   },
   mariavestergaard: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-17T18-08-07.752Z-attempt-806f9d5e-cd86-4d2e-b94b-f6efbdf5e387",
     shadowParity:
