@@ -48,7 +48,17 @@ stat_of() { grep -oE "'$1': [0-9]+" "$OUT/$SRC.scrapy.log" 2>/dev/null | tail -1
 forbidden=$(stat_of "downloader/response_status_count/403")
 no_script=$(stat_of "recipe/json_ld_missing_no_script_count")
 links=$(stat_of "recipe/post_link_count")
-if [ -n "${forbidden:-}" ] && [ "${forbidden:-0}" -gt 0 ]; then
+api_blocked=$(stat_of "recipe/wprm_api_blocked_count")
+scraped=$(stat_of "item_scraped_count")
+# A WPRM spider stops paging the moment one API page is challenged, and still
+# reports finish_reason finished. budgetbytes served three of nineteen pages
+# before Cloudflare answered page four, and legacy called 300 of 1867 recipes a
+# complete run. The advertised page count is the only way to see it.
+if [ -n "${api_blocked:-}" ] && [ "${api_blocked:-0}" -gt 0 ]; then
+  pages=$(grep -oE "total_pages_header='[0-9]+'" "$OUT/$SRC.scrapy.log" 2>/dev/null | grep -oE "[0-9]+" | tail -1)
+  got=$(grep -oE "WPRM page [0-9]+/" "$OUT/$SRC.scrapy.log" 2>/dev/null | grep -oE "[0-9]+" | tail -1)
+  echo "legacy stopped paging on a blocked WPRM API page: ${got:-?} of ${pages:-?} pages fetched, ${scraped:-?} recipes, then finished"
+elif [ -n "${forbidden:-}" ] && [ "${forbidden:-0}" -gt 0 ]; then
   echo "legacy answered HTTP 403 on $forbidden of ${links:-?} requests, recording ${no_script:-?} pages as having no recipe"
 fi
 cd "$REPO"

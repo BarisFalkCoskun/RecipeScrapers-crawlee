@@ -137,6 +137,19 @@ The harness now reports a timed-out run as inconclusive rather than comparing
 its partial output, and the timeout should be raised for a source whose
 catalogue is large rather than left to truncate it.
 
+## A WPRM spider stops paging on one blocked page
+
+The WPRM spiders walk the recipe API a page at a time, and a single challenged
+page ends the walk. They do not report that as a failure: budgetbytes served
+three of the nineteen pages its own header advertises, Cloudflare answered page
+four, and the spider finished with `finish_reason: finished` and 300 recipes
+against the site's 1,867.
+
+Nothing in its output says so. The counter `recipe/wprm_api_blocked_count` and
+the advertised `total_pages_header` are what expose it, and the harness reports
+both. A legacy count that is an exact multiple of the API page size is the
+symptom to look for.
+
 ## When the legacy spider is unhealthy
 
 A legacy run that is being blocked, or that is pointed at a domain the site has
