@@ -32104,10 +32104,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted all 7020 discovered recipes with complete discovery and no blocked, failed or rejected record",
   },
   bornemenuen: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-17T23-28-26.237Z-attempt-6ad03698-68af-46a2-b017-7f194660caa1",
+    shadowParity:
+      "641/641 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 641 recipes with complete discovery and no blocked or failed request; four pages carry Recipe JSON-LD without required fields and stay rejected",
+      "Two uncapped Crawlee runs emitted identical 641-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 641 recipes with every material field matching; 641 records keep a cuisine legacy has no field for; 11 records keep a fuller yield than legacy leading-integer; 100 records keep a rooted image path legacy discards",
   },
   imerco: {
     migrationState: "canary_passed",
