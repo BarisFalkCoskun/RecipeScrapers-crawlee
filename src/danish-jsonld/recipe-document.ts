@@ -620,6 +620,10 @@ function cleanText(value: string): string {
     .replace(/<br\s*\/?>/giu, " ")
     .replace(/<\/?(?:article|div|h[1-6]|li|ol|p|section|ul)\b[^>]*>/giu, " ")
     .replace(/<[^>]+>/gu, "")
+    // Zero-width characters are invisible, and sources embed them mid-word:
+    // krumpli writes "A\uFEFFdd a lid". They match \s, so collapsing whitespace
+    // would turn that into "A dd" — they have to go before, not become spaces.
+    .replace(/[\u200B-\u200D\uFEFF]/gu, "")
     .replace(/\s+/gu, " ")
     .trim();
 }

@@ -168,4 +168,22 @@ describe("WPRM API recipe extraction", () => {
     expect(second.normalized.cuisines).toEqual(first.normalized.cuisines);
   });
 
+
+  it("removes a zero-width character rather than letting it become a space", () => {
+    // krumpli writes "A\uFEFFdd a lid" inside an instruction. The character is
+    // invisible but matches \s, so collapsing whitespace turned it into the
+    // visibly broken "A dd".
+    const entry = structuredClone(fixture[0]) as Record<string, any>;
+    entry.recipe.instructions = [
+      { name: "", instructions: [{ text: "<p>Pour over the stock.</p><p>A\uFEFFdd a lid and cook.</p>" }] },
+    ];
+
+    const [recipe] = extractWprmRecipes([entry]).recipes;
+
+    // Paragraphs concatenate without a separator here, which is what legacy
+    // produces too; the point is that "Add" survives intact.
+    expect(recipe.normalized.instructions[0].text).toBe("Pour over the stock.Add a lid and cook.");
+    expect(recipe.normalized.instructions[0].text).not.toContain("A dd");
+  });
+
 });

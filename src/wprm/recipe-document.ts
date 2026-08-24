@@ -47,10 +47,19 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 const text = (value: unknown): string =>
   typeof value === "string" ? value.trim() : "";
 
+/**
+ * Zero-width characters are invisible and sources embed them mid-word: krumpli
+ * writes "A\uFEFFdd a lid" inside an instruction. They match \s, so collapsing
+ * whitespace turns that into "A dd" — a visibly broken word. They are removed
+ * before the collapse rather than becoming spaces.
+ */
 const plainText = (value: unknown): string => {
   const source = text(value);
   if (source === "") return "";
-  return cheerio.load(source).text().replace(/\s+/gu, " ").trim();
+  return cheerio.load(source).text()
+    .replace(/[\u200B-\u200D\uFEFF]/gu, "")
+    .replace(/\s+/gu, " ")
+    .trim();
 };
 
 const minutes = (value: unknown): number | undefined => {
