@@ -63,6 +63,26 @@ rather than as a diverging record set.
 The comparison exits non-zero when either side produced no records, so a failed
 legacy run cannot be mistaken for a clean match.
 
+## The two sides must be gathered close together in time
+
+The comparison reads a Crawlee crawl out of MongoDB and runs the legacy spider
+now. When those are days apart, anything the site edited in between reads as a
+disagreement between the implementations.
+
+inspiredtaste showed it plainly: legacy returned "Easy Fluffy Pancakes
+(Perfected!)" and the stored Crawlee record said "Easy Fluffy Pancakes". Both
+were faithful — the stored crawl was five days old, and the site had renamed
+the recipe since. The page carries the newer title today.
+
+Two records differing that way also split into four phantoms, because records
+are keyed by URL *and* title, so a renamed recipe appears as one missing on
+each side rather than one changed.
+
+Re-crawl the source before comparing it, or treat a small delta on an otherwise
+clean run as suspect and re-crawl before concluding anything from it. A
+comparison is only evidence about the implementations if both sides saw the
+same site.
+
 ## Concurrency changes the answer
 
 Worker width is not free. Every worker shares one egress IP, and sites fronted
