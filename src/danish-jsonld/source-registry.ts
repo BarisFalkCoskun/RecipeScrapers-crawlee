@@ -28532,10 +28532,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 477 recipes from 478 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   freshsavory: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-21T10-57-44.144Z-attempt-6beff3ea-29a0-4298-8548-2409d27dc4da",
+    shadowParity:
+      "587/587 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 587 recipes from 587 API records with complete discovery and no blocked, failed or rejected record",
+      "Two uncapped Crawlee runs emitted identical 587-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 587 recipes with every material field matching; tags == keywords + cuisines; 580 records keep WPRM named-step prefixes legacy drops",
   },
   fromachefskitchen: {
     migrationState: "shadow_passed",
@@ -32209,10 +32212,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 641-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 641 recipes with every material field matching; 641 records keep a cuisine legacy has no field for; 11 records keep a fuller yield than legacy leading-integer; 100 records keep a rooted image path legacy discards",
   },
   imerco: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-18T00-21-27.720Z-attempt-6777a367-f56e-4504-b1cc-74dbbc80957d",
+    shadowParity:
+      "175/175 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped rerun after the concatenated-canonical fix completed discovery and persisted 175 recipes with no blocked or failed request; two pages carry Recipe JSON-LD without required fields",
+      "Two uncapped Crawlee runs emitted identical 175-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 175 recipes with every material field matching; 175 records keep a cuisine legacy has no field for; 29 records keep a fuller yield than legacy leading-integer",
   },
   castello: {
     migrationState: "configured",
