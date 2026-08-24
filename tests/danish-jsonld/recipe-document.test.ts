@@ -107,6 +107,61 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
     expect(document.normalized).not.toHaveProperty("prepMinutes");
   });
 
+  it("keeps the image out of an array its source leaked markup into", () => {
+    // bornemenuen's template drops an unescaped quote, so its ImageObject url
+    // is ["/sites/.../Karrysalat copy2.jpg", "hvide bønner og æble\" />"] —
+    // the second entry is a fragment of its own page. Legacy discards the whole
+    // field, taking the real image with it.
+    const document = buildRecipeDocumentV2({
+      sourceId: "example",
+      canonicalUrl: "https://example.dk/opskrift/karrysalat",
+      pageUrl: "https://example.dk/opskrift/karrysalat",
+      crawlRunId: "run-leaky-image",
+      crawlAttemptId: "attempt-leaky-image",
+      extractedAt: new Date("2026-08-24T08:00:00.000Z"),
+      rawRecipe: {
+        ...structuredClone(completeRecipe),
+        image: {
+          "@type": "ImageObject",
+          url: ["/sites/default/files/2024-05/Karrysalat%20copy2.jpg", "hvide bønner og æble\" />"],
+        },
+      },
+      language: "da",
+      languageConfidence: 1,
+      languageSignals: [],
+      extractorVersion: "2.0.0",
+      extractionSignals: [],
+    });
+
+    expect(document.normalized.imageUrls)
+      .toEqual(["/sites/default/files/2024-05/Karrysalat%20copy2.jpg"]);
+  });
+
+  it("still accepts the image shapes sources ordinarily publish", () => {
+    const build = (image: unknown) => buildRecipeDocumentV2({
+      sourceId: "example",
+      canonicalUrl: "https://example.dk/opskrift/kage",
+      pageUrl: "https://example.dk/opskrift/kage",
+      crawlRunId: "run-images",
+      crawlAttemptId: "attempt-images",
+      extractedAt: new Date("2026-08-24T08:00:00.000Z"),
+      rawRecipe: { ...structuredClone(completeRecipe), image },
+      language: "da",
+      languageConfidence: 1,
+      languageSignals: [],
+      extractorVersion: "2.0.0",
+      extractionSignals: [],
+    }).normalized.imageUrls;
+
+    expect(build("https://images.example.dk/kage.jpg")).toEqual(["https://images.example.dk/kage.jpg"]);
+    expect(build("//cdn.example.dk/kage.jpg")).toEqual(["//cdn.example.dk/kage.jpg"]);
+    expect(build("/wp-content/kage.jpg")).toEqual(["/wp-content/kage.jpg"]);
+    expect(build(["https://a.dk/1.jpg", "https://a.dk/2.jpg"]))
+      .toEqual(["https://a.dk/1.jpg", "https://a.dk/2.jpg"]);
+    // A caption is not a reference to anything.
+    expect(build("En dejlig kage med marcipan")).toEqual([]);
+  });
+
   it("treats a negative ISO duration as no duration rather than a huge one", () => {
     // gatheranddine publishes prepTime "PT-29787046.716667M", a clock
     // subtraction made the wrong way round that drifts with real time. The

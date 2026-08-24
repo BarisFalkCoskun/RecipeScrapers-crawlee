@@ -475,13 +475,30 @@ function splitInstructionString(value: string): string[] {
 }
 
 function normalizeImageUrls(value: unknown): string[] {
-  if (typeof value === "string") return [cleanText(value)].filter(Boolean);
+  if (typeof value === "string") {
+    const cleaned = cleanText(value);
+    return looksLikeImageReference(cleaned) ? [cleaned] : [];
+  }
   if (Array.isArray(value)) return value.flatMap(normalizeImageUrls);
   if (value && typeof value === "object") {
     const node = value as Record<string, unknown>;
     return normalizeImageUrls(node["url"] ?? node["contentUrl"]);
   }
   return [];
+}
+
+/**
+ * A source whose template leaks an unescaped quote publishes prose in the image
+ * array: bornemenuen states url as ["/sites/.../Karrysalat copy2.jpg", "hvide
+ * bønner og æble\" />"], and the second entry is a fragment of its own markup.
+ * Storing it puts a sentence where a consumer expects an image. Requiring a
+ * reference that could address something keeps the real image, which legacy
+ * drops along with the rest.
+ */
+function looksLikeImageReference(value: string): boolean {
+  if (!value || /\s/u.test(value)) return false;
+  if (/[<>"]/u.test(value)) return false;
+  return /^(?:https?:)?\/\//u.test(value) || value.startsWith("/") || /^data:image\//u.test(value);
 }
 
 function normalizeKeywords(value: unknown): string[] {
