@@ -511,7 +511,7 @@ describe("Danish JSON-LD source registry", () => {
 
     // Sources whose uncapped run came back clean. Parity work can carry one
     // past its canary, which is progress rather than a break.
-    for (const id of ["afamilyfeast", "cookiesandcups", "opskrifterforalle", "inspiredtaste"]) {
+    for (const id of ["cookiesandcups", "opskrifterforalle", "inspiredtaste"]) {
       expect(["canary_passed", "shadow_passed"]).toContain(byId.get(id)?.migrationState);
       expect(byId.get(id)?.latestCanary).toBeTruthy();
     }

@@ -27,11 +27,22 @@ while true; do
   cd "$REPO"
   node tools/parity/dump-crawlee.cjs "$db" "$src" "$before" >/dev/null 2>&1
   rm -rf "$STORAGE_ROOT/st-$src"; mkdir -p "$STORAGE_ROOT/st-$src"
-  CRAWLEE_STORAGE_DIR="$STORAGE_ROOT/st-$src" CRAWLEE_MEMORY_MBYTES=768 \
+  rm -f "$STORAGE_ROOT/$src-run.json"
+  CRAWLEE_STORAGE_DIR="$STORAGE_ROOT/st-$src" CRAWLEE_MEMORY_MBYTES="${REPEAT_CRAWLEE_MB:-1536}" \
   MONGODB_URI='mongodb://127.0.0.1:27017' DB_NAME="$db" \
-    timeout "${REPEAT_TIMEOUT:-2400}" npx tsx src/scripts/crawl-danish-jsonld.ts \
+    timeout "${REPEAT_TIMEOUT:-9000}" npx tsx src/scripts/crawl-danish-jsonld.ts \
       --sources "$src" --force --json-out "$STORAGE_ROOT/$src-run.json" \
       > "$STORAGE_ROOT/$src-run.log" 2>&1
+  run_status=$?
+  # A crawl that was killed, or that never started because an index could not
+  # be built, writes no summary. Its records are unchanged from before, so the
+  # comparison below would call that stable - the second run has to be shown to
+  # have happened, not merely to have left everything alone.
+  if [ "$run_status" -ne 0 ] || [ ! -s "$STORAGE_ROOT/$src-run.json" ]; then
+    { flock 8; printf '%s | INCONCLUSIVE the second run did not complete (exit %s)\n' "$src" "$run_status" >> "$RESULTS"; } 8>>"$RESULTS.lock"
+    echo "[$WORKER] $src -> INCONCLUSIVE second run did not complete"
+    continue
+  fi
   node tools/parity/dump-crawlee.cjs "$db" "$src" "$after" >/dev/null 2>&1
   verdict=$(node -e '
     const fs=require("fs");

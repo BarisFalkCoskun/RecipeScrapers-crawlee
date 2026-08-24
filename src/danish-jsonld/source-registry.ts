@@ -26032,7 +26032,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "canary_passed",
     latestCanary: "2026-08-15T10-06-36.443Z-attempt-0550c74a-5637-4061-9509-d715fe054fc8",
     deferOrBlockReason:
-      "Uncapped run persisted all 3062 discovered recipes with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: legacy-unhealthy; 149 stable records over two uncapped runs against the five current category routes. Uncapped run persisted all 3062 discovered recipes with complete discovery and no blocked, failed or rejected record. The second uncapped run is outstanding: it was killed by the harness timeout before completing",
   },
   /**
    * Six pages carry a canonical pointing at thise.dk, a separate brand whose
@@ -26130,8 +26130,6 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "shadow_passed",
     latestScrapyOutcome: "failed",
     latestCanary: "2026-08-20T13-57-00.000Z",
-    shadowParity:
-      "legacy-unhealthy; 149 stable records over two uncapped runs against the five current category routes",
     deferOrBlockReason:
       "The legacy spider cannot produce a comparison for this source: its only start URL, /opskrifter/, now answers 200 with a category hub carrying no recipe links at all, and the full legacy run emitted nothing. Parity rests on the documented legacy-unhealthy route instead - two uncapped runs over the five current category routes emitted identical 149-record keys and normalized content with complete discovery, idempotent upserts, and no failed, blocked, rejected, storage or domain record, and a manual read of 25 stored records found every one complete. The source sits behind the simply.com browser check, which the rendered path now waits out rather than recording as a block",
   },
@@ -26790,13 +26788,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1474 recipes from 1632 posts with complete discovery and no blocked, failed or rejected record",
   },
   afamilyfeast: {
-    migrationState: "shadow_passed",
+    migrationState: "canary_passed",
     latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-19T16-30-26.970Z-attempt-e245d57e-29ff-4693-a304-c404d47ea324",
-    shadowParity:
-      "1977/1977 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Two uncapped Crawlee runs emitted identical 1977-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 1977 recipes with every material field matching; 1805 records keep a cuisine legacy has no field for; 1 records keep a fuller yield than legacy leading-integer; 78 negative upstream durations V2 rejects and legacy keeps",
+      "Shadow comparison passed: 1977/1977 recipes and every material field match exactly. The full isolated Scrapy run matched every material field. The second uncapped run is outstanding: it was killed by the harness timeout before completing, and the harness read the resulting unchanged records as stability. Recorded counts are from one uncapped run and the incomplete second, which emitted identical 1977-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 1977 recipes with every material field matching; 1805 records keep a cuisine legacy has no field for; 1 records keep a fuller yield than legacy leading-integer; 78 negative upstream durations V2 rejects and legacy keeps",
   },
   coupleinthekitchen: {
     migrationState: "shadow_passed",
@@ -26895,13 +26891,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 41-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 41 recipes with every material field matching; 3 records keep a cuisine legacy has no field for and 2 keep a yield legacy reduces to its first integer",
   },
   annsentitledlife: {
-    migrationState: "shadow_passed",
+    migrationState: "canary_passed",
     latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-19T15-23-05.567Z-attempt-eba71083-16e0-4282-a8df-ede1473f6d54",
-    shadowParity:
-      "458/458 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Two uncapped Crawlee runs emitted identical 458-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 458 recipes with every material field matching; 441 records keep a cuisine legacy has no field for",
+      "Shadow comparison passed: 458/458 recipes and every material field match exactly. The full isolated Scrapy run matched every material field. The second uncapped run is outstanding: it was killed by the harness timeout before completing, and the harness read the resulting unchanged records as stability. Recorded counts are from one uncapped run and the incomplete second, which emitted identical 458-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 458 recipes with every material field matching; 441 records keep a cuisine legacy has no field for",
   },
   thecookful: {
     migrationState: "canary_passed",
@@ -32027,13 +32021,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Cloudflare returned HTTP 403 on 7724 requests across 530 processed pages and nothing was persisted",
   },
   madogdrikke: {
-    migrationState: "shadow_passed",
+    migrationState: "canary_passed",
     latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-17T15-07-04.733Z-attempt-d21edf83-5518-40a1-9f1b-4dda2bdf7236",
-    shadowParity:
-      "2483/2483 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Two uncapped Crawlee runs emitted identical 2483-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 2483 recipes with every material field matching; tags == keywords + cuisines; 1856 records keep a fuller yield than legacy leading-integer; 6 records legacy accepts without a name, ingredients or instructions",
+      "Shadow comparison passed: 2483/2483 recipes and every material field match exactly. The full isolated Scrapy run matched every material field. The second uncapped run is outstanding: it was killed by the harness timeout before completing, and the harness read the resulting unchanged records as stability. Recorded counts are from one uncapped run and the incomplete second, which emitted identical 2483-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 2483 recipes with every material field matching; tags == keywords + cuisines; 1856 records keep a fuller yield than legacy leading-integer; 6 records legacy accepts without a name, ingredients or instructions",
   },
   landolakes: {
     migrationState: "canary_passed",
@@ -32042,7 +32034,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted all 2782 discovered recipes with complete discovery and no blocked, failed or rejected record",
   },
   mariavestergaard: {
-    migrationState: "shadow_passed",
+    migrationState: "canary_passed",
     latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-17T18-08-07.752Z-attempt-806f9d5e-cd86-4d2e-b94b-f6efbdf5e387",
     shadowParity:
