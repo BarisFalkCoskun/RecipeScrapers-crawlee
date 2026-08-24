@@ -60,7 +60,15 @@ const norm=s=>stripMarkup(stripMarkup(String(s??"")))
 // choices out of the field comparison.
 const url=u=>{
   const raw=String(u||"").split("#")[0].replace(/\/$/,"").replace("://www.","://");
-  try{ const p=new URL(raw); p.searchParams.sort(); return p.toString().replace(/\/$/,""); }
+  try{
+    const p=new URL(raw);
+    p.searchParams.sort();
+    // A trailing slash on the path is the same page with or without it, and it
+    // is invisible to the earlier strip when a query string follows:
+    // cookcookgo serves /dk/?p=932 and /dk?p=932 as one recipe.
+    if(p.pathname.length>1) p.pathname=p.pathname.replace(/\/+$/u,"");
+    return p.toString().replace(/\/$/,"");
+  }
   catch{ return raw; }
 };
 const K=(u,t)=>url(u)+" :: "+norm(t);
@@ -105,7 +113,11 @@ for(const [k,l] of L){
     // legacy drops it, so a step that matches once the prefix is removed is the
     // same step with more of the source preserved.
     const stripped=cs.map((t,i)=>{
-      const m=/^[^:]{1,60}:\s*(.*)$/su.exec(t);
+      // The bound is generous because equality after stripping is what makes
+      // this safe, not the length: culinaryginger names one step "If using
+      // wooden skewers, soak them in water for 30 minutes to prevent burning",
+      // which is 68 characters.
+      const m=/^[^:]{1,160}:\s*(.*)$/su.exec(t);
       return m && m[1]===ls[i] ? m[1] : t;
     });
     if(JSON.stringify(ls)===JSON.stringify(stripped)) namedSteps++;
