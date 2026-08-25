@@ -644,12 +644,20 @@ describe("Danish JSON-LD source registry", () => {
     // These spiders walk the recipe API a page at a time and stop for good when
     // one page is challenged, reporting finish_reason finished either way.
     // budgetbytes fetched three of nineteen pages and stored 300 of 1867.
+    // The finding is about the legacy spider and holds whatever state the source
+    // is in: budgetbytes and eatingbirdfood are back at canary_passed while
+    // their evidence is re-gathered after the step-name fix, which does not
+    // change what their legacy run did.
     for (const id of ["budgetbytes", "plainchicken", "eatingbirdfood", "willcookforsmiles"]) {
       const source = byId.get(id);
-      expect(source?.migrationState).toBe("shadow_passed");
+      expect(["shadow_passed", "canary_passed"]).toContain(source?.migrationState);
       expect(source?.latestScrapyOutcome).toBe("failed");
       expect(source?.deferOrBlockReason).toMatch(/stops for good when one page is challenged/u);
       expect(source?.deferOrBlockReason).toMatch(/finish_reason finished/u);
+    }
+    // The ones not being re-verified still carry the parity they passed on.
+    for (const id of ["plainchicken", "willcookforsmiles"]) {
+      expect(byId.get(id)?.migrationState).toBe("shadow_passed");
     }
     // Five of them stored nothing at all and still reported a finished run.
     for (const id of ["plainchicken", "willcookforsmiles", "kitchensanctuary"]) {
