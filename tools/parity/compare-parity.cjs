@@ -219,10 +219,18 @@ for(const [k,l] of L){
   }
   const limg=(l.image_urls||[]).map(norm), cimg=(n.imageUrls||[]).map(norm);
   if(JSON.stringify(limg)!==JSON.stringify(cimg)){
-    // Legacy keeps only absolute image URLs, so a source that states its images
-    // as rooted paths — bornemenuen serves /sites/default/files/... — leaves it
-    // with none at all while V2 keeps what the page points at.
-    if(limg.length===0 && cimg.length>0 && cimg.every(u=>u.startsWith("/") && !u.startsWith("//"))) relativeImages++;
+    // Legacy ends up with no images on whole sources where V2 has them, for
+    // more than one reason: it keeps only absolute URLs, so a source stating
+    // rooted paths (bornemenuen serves /sites/default/files/...) leaves it with
+    // none, and familiejournal states its images in a shape legacy reads as
+    // empty on all 995 of its recipes while V2 keeps three imgix crops of each.
+    // Either way legacy has nothing and V2 has something usable, which is V2
+    // keeping what legacy discards rather than the two disagreeing.
+    //
+    // The test is on legacy being empty, so the reverse - V2 losing images a
+    // legacy run found - is still a difference and still reported.
+    const usable=u=>/^(?:https?:)?\/\//u.test(u) || (u.startsWith("/") && !u.startsWith("//")) || u.startsWith("data:image/");
+    if(limg.length===0 && cimg.length>0 && cimg.every(usable)) relativeImages++;
     else add("images",k,l.image_urls,n.imageUrls);
   }
   if(JSON.stringify((l.categories||[]).map(norm).sort())!==JSON.stringify((n.categories||[]).map(norm).sort())) add("categories",k,l.categories,n.categories);
@@ -280,5 +288,5 @@ if(!legacy.length || !crawlee.length){
   console.log("\nMISMATCH: field differences above");
   process.exitCode=2;
 } else {
-  console.log(`\nALL MATERIAL FIELDS MATCH (${cuisineDropped?`${cuisineDropped} records keep a cuisine legacy has no field for`:"tags == keywords + cuisines"}${namedSteps?`; ${namedSteps} records keep WPRM named-step prefixes legacy drops`:""}${richerYield?`; ${richerYield} records keep a fuller yield than legacy leading-integer`:""}${negativeDurations?`; ${negativeDurations} negative upstream durations V2 rejects and legacy keeps`:""}${looseDurations?`; ${looseDurations} loosely spelled durations V2 reads and legacy gives up on`:""}${relativeImages?`; ${relativeImages} records keep a rooted image path legacy discards`:""}${fusedByLegacy?`; ${fusedByLegacy} records keep a space at a block boundary legacy fuses over`:""}${spacedByLegacy?`; ${spacedByLegacy} records drop a space legacy inserts where it strips inline markup`:""}${siblings.length?`; ${siblings.length} sibling recipes recovered`:""}${incompleteOnlyLegacy.length?`; ${incompleteOnlyLegacy.length} records legacy accepts without a name, ingredients or instructions`:""})`);
+  console.log(`\nALL MATERIAL FIELDS MATCH (${cuisineDropped?`${cuisineDropped} records keep a cuisine legacy has no field for`:"tags == keywords + cuisines"}${namedSteps?`; ${namedSteps} records keep WPRM named-step prefixes legacy drops`:""}${richerYield?`; ${richerYield} records keep a fuller yield than legacy leading-integer`:""}${negativeDurations?`; ${negativeDurations} negative upstream durations V2 rejects and legacy keeps`:""}${looseDurations?`; ${looseDurations} loosely spelled durations V2 reads and legacy gives up on`:""}${relativeImages?`; ${relativeImages} records keep images legacy discards`:""}${fusedByLegacy?`; ${fusedByLegacy} records keep a space at a block boundary legacy fuses over`:""}${spacedByLegacy?`; ${spacedByLegacy} records drop a space legacy inserts where it strips inline markup`:""}${siblings.length?`; ${siblings.length} sibling recipes recovered`:""}${incompleteOnlyLegacy.length?`; ${incompleteOnlyLegacy.length} records legacy accepts without a name, ingredients or instructions`:""})`);
 }

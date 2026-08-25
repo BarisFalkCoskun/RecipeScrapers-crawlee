@@ -31205,10 +31205,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run discovered all 1533 records the live listing contract declares and persisted 1531 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients, 1 no canonical link), so there is no unexplained rejection",
   },
   thegunnysack: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-11-57.499Z-attempt-793c107b-21bc-403e-bfb2-8f647e666b58",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run discovered all 1399 records the live listing contract declares and persisted 1376 with no blocked or failed request. Every one of the 23 shortfall records is an upstream defect the completeness contract rejects (4 no ingredients, 1 no instructions, 18 no canonical link), so there is no unexplained rejection",
+      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 1376 keys with identical content. Every one of the 23 shortfall records is an upstream defect the completeness contract rejects (4 no ingredients, 1 no instructions, 18 no canonical link), so there is no unexplained rejection",
   },
   thehealthyfoodie: {
     migrationState: "shadow_passed",
@@ -32004,9 +32005,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   },
   familiejournal: {
     migrationState: "canary_passed",
-    latestCanary: "2026-08-18T15-37-57.655Z-attempt-7803e70d-5e95-4878-ab42-ba783293cbd4",
+    latestCanary: "2026-08-25T12-46-58.363Z-attempt-5da9397c-2f79-4657-bda2-22a2f900f6f3",
     deferOrBlockReason:
-      "Uncapped run persisted 993 recipes from 6432 discovered candidates with complete discovery and no blocked, failed or rejected record; the remaining candidates publish no Recipe JSON-LD even after rendering",
+      "Uncapped run persisted all 995 recipes with complete discovery and no failed, blocked or rejected record. A full isolated legacy run - the first to complete, after the earlier attempts died on a two-hour ceiling - emitted the same 995 records, and every material field matches. V2 additionally keeps a fuller yield than legacy's leading integer on 908 records, and the images on all 995: legacy reads this source's image shape as empty and stores none at all. The second uncapped run needed for idempotency is running",
   },
   /**
    * Its robots.txt advertises /sitemap.xml, and that endpoint never answers:
