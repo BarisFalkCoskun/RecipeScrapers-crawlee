@@ -107,29 +107,45 @@ let negativeDurations=0;
 let looseDurations=0;
 let relativeImages=0;
 let fusedByLegacy=0;
+let spacedByLegacy=0;
+// Legacy and V2 disagree about whitespace at a markup boundary, in both
+// directions, and neither disagreement is about content.
+//
 // Legacy renders a text field by taking its markup's text content, which
-// concatenates block elements: avocadoen writes one step as
+// concatenates block elements: avocadoen writes a step as
 // "<p>...250 grader varmluft</p><p>Airfryer: ...</p>" and legacy emits
-// "varmluftAirfryer". V2 turns the boundary into a space, so the two differ by
-// whitespace alone and only ever in that direction - V2 never has fewer spaces.
-// Both conditions are required: equal once whitespace is dropped, and V2 not
-// short of a space legacy has. That keeps this from excusing a lost word, but
-// it does mean a difference of whitespace alone cannot be seen through it, so
-// defects of that shape have to be caught by their own tests rather than here.
-const spacesOnly=(a,b)=>{
-  if(a.length!==b.length) return false;
-  const bare=t=>t.replace(/\s+/gu,"");
-  const gaps=t=>(t.match(/\s/gu)||[]).length;
-  return a.every((t,i)=>t===b[i] ||
-    (bare(t)===bare(b[i]) && gaps(b[i])>=gaps(t)));
-};
+// "varmluftAirfryer" where V2 puts a space.
+//
+// The other way round, legacy replaces any stripped tag with a space, including
+// an inline one the page shows no gap at: andiemitchell writes
+// "Thai Kitchen<sup>®</sup>" and legacy emits "Thai Kitchen ®", and
+// anoregoncottage links an ingredient straight after a colon and legacy emits
+// "seasoning of choice: Homemade Spice Rub" where the page reads
+// "choice:Homemade". V2 renders what the page renders.
+//
+// So a whitespace-only difference is allowed in either direction. The direction
+// is still counted and reported, because one of them - V2 short of a space - is
+// also what a source crawled before the block-boundary fix looks like. What
+// keeps a stale crawl from passing here is not this function but fix-impact.cjs,
+// which re-extracts every stored record with the current code before any
+// promotion; the count below is the human-visible signal that it should be run.
+//
+// The cost is that a whitespace-only difference cannot be seen through at all,
+// and one such defect has happened - a zero-width character collapsing "A﻿dd"
+// into "A dd". Defects of that shape belong to the extraction tests now.
+const bareText=t=>String(t).replace(/\s+/gu,"");
+const gapCount=t=>(String(t).match(/\s/gu)||[]).length;
+const spacesOnly=(a,b)=>
+  a.length===b.length && a.every((t,i)=>t===b[i] || bareText(t)===bareText(b[i]));
+const legacyIsSpacier=(a,b)=>
+  a.reduce((n,t,i)=>n+gapCount(t)-gapCount(b[i]),0)>0;
 const diffs={}; const add=(f,u,a,b)=>{(diffs[f]=diffs[f]||[]).push({u,legacy:a,crawlee:b});};
 for(const [k,l] of L){
   const c=C.get(k); if(!c) continue; const n=c.normalized||{};
   const li=(l.ingredients||[]).map(x=>norm(x.original||x.name)).filter(Boolean);
   const ci=(n.ingredients||[]).map(x=>norm(typeof x==="string"?x:(x.original||x.text||x.name))).filter(Boolean);
   if(JSON.stringify(li)!==JSON.stringify(ci)){
-    if(spacesOnly(li,ci)) fusedByLegacy++;
+    if(spacesOnly(li,ci)){ legacyIsSpacier(li,ci)?spacedByLegacy++:fusedByLegacy++; }
     else add("ingredients",k,li,ci);
   }
   const ls=(l.instructions||[]).map(x=>norm(typeof x==="string"?x:(x.text||x.name))).filter(Boolean);
@@ -147,7 +163,7 @@ for(const [k,l] of L){
       return m && m[1]===ls[i] ? m[1] : t;
     });
     if(JSON.stringify(ls)===JSON.stringify(stripped)) namedSteps++;
-    else if(spacesOnly(ls,cs)) fusedByLegacy++;
+    else if(spacesOnly(ls,cs)){ legacyIsSpacier(ls,cs)?spacedByLegacy++:fusedByLegacy++; }
     else add("instructions",k,ls,cs);
   }
   // A negative ISO duration is a broken upstream value. V2 reads it as no
@@ -250,5 +266,5 @@ if(!legacy.length || !crawlee.length){
   console.log("\nMISMATCH: field differences above");
   process.exitCode=2;
 } else {
-  console.log(`\nALL MATERIAL FIELDS MATCH (${cuisineDropped?`${cuisineDropped} records keep a cuisine legacy has no field for`:"tags == keywords + cuisines"}${namedSteps?`; ${namedSteps} records keep WPRM named-step prefixes legacy drops`:""}${richerYield?`; ${richerYield} records keep a fuller yield than legacy leading-integer`:""}${negativeDurations?`; ${negativeDurations} negative upstream durations V2 rejects and legacy keeps`:""}${looseDurations?`; ${looseDurations} loosely spelled durations V2 reads and legacy gives up on`:""}${relativeImages?`; ${relativeImages} records keep a rooted image path legacy discards`:""}${fusedByLegacy?`; ${fusedByLegacy} records keep a space at a block boundary legacy fuses over`:""}${siblings.length?`; ${siblings.length} sibling recipes recovered`:""}${incompleteOnlyLegacy.length?`; ${incompleteOnlyLegacy.length} records legacy accepts without a name, ingredients or instructions`:""})`);
+  console.log(`\nALL MATERIAL FIELDS MATCH (${cuisineDropped?`${cuisineDropped} records keep a cuisine legacy has no field for`:"tags == keywords + cuisines"}${namedSteps?`; ${namedSteps} records keep WPRM named-step prefixes legacy drops`:""}${richerYield?`; ${richerYield} records keep a fuller yield than legacy leading-integer`:""}${negativeDurations?`; ${negativeDurations} negative upstream durations V2 rejects and legacy keeps`:""}${looseDurations?`; ${looseDurations} loosely spelled durations V2 reads and legacy gives up on`:""}${relativeImages?`; ${relativeImages} records keep a rooted image path legacy discards`:""}${fusedByLegacy?`; ${fusedByLegacy} records keep a space at a block boundary legacy fuses over`:""}${spacedByLegacy?`; ${spacedByLegacy} records drop a space legacy inserts where it strips inline markup`:""}${siblings.length?`; ${siblings.length} sibling recipes recovered`:""}${incompleteOnlyLegacy.length?`; ${incompleteOnlyLegacy.length} records legacy accepts without a name, ingredients or instructions`:""})`);
 }

@@ -212,6 +212,17 @@ class, and one such defect has already happened - a zero-width character inside
 `tests/wprm/recipe-document.test.ts`, which is where defects of that shape have
 to be caught now.
 
-Note the direction. When V2 has *fewer* spaces than legacy the guard refuses the
-class, which is what a source crawled before the block-boundary fix looks like.
-Those need re-crawling, not a comparator change; `fix-impact.cjs` names them.
+Legacy also disagrees the other way. It replaces any stripped tag with a space,
+including an inline one the page shows no gap at: andiemitchell writes
+`Thai Kitchen<sup>&reg;</sup>` and legacy emits `Thai Kitchen ®`, and
+anoregoncottage links an ingredient straight after a colon so legacy emits
+`seasoning of choice: Homemade Spice Rub` where the page reads
+`choice:Homemade`. V2 renders what the page renders, so this is the same class
+seen from the other side and is allowed too.
+
+The direction is still counted and named separately in the match line, because
+V2 being short of a space is *also* what a source crawled before the
+block-boundary fix looks like. The comparator cannot tell those apart from the
+text alone. What keeps a stale crawl from being promoted is `fix-impact.cjs`,
+which re-extracts every stored record with the current code, and it has to be
+run before promoting on a match that reports this class.
