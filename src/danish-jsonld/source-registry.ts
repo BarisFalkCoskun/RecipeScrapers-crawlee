@@ -27612,10 +27612,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 126 recipes from 126 API records with complete discovery and no blocked, failed or rejected record",
   },
   centercutcook: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-38-02.808Z-attempt-7cb78e3d-e5da-49ce-a73b-2e66672e88c7",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 424 recipes from 424 API records with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: legacy-unhealthy; page two of the API answered 403, so the legacy spider stopped after 100 recipes yet still reported finish_reason 'finished'. A truncated run is not a baseline, so acceptance rests on discovery matching the source's own inventory - the live listing contract reports x-wp-total 424 and the uncapped run persisted 424 - on all 100 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 424 keys with identical content, and on a reviewed sample of 25 stored records",
   },
   cheerfulcook: {
     migrationState: "shadow_passed",
@@ -27746,10 +27747,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 2879 recipes from 2880 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   cookincanuck: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-40-47.999Z-attempt-213eb5bf-0453-4004-a86b-1f8c8fde3924",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 1206 recipes from 1206 API records with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: legacy-unhealthy; page 6 of the API answered 403, so the legacy spider stopped after 500 recipes yet still reported finish_reason 'finished'. A truncated run is not a baseline, so acceptance rests on discovery matching the source's own inventory - the live listing contract reports x-wp-total 1206 and the uncapped run persisted 1206 - on all 500 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 1206 keys with identical content, and on a reviewed sample of 25 stored records",
   },
   cookingchew: {
     migrationState: "configured",
@@ -27875,10 +27877,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched 7 of the 11 pages its own header advertises, stored 700 recipes, and finished with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 1085-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
   },
   cubesnjuliennes: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-44-35.315Z-attempt-1dcce09a-efb5-4381-a872-804f48a9329b",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 358 recipes from 358 API records with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: 358 records match the isolated legacy run on every material field, and a second uncapped run reproduced all 358 keys with identical content; tags == keywords + cuisines",
   },
   cuisineandtravel: {
     migrationState: "shadow_passed",
@@ -28221,10 +28224,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 13 recipes from 13 API records with complete discovery and no blocked, failed or rejected record",
   },
   eatyourselfskinny: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-51-57.539Z-attempt-2f4fa10d-10b6-4f9b-aab2-676b02cccf7a",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 454 recipes from 454 API records with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: legacy-unhealthy; the first API page answered 403, so the legacy spider produced no recipes at all yet still reported finish_reason 'finished'. Acceptance therefore rests on discovery matching the source's own inventory - the live listing contract reports x-wp-total 454 and the uncapped run persisted 454 - on two uncapped runs reproducing all 454 keys with identical content, and on a reviewed sample of 25 stored records",
   },
   effortlessfoodie: {
     migrationState: "shadow_passed",
@@ -28419,10 +28423,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1930 recipes from 1975 API records; 45 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   fivehearthome: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-58-00.454Z-attempt-bcbbe56f-1ae7-41cf-a6d5-e4e85fd5b835",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 638 recipes from 638 API records with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: legacy-unhealthy; the first API page answered 403, so the legacy spider produced no recipes at all yet still reported finish_reason 'finished'. Acceptance therefore rests on discovery matching the source's own inventory - the live listing contract reports x-wp-total 638 and the uncapped run persisted 638 - on two uncapped runs reproducing all 638 keys with identical content, and on a reviewed sample of 25 stored records",
   },
   flavcity: {
     migrationState: "configured",
@@ -29073,10 +29078,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 260 recipes from 268 API records; 8 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   janespatisserie: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-22-19.585Z-attempt-8d8f65f1-d426-44d3-ac00-3602e4adb414",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 851 recipes from 851 API records with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: legacy-unhealthy; page two of the API answered 403, so the legacy spider stopped after 100 recipes yet still reported finish_reason 'finished'. A truncated run is not a baseline, so acceptance rests on discovery matching the source's own inventory - the live listing contract reports x-wp-total 852 and the uncapped run persisted 852 - on all 100 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 852 keys with identical content, and on a reviewed sample of 25 stored records",
   },
   jaroflemons: {
     migrationState: "configured",
@@ -29304,11 +29310,17 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     deferOrBlockReason:
       "Uncapped run persisted 224 recipes from 224 API records with complete discovery and no blocked, failed or rejected record",
   },
+  /**
+   * The catalog is reachable in full and the shortfall is upstream: recipe
+   * 87108, "Philly Cheesesteak Pizza", publishes one ingredient and an empty
+   * instructions array. It is a stub, not a fetch failure - its page answers
+   * 200 and it sits mid-page, so nothing about the crawl hid it.
+   */
   lecremedelacrumb: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-21T11-27-28.301Z-attempt-62707ecc-71d0-476c-81cd-3e86082497a0",
+    migrationState: "configured",
+    latestCanary: "2026-08-25T07-15-09.782Z-attempt-21934e1c-8432-4f7a-8e0d-b425db2369d7",
     deferOrBlockReason:
-      "Uncapped run persisted 1471 recipes from 1471 API records with complete discovery and no blocked, failed or rejected record",
+      "Uncapped run discovered all 1472 records the live listing contract declares and persisted 1471 with no blocked or failed request; the one shortfall is an upstream stub carrying no instructions, which the completeness contract rejects",
   },
   lemonsandzest: {
     migrationState: "canary_passed",
@@ -29749,10 +29761,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 499 recipes from 499 API records with complete discovery and no blocked, failed or rejected record",
   },
   mysequinedlife: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-36-29.208Z-attempt-bea0c5cd-bb3c-404e-8f3b-9922d4a952eb",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 620 recipes from 620 API records with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: legacy-unhealthy; the first API page answered 403, so the legacy spider produced no recipes at all yet still reported finish_reason 'finished'. Acceptance therefore rests on discovery matching the source's own inventory - the live listing contract reports x-wp-total 620 and the uncapped run persisted 620 - on two uncapped runs reproducing all 620 keys with identical content, and on a reviewed sample of 25 stored records",
   },
   mytastycurry: {
     migrationState: "configured",
@@ -29811,10 +29824,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 612-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 612 recipes with every material field matching",
   },
   noracooks: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-37-45.210Z-attempt-553d27f7-bc50-4146-a461-0c28d5ebeb8c",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 717 recipes from 717 API records with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: legacy-unhealthy; page 5 of the API answered 403, so the legacy spider stopped after 400 recipes yet still reported finish_reason 'finished'. A truncated run is not a baseline, so acceptance rests on discovery matching the source's own inventory - the live listing contract reports x-wp-total 718 and the uncapped run persisted 718 - on all 400 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 718 keys with identical content, and on a reviewed sample of 25 stored records",
   },
   nourishplate: {
     migrationState: "shadow_passed",
@@ -29909,10 +29923,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1315 recipes from 1346 API records; 31 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   onmykidsplate: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-38-51.423Z-attempt-316a784e-9f11-47e2-bba5-6bb1cc949a57",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 530 recipes from 530 API records with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: legacy-unhealthy; page two of the API answered 403, so the legacy spider stopped after 100 recipes yet still reported finish_reason 'finished'. A truncated run is not a baseline, so acceptance rests on discovery matching the source's own inventory - the live listing contract reports x-wp-total 530 and the uncapped run persisted 530 - on all 100 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 530 keys with identical content, and on a reviewed sample of 25 stored records",
   },
   orchidsandsweettea: {
     migrationState: "configured",
@@ -30362,10 +30377,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   savorynothings: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-53-50.537Z-attempt-cef75340-e0a5-450a-a7cd-9eeb5c23d4ac",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 849 recipes from 849 API records with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: legacy-unhealthy; page two of the API answered 403, so the legacy spider stopped after 100 recipes yet still reported finish_reason 'finished'. A truncated run is not a baseline, so acceptance rests on discovery matching the source's own inventory - the live listing contract reports x-wp-total 849 and the uncapped run persisted 849 - on all 100 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 849 keys with identical content, and on a reviewed sample of 25 stored records",
   },
   savvybites: {
     migrationState: "shadow_passed",
@@ -30768,10 +30784,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 649 recipes from 680 API records; 31 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   tablefortwoblog: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-05-20.700Z-attempt-774a3024-90a0-4e29-b212-5a63699cd5bb",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 1195 recipes from 1195 API records with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: legacy-unhealthy; page two of the API answered 403, so the legacy spider stopped after 100 recipes yet still reported finish_reason 'finished'. A truncated run is not a baseline, so acceptance rests on discovery matching the source's own inventory - the live listing contract reports x-wp-total 1195 and the uncapped run persisted 1195 - on all 100 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 1195 keys with identical content, and on a reviewed sample of 25 stored records",
   },
   tamingtwins: {
     migrationState: "shadow_passed",
@@ -30937,10 +30954,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1286 recipes from 1292 API records; 6 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   thecuriousplate: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-09-34.295Z-attempt-cd66e53f-a487-427f-a8e3-4815926a2e3e",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 325 recipes from 325 API records with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: 325 records match the isolated legacy run on every material field, and a second uncapped run reproduced all 325 keys with identical content; tags == keywords + cuisines",
   },
   thedefineddish: {
     migrationState: "configured",
@@ -31015,10 +31033,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run reached no recipe candidates, so the route needs review before a canary",
   },
   thefoodblog: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-07-18.419Z-attempt-d4eecdaa-1275-4ce4-a9bd-ba50575fdc74",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 384 recipes from 384 API records with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: legacy-unhealthy; the first API page answered 403, so the legacy spider produced no recipes at all yet still reported finish_reason 'finished'. Acceptance therefore rests on discovery matching the source's own inventory - the live listing contract reports x-wp-total 384 and the uncapped run persisted 384 - on two uncapped runs reproducing all 384 keys with identical content, and on a reviewed sample of 25 stored records",
   },
   thefoodcharlatan: {
     migrationState: "configured",
@@ -31835,10 +31854,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 612-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 612 recipes with every material field matching",
   },
   yummytoddlerfood: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-27-08.736Z-attempt-194267f3-07a6-4d41-adb1-2928ca92b25c",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 973 recipes from 973 API records with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: legacy-unhealthy; the first API page answered 403, so the legacy spider produced no recipes at all yet still reported finish_reason 'finished'. Acceptance therefore rests on discovery matching the source's own inventory - the live listing contract reports x-wp-total 974 and the uncapped run persisted 974 - on two uncapped runs reproducing all 974 keys with identical content, and on a reviewed sample of 25 stored records",
   },
   yupitsvegan: {
     migrationState: "shadow_passed",
