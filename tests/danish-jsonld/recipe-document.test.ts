@@ -256,6 +256,10 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
     expect(build("PT1\u00bdH")).toBe(90);
     expect(build("PT\u00bdH")).toBe(30);
     expect(build("PT2\u00bcH")).toBe(135);
+    // iform also writes the fraction with a space before it. Expanding before
+    // the gap closes reads "3 ¼H" as thirty and a quarter hours.
+    expect(build("P0Y0M0DT3 \u00bcH0M0S")).toBe(195);
+    expect(build("PT1 \u00bdH")).toBe(90);
     // Whitespace inside a duration is a formatting slip, not a new meaning.
     expect(build("PT 1H 30M")).toBe(90);
     expect(build("PT45M")).toBe(45);

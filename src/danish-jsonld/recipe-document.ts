@@ -579,8 +579,10 @@ function parseIsoDurationMinutes(value: unknown): number | undefined {
   // "PT15t30M" for fifteen timer thirty, and its own totals confirm it: 15t30M
   // prep plus 1t45M cooking is the 17t15M it gives as the total. Whitespace
   // inside a duration is likewise a formatting slip rather than a new meaning.
-  const isoLike = expandFractions(normalized)
-    .replace(/\s+/gu, "")
+  // Whitespace comes out before the fractions are expanded, or a value written
+  // "3 ¼H" loses the gap between them and reads as 3 followed by 0.25 — thirty
+  // and a quarter hours rather than three and a quarter.
+  const isoLike = expandFractions(normalized.replace(/\s+/gu, ""))
     .replace(/(\d)t(?=\d|$)/gu, "$1h");
   const iso = /^p(?:\d+y)?(?:\d+m)?(?:\d+d)?t(?:(\d+(?:\.\d+)?)h)?(?:(\d+(?:\.\d+)?)m)?(?:\d+(?:\.\d+)?s)?$/u.exec(isoLike);
   if (iso) return positiveRoundedMinutes(

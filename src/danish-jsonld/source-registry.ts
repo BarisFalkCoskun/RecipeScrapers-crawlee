@@ -27039,10 +27039,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 507 recipes from 507 API records with complete discovery and no blocked, failed or rejected record",
   },
   agirldefloured: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "failed",
     latestCanary: "2026-08-21T10-58-41.687Z-attempt-9e165b92-fa90-4c38-b85a-a8b2b621d10a",
+    shadowParity:
+      "legacy-unhealthy; 261 stable records over two uncapped runs against legacy's none",
     deferOrBlockReason:
-      "Uncapped run persisted 260 recipes from 260 API records with complete discovery and no blocked, failed or rejected record",
+      "The legacy spider cannot produce a comparison for this source: its only request is answered with a 301 to a host the spider's allowed_domains does not list, so every response is filtered off-domain. It makes one request, stores nothing, and finishes with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 261-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
   },
   ahintofrosemary: {
     migrationState: "shadow_passed",
@@ -27137,10 +27140,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 816-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 816 recipes with every material field matching",
   },
   amuseyourbouche: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "failed",
     latestCanary: "2026-08-21T11-02-19.546Z-attempt-e50f6910-8a2e-4470-9f4b-33cd5be4b2d6",
+    shadowParity:
+      "legacy-unhealthy; 584 stable records over two uncapped runs against legacy's none",
     deferOrBlockReason:
-      "Uncapped run persisted 584 recipes from 584 API records with complete discovery and no blocked, failed or rejected record",
+      "The legacy spider cannot produce a comparison for this source: its only request is answered with a 301 to a host the spider's allowed_domains does not list, so every response is filtered off-domain. It makes one request, stores nothing, and finishes with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 584-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
   },
   amyinthekitchen: {
     migrationState: "configured",
@@ -29019,10 +29025,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 248 recipes from 248 API records with complete discovery and no blocked, failed or rejected record",
   },
   isabeleats: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "failed",
     latestCanary: "2026-08-21T11-21-29.837Z-attempt-6bb850d9-5347-4039-bb88-024fc9137dab",
+    shadowParity:
+      "legacy-unhealthy; 584 stable records over two uncapped runs against legacy's none",
     deferOrBlockReason:
-      "Uncapped run persisted 584 recipes from 584 API records with complete discovery and no blocked, failed or rejected record",
+      "The legacy spider cannot produce a comparison for this source: its first WPRM API page is challenged, which ends the walk for good. It makes one request, stores nothing, and finishes with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 584-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
   },
   itdoesnttastelikechicken: {
     migrationState: "shadow_passed",
@@ -29453,10 +29462,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 722 recipes from 723 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   macheesmo: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "failed",
     latestCanary: "2026-08-21T11-28-00.893Z-attempt-049961ba-e348-4b75-8258-926d4ab10370",
+    shadowParity:
+      "legacy-unhealthy; 1471 stable records over two uncapped runs against legacy's none",
     deferOrBlockReason:
-      "Uncapped run persisted 1471 recipes from 1471 API records with complete discovery and no blocked, failed or rejected record",
+      "The legacy spider cannot produce a comparison for this source: its only request is answered with a 301 to a host the spider's allowed_domains does not list, so every response is filtered off-domain. It makes one request, stores nothing, and finishes with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 1471-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
   },
   madaboutfood: {
     migrationState: "configured",
@@ -30781,10 +30793,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1099 recipes from 1108 API records; 9 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   tasteslovely: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "failed",
     latestCanary: "2026-08-21T12-06-10.965Z-attempt-640fa092-360c-4acd-9090-4c8b1b63e694",
+    shadowParity:
+      "legacy-unhealthy; 547 stable records over two uncapped runs against legacy's none",
     deferOrBlockReason:
-      "Uncapped run persisted 547 recipes from 547 API records with complete discovery and no blocked, failed or rejected record",
+      "The legacy spider cannot produce a comparison for this source: its first WPRM API page is challenged, which ends the walk for good. It makes one request, stores nothing, and finishes with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 547-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
   },
   tastesofhomemade: {
     migrationState: "shadow_passed",
@@ -31653,10 +31668,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1183 recipes from 1197 API records; 14 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   whiskbite: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "failed",
     latestCanary: "2026-08-21T12-26-50.091Z-attempt-295894b6-cbaa-48e6-aeba-aadddf77f87f",
+    shadowParity:
+      "legacy-unhealthy; 60 stable records over two uncapped runs against legacy's none",
     deferOrBlockReason:
-      "Uncapped run persisted 60 recipes from 60 API records with complete discovery and no blocked, failed or rejected record",
+      "The legacy spider cannot produce a comparison for this source: its only request is answered with a 301 to a host the spider's allowed_domains does not list, so every response is filtered off-domain. It makes one request, stores nothing, and finishes with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 60-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
   },
   whiskrecipes: {
     migrationState: "blocked",
