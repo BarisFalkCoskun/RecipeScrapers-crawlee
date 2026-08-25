@@ -106,12 +106,32 @@ let richerYield=0;
 let negativeDurations=0;
 let looseDurations=0;
 let relativeImages=0;
+let fusedByLegacy=0;
+// Legacy renders a text field by taking its markup's text content, which
+// concatenates block elements: avocadoen writes one step as
+// "<p>...250 grader varmluft</p><p>Airfryer: ...</p>" and legacy emits
+// "varmluftAirfryer". V2 turns the boundary into a space, so the two differ by
+// whitespace alone and only ever in that direction - V2 never has fewer spaces.
+// Both conditions are required: equal once whitespace is dropped, and V2 not
+// short of a space legacy has. That keeps this from excusing a lost word, but
+// it does mean a difference of whitespace alone cannot be seen through it, so
+// defects of that shape have to be caught by their own tests rather than here.
+const spacesOnly=(a,b)=>{
+  if(a.length!==b.length) return false;
+  const bare=t=>t.replace(/\s+/gu,"");
+  const gaps=t=>(t.match(/\s/gu)||[]).length;
+  return a.every((t,i)=>t===b[i] ||
+    (bare(t)===bare(b[i]) && gaps(b[i])>=gaps(t)));
+};
 const diffs={}; const add=(f,u,a,b)=>{(diffs[f]=diffs[f]||[]).push({u,legacy:a,crawlee:b});};
 for(const [k,l] of L){
   const c=C.get(k); if(!c) continue; const n=c.normalized||{};
   const li=(l.ingredients||[]).map(x=>norm(x.original||x.name)).filter(Boolean);
   const ci=(n.ingredients||[]).map(x=>norm(typeof x==="string"?x:(x.original||x.text||x.name))).filter(Boolean);
-  if(JSON.stringify(li)!==JSON.stringify(ci)) add("ingredients",k,li,ci);
+  if(JSON.stringify(li)!==JSON.stringify(ci)){
+    if(spacesOnly(li,ci)) fusedByLegacy++;
+    else add("ingredients",k,li,ci);
+  }
   const ls=(l.instructions||[]).map(x=>norm(typeof x==="string"?x:(x.text||x.name))).filter(Boolean);
   const cs=(n.instructions||[]).map(x=>norm(typeof x==="string"?x:(x.text||x.name))).filter(Boolean);
   if(JSON.stringify(ls)!==JSON.stringify(cs)){
@@ -127,6 +147,7 @@ for(const [k,l] of L){
       return m && m[1]===ls[i] ? m[1] : t;
     });
     if(JSON.stringify(ls)===JSON.stringify(stripped)) namedSteps++;
+    else if(spacesOnly(ls,cs)) fusedByLegacy++;
     else add("instructions",k,ls,cs);
   }
   // A negative ISO duration is a broken upstream value. V2 reads it as no
@@ -229,5 +250,5 @@ if(!legacy.length || !crawlee.length){
   console.log("\nMISMATCH: field differences above");
   process.exitCode=2;
 } else {
-  console.log(`\nALL MATERIAL FIELDS MATCH (${cuisineDropped?`${cuisineDropped} records keep a cuisine legacy has no field for`:"tags == keywords + cuisines"}${namedSteps?`; ${namedSteps} records keep WPRM named-step prefixes legacy drops`:""}${richerYield?`; ${richerYield} records keep a fuller yield than legacy leading-integer`:""}${negativeDurations?`; ${negativeDurations} negative upstream durations V2 rejects and legacy keeps`:""}${looseDurations?`; ${looseDurations} loosely spelled durations V2 reads and legacy gives up on`:""}${relativeImages?`; ${relativeImages} records keep a rooted image path legacy discards`:""}${siblings.length?`; ${siblings.length} sibling recipes recovered`:""}${incompleteOnlyLegacy.length?`; ${incompleteOnlyLegacy.length} records legacy accepts without a name, ingredients or instructions`:""})`);
+  console.log(`\nALL MATERIAL FIELDS MATCH (${cuisineDropped?`${cuisineDropped} records keep a cuisine legacy has no field for`:"tags == keywords + cuisines"}${namedSteps?`; ${namedSteps} records keep WPRM named-step prefixes legacy drops`:""}${richerYield?`; ${richerYield} records keep a fuller yield than legacy leading-integer`:""}${negativeDurations?`; ${negativeDurations} negative upstream durations V2 rejects and legacy keeps`:""}${looseDurations?`; ${looseDurations} loosely spelled durations V2 reads and legacy gives up on`:""}${relativeImages?`; ${relativeImages} records keep a rooted image path legacy discards`:""}${fusedByLegacy?`; ${fusedByLegacy} records keep a space at a block boundary legacy fuses over`:""}${siblings.length?`; ${siblings.length} sibling recipes recovered`:""}${incompleteOnlyLegacy.length?`; ${incompleteOnlyLegacy.length} records legacy accepts without a name, ingredients or instructions`:""})`);
 }

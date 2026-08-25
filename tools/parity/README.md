@@ -193,3 +193,25 @@ Check `extractedAt` on the before side against the commit time of any recent
 extraction fix. If the stored records predate it, the pair proves nothing — the
 re-crawl has since rewritten them, so simply queue the source again and let the
 next pair run entirely on post-fix code.
+
+## Legacy fuses text across a block boundary
+
+Legacy renders a text field by taking the text content of its markup, which
+concatenates block elements with nothing between them. avocadoen writes one step
+as `<p>...250 grader varmluft</p><p>Airfryer: ...</p>` and legacy emits
+`varmluftAirfryer`. V2 turns the boundary into a space, so the two sides differ
+by whitespace alone.
+
+The comparator treats that as an intentional difference, but only under two
+conditions together: the two are equal once whitespace is dropped, and V2 is not
+short of a space legacy has. A record that lost a word still fails.
+
+The cost is that a difference of whitespace alone cannot be seen through this
+class, and one such defect has already happened - a zero-width character inside
+`A﻿dd` collapsing to `A dd`. That is caught by its own test in
+`tests/wprm/recipe-document.test.ts`, which is where defects of that shape have
+to be caught now.
+
+Note the direction. When V2 has *fewer* spaces than legacy the guard refuses the
+class, which is what a source crawled before the block-boundary fix looks like.
+Those need re-crawling, not a comparator change; `fix-impact.cjs` names them.
