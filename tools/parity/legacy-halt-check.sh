@@ -29,12 +29,17 @@ REASON=$(grep -oE "'finish_reason': '[a-z_]+'" "$STATS" | tail -1 | grep -oE "'[
 CODES=$(grep -oE "'downloader/response_status_count/[0-9]+': [0-9]+" "$STATS" | sed "s/'downloader.response_status_count.//;s/'//" | tr '\n' ' ')
 : "${ITEMS:=0}" "${BLOCKED:=0}" "${REASON:=unknown}"
 
-API=$(node -e 'const {DANISH_JSONLD_SOURCES}=require("./dist/danish-jsonld/source-registry.js");
-const s=DANISH_JSONLD_SOURCES.find(x=>x.id===process.argv[1]);console.log((s&&s.startUrls&&s.startUrls[0])||"");' "$SRC")
-TOTAL=""
-if [ -n "$API" ]; then
-  TOTAL=$(curl -sIL --max-time 60 "$API" | grep -i '^x-wp-total:' | tail -1 | tr -dc '0-9')
-fi
+# Discovery is complete when the run reached every record the listing declares,
+# not when it stored every one of them: the bar is zero *unexplained* rejection,
+# and a source whose listing carries an upstream stub can never store all of
+# them. Requiring stored == x-wp-total here rejected twenty confirmed halts for
+# being one to fifteen records short, every one of those records an upstream
+# defect the explainer already accounts for. So ask the explainer rather than
+# compare the counts.
+EXPLAIN=$(node tools/parity/explain-rejections.cjs "$SRC" "$DB" 2>&1)
+EXPLAIN_OK=$?
+TOTAL=$(printf '%s' "$EXPLAIN" | grep -oE 'declared=[0-9]+' | grep -oE '[0-9]+')
+SHORTFALL=$(printf '%s' "$EXPLAIN" | grep -oE 'missing=[0-9]+[^|]*' | head -1)
 
 node tools/parity/dump-crawlee.cjs "$DB" "$SRC" "$CR" >/dev/null 2>&1
 STORED=$(node -e 'console.log(JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).length)' "$CR" 2>/dev/null || echo 0)
@@ -48,7 +53,7 @@ FIELDDIFF=$(echo "$CMP" | grep -cE '^### ')
 
 VERDICT="NOT-ELIGIBLE"
 if [ "$BLOCKED" -gt 0 ] && [ "$REASON" = "finished" ] && [ "$ONLYLEG" = "0" ] && [ "$FIELDDIFF" = "0" ] \
-   && [ -n "$TOTAL" ] && [ "$TOTAL" = "$STORED" ]; then
+   && [ "$EXPLAIN_OK" -eq 0 ]; then
   VERDICT="LEGACY-UNHEALTHY-CONFIRMED"
 fi
-echo "$SRC | $VERDICT | legacy=$ITEMS blocked=$BLOCKED reason=$REASON codes=[$CODES] | live_x_wp_total=${TOTAL:-none} stored=$STORED | only_legacy=$ONLYLEG field_diffs=$FIELDDIFF"
+echo "$SRC | $VERDICT | legacy=$ITEMS blocked=$BLOCKED reason=$REASON codes=[$CODES] | declared=${TOTAL:-none} stored=$STORED ${SHORTFALL:-} | only_legacy=$ONLYLEG field_diffs=$FIELDDIFF"
