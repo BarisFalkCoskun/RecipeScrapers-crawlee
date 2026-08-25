@@ -186,4 +186,32 @@ describe("WPRM API recipe extraction", () => {
     expect(recipe.normalized.instructions[0].text).not.toContain("A dd");
   });
 
+
+  it("renders ingredient markup down so a per-request id cannot destabilise it", () => {
+    // connoisseurusveg links an ingredient through an affiliate plugin that
+    // mints a fresh data-lasso-id on every request. Storing the raw anchor made
+    // the record differ between two crawls of identical data.
+    const entry = structuredClone(fixture[0]) as Record<string, any>;
+    const withId = (id: string) => {
+      const e = structuredClone(entry) as Record<string, any>;
+      e.recipe.ingredients = [{ name: "", ingredients: [{
+        amount: "1",
+        unit: "",
+        name: `vegan double pie crust, (one batch of my <a href="https://x.test/crust/" data-lasso-id="${id}">vegan pie crust</a>)`,
+        notes: "",
+      }] }];
+      return [e];
+    };
+
+    const [first] = extractWprmRecipes(withId("38248")).recipes;
+    const [second] = extractWprmRecipes(withId("38649")).recipes;
+
+    expect(first.normalized.ingredients[0]).not.toContain("data-lasso-id");
+    expect(first.normalized.ingredients[0]).not.toContain("<a ");
+    expect(first.normalized.ingredients[0])
+      .toBe("1 vegan double pie crust, (one batch of my vegan pie crust)");
+    // The same data crawled twice stores the same record.
+    expect(second.normalized.ingredients).toEqual(first.normalized.ingredients);
+  });
+
 });

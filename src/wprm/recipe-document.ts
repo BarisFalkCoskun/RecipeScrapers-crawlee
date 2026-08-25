@@ -80,11 +80,17 @@ function flattenIngredients(groups: unknown): string[] {
     if (!isRecord(group) || !Array.isArray(group.ingredients)) continue;
     for (const entry of group.ingredients) {
       if (!isRecord(entry)) continue;
-      const head = [text(entry.amount), text(entry.unit), text(entry.name)]
+      // Ingredient parts carry markup on some sources, and instructions were
+      // already rendered down while these were not. connoisseurusveg links an
+      // ingredient through an affiliate plugin that mints a fresh
+      // data-lasso-id on every request, so the raw anchor made the record
+      // differ between two crawls of identical data - idempotency it could
+      // never satisfy, and markup no consumer of an ingredient wants.
+      const head = [plainText(entry.amount), plainText(entry.unit), plainText(entry.name)]
         .filter((part) => part !== "")
         .join(" ");
       if (head === "") continue;
-      const notes = text(entry.notes);
+      const notes = plainText(entry.notes);
       lines.push(notes === "" ? head : `${head} (${notes})`);
     }
   }
