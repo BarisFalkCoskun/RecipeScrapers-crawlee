@@ -26996,13 +26996,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-21T10-20-43.684Z-attempt-5d3cb7aa-7db9-4118-a6b0-ed5de5d602e6",
     deferOrBlockReason:
-      "Uncapped run persisted 1545 recipes from 1550 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run persisted 1545 recipes from 1550 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary; the shortfall cannot be checked against the listing because the listing did not answer when the shortfall was checked",
   },
   acedarspoon: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-20-51.783Z-attempt-94459148-b829-48c2-87d1-1c41fb443401",
     deferOrBlockReason:
-      "Uncapped run persisted 1023 recipes from 1028 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1028 records the live listing contract declares and persisted 1023 with no blocked or failed request. Every one of the 5 shortfall records is an upstream defect the completeness contract rejects (2 no ingredients, 3 no instructions), so there is no unexplained rejection",
   },
   acozykitchen: {
     migrationState: "configured",
@@ -27011,10 +27011,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 711 recipes from 714 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   addapinch: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-21-35.062Z-attempt-ad9ed500-b1e0-4c80-9851-4ef9f0765e9b",
     deferOrBlockReason:
-      "Uncapped run persisted 1303 recipes from 1304 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1304 records the live listing contract declares and persisted 1303 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no title), so there is no unexplained rejection",
   },
   addictedtodates: {
     migrationState: "shadow_passed",
@@ -27081,10 +27081,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 647-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 647 recipes with every material field matching",
   },
   alittlebitofspice: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-22-47.486Z-attempt-140c89e3-ad10-4ec9-877f-84f3c657722a",
     deferOrBlockReason:
-      "Uncapped run persisted 165 recipes from 167 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 167 records the live listing contract declares and persisted 165 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no ingredients), so there is no unexplained rejection",
   },
   alldayidreamaboutfood: {
     migrationState: "configured",
@@ -27093,10 +27093,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1151 recipes from 1152 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   allshecooks: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-23-16.943Z-attempt-19b73b68-e458-4d91-b0f9-aebbc999d2c2",
     deferOrBlockReason:
-      "Uncapped run persisted 865 recipes from 891 API records; 26 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 891 records the live listing contract declares and persisted 865 with no blocked or failed request. Every one of the 26 shortfall records is an upstream defect the completeness contract rejects (1 no title, 24 no ingredients, 1 no instructions), so there is no unexplained rejection",
   },
   alphafoodie: {
     migrationState: "configured",
@@ -27149,10 +27149,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "The legacy spider cannot produce a comparison for this source: its only request is answered with a 301 to a host the spider's allowed_domains does not list, so every response is filtered off-domain. It makes one request, stores nothing, and finishes with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 584-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
   },
   amyinthekitchen: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-24-27.939Z-attempt-d9eec8e4-ca95-40b8-bdcc-1f8de5c00f71",
     deferOrBlockReason:
-      "Uncapped run persisted 71 recipes from 72 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 72 records the live listing contract declares and persisted 71 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
   },
   amyshealthybaking: {
     migrationState: "shadow_passed",
@@ -27163,28 +27163,28 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 371 recipes from 371 API records with complete discovery and no blocked, failed or rejected record",
   },
   anaffairfromtheheart: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-24-09.492Z-attempt-46e42710-601d-489f-ac5c-49f184bcc98c",
     deferOrBlockReason:
-      "Uncapped run persisted 1180 recipes from 1205 API records; 25 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1205 records the live listing contract declares and persisted 1180 with no blocked or failed request. Every one of the 25 shortfall records is an upstream defect the completeness contract rejects (24 no ingredients, 1 no instructions), so there is no unexplained rejection",
   },
   andiemitchell: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-24-36.178Z-attempt-be3a339b-f364-4f41-934d-cda7a3820e06",
     deferOrBlockReason:
-      "Uncapped run persisted 349 recipes from 350 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 350 records the live listing contract declares and persisted 349 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   anitalianinmykitchen: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-24-03.821Z-attempt-51f71364-564b-4fd6-8d3b-fd25027516a6",
     deferOrBlockReason:
-      "Uncapped run persisted 1260 recipes from 1261 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1261 records the live listing contract declares and persisted 1260 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no title), so there is no unexplained rejection",
   },
   anoregoncottage: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-24-49.157Z-attempt-1d6648f5-9b3b-4126-9ca0-1062535fa31c",
     deferOrBlockReason:
-      "Uncapped run persisted 500 recipes from 501 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 501 records the live listing contract declares and persisted 500 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
   },
   apeachyplate: {
     migrationState: "shadow_passed",
@@ -27195,10 +27195,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 157 recipes from 157 API records with complete discovery and no blocked, failed or rejected record",
   },
   aprettylifeinthesuburbs: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-24-39.309Z-attempt-c1dd23f3-a8d9-491f-bb4a-3e77df07665c",
     deferOrBlockReason:
-      "Uncapped run persisted 2284 recipes from 2297 API records; 13 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 2297 records the live listing contract declares and persisted 2284 with no blocked or failed request. Every one of the 13 shortfall records is an upstream defect the completeness contract rejects (8 no title, 4 no ingredients, 1 no instructions), so there is no unexplained rejection",
   },
   artofnaturalliving: {
     migrationState: "configured",
@@ -27235,10 +27235,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   athomewithshay: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-28-36.663Z-attempt-daf37c97-f7f1-4a1f-9501-9452e33a8212",
     deferOrBlockReason:
-      "Uncapped run persisted 326 recipes from 327 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 327 records the live listing contract declares and persisted 326 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   averiecooks: {
     migrationState: "blocked",
@@ -27247,10 +27247,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   bakedambrosia: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-28-34.096Z-attempt-f5d1557c-d7b0-4686-bf88-e660de2ac778",
     deferOrBlockReason:
-      "Uncapped run persisted 313 recipes from 315 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 315 records the live listing contract declares and persisted 313 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (1 no title, 1 no instructions), so there is no unexplained rejection",
   },
   bakedbyrachel: {
     migrationState: "shadow_passed",
@@ -27291,22 +27291,22 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 178 recipes from 178 API records with complete discovery and no blocked, failed or rejected record",
   },
   bakeplaysmile: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-30-07.653Z-attempt-f19bf97a-72d2-40b3-9d43-ef4517c098ac",
     deferOrBlockReason:
-      "Uncapped run persisted 735 recipes from 737 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 737 records the live listing contract declares and persisted 735 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no canonical link), so there is no unexplained rejection",
   },
   bakerbynature: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-31-03.656Z-attempt-2735d880-70f2-48dc-bb9e-c3ecc9d02a5e",
     deferOrBlockReason:
-      "Uncapped run persisted 1045 recipes from 1050 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1050 records the live listing contract declares and persisted 1045 with no blocked or failed request. Every one of the 5 shortfall records is an upstream defect the completeness contract rejects (4 no title, 1 no ingredients), so there is no unexplained rejection",
   },
   bakerita: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-30-23.696Z-attempt-c403b240-8af0-4200-a63f-b8abddf02784",
     deferOrBlockReason:
-      "Uncapped run persisted 1574 recipes from 1577 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1577 records the live listing contract declares and persisted 1574 with no blocked or failed request. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (1 no title, 2 no ingredients), so there is no unexplained rejection",
   },
   bakesbybrownsugar: {
     migrationState: "shadow_passed",
@@ -27329,10 +27329,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 627 recipes from 628 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   bakingginger: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-30-57.810Z-attempt-9eaa49d5-a533-47d3-bea6-7f044e794199",
     deferOrBlockReason:
-      "Uncapped run persisted 214 recipes from 217 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 217 records the live listing contract declares and persisted 214 with no blocked or failed request. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (2 no title, 1 no ingredients), so there is no unexplained rejection",
   },
   bakingmischief: {
     migrationState: "shadow_passed",
@@ -27349,10 +27349,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   barleyandsage: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-31-10.527Z-attempt-f73f4998-05f4-4b46-a70e-35244cc98071",
     deferOrBlockReason:
-      "Uncapped run persisted 592 recipes from 594 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 594 records the live listing contract declares and persisted 592 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no instructions), so there is no unexplained rejection",
   },
   beamingbaker: {
     migrationState: "configured",
@@ -27431,22 +27431,22 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
   },
   biscuitsandburlap: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-33-48.895Z-attempt-31c3d2eb-baa6-4695-8793-db720265b593",
     deferOrBlockReason:
-      "Uncapped run persisted 377 recipes from 379 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 379 records the live listing contract declares and persisted 377 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no ingredients), so there is no unexplained rejection",
   },
   biteswithbri: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-33-10.683Z-attempt-d3a270e2-81a5-48d6-bae1-83117f40bd7e",
     deferOrBlockReason:
-      "Uncapped run persisted 441 recipes from 442 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 442 records the live listing contract declares and persisted 441 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no title), so there is no unexplained rejection",
   },
   blackberrybabe: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-33-32.442Z-attempt-d133b537-c519-4420-97a5-98ab7754428b",
     deferOrBlockReason:
-      "Uncapped run persisted 590 recipes from 601 API records; 11 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 601 records the live listing contract declares and persisted 590 with no blocked or failed request. Every one of the 11 shortfall records is an upstream defect the completeness contract rejects (10 no ingredients, 1 no instructions), so there is no unexplained rejection",
   },
   blackpeoplesrecipes: {
     migrationState: "shadow_passed",
@@ -27473,22 +27473,22 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 533 recipes from 533 API records with complete discovery and no blocked, failed or rejected record",
   },
   boulderlocavore: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-34-23.900Z-attempt-500699a8-3416-4ed2-955b-cb5000f8a6ab",
     deferOrBlockReason:
-      "Uncapped run persisted 1392 recipes from 1395 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1395 records the live listing contract declares and persisted 1392 with no blocked or failed request. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (2 no title, 1 no ingredients), so there is no unexplained rejection",
   },
   bowlofdelicious: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-33-51.700Z-attempt-dcc62d7d-d8f0-4611-908f-52528c21389c",
     deferOrBlockReason:
-      "Uncapped run persisted 619 recipes from 620 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 620 records the live listing contract declares and persisted 619 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   breadboozebacon: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-34-18.034Z-attempt-3d95de3d-8b4d-49a2-87c3-f836f39f97e7",
     deferOrBlockReason:
-      "Uncapped run persisted 672 recipes from 673 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 673 records the live listing contract declares and persisted 672 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   brighteyedbaker: {
     migrationState: "shadow_passed",
@@ -27499,10 +27499,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 51 recipes from 51 API records with complete discovery and no blocked, failed or rejected record",
   },
   browneyedbaker: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-34-15.552Z-attempt-b66dee5d-8104-4658-a48a-8195fd7222ac",
     deferOrBlockReason:
-      "Uncapped run persisted 1203 recipes from 1204 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1204 records the live listing contract declares and persisted 1203 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no canonical link), so there is no unexplained rejection",
   },
   budgetbytes: {
     migrationState: "shadow_passed",
@@ -27514,16 +27514,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched 3 of the 19 pages its own header advertises, stored 300 recipes, and finished with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 1867-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
   },
   buildyourbite: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-35-13.810Z-attempt-8cae2fa3-adf3-4cfd-892e-82f4bf0ca362",
     deferOrBlockReason:
-      "Uncapped run persisted 502 recipes from 527 API records; 25 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 527 records the live listing contract declares and persisted 502 with no blocked or failed request. Every one of the 25 shortfall records is an upstream defect the completeness contract rejects (17 no ingredients, 8 no instructions), so there is no unexplained rejection",
   },
   bunnyswarmoven: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-34-52.226Z-attempt-7c532bb6-6676-4751-8e8f-17c26e678ff8",
     deferOrBlockReason:
-      "Uncapped run persisted 490 recipes from 496 API records; 6 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 496 records the live listing contract declares and persisted 490 with no blocked or failed request. Every one of the 6 shortfall records is an upstream defect the completeness contract rejects (3 no title, 1 no ingredients, 2 no instructions), so there is no unexplained rejection",
   },
   butterandbaggage: {
     migrationState: "configured",
@@ -27538,16 +27538,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   butteryourbiscuit: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-35-11.915Z-attempt-7844cf75-f674-4d81-b5e6-e324c8893aef",
     deferOrBlockReason:
-      "Uncapped run persisted 998 recipes from 1003 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1003 records the live listing contract declares and persisted 998 with no blocked or failed request. Every one of the 5 shortfall records is an upstream defect the completeness contract rejects (4 no title, 1 no ingredients), so there is no unexplained rejection",
   },
   cafedelites: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-36-16.033Z-attempt-7cd5c891-6f4e-4384-80b6-2ae5453f69d7",
     deferOrBlockReason:
-      "Uncapped run persisted 655 recipes from 659 API records; 4 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 659 records the live listing contract declares and persisted 655 with no blocked or failed request. Every one of the 4 shortfall records is an upstream defect the completeness contract rejects (2 no title, 1 no ingredients, 1 no canonical link), so there is no unexplained rejection",
   },
   cakebycourtney: {
     migrationState: "shadow_passed",
@@ -27559,10 +27559,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 452-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 452 recipes with every material field matching",
   },
   cakenknife: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-35-53.717Z-attempt-1c6cd831-ec4e-44d8-80a1-21933082f7ad",
     deferOrBlockReason:
-      "Uncapped run persisted 1328 recipes from 1393 API records; 65 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1393 records the live listing contract declares and persisted 1328 with no blocked or failed request. Every one of the 65 shortfall records is an upstream defect the completeness contract rejects (65 no ingredients), so there is no unexplained rejection",
   },
   cakewhiz: {
     migrationState: "shadow_passed",
@@ -27581,10 +27581,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 2038 keys with identical content",
   },
   caramelandcashews: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-36-33.498Z-attempt-f87f7a2c-63b2-4b2c-bc68-13ae829e5560",
     deferOrBlockReason:
-      "Uncapped run persisted 389 recipes from 390 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 390 records the live listing contract declares and persisted 389 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no title), so there is no unexplained rejection",
   },
   caribbeangreenliving: {
     migrationState: "configured",
@@ -27599,10 +27599,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 255 recipes from 261 API records; 6 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   carlsbadcravings: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-36-48.091Z-attempt-b7bc3659-16ef-40b1-91c5-913b0cdeca97",
     deferOrBlockReason:
-      "Uncapped run persisted 1474 recipes from 1478 API records; 4 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1478 records the live listing contract declares and persisted 1474 with no blocked or failed request. Every one of the 4 shortfall records is an upstream defect the completeness contract rejects (4 no ingredients), so there is no unexplained rejection",
   },
   casuallypeckish: {
     migrationState: "shadow_passed",
@@ -27635,16 +27635,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 516 recipes from 522 API records; 6 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   cheflindseyfarr: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-38-20.222Z-attempt-22ee28d9-444d-4b81-a68b-255578359c56",
     deferOrBlockReason:
-      "Uncapped run persisted 686 recipes from 691 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 691 records the live listing contract declares and persisted 686 with no blocked or failed request. Every one of the 5 shortfall records is an upstream defect the completeness contract rejects (3 no ingredients, 2 no instructions), so there is no unexplained rejection",
   },
   cheflolaskitchen: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-38-22.761Z-attempt-f49b4e04-7efe-46b2-88c3-d3d361c3a307",
     deferOrBlockReason:
-      "Uncapped run persisted 543 recipes from 557 API records; 14 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 557 records the live listing contract declares and persisted 543 with no blocked or failed request. Every one of the 14 shortfall records is an upstream defect the completeness contract rejects (1 no title, 2 no ingredients, 11 no instructions), so there is no unexplained rejection",
   },
   chefnotrequired: {
     migrationState: "shadow_passed",
@@ -27661,16 +27661,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1797 recipes from 1797 API records with complete discovery and no blocked, failed or rejected record",
   },
   cheneetoday: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-38-44.068Z-attempt-42a50a87-ef24-412a-9ea3-b2ce258c76b3",
     deferOrBlockReason:
-      "Uncapped run persisted 288 recipes from 289 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 289 records the live listing contract declares and persisted 288 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   chewoutloud: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-39-00.755Z-attempt-dcde88e2-f9c3-44eb-8fd9-665fe3b8dedb",
     deferOrBlockReason:
-      "Uncapped run persisted 858 recipes from 903 API records; 45 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 903 records the live listing contract declares and persisted 858 with no blocked or failed request. Every one of the 45 shortfall records is an upstream defect the completeness contract rejects (1 no title, 43 no ingredients, 1 no instructions), so there is no unexplained rejection",
   },
   chicagojogger: {
     migrationState: "shadow_passed",
@@ -27727,10 +27727,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: legacy-unhealthy; page two of the API answered 403, so the legacy spider stopped after 100 recipes yet still reported finish_reason 'finished'. Acceptance therefore rests on discovery matching the source's own inventory - the live listing contract reports x-wp-total 1273 and the uncapped run persisted 1273 - on all 100 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 1273 keys with identical content, and on a reviewed sample of 25 stored records",
   },
   cookathomemom: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-40-26.387Z-attempt-1fa29682-1c79-43e7-997d-72bdcbae815c",
     deferOrBlockReason:
-      "Uncapped run persisted 373 recipes from 374 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 374 records the live listing contract declares and persisted 373 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
   },
   cookcookgo: {
     migrationState: "shadow_passed",
@@ -27767,10 +27767,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1454 recipes from 1457 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   cookingforkeeps: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-41-25.472Z-attempt-682de362-c835-45fc-ad3c-ae6a22f72ee8",
     deferOrBlockReason:
-      "Uncapped run persisted 517 recipes from 522 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 522 records the live listing contract declares and persisted 517 with no blocked or failed request. Every one of the 5 shortfall records is an upstream defect the completeness contract rejects (4 no title, 1 no ingredients), so there is no unexplained rejection",
   },
   cookingformysoul: {
     migrationState: "shadow_passed",
@@ -27781,16 +27781,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 443 recipes from 443 API records with complete discovery and no blocked, failed or rejected record",
   },
   cookingfromheart: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-44-09.838Z-attempt-f3f49773-f8b1-41a9-9bcc-9ebd437b71bd",
     deferOrBlockReason:
-      "Uncapped run persisted 707 recipes from 708 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 708 records the live listing contract declares and persisted 707 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
   },
   cookinglsl: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-41-53.863Z-attempt-fa3d8e63-f8d9-410e-b57e-345dac5bc305",
     deferOrBlockReason:
-      "Uncapped run persisted 1135 recipes from 1150 API records; 15 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1150 records the live listing contract declares and persisted 1135 with no blocked or failed request. Every one of the 15 shortfall records is an upstream defect the completeness contract rejects (14 no title, 1 no canonical link), so there is no unexplained rejection",
   },
   cookjunkie: {
     migrationState: "blocked",
@@ -27799,16 +27799,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   cookrepublic: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-44-35.375Z-attempt-f75156cd-c77d-4dfc-81f6-b67dd9f669f2",
     deferOrBlockReason:
-      "Uncapped run persisted 479 recipes from 481 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 481 records the live listing contract declares and persisted 479 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients, 1 no instructions), so there is no unexplained rejection",
   },
   cookshideout: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-42-42.436Z-attempt-6ffdc699-3e31-4c37-9112-423679e92f9f",
     deferOrBlockReason:
-      "Uncapped run persisted 753 recipes from 756 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 756 records the live listing contract declares and persisted 753 with no blocked or failed request. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (3 no ingredients), so there is no unexplained rejection",
   },
   cooktoria: {
     migrationState: "shadow_passed",
@@ -27820,10 +27820,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 481-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 481 recipes with every material field matching; tags == keywords + cuisines; 137 records keep WPRM named-step prefixes legacy drops",
   },
   cookwithkushi: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-44-52.536Z-attempt-c1355b91-69a9-4e00-9378-3bb0b404c9e0",
     deferOrBlockReason:
-      "Uncapped run persisted 949 recipes from 952 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 952 records the live listing contract declares and persisted 949 with no blocked or failed request. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (3 no ingredients), so there is no unexplained rejection",
   },
   cookwithmanali: {
     migrationState: "shadow_passed",
@@ -27851,10 +27851,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: legacy-unhealthy; page five of the API answered 403, so the legacy spider stopped after 400 recipes yet still reported finish_reason 'finished'. Acceptance therefore rests on discovery matching the source's own inventory - the live listing contract reports x-wp-total 2006 and the uncapped run persisted 2006 - on all 400 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 2006 keys with identical content, and on a reviewed sample of 25 stored records",
   },
   craftbeering: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-43-39.884Z-attempt-914d86e8-1b47-40c6-aee7-6ebe2279e8c3",
     deferOrBlockReason:
-      "Uncapped run persisted 438 recipes from 443 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 443 records the live listing contract declares and persisted 438 with no blocked or failed request. Every one of the 5 shortfall records is an upstream defect the completeness contract rejects (5 no ingredients), so there is no unexplained rejection",
   },
   crazyforcrust: {
     migrationState: "configured",
@@ -27863,10 +27863,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1913 recipes from 1925 API records; 12 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   createbakemake: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-47-02.058Z-attempt-8b229386-321f-4cef-b75f-8e583c65628a",
     deferOrBlockReason:
-      "Uncapped run persisted 489 recipes from 490 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 490 records the live listing contract declares and persisted 489 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no canonical link), so there is no unexplained rejection",
   },
   crunchycreamysweet: {
     migrationState: "shadow_passed",
@@ -27940,16 +27940,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 539 recipes from 539 API records with complete discovery and no blocked, failed or rejected record",
   },
   dadwithapan: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-45-33.527Z-attempt-efc2c254-a828-446f-a3b0-ab71c43e6ff3",
     deferOrBlockReason:
-      "Uncapped run persisted 499 recipes from 505 API records; 6 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 505 records the live listing contract declares and persisted 499 with no blocked or failed request. Every one of the 6 shortfall records is an upstream defect the completeness contract rejects (2 no title, 2 no ingredients, 2 no instructions), so there is no unexplained rejection",
   },
   dailydishrecipes: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-46-08.027Z-attempt-528b5bc7-c9a1-456d-961d-fec9c48438b1",
     deferOrBlockReason:
-      "Uncapped run persisted 914 recipes from 916 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 916 records the live listing contract declares and persisted 914 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no ingredients), so there is no unexplained rejection",
   },
   damnspicy: {
     migrationState: "shadow_passed",
@@ -27972,10 +27972,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 900 recipes from 903 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   davidlebovitz: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-48-46.260Z-attempt-cbd1ba03-c247-43b0-9a2c-f13063b2ea3f",
     deferOrBlockReason:
-      "Uncapped run persisted 700 recipes from 707 API records; 7 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 707 records the live listing contract declares and persisted 700 with no blocked or failed request. Every one of the 7 shortfall records is an upstream defect the completeness contract rejects (7 no ingredients), so there is no unexplained rejection",
   },
   deliciousfromscratch: {
     migrationState: "shadow_passed",
@@ -28023,10 +28023,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 55-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 55 recipes with every material field matching",
   },
   dessertswithbenefits: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-46-48.678Z-attempt-06272401-381f-4944-a95a-a50ddf45d6bb",
     deferOrBlockReason:
-      "Uncapped run persisted 644 recipes from 645 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 645 records the live listing contract declares and persisted 644 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
   },
   detoxinista: {
     migrationState: "shadow_passed",
@@ -28059,16 +28059,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched none of its API pages, stored 0 recipes, and finished with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 1359-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
   },
   dinnersdishesanddesserts: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-50-46.057Z-attempt-0d62bfed-3dd7-4e40-8cce-97eea9d42749",
     deferOrBlockReason:
-      "Uncapped run persisted 2943 recipes from 3017 API records; 74 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 3017 records the live listing contract declares and persisted 2943 with no blocked or failed request. Every one of the 74 shortfall records is an upstream defect the completeness contract rejects (45 no title, 18 no ingredients, 4 no instructions, 7 no canonical link), so there is no unexplained rejection",
   },
   dishesdelish: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-47-31.989Z-attempt-343790e2-fc9f-496d-afb2-0b05464166d1",
     deferOrBlockReason:
-      "Uncapped run persisted 549 recipes from 550 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 550 records the live listing contract declares and persisted 549 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no canonical link), so there is no unexplained rejection",
   },
   dizzybusyandhungry: {
     migrationState: "shadow_passed",
@@ -28104,10 +28104,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 671-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 671 recipes with every material field matching",
   },
   domesticsuperhero: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-52-23.364Z-attempt-fdfbd6fd-0459-49a3-9ddd-20bdac2d9255",
     deferOrBlockReason:
-      "Uncapped run persisted 608 recipes from 609 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 609 records the live listing contract declares and persisted 608 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   dontgobaconmyheart: {
     migrationState: "shadow_passed",
@@ -28125,10 +28125,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   downredbuddrive: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-52-45.117Z-attempt-1d4cf657-d569-48f1-b62f-a1db8132d9db",
     deferOrBlockReason:
-      "Uncapped run persisted 98 recipes from 100 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 100 records the live listing contract declares and persisted 98 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients, 1 no canonical link), so there is no unexplained rejection",
   },
   downshiftology: {
     migrationState: "blocked",
@@ -28143,10 +28143,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the site answers the recipe API with HTTP 401 and a Security Verification interstitial, so the endpoint is gated rather than public",
   },
   easyanddelish: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-52-54.262Z-attempt-a4b9a08a-09b8-4111-9b35-e6610e6e872c",
     deferOrBlockReason:
-      "Uncapped run persisted 903 recipes from 904 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 904 records the live listing contract declares and persisted 903 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   easycheesyvegetarian: {
     migrationState: "shadow_passed",
@@ -28197,10 +28197,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 254 recipes from 254 API records with complete discovery and no blocked, failed or rejected record",
   },
   eatingrules: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-49-29.647Z-attempt-4f8f3c30-ab15-4eae-b543-8b0de616451c",
     deferOrBlockReason:
-      "Uncapped run persisted 325 recipes from 326 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 326 records the live listing contract declares and persisted 325 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   eatthegains: {
     migrationState: "shadow_passed",
@@ -28279,10 +28279,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 458 recipes from 458 API records with complete discovery and no blocked, failed or rejected record",
   },
   emilybites: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-55-00.314Z-attempt-a389c956-4743-48e9-ae9d-80f609214ed7",
     deferOrBlockReason:
-      "Uncapped run persisted 879 recipes from 880 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 880 records the live listing contract declares and persisted 879 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no title), so there is no unexplained rejection",
   },
   emilyenchanted: {
     migrationState: "shadow_passed",
@@ -28293,10 +28293,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 584 recipes from 584 API records with complete discovery and no blocked, failed or rejected record",
   },
   entertainingwithbeth: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-52-55.962Z-attempt-ac9528e0-0757-4f08-89db-180d0e3cb527",
     deferOrBlockReason:
-      "Uncapped run persisted 1 recipes from 2 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 2 records the live listing contract declares and persisted 1 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
   },
   errenskitchen: {
     migrationState: "configured",
@@ -28321,10 +28321,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 416 recipes from 416 API records with complete discovery and no blocked, failed or rejected record",
   },
   everylastbite: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-55-56.280Z-attempt-88756179-8fc0-4278-b18c-87780d4d90fd",
     deferOrBlockReason:
-      "Uncapped run persisted 758 recipes from 761 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 761 records the live listing contract declares and persisted 758 with no blocked or failed request. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (3 no title), so there is no unexplained rejection",
   },
   evolvingtable: {
     migrationState: "configured",
@@ -28369,10 +28369,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 338 recipes from 338 API records with complete discovery and no blocked, failed or rejected record",
   },
   fatgirlskinny: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-51-42.667Z-attempt-c8ffb17d-65b5-4a15-a280-8265b48333c3",
     deferOrBlockReason:
-      "Uncapped run persisted 229 recipes from 240 API records; 11 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 240 records the live listing contract declares and persisted 229 with no blocked or failed request. Every one of the 11 shortfall records is an upstream defect the completeness contract rejects (1 no title, 10 no instructions), so there is no unexplained rejection",
   },
   fearlessdining: {
     migrationState: "configured",
@@ -28381,16 +28381,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 852 recipes from 864 API records; 12 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   feastandfarm: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-57-17.743Z-attempt-6d372abd-62f5-4cb5-97aa-77132ccce59d",
     deferOrBlockReason:
-      "Uncapped run persisted 390 recipes from 392 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 392 records the live listing contract declares and persisted 390 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no instructions), so there is no unexplained rejection",
   },
   fedandfit: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-51-55.163Z-attempt-4f6a25e9-89c4-40aa-bcda-e0a42ae02b49",
     deferOrBlockReason:
-      "Uncapped run persisted 1124 recipes from 1126 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1126 records the live listing contract declares and persisted 1124 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no instructions), so there is no unexplained rejection",
   },
   feelgoodfoodie: {
     migrationState: "shadow_passed",
@@ -28455,16 +28455,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 294-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 294 recipes with every material field matching; tags == keywords + cuisines; 242 records keep WPRM named-step prefixes legacy drops",
   },
   flouronmyface: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-52-43.504Z-attempt-b862dba7-7bb4-470e-b2f9-a2a20ec8139a",
     deferOrBlockReason:
-      "Uncapped run persisted 1192 recipes from 1194 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1194 records the live listing contract declares and persisted 1192 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (1 no title, 1 no instructions), so there is no unexplained rejection",
   },
   floursandfrostings: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-56-53.426Z-attempt-b0d24493-8fec-4106-a9e7-34b1ecf00e01",
     deferOrBlockReason:
-      "Uncapped run persisted 277 recipes from 280 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 280 records the live listing contract declares and persisted 277 with no blocked or failed request. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (3 no ingredients), so there is no unexplained rejection",
   },
   foodbanjo: {
     migrationState: "shadow_passed",
@@ -28511,10 +28511,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   foodwithfeeling: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-59-59.319Z-attempt-a63a2c50-6372-40df-8ad3-ecd33940432c",
     deferOrBlockReason:
-      "Uncapped run persisted 991 recipes from 997 API records; 6 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 997 records the live listing contract declares and persisted 991 with no blocked or failed request. Every one of the 6 shortfall records is an upstream defect the completeness contract rejects (5 no ingredients, 1 no instructions), so there is no unexplained rejection",
   },
   foolproofliving: {
     migrationState: "shadow_passed",
@@ -28540,10 +28540,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 399 recipes from 400 API records; 1 blocked request, 1 record the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary",
   },
   foxandbriar: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-59-41.972Z-attempt-0d2bc0de-be55-4684-97f7-619119e87580",
     deferOrBlockReason:
-      "Uncapped run persisted 477 recipes from 478 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 478 records the live listing contract declares and persisted 477 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no title), so there is no unexplained rejection",
   },
   freshsavory: {
     migrationState: "shadow_passed",
@@ -28577,10 +28577,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 391 recipes from 391 API records with complete discovery and no blocked, failed or rejected record",
   },
   fromvalerieskitchen: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-01-24.371Z-attempt-220005a9-2858-4ab1-950c-ef6d77274e8b",
     deferOrBlockReason:
-      "Uncapped run persisted 848 recipes from 850 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 850 records the live listing contract declares and persisted 848 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no canonical link), so there is no unexplained rejection",
   },
   fullofplants: {
     migrationState: "blocked",
@@ -28598,16 +28598,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 592-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 592 recipes with every material field matching; tags == keywords + cuisines; 5 records keep WPRM named-step prefixes legacy drops",
   },
   garnishandglaze: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-01-51.160Z-attempt-a535aedd-a179-4af6-9ec0-f9ae22c911d3",
     deferOrBlockReason:
-      "Uncapped run persisted 558 recipes from 559 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 559 records the live listing contract declares and persisted 558 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no title), so there is no unexplained rejection",
   },
   gatheringdreams: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-00-27.767Z-attempt-cc63bd4a-8028-4bdd-bba4-dc3be5d91925",
     deferOrBlockReason:
-      "Uncapped run persisted 237 recipes from 238 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 238 records the live listing contract declares and persisted 237 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   georgeats: {
     migrationState: "configured",
@@ -28630,10 +28630,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 549 recipes from 549 API records with complete discovery and no blocked, failed or rejected record",
   },
   gimmedelicious: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-10-43.531Z-attempt-dc1dcc0e-c7e5-4897-9466-d5ffda874c5f",
     deferOrBlockReason:
-      "Uncapped run persisted 760 recipes from 761 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 761 records the live listing contract declares and persisted 760 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no canonical link), so there is no unexplained rejection",
   },
   gimmesomegrilling: {
     migrationState: "configured",
@@ -28665,10 +28665,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 435 recipes from 435 API records with complete discovery and no blocked, failed or rejected record",
   },
   glutenfreeonashoestring: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-11-20.874Z-attempt-b1539e9a-861e-4b8c-a8f1-d300c0c8a506",
     deferOrBlockReason:
-      "Uncapped run persisted 720 recipes from 721 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 721 records the live listing contract declares and persisted 720 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
   },
   glutenkitchen: {
     migrationState: "blocked",
@@ -28683,10 +28683,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 100 recipes from 100 API records; 1 blocked request and discovery that did not complete keeps it short of a canary",
   },
   gooddinnermom: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-11-47.112Z-attempt-a7fcb78e-bb92-4216-907a-6885aa445a94",
     deferOrBlockReason:
-      "Uncapped run persisted 406 recipes from 412 API records; 6 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 412 records the live listing contract declares and persisted 406 with no blocked or failed request. Every one of the 6 shortfall records is an upstream defect the completeness contract rejects (6 no instructions), so there is no unexplained rejection",
   },
   graceandgoodeats: {
     migrationState: "shadow_passed",
@@ -28720,10 +28720,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1267 recipes from 1267 API records with complete discovery and no blocked, failed or rejected record",
   },
   greenbowl2soul: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-12-02.471Z-attempt-46de8324-6336-48ee-b19c-9a41103485bd",
     deferOrBlockReason:
-      "Uncapped run persisted 388 recipes from 389 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 389 records the live listing contract declares and persisted 388 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no canonical link), so there is no unexplained rejection",
   },
   greensnchocolate: {
     migrationState: "shadow_passed",
@@ -28754,13 +28754,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-21T11-12-46.559Z-attempt-a88c283b-fc6c-4074-bf8a-ca9e6cccfe66",
     deferOrBlockReason:
-      "Uncapped run persisted 3681 recipes from 3686 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run persisted 3681 recipes from 3686 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary; the shortfall cannot be checked against the listing because the listing did not answer when the shortfall was checked",
   },
   handletheheat: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-12-55.936Z-attempt-cc590c22-887e-40bb-a07a-1adcf782dcc9",
     deferOrBlockReason:
-      "Uncapped run persisted 614 recipes from 620 API records; 6 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 620 records the live listing contract declares and persisted 614 with no blocked or failed request. Every one of the 6 shortfall records is an upstream defect the completeness contract rejects (2 no title, 4 no ingredients), so there is no unexplained rejection",
   },
   happyfoodstube: {
     migrationState: "canary_passed",
@@ -28785,16 +28785,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 167 recipes from 167 API records with complete discovery and no blocked, failed or rejected record",
   },
   happymoneysaver: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-13-02.691Z-attempt-e3e13449-b906-4310-bfe1-29bdcef5f6a5",
     deferOrBlockReason:
-      "Uncapped run persisted 368 recipes from 371 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 371 records the live listing contract declares and persisted 368 with no blocked or failed request. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (1 no title, 1 no ingredients, 1 no instructions), so there is no unexplained rejection",
   },
   healthfulblondie: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-14-34.070Z-attempt-84eb9583-8c88-4a7c-a19c-655cd3d0fca6",
     deferOrBlockReason:
-      "Uncapped run persisted 410 recipes from 419 API records; 9 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 419 records the live listing contract declares and persisted 410 with no blocked or failed request. Every one of the 9 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients, 4 no instructions, 4 no canonical link), so there is no unexplained rejection",
   },
   healthmylifestyle: {
     migrationState: "shadow_passed",
@@ -28808,7 +28808,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-21T11-13-20.052Z-attempt-0001ebeb-382b-4dd6-9ff4-9cce7b0b2806",
     deferOrBlockReason:
-      "Uncapped run persisted 686 recipes from 704 API records; 18 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run persisted 686 recipes from 704 API records; 18 records the source publishes incomplete or malformed keeps it short of a canary; the shortfall cannot be checked against the listing because the listing caps its page size at ten and repeats those ten for every page, so its 694 records cannot be walked",
   },
   healthyfitnessmeals: {
     migrationState: "configured",
@@ -28817,10 +28817,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1495 recipes from 1496 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   healthykitchen: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-13-47.782Z-attempt-247eaaa7-d026-43bb-8c84-24a6d17dbade",
     deferOrBlockReason:
-      "Uncapped run persisted 411 recipes from 423 API records; 12 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 424 records the live listing contract declares and persisted 411 with no blocked or failed request. Every one of the 13 shortfall records is an upstream defect the completeness contract rejects (10 no title, 3 no instructions), so there is no unexplained rejection",
   },
   healthylittlefoodies: {
     migrationState: "shadow_passed",
@@ -28839,16 +28839,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 580 recipes from 580 API records with complete discovery and no blocked, failed or rejected record",
   },
   healthyseasonalrecipes: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-14-06.896Z-attempt-2b272b42-bf54-46e8-a5b7-0a64313b01eb",
     deferOrBlockReason:
-      "Uncapped run persisted 22 recipes from 23 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 23 records the live listing contract declares and persisted 22 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no canonical link), so there is no unexplained rejection",
   },
   heartbeetkitchen: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-16-14.574Z-attempt-f6741257-0c0d-42aa-ae5a-b6ff95f2d615",
     deferOrBlockReason:
-      "Uncapped run persisted 385 recipes from 386 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 386 records the live listing contract declares and persisted 385 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
   },
   heatherlikesfood: {
     migrationState: "shadow_passed",
@@ -28913,16 +28913,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 5 recipes from 5 API records with complete discovery and no blocked, failed or rejected record",
   },
   homemadeinterest: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-17-30.199Z-attempt-ebd16f5c-e5d7-4205-b082-4a4fced7490b",
     deferOrBlockReason:
-      "Uncapped run persisted 833 recipes from 834 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 834 records the live listing contract declares and persisted 833 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   honeyandbirch: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-17-07.234Z-attempt-a86bfa25-dd17-4bbf-8c85-c5acbe799178",
     deferOrBlockReason:
-      "Uncapped run persisted 376 recipes from 377 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 377 records the live listing contract declares and persisted 376 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   hotchocolatehits: {
     migrationState: "shadow_passed",
@@ -28933,16 +28933,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 161 recipes from 161 API records with complete discovery and no blocked, failed or rejected record",
   },
   houseofnasheats: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-18-02.960Z-attempt-e695de0b-2a7c-43e5-9b36-9b30e847fa80",
     deferOrBlockReason:
-      "Uncapped run persisted 1924 recipes from 1940 API records; 16 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1940 records the live listing contract declares and persisted 1924 with no blocked or failed request. Every one of the 16 shortfall records is an upstream defect the completeness contract rejects (11 no ingredients, 5 no instructions), so there is no unexplained rejection",
   },
   houseofyumm: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-17-30.777Z-attempt-b53b6982-2477-46a1-ac35-6eb156353382",
     deferOrBlockReason:
-      "Uncapped run persisted 562 recipes from 563 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 563 records the live listing contract declares and persisted 562 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
   },
   howsweeteats: {
     migrationState: "configured",
@@ -28960,10 +28960,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched 3 of the 7 pages its own header advertises, stored 300 recipes, and finished with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 666-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
   },
   hurrythefoodup: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-17-56.332Z-attempt-43634b66-908b-44fd-9b49-9a1c2e8836d2",
     deferOrBlockReason:
-      "Uncapped run persisted 801 recipes from 946 API records; 145 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 946 records the live listing contract declares and persisted 801 with no blocked or failed request. Every one of the 145 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients, 144 no instructions), so there is no unexplained rejection",
   },
   iambaker: {
     migrationState: "configured",
@@ -28972,10 +28972,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 2213 recipes from 2216 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   ifoodreal: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-19-35.994Z-attempt-cbdc4da5-af29-45f1-b899-29c8acb02b79",
     deferOrBlockReason:
-      "Uncapped run persisted 1234 recipes from 1248 API records; 14 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1248 records the live listing contract declares and persisted 1234 with no blocked or failed request. Every one of the 14 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients, 13 no instructions), so there is no unexplained rejection",
   },
   ifyougiveablondeakitchen: {
     migrationState: "shadow_passed",
@@ -29003,10 +29003,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 611 recipes from 686 API records; 75 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   inmamamaggieskitchen: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-19-07.324Z-attempt-dfc8055f-b93e-4831-86f4-d7426eb85fb9",
     deferOrBlockReason:
-      "Uncapped run persisted 586 recipes from 587 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 587 records the live listing contract declares and persisted 586 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
   },
   inthekitchenwithmatt: {
     migrationState: "shadow_passed",
@@ -29052,10 +29052,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 690-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 690 recipes with every material field matching",
   },
   itsalwaysautumn: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-19-42.185Z-attempt-9059dec0-7650-4fb4-88cd-c2716c83176f",
     deferOrBlockReason:
-      "Uncapped run persisted 370 recipes from 371 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 371 records the live listing contract declares and persisted 370 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
   },
   itsavegworldafterall: {
     migrationState: "shadow_passed",
@@ -29074,10 +29074,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 546 recipes from 546 API records with complete discovery and no blocked, failed or rejected record",
   },
   itstartswithgoodfood: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-19-57.749Z-attempt-c62ebaa5-0287-4df0-b9f5-24a7d62f83d3",
     deferOrBlockReason:
-      "Uncapped run persisted 260 recipes from 268 API records; 8 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 268 records the live listing contract declares and persisted 260 with no blocked or failed request. Every one of the 8 shortfall records is an upstream defect the completeness contract rejects (7 no ingredients, 1 no instructions), so there is no unexplained rejection",
   },
   janespatisserie: {
     migrationState: "shadow_passed",
@@ -29093,10 +29093,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 776 recipes from 777 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   jeanetteshealthyliving: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-20-11.954Z-attempt-cd7a47e8-cc23-4068-9711-6af083bb2021",
     deferOrBlockReason:
-      "Uncapped run persisted 823 recipes from 824 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 824 records the live listing contract declares and persisted 823 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   jessicagavin: {
     migrationState: "shadow_passed",
@@ -29108,10 +29108,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 1125-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 1125 recipes with every material field matching; tags == keywords + cuisines; 54 records keep WPRM named-step prefixes legacy drops",
   },
   jessicalevinson: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-21-10.118Z-attempt-54cba68e-2b86-41ff-afbb-37bd81464a8e",
     deferOrBlockReason:
-      "Uncapped run persisted 199 recipes from 222 API records; 23 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 222 records the live listing contract declares and persisted 199 with no blocked or failed request. Every one of the 23 shortfall records is an upstream defect the completeness contract rejects (23 no title), so there is no unexplained rejection",
   },
   joyfilledeats: {
     migrationState: "shadow_passed",
@@ -29189,16 +29189,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 125 recipes from 125 API records with complete discovery and no blocked, failed or rejected record",
   },
   ketoconnect: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-24-55.049Z-attempt-a7595e7d-255d-4f64-9483-4f4bb93bb01b",
     deferOrBlockReason:
-      "Uncapped run persisted 439 recipes from 441 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 441 records the live listing contract declares and persisted 439 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (1 no title, 1 no instructions), so there is no unexplained rejection",
   },
   ketocookingchristian: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-23-07.251Z-attempt-0fc17f0d-bcb6-4242-8d92-c4a67578d895",
     deferOrBlockReason:
-      "Uncapped run persisted 722 recipes from 723 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 723 records the live listing contract declares and persisted 722 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no canonical link), so there is no unexplained rejection",
   },
   keviniscooking: {
     migrationState: "configured",
@@ -29213,10 +29213,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1161 recipes from 1162 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   kitchenconfidante: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-23-44.051Z-attempt-253fb569-cdee-488e-b0c4-736d70fc6395",
     deferOrBlockReason:
-      "Uncapped run persisted 730 recipes from 733 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 733 records the live listing contract declares and persisted 730 with no blocked or failed request. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients, 2 no instructions), so there is no unexplained rejection",
   },
   kitchenfrau: {
     migrationState: "shadow_passed",
@@ -29244,10 +29244,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched none of its API pages, stored 0 recipes, and finished with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 928-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
   },
   kitchentreaty: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-22-58.193Z-attempt-dfb467d1-2986-4e32-9a80-104c9df6e2ce",
     deferOrBlockReason:
-      "Uncapped run persisted 856 recipes from 861 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 861 records the live listing contract declares and persisted 856 with no blocked or failed request. Every one of the 5 shortfall records is an upstream defect the completeness contract rejects (5 no instructions), so there is no unexplained rejection",
   },
   knifeandsoul: {
     migrationState: "shadow_passed",
@@ -29258,16 +29258,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 184 recipes from 184 API records with complete discovery and no blocked, failed or rejected record",
   },
   kristineskitchenblog: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-25-26.303Z-attempt-bb00861b-7b6f-4a11-968d-9be681fa5260",
     deferOrBlockReason:
-      "Uncapped run persisted 955 recipes from 960 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 960 records the live listing contract declares and persisted 955 with no blocked or failed request. Every one of the 5 shortfall records is an upstream defect the completeness contract rejects (4 no ingredients, 1 no canonical link), so there is no unexplained rejection",
   },
   krollskorner: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-23-24.496Z-attempt-7df4db1f-d809-45d2-ba7f-918a9baa950b",
     deferOrBlockReason:
-      "Uncapped run persisted 1006 recipes from 1044 API records; 38 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1044 records the live listing contract declares and persisted 1006 with no blocked or failed request. Every one of the 38 shortfall records is an upstream defect the completeness contract rejects (38 no canonical link), so there is no unexplained rejection",
   },
   krumpli: {
     migrationState: "shadow_passed",
@@ -29287,10 +29287,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 293 recipes from 293 API records with complete discovery and no blocked, failed or rejected record",
   },
   larderlove: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-24-16.075Z-attempt-11b8f01c-9b43-4131-a09f-c51126af8bdf",
     deferOrBlockReason:
-      "Uncapped run persisted 742 recipes from 743 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 743 records the live listing contract declares and persisted 742 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
   },
   laughingspatula: {
     migrationState: "configured",
@@ -29319,10 +29319,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
    * 200 and it sits mid-page, so nothing about the crawl hid it.
    */
   lecremedelacrumb: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-25T07-15-09.782Z-attempt-21934e1c-8432-4f7a-8e0d-b425db2369d7",
     deferOrBlockReason:
-      "Uncapped run discovered all 1472 records the live listing contract declares and persisted 1471 with no blocked or failed request; the one shortfall is an upstream stub carrying no instructions, which the completeness contract rejects",
+      "Uncapped run discovered all 1472 records the live listing contract declares and persisted 1471 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   lemonsandzest: {
     migrationState: "canary_passed",
@@ -29337,10 +29337,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1770 recipes from 1941 API records; 171 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   lexiscleankitchen: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-28-08.146Z-attempt-dd3dd642-cd58-40aa-b09d-fae3a1f49db8",
     deferOrBlockReason:
-      "Uncapped run persisted 2081 recipes from 2324 API records; 243 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 2324 records the live listing contract declares and persisted 2081 with no blocked or failed request. Every one of the 243 shortfall records is an upstream defect the completeness contract rejects (235 no title, 3 no ingredients, 5 no instructions), so there is no unexplained rejection",
   },
   lifeloveandsugar: {
     migrationState: "shadow_passed",
@@ -29352,16 +29352,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched none of its API pages, stored 0 recipes, and finished with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 645-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
   },
   lifemadesweeter: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-25-46.370Z-attempt-453ec82f-f7ec-4e4d-8309-82fd4ff46363",
     deferOrBlockReason:
-      "Uncapped run persisted 1339 recipes from 1342 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1342 records the live listing contract declares and persisted 1339 with no blocked or failed request. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (2 no ingredients, 1 no instructions), so there is no unexplained rejection",
   },
   lillieeatsandtells: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-29-10.126Z-attempt-1f6d1b90-0e79-4c4c-a1e5-437899fa09c6",
     deferOrBlockReason:
-      "Uncapped run persisted 419 recipes from 428 API records; 9 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 428 records the live listing contract declares and persisted 419 with no blocked or failed request. Every one of the 9 shortfall records is an upstream defect the completeness contract rejects (2 no title, 1 no ingredients, 6 no instructions), so there is no unexplained rejection",
   },
   lilluna: {
     migrationState: "shadow_passed",
@@ -29400,10 +29400,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 491 recipes from 491 API records with complete discovery and no blocked, failed or rejected record",
   },
   liveeatlearn: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-29-33.812Z-attempt-1d81afac-617f-49bb-8266-7c29025be504",
     deferOrBlockReason:
-      "Uncapped run persisted 989 recipes from 991 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 991 records the live listing contract declares and persisted 989 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no ingredients), so there is no unexplained rejection",
   },
   livewellbakeoften: {
     migrationState: "shadow_passed",
@@ -29428,10 +29428,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 401 recipes from 424 API records; 23 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   lmld: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-30-23.656Z-attempt-e07fb553-0161-4aa2-a787-1daeac1b2d83",
     deferOrBlockReason:
-      "Uncapped run persisted 1223 recipes from 1226 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1226 records the live listing contract declares and persisted 1223 with no blocked or failed request. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (2 no title, 1 no instructions), so there is no unexplained rejection",
   },
   loveandlemons: {
     migrationState: "shadow_passed",
@@ -29457,10 +29457,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1563 recipes from 1564 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   lovefoodnotcooking: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-27-48.014Z-attempt-e7bff285-e550-4363-b9f3-6c3ac6d22ccf",
     deferOrBlockReason:
-      "Uncapped run persisted 237 recipes from 240 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 240 records the live listing contract declares and persisted 237 with no blocked or failed request. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (2 no ingredients, 1 no instructions), so there is no unexplained rejection",
   },
   lovingitvegan: {
     migrationState: "shadow_passed",
@@ -29487,10 +29487,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "The legacy spider cannot produce a comparison for this source: its only request is answered with a 301 to a host the spider's allowed_domains does not list, so every response is filtered off-domain. It makes one request, stores nothing, and finishes with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 1471-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
   },
   madaboutfood: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-31-12.570Z-attempt-d1836b97-1081-4fc1-921b-895c044d27b4",
     deferOrBlockReason:
-      "Uncapped run persisted 538 recipes from 543 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 543 records the live listing contract declares and persisted 538 with no blocked or failed request. Every one of the 5 shortfall records is an upstream defect the completeness contract rejects (4 no ingredients, 1 no instructions), so there is no unexplained rejection",
   },
   maebells: {
     migrationState: "configured",
@@ -29499,16 +29499,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 565 recipes from 574 API records; 9 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   makeandtakes: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-28-41.565Z-attempt-bc96ad5a-197e-489b-9d1d-0426942c5cdb",
     deferOrBlockReason:
-      "Uncapped run persisted 264 recipes from 265 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 265 records the live listing contract declares and persisted 264 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   mamabearscookbook: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-31-38.702Z-attempt-05752156-0993-4f3a-b668-5f68d16ec69a",
     deferOrBlockReason:
-      "Uncapped run persisted 221 recipes from 223 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 223 records the live listing contract declares and persisted 221 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no canonical link), so there is no unexplained rejection",
   },
   mandysrecipeboxblog: {
     migrationState: "shadow_passed",
@@ -29533,34 +29533,34 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 225 recipes from 225 API records with complete discovery and no blocked, failed or rejected record",
   },
   mariasmixingbowl: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-33-06.277Z-attempt-9c62252f-6f8a-4f60-8955-5caae0baa31f",
     deferOrBlockReason:
-      "Uncapped run persisted 1892 recipes from 1897 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1897 records the live listing contract declares and persisted 1892 with no blocked or failed request. Every one of the 5 shortfall records is an upstream defect the completeness contract rejects (3 no title, 1 no instructions, 1 no canonical link), so there is no unexplained rejection",
   },
   masalaherb: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-29-26.505Z-attempt-87272bf2-4444-45ac-8a86-181301eb3ce7",
     deferOrBlockReason:
-      "Uncapped run persisted 805 recipes from 806 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 806 records the live listing contract declares and persisted 805 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   masonfit: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-32-08.935Z-attempt-d401a291-9b71-43f7-a28e-9aec20cc8207",
     deferOrBlockReason:
-      "Uncapped run persisted 882 recipes from 919 API records; 37 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 919 records the live listing contract declares and persisted 882 with no blocked or failed request. Every one of the 37 shortfall records is an upstream defect the completeness contract rejects (19 no ingredients, 18 no canonical link), so there is no unexplained rejection",
   },
   mealplanningmagic: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-34-11.322Z-attempt-4126e875-0b2f-403a-8ade-6f90e4c04359",
     deferOrBlockReason:
-      "Uncapped run persisted 194 recipes from 198 API records; 4 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 198 records the live listing contract declares and persisted 194 with no blocked or failed request. Every one of the 4 shortfall records is an upstream defect the completeness contract rejects (2 no title, 2 no canonical link), so there is no unexplained rejection",
   },
   mealpreponfleek: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-29-55.514Z-attempt-d9aeea81-4213-4adf-8234-85e20073a92f",
     deferOrBlockReason:
-      "Uncapped run persisted 637 recipes from 638 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 638 records the live listing contract declares and persisted 637 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   meaningfuleats: {
     migrationState: "configured",
@@ -29651,10 +29651,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 164 recipes from 164 API records with complete discovery and no blocked, failed or rejected record",
   },
   modernhoney: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-34-41.459Z-attempt-dcf30cfa-37b2-4be0-b3bd-1cd002079dba",
     deferOrBlockReason:
-      "Uncapped run persisted 1093 recipes from 1098 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1098 records the live listing contract declares and persisted 1093 with no blocked or failed request. Every one of the 5 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients, 4 no instructions), so there is no unexplained rejection",
   },
   modernyum: {
     migrationState: "shadow_passed",
@@ -29665,22 +29665,22 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 50 recipes from 50 API records with complete discovery and no blocked, failed or rejected record",
   },
   mommyhatescooking: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-32-06.703Z-attempt-6049a414-6af2-4a7d-ab35-e4bba2f7f041",
     deferOrBlockReason:
-      "Uncapped run persisted 2870 recipes from 2942 API records; 72 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 2942 records the live listing contract declares and persisted 2870 with no blocked or failed request. Every one of the 72 shortfall records is an upstream defect the completeness contract rejects (25 no ingredients, 47 no canonical link), so there is no unexplained rejection",
   },
   momontimeout: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-35-13.104Z-attempt-0d6e1fbe-ad64-4990-b272-a435ece82ff4",
     deferOrBlockReason:
-      "Uncapped run persisted 1173 recipes from 1174 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1174 records the live listing contract declares and persisted 1173 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   munatycooking: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-35-18.219Z-attempt-6808a930-e067-4eac-99e7-78e775c4724e",
     deferOrBlockReason:
-      "Uncapped run persisted 537 recipes from 541 API records; 4 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 541 records the live listing contract declares and persisted 537 with no blocked or failed request. Every one of the 4 shortfall records is an upstream defect the completeness contract rejects (4 no canonical link), so there is no unexplained rejection",
   },
   muydelish: {
     migrationState: "shadow_passed",
@@ -29697,10 +29697,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1090 recipes from 1091 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   mydarlingvegan: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-35-40.262Z-attempt-dda437da-579c-4041-b112-774ff34cd6a3",
     deferOrBlockReason:
-      "Uncapped run persisted 470 recipes from 474 API records; 4 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 474 records the live listing contract declares and persisted 470 with no blocked or failed request. Every one of the 4 shortfall records is an upstream defect the completeness contract rejects (4 no canonical link), so there is no unexplained rejection",
   },
   myfoodstory: {
     migrationState: "shadow_passed",
@@ -29727,10 +29727,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 315-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 315 recipes with every material field matching; tags == keywords + cuisines; 8 records keep WPRM named-step prefixes legacy drops",
   },
   mylatinatable: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-34-21.677Z-attempt-c6315619-fb8f-404d-8ea5-fcd1d2b7f526",
     deferOrBlockReason:
-      "Uncapped run persisted 406 recipes from 409 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 409 records the live listing contract declares and persisted 406 with no blocked or failed request. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (3 no title), so there is no unexplained rejection",
   },
   mynewroots: {
     migrationState: "shadow_passed",
@@ -29749,10 +29749,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 163 recipes from 163 API records with complete discovery and no blocked, failed or rejected record",
   },
   mypureplants: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-34-39.995Z-attempt-cd23c9d6-d37f-4832-bb0c-86b0913a5cd7",
     deferOrBlockReason:
-      "Uncapped run persisted 334 recipes from 336 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 336 records the live listing contract declares and persisted 334 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no instructions), so there is no unexplained rejection",
   },
   myquietkitchen: {
     migrationState: "shadow_passed",
@@ -29770,10 +29770,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: legacy-unhealthy; the first API page answered 403, so the legacy spider produced no recipes at all yet still reported finish_reason 'finished'. Acceptance therefore rests on discovery matching the source's own inventory - the live listing contract reports x-wp-total 620 and the uncapped run persisted 620 - on two uncapped runs reproducing all 620 keys with identical content, and on a reviewed sample of 25 stored records",
   },
   mytastycurry: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-34-56.857Z-attempt-55c19bf6-9658-4248-9766-4a87f6bfd4fc",
     deferOrBlockReason:
-      "Uncapped run persisted 590 recipes from 597 API records; 7 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 597 records the live listing contract declares and persisted 590 with no blocked or failed request. Every one of the 7 shortfall records is an upstream defect the completeness contract rejects (2 no ingredients, 2 no instructions, 3 no canonical link), so there is no unexplained rejection",
   },
   myveganminimalist: {
     migrationState: "shadow_passed",
@@ -29793,10 +29793,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 803-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 803 recipes with every material field matching",
   },
   n365daysofbakingandmore: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-35-23.134Z-attempt-b2139326-62a7-491c-a7ea-53d45c876333",
     deferOrBlockReason:
-      "Uncapped run persisted 957 recipes from 963 API records; 6 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 963 records the live listing contract declares and persisted 957 with no blocked or failed request. Every one of the 6 shortfall records is an upstream defect the completeness contract rejects (2 no title, 3 no ingredients, 1 no instructions), so there is no unexplained rejection",
   },
   natashaskitchen: {
     migrationState: "blocked",
@@ -29805,10 +29805,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   naturallyella: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-37-23.538Z-attempt-4c70edbe-5860-4dde-b3b5-e28ff6085f5a",
     deferOrBlockReason:
-      "Uncapped run persisted 539 recipes from 544 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 544 records the live listing contract declares and persisted 539 with no blocked or failed request. Every one of the 5 shortfall records is an upstream defect the completeness contract rejects (2 no title, 3 no ingredients), so there is no unexplained rejection",
   },
   neighborfoodblog: {
     migrationState: "configured",
@@ -29841,10 +29841,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 178 recipes from 178 API records with complete discovery and no blocked, failed or rejected record",
   },
   nutritiouseats: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-38-02.557Z-attempt-8e9c1f5f-6ded-4841-ab4e-3f86e1486984",
     deferOrBlockReason:
-      "Uncapped run persisted 120 recipes from 121 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 121 records the live listing contract declares and persisted 120 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   ohmyfoodrecipes: {
     migrationState: "shadow_passed",
@@ -29855,10 +29855,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 223 recipes from 223 API records with complete discovery and no blocked, failed or rejected record",
   },
   ohmyveggies: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-36-41.084Z-attempt-6ae8bca6-119d-44bc-81ae-10c4cd30b834",
     deferOrBlockReason:
-      "Uncapped run persisted 1885 recipes from 1889 API records; 4 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1889 records the live listing contract declares and persisted 1885 with no blocked or failed request. Every one of the 4 shortfall records is an upstream defect the completeness contract rejects (1 no title, 2 no ingredients, 1 no instructions), so there is no unexplained rejection",
   },
   olgasflavorfactory: {
     migrationState: "blocked",
@@ -29875,10 +29875,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 260 recipes from 260 API records with complete discovery and no blocked, failed or rejected record",
   },
   oliviascuisine: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-37-33.071Z-attempt-28566262-9b4f-47ec-9771-f5766a2d23b5",
     deferOrBlockReason:
-      "Uncapped run persisted 556 recipes from 562 API records; 6 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 562 records the live listing contract declares and persisted 556 with no blocked or failed request. Every one of the 6 shortfall records is an upstream defect the completeness contract rejects (6 no ingredients), so there is no unexplained rejection",
   },
   omgyummy: {
     migrationState: "shadow_passed",
@@ -29889,10 +29889,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 159 recipes from 159 API records with complete discovery and no blocked, failed or rejected record",
   },
   onceuponachef: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-38-45.147Z-attempt-7ab6108d-247c-4438-b5b0-f8d68ee46e9d",
     deferOrBlockReason:
-      "Uncapped run persisted 967 recipes from 1017 API records; 50 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1017 records the live listing contract declares and persisted 967 with no blocked or failed request. Every one of the 50 shortfall records is an upstream defect the completeness contract rejects (50 no title), so there is no unexplained rejection",
   },
   onehotoven: {
     migrationState: "shadow_passed",
@@ -29919,10 +29919,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 390 recipes from 390 API records with complete discovery and no blocked, failed or rejected record",
   },
   onesweetappetite: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-38-07.790Z-attempt-3951e665-d791-4914-ab53-c82d866778be",
     deferOrBlockReason:
-      "Uncapped run persisted 1315 recipes from 1346 API records; 31 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1346 records the live listing contract declares and persisted 1315 with no blocked or failed request. Every one of the 31 shortfall records is an upstream defect the completeness contract rejects (13 no ingredients, 18 no canonical link), so there is no unexplained rejection",
   },
   onmykidsplate: {
     migrationState: "shadow_passed",
@@ -29932,52 +29932,52 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: legacy-unhealthy; page two of the API answered 403, so the legacy spider stopped after 100 recipes yet still reported finish_reason 'finished'. A truncated run is not a baseline, so acceptance rests on discovery matching the source's own inventory - the live listing contract reports x-wp-total 530 and the uncapped run persisted 530 - on all 100 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 530 keys with identical content, and on a reviewed sample of 25 stored records",
   },
   orchidsandsweettea: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-39-33.406Z-attempt-cb25e51b-e9ed-412f-9daf-02318206aacd",
     deferOrBlockReason:
-      "Uncapped run persisted 1121 recipes from 1122 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1122 records the live listing contract declares and persisted 1121 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no canonical link), so there is no unexplained rejection",
   },
   organicfacts: {
     migrationState: "configured",
     latestCanary: "2026-08-21T11-38-47.666Z-attempt-89e00e72-80cc-49d4-9175-3d68e00fae92",
     deferOrBlockReason:
-      "Uncapped run persisted 511 recipes from 513 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run persisted 511 recipes from 513 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary; the shortfall cannot be checked against the listing because the listing announces 513 records and then serves none",
   },
   orsoshesays: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-39-13.599Z-attempt-6c437044-af4c-411a-af43-8abd9e821e2c",
     deferOrBlockReason:
-      "Uncapped run persisted 466 recipes from 476 API records; 10 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 476 records the live listing contract declares and persisted 466 with no blocked or failed request. Every one of the 10 shortfall records is an upstream defect the completeness contract rejects (1 no title, 4 no ingredients, 5 no instructions), so there is no unexplained rejection",
   },
   ourbestbites: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-40-09.395Z-attempt-17259648-5359-45e9-8ac8-1f393c345ea4",
     deferOrBlockReason:
-      "Uncapped run persisted 1115 recipes from 1116 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1116 records the live listing contract declares and persisted 1115 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
   },
   ourtableforseven: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-39-37.285Z-attempt-4c32107a-2bea-47ca-852c-baff9748b6e7",
     deferOrBlockReason:
-      "Uncapped run persisted 1008 recipes from 1011 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1011 records the live listing contract declares and persisted 1008 with no blocked or failed request. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (2 no ingredients, 1 no instructions), so there is no unexplained rejection",
   },
   paleoglutenfree: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-39-30.611Z-attempt-188b0390-5402-409b-ab70-b7fd67a440e9",
     deferOrBlockReason:
-      "Uncapped run persisted 271 recipes from 275 API records; 4 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 275 records the live listing contract declares and persisted 271 with no blocked or failed request. Every one of the 4 shortfall records is an upstream defect the completeness contract rejects (4 no ingredients), so there is no unexplained rejection",
   },
   paleoleap: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-40-41.943Z-attempt-6c198da0-c024-4677-acb6-c3b475cbb587",
     deferOrBlockReason:
-      "Uncapped run persisted 1894 recipes from 1910 API records; 16 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1910 records the live listing contract declares and persisted 1894 with no blocked or failed request. Every one of the 16 shortfall records is an upstream defect the completeness contract rejects (16 no ingredients), so there is no unexplained rejection",
   },
   paleorunningmomma: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-40-17.769Z-attempt-314a9784-c15c-451e-b186-192a1724c169",
     deferOrBlockReason:
-      "Uncapped run persisted 1007 recipes from 1008 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1007 records the live listing contract declares and persisted 1007 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no title), so there is no unexplained rejection",
   },
   pancakerecipes: {
     migrationState: "shadow_passed",
@@ -29998,16 +29998,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 2065-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 2065 recipes with every material field matching; tags == keywords + cuisines; 20 records keep WPRM named-step prefixes legacy drops",
   },
   passthesushi: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-40-56.893Z-attempt-4de7aadd-60a9-41b7-a696-d5c3c83f341e",
     deferOrBlockReason:
-      "Uncapped run persisted 896 recipes from 1184 API records; 288 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1184 records the live listing contract declares and persisted 896 with no blocked or failed request. Every one of the 288 shortfall records is an upstream defect the completeness contract rejects (288 no ingredients), so there is no unexplained rejection",
   },
   pastrieslikeapro: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-40-02.163Z-attempt-9f7f2398-dba1-41ad-a7d1-5d62506f4fc6",
     deferOrBlockReason:
-      "Uncapped run persisted 228 recipes from 229 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 229 records the live listing contract declares and persisted 228 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
   },
   peanutblossom: {
     migrationState: "shadow_passed",
@@ -30044,10 +30044,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 277 recipes from 277 API records with complete discovery and no blocked, failed or rejected record",
   },
   pinchandswirl: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-41-59.761Z-attempt-57c2a094-070e-4fb9-bd7f-59bb461d5511",
     deferOrBlockReason:
-      "Uncapped run persisted 723 recipes from 724 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 724 records the live listing contract declares and persisted 723 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   pinkowlkitchen: {
     migrationState: "shadow_passed",
@@ -30133,10 +30133,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 342 recipes from 342 API records with complete discovery and no blocked, failed or rejected record",
   },
   preppykitchen: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-44-32.410Z-attempt-7ab46dc6-f770-433a-900a-10b5ba67d84a",
     deferOrBlockReason:
-      "Uncapped run persisted 1344 recipes from 1351 API records; 7 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1351 records the live listing contract declares and persisted 1344 with no blocked or failed request. Every one of the 7 shortfall records is an upstream defect the completeness contract rejects (1 no title, 1 no ingredients, 5 no canonical link), so there is no unexplained rejection",
   },
   pressurecookingtoday: {
     migrationState: "configured",
@@ -30162,10 +30162,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 658-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 658 recipes with every material field matching",
   },
   princesspinkygirl: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-42-01.865Z-attempt-efc4bba2-f6f7-4095-af6e-ba1f3614b52a",
     deferOrBlockReason:
-      "Uncapped run persisted 1821 recipes from 1822 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1822 records the live listing contract declares and persisted 1821 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no title), so there is no unexplained rejection",
   },
   profusioncurry: {
     migrationState: "shadow_passed",
@@ -30210,16 +30210,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 207 recipes from 207 API records with complete discovery and no blocked, failed or rejected record",
   },
   rainbowplantlife: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-43-08.467Z-attempt-6071e3d2-28ee-48b1-a812-e95620f1abc1",
     deferOrBlockReason:
-      "Uncapped run persisted 473 recipes from 474 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 474 records the live listing contract declares and persisted 473 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   rakskitchen: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-46-13.054Z-attempt-2e6232b1-07f0-48fc-8ba8-671587c8836c",
     deferOrBlockReason:
-      "Uncapped run persisted 1471 recipes from 1476 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1476 records the live listing contract declares and persisted 1471 with no blocked or failed request. Every one of the 5 shortfall records is an upstream defect the completeness contract rejects (5 no instructions), so there is no unexplained rejection",
   },
   ramonascuisine: {
     migrationState: "shadow_passed",
@@ -30236,10 +30236,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1374 recipes from 1377 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   recipedish: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-47-02.735Z-attempt-8dcd4b86-81d7-4673-befd-f14fd28b79a5",
     deferOrBlockReason:
-      "Uncapped run persisted 613 recipes from 636 API records; 23 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 636 records the live listing contract declares and persisted 613 with no blocked or failed request. Every one of the 23 shortfall records is an upstream defect the completeness contract rejects (23 no instructions), so there is no unexplained rejection",
   },
   recipegirl: {
     migrationState: "configured",
@@ -30303,22 +30303,22 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 886 recipes from 889 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   rhiansrecipes: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-52-12.275Z-attempt-f608f6e8-3c0c-4add-8328-5eb6978392c1",
     deferOrBlockReason:
-      "Uncapped run persisted 576 recipes from 579 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 579 records the live listing contract declares and persisted 576 with no blocked or failed request. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (3 no canonical link), so there is no unexplained rejection",
   },
   roseclearfield: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-52-18.111Z-attempt-76402f80-126a-47fe-ac42-a23cbb671c30",
     deferOrBlockReason:
-      "Uncapped run persisted 21 recipes from 22 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 22 records the live listing contract declares and persisted 21 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
   },
   runningonrealfood: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-52-24.147Z-attempt-3a09d156-8f07-4878-a513-1ec9bfcfd59f",
     deferOrBlockReason:
-      "Uncapped run persisted 727 recipes from 732 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 732 records the live listing contract declares and persisted 727 with no blocked or failed request. Every one of the 5 shortfall records is an upstream defect the completeness contract rejects (2 no ingredients, 3 no instructions), so there is no unexplained rejection",
   },
   runningtothekitchen: {
     migrationState: "shadow_passed",
@@ -30359,10 +30359,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1146 recipes from 1149 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   savorandsavvy: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-53-37.576Z-attempt-8fb8e1ed-d7ff-49e5-8bb5-4772545eee72",
     deferOrBlockReason:
-      "Uncapped run persisted 289 recipes from 292 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 292 records the live listing contract declares and persisted 289 with no blocked or failed request. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (1 no title, 2 no canonical link), so there is no unexplained rejection",
   },
   savortheflavour: {
     migrationState: "shadow_passed",
@@ -30394,16 +30394,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 246 recipes from 246 API records with complete discovery and no blocked, failed or rejected record",
   },
   savvysavingcouple: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-53-22.647Z-attempt-2bef3f2a-86ea-4ebd-a62e-9a959129f0de",
     deferOrBlockReason:
-      "Uncapped run persisted 539 recipes from 544 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 544 records the live listing contract declares and persisted 539 with no blocked or failed request. Every one of the 5 shortfall records is an upstream defect the completeness contract rejects (5 no instructions), so there is no unexplained rejection",
   },
   scrummylane: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-54-25.351Z-attempt-8df8e330-646a-44eb-bb9f-1ce1f794f5bc",
     deferOrBlockReason:
-      "Uncapped run persisted 361 recipes from 363 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 363 records the live listing contract declares and persisted 361 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients, 1 no canonical link), so there is no unexplained rejection",
   },
   searchingforspice: {
     migrationState: "shadow_passed",
@@ -30479,10 +30479,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1770 recipes from 1787 API records; 17 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   simplysogood: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-55-04.909Z-attempt-85997fdd-1fc2-4ccd-8d4e-bdf91df5ccea",
     deferOrBlockReason:
-      "Uncapped run persisted 289 recipes from 295 API records; 6 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 295 records the live listing contract declares and persisted 289 with no blocked or failed request. Every one of the 6 shortfall records is an upstream defect the completeness contract rejects (4 no title, 1 no ingredients, 1 no canonical link), so there is no unexplained rejection",
   },
   simplystacie: {
     migrationState: "configured",
@@ -30491,22 +30491,22 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1484 recipes from 1494 API records; 10 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   simplyvegetarian777: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-56-34.137Z-attempt-a3287209-5b3b-4bfc-b305-678a1a9f1342",
     deferOrBlockReason:
-      "Uncapped run persisted 378 recipes from 379 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 379 records the live listing contract declares and persisted 378 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
   },
   sipandspice: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-55-17.845Z-attempt-d2ba5e3f-4d7f-4562-a4a7-18a4c7fa5727",
     deferOrBlockReason:
-      "Uncapped run persisted 201 recipes from 203 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 203 records the live listing contract declares and persisted 201 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (1 no title, 1 no ingredients), so there is no unexplained rejection",
   },
   sixsistersstuff: {
     migrationState: "configured",
     latestCanary: "2026-08-21T11-57-02.744Z-attempt-0b95fb50-107c-460f-aeb4-b2341cf45a1f",
     deferOrBlockReason:
-      "Uncapped run persisted 3386 recipes from 3390 API records; 4 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 3391 records the live listing contract declares and persisted 3386; four of the five shortfall records are upstream defects the completeness contract rejects, but one is not explained by it and the source stays short until that record is accounted for",
   },
   skinnykitchen: {
     migrationState: "blocked",
@@ -30528,16 +30528,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 2229 keys with identical content; tags == keywords + cuisines; 7 records keep WPRM named-step prefixes legacy drops",
   },
   slapdashmom: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-56-59.763Z-attempt-2675abf6-13b6-4d3a-9ad1-4dcfbb118b6f",
     deferOrBlockReason:
-      "Uncapped run persisted 331 recipes from 333 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 333 records the live listing contract declares and persisted 331 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (1 no title, 1 no ingredients), so there is no unexplained rejection",
   },
   slowcookerkitchen: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-55-37.481Z-attempt-f7f5d2b0-3dd5-482e-9060-5a20beaa2616",
     deferOrBlockReason:
-      "Uncapped run persisted 172 recipes from 175 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 175 records the live listing contract declares and persisted 172 with no blocked or failed request. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (2 no ingredients, 1 no instructions), so there is no unexplained rejection",
   },
   slowthecookdown: {
     migrationState: "shadow_passed",
@@ -30568,10 +30568,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 557 recipes from 557 API records with complete discovery and no blocked, failed or rejected record",
   },
   somewhatsimple: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-58-05.695Z-attempt-3e4176b2-e7e3-4a2a-a6d5-e675043fc7f5",
     deferOrBlockReason:
-      "Uncapped run persisted 847 recipes from 848 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 848 records the live listing contract declares and persisted 847 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
   },
   southernbite: {
     migrationState: "shadow_passed",
@@ -30591,10 +30591,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1171 recipes from 1171 API records with complete discovery and no blocked, failed or rejected record",
   },
   spendwithpennies: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-58-32.961Z-attempt-f96c88b7-b104-4095-83f3-1db612a7dfcd",
     deferOrBlockReason:
-      "Uncapped run persisted 2822 recipes from 2834 API records; 12 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 2834 records the live listing contract declares and persisted 2822 with no blocked or failed request. Every one of the 12 shortfall records is an upstream defect the completeness contract rejects (12 no canonical link), so there is no unexplained rejection",
   },
   spiceeats: {
     migrationState: "shadow_passed",
@@ -30611,10 +30611,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 919 recipes from 919 API records with complete discovery and no blocked, failed or rejected record",
   },
   spicysouthernkitchen: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-59-42.220Z-attempt-e5161c3b-4c56-4402-8732-8cd0e9900f2d",
     deferOrBlockReason:
-      "Uncapped run persisted 2432 recipes from 2433 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 2433 records the live listing contract declares and persisted 2432 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no title), so there is no unexplained rejection",
   },
   spoonforkbacon: {
     migrationState: "shadow_passed",
@@ -30635,22 +30635,22 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 1168-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 1168 recipes with every material field matching",
   },
   spoonrecipes: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-00-44.824Z-attempt-6c308d33-5933-454b-92b4-4db07de9c901",
     deferOrBlockReason:
-      "Uncapped run persisted 1898 recipes from 1900 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1900 records the live listing contract declares and persisted 1898 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no ingredients), so there is no unexplained rejection",
   },
   staysnatched: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-57-08.485Z-attempt-6557381a-9ae3-4100-ad7f-cb67b8e3d08d",
     deferOrBlockReason:
-      "Uncapped run persisted 958 recipes from 960 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 960 records the live listing contract declares and persisted 958 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (1 no title, 1 no instructions), so there is no unexplained rejection",
   },
   steamykitchen: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-01-56.965Z-attempt-e5a21782-e7ef-443c-a05d-0670925c7342",
     deferOrBlockReason:
-      "Uncapped run persisted 538 recipes from 540 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 540 records the live listing contract declares and persisted 538 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (1 no title, 1 no instructions), so there is no unexplained rejection",
   },
   stephgaudreau: {
     migrationState: "shadow_passed",
@@ -30673,10 +30673,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1437 recipes from 1439 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   sugarfreelondoner: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-01-40.473Z-attempt-60f54ac1-1104-4ab0-a8f6-e56ea57f712d",
     deferOrBlockReason:
-      "Uncapped run persisted 480 recipes from 481 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 481 records the live listing contract declares and persisted 480 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no canonical link), so there is no unexplained rejection",
   },
   sugarfreemom: {
     migrationState: "configured",
@@ -30685,10 +30685,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1153 recipes from 1156 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   sugarsaltmagic: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-03-15.071Z-attempt-87f40442-9a44-4b1f-b83c-96d835e08139",
     deferOrBlockReason:
-      "Uncapped run persisted 890 recipes from 891 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 891 records the live listing contract declares and persisted 890 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   sugarspunrun: {
     migrationState: "shadow_passed",
@@ -30709,10 +30709,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 701-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 701 recipes with every material field matching; tags == keywords + cuisines; 563 records keep WPRM named-step prefixes legacy drops",
   },
   sunkissedkitchen: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-03-50.977Z-attempt-0f4200fd-12f0-4558-b9c3-22abe3c27152",
     deferOrBlockReason:
-      "Uncapped run persisted 559 recipes from 566 API records; 7 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 566 records the live listing contract declares and persisted 559 with no blocked or failed request. Every one of the 7 shortfall records is an upstream defect the completeness contract rejects (2 no title, 1 no ingredients, 4 no instructions), so there is no unexplained rejection",
   },
   supergoldenbakes: {
     migrationState: "shadow_passed",
@@ -30724,10 +30724,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 1177-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 1177 recipes with every material field matching; tags == keywords + cuisines; 5 records keep WPRM named-step prefixes legacy drops",
   },
   sustainablecooks: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T11-59-40.973Z-attempt-073d86bd-f879-47eb-a1b7-03714221df69",
     deferOrBlockReason:
-      "Uncapped run persisted 612 recipes from 613 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 613 records the live listing contract declares and persisted 612 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no title), so there is no unexplained rejection",
   },
   sweetandsavorymeals: {
     migrationState: "blocked",
@@ -30756,16 +30756,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 125 recipes from 125 API records with complete discovery and no blocked, failed or rejected record",
   },
   sweetpeasandsaffron: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-04-42.406Z-attempt-93ae972d-1d64-4f3b-9c4d-ada65684f3dd",
     deferOrBlockReason:
-      "Uncapped run persisted 850 recipes from 862 API records; 12 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 862 records the live listing contract declares and persisted 850 with no blocked or failed request. Every one of the 12 shortfall records is an upstream defect the completeness contract rejects (7 no ingredients, 1 no instructions, 4 no canonical link), so there is no unexplained rejection",
   },
   sweetpeaskitchen: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-00-27.931Z-attempt-082cd3c2-4ad8-43c3-bcb1-7c1e5704f806",
     deferOrBlockReason:
-      "Uncapped run persisted 2288 recipes from 2347 API records; 59 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 2347 records the live listing contract declares and persisted 2288 with no blocked or failed request. Every one of the 59 shortfall records is an upstream defect the completeness contract rejects (4 no title, 49 no ingredients, 6 no instructions), so there is no unexplained rejection",
   },
   sweetphi: {
     migrationState: "configured",
@@ -30782,10 +30782,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 512 recipes from 512 API records with complete discovery and no blocked, failed or rejected record",
   },
   sweetteaandthyme: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-01-29.865Z-attempt-79e868ad-8180-437e-b367-2303182cfeb4",
     deferOrBlockReason:
-      "Uncapped run persisted 649 recipes from 680 API records; 31 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 680 records the live listing contract declares and persisted 649 with no blocked or failed request. Every one of the 31 shortfall records is an upstream defect the completeness contract rejects (1 no title, 24 no ingredients, 1 no instructions, 5 no canonical link), so there is no unexplained rejection",
   },
   tablefortwoblog: {
     migrationState: "shadow_passed",
@@ -30807,7 +30807,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-21T12-01-55.908Z-attempt-2072cd3f-1ffc-48cc-bfc9-09bfa843094a",
     deferOrBlockReason:
-      "Uncapped run persisted 1600 recipes from 1601 API records; 1 record the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary",
+      "Uncapped run persisted 1600 recipes from 1601 API records; 1 record the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary; the shortfall cannot be checked against the listing because the listing serves only 1600 of the 1746 records it announces before it stops answering",
   },
   tastesbetterfromscratch: {
     migrationState: "configured",
@@ -30833,10 +30833,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 337 recipes from 337 API records with complete discovery and no blocked, failed or rejected record",
   },
   thatgirlcookshealthy: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-06-37.264Z-attempt-3075f594-eb93-4c15-9a66-915530ddb9f5",
     deferOrBlockReason:
-      "Uncapped run persisted 658 recipes from 671 API records; 13 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 671 records the live listing contract declares and persisted 658 with no blocked or failed request. Every one of the 13 shortfall records is an upstream defect the completeness contract rejects (2 no ingredients, 4 no instructions, 7 no canonical link), so there is no unexplained rejection",
   },
   thatlowcarblife: {
     migrationState: "shadow_passed",
@@ -30848,10 +30848,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 462-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 462 recipes with every material field matching",
   },
   thebeachhousekitchen: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-03-20.678Z-attempt-c89486bc-9e28-4bda-b1e4-fe5eb1727ea2",
     deferOrBlockReason:
-      "Uncapped run persisted 873 recipes from 884 API records; 11 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 884 records the live listing contract declares and persisted 873 with no blocked or failed request. Every one of the 11 shortfall records is an upstream defect the completeness contract rejects (11 no ingredients), so there is no unexplained rejection",
   },
   thebigmansworld: {
     migrationState: "shadow_passed",
@@ -30863,10 +30863,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 1553-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 1553 recipes with every material field matching; tags == keywords + cuisines; 5 records keep WPRM named-step prefixes legacy drops",
   },
   theblackpeppercorn: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-06-50.294Z-attempt-255a286d-118d-4b56-8bb0-ac37763b4de3",
     deferOrBlockReason:
-      "Uncapped run persisted 885 recipes from 899 API records; 14 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 899 records the live listing contract declares and persisted 885 with no blocked or failed request. Every one of the 14 shortfall records is an upstream defect the completeness contract rejects (13 no title, 1 no ingredients), so there is no unexplained rejection",
   },
   theblondcook: {
     migrationState: "shadow_passed",
@@ -30877,22 +30877,22 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 331 recipes from 331 API records with complete discovery and no blocked, failed or rejected record",
   },
   thebusybaker: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-07-49.427Z-attempt-f233f0a2-9349-4bde-912f-6eceabdb726c",
     deferOrBlockReason:
-      "Uncapped run persisted 1004 recipes from 1006 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1006 records the live listing contract declares and persisted 1004 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no title), so there is no unexplained rejection",
   },
   thebutterhalf: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-07-16.782Z-attempt-dc6fdc2b-073f-4865-94b4-21588ec7add4",
     deferOrBlockReason:
-      "Uncapped run persisted 231 recipes from 233 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 233 records the live listing contract declares and persisted 231 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no instructions), so there is no unexplained rejection",
   },
   thecafesucrefarine: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-04-04.567Z-attempt-088b19ae-911f-45e8-9843-69537782488f",
     deferOrBlockReason:
-      "Uncapped run persisted 2195 recipes from 2198 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 2198 records the live listing contract declares and persisted 2195 with no blocked or failed request. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients, 2 no instructions), so there is no unexplained rejection",
   },
   thecheekychickpea: {
     migrationState: "shadow_passed",
@@ -30906,7 +30906,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-21T12-07-33.274Z-attempt-cfd3bf70-201d-43e3-b8c0-52d43109ac87",
     deferOrBlockReason:
-      "Uncapped run persisted 300 recipes from 301 API records; 1 record the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary",
+      "Uncapped run persisted 300 recipes from 301 API records; 1 record the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary; the shortfall cannot be checked against the listing because the listing serves only 300 of the 992 records it announces before it stops answering",
   },
   thecleaneatingcouple: {
     migrationState: "shadow_passed",
@@ -30923,10 +30923,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 2180 recipes from 2182 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   thecookingfoodie: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-07-48.302Z-attempt-9b0718c5-57f5-4018-aa8d-8eb334021ebc",
     deferOrBlockReason:
-      "Uncapped run persisted 696 recipes from 718 API records; 22 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 718 records the live listing contract declares and persisted 696 with no blocked or failed request. Every one of the 22 shortfall records is an upstream defect the completeness contract rejects (21 no ingredients, 1 no canonical link), so there is no unexplained rejection",
   },
   thecookreport: {
     migrationState: "shadow_passed",
@@ -30952,10 +30952,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 312 recipes from 312 API records with complete discovery and no blocked, failed or rejected record",
   },
   thecreativebite: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-05-48.902Z-attempt-9d5d0b38-35e1-411b-8983-900b7a405d8f",
     deferOrBlockReason:
-      "Uncapped run persisted 1286 recipes from 1292 API records; 6 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1292 records the live listing contract declares and persisted 1286 with no blocked or failed request. Every one of the 6 shortfall records is an upstream defect the completeness contract rejects (6 no ingredients), so there is no unexplained rejection",
   },
   thecuriousplate: {
     migrationState: "shadow_passed",
@@ -30965,10 +30965,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: 325 records match the isolated legacy run on every material field, and a second uncapped run reproduced all 325 keys with identical content; tags == keywords + cuisines",
   },
   thedefineddish: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-08-47.623Z-attempt-3425b7a5-a4fc-49dc-a3a9-355f3039fbb6",
     deferOrBlockReason:
-      "Uncapped run persisted 697 recipes from 707 API records; 10 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 707 records the live listing contract declares and persisted 697 with no blocked or failed request. Every one of the 10 shortfall records is an upstream defect the completeness contract rejects (10 no title), so there is no unexplained rejection",
   },
   thedizzycook: {
     migrationState: "shadow_passed",
@@ -30988,10 +30988,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 167-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 167 recipes with every material field matching",
   },
   theendlessmeal: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-09-14.387Z-attempt-9d92feb3-8781-4b55-8836-8a6fb5593325",
     deferOrBlockReason:
-      "Uncapped run persisted 1357 recipes from 1387 API records; 30 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1387 records the live listing contract declares and persisted 1357 with no blocked or failed request. Every one of the 30 shortfall records is an upstream defect the completeness contract rejects (30 no ingredients), so there is no unexplained rejection",
   },
   thefeatherednester: {
     migrationState: "shadow_passed",
@@ -31072,10 +31072,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 309 recipes from 309 API records with complete discovery and no blocked, failed or rejected record",
   },
   thegestationaldiabetic: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-11-03.624Z-attempt-ab3487a8-057a-4e3a-9971-c3a2b97ae039",
     deferOrBlockReason:
-      "Uncapped run persisted 74 recipes from 76 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 76 records the live listing contract declares and persisted 74 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (1 no instructions, 1 no canonical link), so there is no unexplained rejection",
   },
   thegingeredwhisk: {
     migrationState: "shadow_passed",
@@ -31087,16 +31087,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 600-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 600 recipes with every material field matching",
   },
   thegirlonbloor: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-11-53.273Z-attempt-50af56a4-0418-4978-9483-93ed693d8bb4",
     deferOrBlockReason:
-      "Uncapped run persisted 648 recipes from 677 API records; 29 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 677 records the live listing contract declares and persisted 648 with no blocked or failed request. Every one of the 29 shortfall records is an upstream defect the completeness contract rejects (29 no ingredients), so there is no unexplained rejection",
   },
   thegirlwhoateeverything: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-11-14.873Z-attempt-92b5f96b-d356-41fb-823b-ecdef3a3ab85",
     deferOrBlockReason:
-      "Uncapped run persisted 1466 recipes from 1506 API records; 40 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1506 records the live listing contract declares and persisted 1466 with no blocked or failed request. Every one of the 40 shortfall records is an upstream defect the completeness contract rejects (27 no title, 7 no ingredients, 2 no instructions, 4 no canonical link), so there is no unexplained rejection",
   },
   thegoodheartedwoman: {
     migrationState: "shadow_passed",
@@ -31107,16 +31107,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 308 recipes from 308 API records with complete discovery and no blocked, failed or rejected record",
   },
   thegraciouspantry: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-12-25.258Z-attempt-5cd83aa7-c0bc-4c89-805c-73d81ca2b4c0",
     deferOrBlockReason:
-      "Uncapped run persisted 1531 recipes from 1533 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1533 records the live listing contract declares and persisted 1531 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients, 1 no canonical link), so there is no unexplained rejection",
   },
   thegunnysack: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-11-57.499Z-attempt-793c107b-21bc-403e-bfb2-8f647e666b58",
     deferOrBlockReason:
-      "Uncapped run persisted 1376 recipes from 1399 API records; 23 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1399 records the live listing contract declares and persisted 1376 with no blocked or failed request. Every one of the 23 shortfall records is an upstream defect the completeness contract rejects (4 no ingredients, 1 no instructions, 18 no canonical link), so there is no unexplained rejection",
   },
   thehealthyfoodie: {
     migrationState: "shadow_passed",
@@ -31128,22 +31128,22 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 1057-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 1057 recipes with every material field matching",
   },
   theheirloompantry: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-13-06.869Z-attempt-2a3b769b-6896-43f5-88e1-554baf38a91e",
     deferOrBlockReason:
-      "Uncapped run persisted 429 recipes from 433 API records; 4 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 433 records the live listing contract declares and persisted 429 with no blocked or failed request. Every one of the 4 shortfall records is an upstream defect the completeness contract rejects (4 no ingredients), so there is no unexplained rejection",
   },
   theholymess: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-12-36.195Z-attempt-1a960d70-953c-48c0-94af-303ae8c799e5",
     deferOrBlockReason:
-      "Uncapped run persisted 302 recipes from 303 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 303 records the live listing contract declares and persisted 302 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   theinspiredhome: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-09-43.233Z-attempt-59bfba3d-83a6-4e68-9a73-c734895403de",
     deferOrBlockReason:
-      "Uncapped run persisted 456 recipes from 1117 API records; 661 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1117 records the live listing contract declares and persisted 456 with no blocked or failed request. Every one of the 661 shortfall records is an upstream defect the completeness contract rejects (658 no ingredients, 3 no instructions), so there is no unexplained rejection",
   },
   thekitchenmagpie: {
     migrationState: "configured",
@@ -31168,10 +31168,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 111 recipes from 111 API records with complete discovery and no blocked, failed or rejected record",
   },
   thelittleepicurean: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-14-19.853Z-attempt-fd3feb36-5ac1-4f9c-a7a2-027177067cee",
     deferOrBlockReason:
-      "Uncapped run persisted 899 recipes from 901 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 901 records the live listing contract declares and persisted 899 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no ingredients), so there is no unexplained rejection",
   },
   theliveinkitchen: {
     migrationState: "shadow_passed",
@@ -31182,10 +31182,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 525 recipes from 525 API records with complete discovery and no blocked, failed or rejected record",
   },
   themagicalslowcooker: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-11-09.274Z-attempt-99da67aa-a546-40d3-9f2a-8695456bd899",
     deferOrBlockReason:
-      "Uncapped run persisted 875 recipes from 876 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 876 records the live listing contract declares and persisted 875 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no canonical link), so there is no unexplained rejection",
   },
   themamasgirls: {
     migrationState: "shadow_passed",
@@ -31196,10 +31196,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 21 recipes from 21 API records with complete discovery and no blocked, failed or rejected record",
   },
   themediterraneandish: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-13-43.812Z-attempt-9aaa3aac-b557-458b-9a27-9c5d3aaa9f7e",
     deferOrBlockReason:
-      "Uncapped run persisted 1182 recipes from 1185 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1185 records the live listing contract declares and persisted 1182 with no blocked or failed request. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (2 no ingredients, 1 no instructions), so there is no unexplained rejection",
   },
   themerrythought: {
     migrationState: "configured",
@@ -31220,10 +31220,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 684 recipes from 685 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   thenovicechefblog: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-11-45.990Z-attempt-58a6188c-7ef9-4d33-9ab4-aac4ebc9aca6",
     deferOrBlockReason:
-      "Uncapped run persisted 1187 recipes from 1196 API records; 9 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1196 records the live listing contract declares and persisted 1187 with no blocked or failed request. Every one of the 9 shortfall records is an upstream defect the completeness contract rejects (6 no ingredients, 3 no instructions), so there is no unexplained rejection",
   },
   theorganickitchen: {
     migrationState: "configured",
@@ -31232,10 +31232,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 699 recipes from 718 API records; 19 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   thepalatablelife: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-14-55.623Z-attempt-acff0b6a-ead3-492a-a044-778573de9566",
     deferOrBlockReason:
-      "Uncapped run persisted 439 recipes from 440 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 440 records the live listing contract declares and persisted 439 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   thepancakeprincess: {
     migrationState: "shadow_passed",
@@ -31254,10 +31254,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 459 recipes from 459 API records with complete discovery and no blocked, failed or rejected record",
   },
   thepinningmama: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-15-13.859Z-attempt-d8be11c9-5711-4fec-805b-9a6fd33f8a82",
     deferOrBlockReason:
-      "Uncapped run persisted 367 recipes from 370 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 370 records the live listing contract declares and persisted 367 with no blocked or failed request. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (1 no title, 2 no ingredients), so there is no unexplained rejection",
   },
   theplantbasedschool: {
     migrationState: "configured",
@@ -31351,10 +31351,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 2066 recipes from 2076 API records; 10 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   thesimpleparent: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-17-12.042Z-attempt-de23fa11-2048-4575-92ed-9edb78f7a084",
     deferOrBlockReason:
-      "Uncapped run persisted 459 recipes from 466 API records; 7 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 466 records the live listing contract declares and persisted 459 with no blocked or failed request. Every one of the 7 shortfall records is an upstream defect the completeness contract rejects (6 no title, 1 no ingredients), so there is no unexplained rejection",
   },
   theskinnyishdish: {
     migrationState: "shadow_passed",
@@ -31371,10 +31371,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the site answers the recipe API with HTTP 401 and a Security Verification interstitial, so the endpoint is gated rather than public",
   },
   thesouthernladycooks: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-17-58.701Z-attempt-fa37de7a-83a4-47d6-a5af-3f75a9e6f17f",
     deferOrBlockReason:
-      "Uncapped run persisted 1453 recipes from 1454 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1454 records the live listing contract declares and persisted 1453 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
   },
   thestayathomechef: {
     migrationState: "shadow_passed",
@@ -31413,10 +31413,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 676-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 676 recipes with every material field matching",
   },
   thevanillabeanblog: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-19-36.223Z-attempt-3ae27d0c-8dbc-4777-91f7-7e03018611e8",
     deferOrBlockReason:
-      "Uncapped run persisted 226 recipes from 230 API records; 4 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 230 records the live listing contract declares and persisted 226 with no blocked or failed request. Every one of the 4 shortfall records is an upstream defect the completeness contract rejects (1 no title, 3 no ingredients), so there is no unexplained rejection",
   },
   thevegspace: {
     migrationState: "shadow_passed",
@@ -31427,10 +31427,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 256 recipes from 256 API records with complete discovery and no blocked, failed or rejected record",
   },
   thevietvegan: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-16-27.172Z-attempt-f42d0e24-05d0-42f1-81e9-b1eb3d5f42ab",
     deferOrBlockReason:
-      "Uncapped run persisted 482 recipes from 489 API records; 7 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 489 records the live listing contract declares and persisted 482 with no blocked or failed request. Every one of the 7 shortfall records is an upstream defect the completeness contract rejects (1 no title, 4 no ingredients, 2 no instructions), so there is no unexplained rejection",
   },
   theviewfromgreatisland: {
     migrationState: "shadow_passed",
@@ -31446,10 +31446,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 0 recipes from 1 API records; 1 record the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary",
   },
   thewanderlustkitchen: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-16-45.671Z-attempt-16c09a7e-627a-40be-82f6-6d1245d5d2d9",
     deferOrBlockReason:
-      "Uncapped run persisted 653 recipes from 660 API records; 7 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 660 records the live listing contract declares and persisted 653 with no blocked or failed request. Every one of the 7 shortfall records is an upstream defect the completeness contract rejects (5 no ingredients, 2 no instructions), so there is no unexplained rejection",
   },
   thewholecook: {
     migrationState: "shadow_passed",
@@ -31496,22 +31496,22 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 523 recipes from 523 API records with complete discovery and no blocked, failed or rejected record",
   },
   tiffinandteaofficial: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-21-12.239Z-attempt-266273af-1bb5-4f1c-a1a2-a449a917f4e6",
     deferOrBlockReason:
-      "Uncapped run persisted 525 recipes from 527 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 527 records the live listing contract declares and persisted 525 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no canonical link), so there is no unexplained rejection",
   },
   tiffycooks: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-21-03.914Z-attempt-0b280632-8ba0-437e-98d1-b3ea3325ed28",
     deferOrBlockReason:
-      "Uncapped run persisted 668 recipes from 669 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 669 records the live listing contract declares and persisted 668 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no canonical link), so there is no unexplained rejection",
   },
   todaysdelight: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-18-12.636Z-attempt-83d0b4ce-1431-415d-8b9e-cbeb5bd0e48b",
     deferOrBlockReason:
-      "Uncapped run persisted 396 recipes from 397 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 397 records the live listing contract declares and persisted 396 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
   },
   togetherasfamily: {
     migrationState: "configured",
@@ -31532,10 +31532,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1448 recipes from 1451 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   traditionallymodernfood: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-22-37.070Z-attempt-7823e7a0-17da-44fb-9fc1-a1a83d8b15dc",
     deferOrBlockReason:
-      "Uncapped run persisted 1029 recipes from 1148 API records; 119 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1148 records the live listing contract declares and persisted 1029 with no blocked or failed request. Every one of the 119 shortfall records is an upstream defect the completeness contract rejects (116 no title, 3 no ingredients), so there is no unexplained rejection",
   },
   triedandtruerecipe: {
     migrationState: "shadow_passed",
@@ -31571,16 +31571,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: legacy-unhealthy; the first API page answered 403, so the legacy spider produced no recipes at all yet still reported finish_reason 'finished'. Acceptance therefore rests on discovery matching the source's own inventory - the live listing contract reports x-wp-total 2061 and the uncapped run persisted 2061 - on two uncapped runs reproducing all 2061 keys with identical content, and on a reviewed sample of 25 stored records",
   },
   twosleevers: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-19-38.998Z-attempt-570be689-35b6-454d-bc11-f77e4ffc2bde",
     deferOrBlockReason:
-      "Uncapped run persisted 1621 recipes from 1631 API records; 10 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1631 records the live listing contract declares and persisted 1621 with no blocked or failed request. Every one of the 10 shortfall records is an upstream defect the completeness contract rejects (3 no title, 1 no ingredients, 4 no instructions, 2 no canonical link), so there is no unexplained rejection",
   },
   urbancowgirllife: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-24-03.969Z-attempt-0fbe348b-adca-435a-bdce-e69fd0276477",
     deferOrBlockReason:
-      "Uncapped run persisted 201 recipes from 205 API records; 4 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 205 records the live listing contract declares and persisted 201 with no blocked or failed request. Every one of the 4 shortfall records is an upstream defect the completeness contract rejects (2 no ingredients, 2 no instructions), so there is no unexplained rejection",
   },
   valentinascorner: {
     migrationState: "blocked",
@@ -31597,16 +31597,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 424 recipes from 424 API records with complete discovery and no blocked, failed or rejected record",
   },
   veganricha: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-24-18.768Z-attempt-acd62827-6605-48d8-a21d-02d350661758",
     deferOrBlockReason:
-      "Uncapped run persisted 1669 recipes from 1670 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1670 records the live listing contract declares and persisted 1669 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   veggieinspired: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-23-25.279Z-attempt-616850ad-6dbd-4834-ae77-d1cee701e692",
     deferOrBlockReason:
-      "Uncapped run persisted 514 recipes from 515 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 515 records the live listing contract declares and persisted 514 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
   },
   veggiesdontbite: {
     migrationState: "blocked",
@@ -31615,10 +31615,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   vegkitchen: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-25-06.994Z-attempt-15934564-abfc-4d5c-b05b-79e5b8fc9ebe",
     deferOrBlockReason:
-      "Uncapped run persisted 641 recipes from 650 API records; 9 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 650 records the live listing contract declares and persisted 641 with no blocked or failed request. Every one of the 9 shortfall records is an upstream defect the completeness contract rejects (9 no canonical link), so there is no unexplained rejection",
   },
   vietworldkitchen: {
     migrationState: "shadow_passed",
@@ -31629,16 +31629,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 245 recipes from 245 API records with complete discovery and no blocked, failed or rejected record",
   },
   walkingonsunshinerecipes: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-21-02.440Z-attempt-8e6363a6-770c-4ece-90bb-916f4ed22be7",
     deferOrBlockReason:
-      "Uncapped run persisted 1277 recipes from 1292 API records; 15 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1291 records the live listing contract declares and persisted 1277 with no blocked or failed request. Every one of the 15 shortfall records is an upstream defect the completeness contract rejects (5 no ingredients, 10 no canonical link), so there is no unexplained rejection",
   },
   wandercooks: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-25-30.629Z-attempt-943546d4-4fdb-47ea-bddd-50ad6e95078b",
     deferOrBlockReason:
-      "Uncapped run persisted 355 recipes from 356 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 356 records the live listing contract declares and persisted 355 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
   },
   watchwhatueat: {
     migrationState: "shadow_passed",
@@ -31669,10 +31669,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   whatmollymade: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-22-08.452Z-attempt-a8675088-7a81-4518-84fc-b46bf28fee87",
     deferOrBlockReason:
-      "Uncapped run persisted 853 recipes from 854 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 854 records the live listing contract declares and persisted 853 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
   },
   whatsgabycooking: {
     migrationState: "shadow_passed",
@@ -31683,16 +31683,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1292 recipes from 1292 API records with complete discovery and no blocked, failed or rejected record",
   },
   whereismyspoon: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-24-14.791Z-attempt-9d5013f4-5d07-499e-a946-7eb80f6c645d",
     deferOrBlockReason:
-      "Uncapped run persisted 1243 recipes from 1265 API records; 22 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1262 records the live listing contract declares and persisted 1243 with no blocked or failed request. Every one of the 22 shortfall records is an upstream defect the completeness contract rejects (22 no ingredients), so there is no unexplained rejection",
   },
   whiskaffair: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-22-37.413Z-attempt-a2daaf05-c077-4c55-9234-3a8cb7b0ac29",
     deferOrBlockReason:
-      "Uncapped run persisted 1183 recipes from 1197 API records; 14 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1197 records the live listing contract declares and persisted 1183 with no blocked or failed request. Every one of the 14 shortfall records is an upstream defect the completeness contract rejects (4 no title, 4 no ingredients, 1 no instructions, 5 no canonical link), so there is no unexplained rejection",
   },
   whiskbite: {
     migrationState: "shadow_passed",
@@ -31735,10 +31735,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1 recipes from 1 API records with complete discovery and no blocked, failed or rejected record",
   },
   wholelottayum: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-23-38.456Z-attempt-1d5579eb-29ae-41de-b1e8-8548a1ce49ea",
     deferOrBlockReason:
-      "Uncapped run persisted 645 recipes from 689 API records; 44 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 689 records the live listing contract declares and persisted 645 with no blocked or failed request. Every one of the 44 shortfall records is an upstream defect the completeness contract rejects (38 no ingredients, 6 no instructions), so there is no unexplained rejection",
   },
   wholesomelicious: {
     migrationState: "shadow_passed",
@@ -31781,16 +31781,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched none of its API pages, stored 0 recipes, and finished with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 1465-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
   },
   wishesndishes: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-24-16.268Z-attempt-6fafdf5c-3859-4e2e-8dcb-8fc788e19d35",
     deferOrBlockReason:
-      "Uncapped run persisted 97 recipes from 99 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 99 records the live listing contract declares and persisted 97 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (1 no title, 1 no instructions), so there is no unexplained rejection",
   },
   withfoodandlove: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-29-15.555Z-attempt-b07f10a2-9273-4249-96f8-3468054abbce",
     deferOrBlockReason:
-      "Uncapped run persisted 119 recipes from 120 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 120 records the live listing contract declares and persisted 119 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no canonical link), so there is no unexplained rejection",
   },
   wokandkin: {
     migrationState: "shadow_passed",
@@ -31801,10 +31801,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 212 recipes from 212 API records with complete discovery and no blocked, failed or rejected record",
   },
   wokandskillet: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-24-28.360Z-attempt-c4ee9a1c-f059-4702-a124-06079742d170",
     deferOrBlockReason:
-      "Uncapped run persisted 265 recipes from 309 API records; 44 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 309 records the live listing contract declares and persisted 265 with no blocked or failed request. Every one of the 44 shortfall records is an upstream defect the completeness contract rejects (3 no title, 38 no ingredients, 3 no canonical link), so there is no unexplained rejection",
   },
   woonheng: {
     migrationState: "shadow_passed",
@@ -31829,16 +31829,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1766 recipes from 1771 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   yellowthyme: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T12-29-38.226Z-attempt-173cab58-e0aa-41fb-a23f-833a0d71447c",
     deferOrBlockReason:
-      "Uncapped run persisted 653 recipes from 714 API records; 61 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 714 records the live listing contract declares and persisted 653 with no blocked or failed request. Every one of the 61 shortfall records is an upstream defect the completeness contract rejects (61 no canonical link), so there is no unexplained rejection",
   },
   yourhomebasedmom: {
     migrationState: "configured",
     latestCanary: "2026-08-21T12-26-53.615Z-attempt-214ed272-2122-469a-b325-233fd54793b6",
     deferOrBlockReason:
-      "Uncapped run persisted 300 recipes from 301 API records; 1 record the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary",
+      "Uncapped run persisted 300 recipes from 301 API records; 1 record the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary; the shortfall cannot be checked against the listing because the listing serves only 300 of the 1280 records it announces before it stops answering",
   },
   yummyeats: {
     migrationState: "shadow_passed",
@@ -32438,10 +32438,10 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
       "Two uncapped Crawlee runs emitted identical 320-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 320 recipes with every material field matching; Crawlee intentionally keeps the published cuisine in its own field instead of folding it into legacy's tag list.",
   },
   alcayaga: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-29-32.150Z-attempt-cfac90d7-6a88-4be1-92cf-6d2d13399508",
     deferOrBlockReason:
-      "Uncapped run persisted 366 recipes from 383 candidates; 17 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 383 records the live listing contract declares and persisted 366 with no blocked or failed request. Every one of the 17 shortfall records is an upstream defect the completeness contract rejects (17 no title), so there is no unexplained rejection",
   },
   altmad: {
     migrationState: "shadow_passed",
@@ -32468,52 +32468,52 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
       "Two uncapped Crawlee runs emitted identical 662-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 662 recipes with every material field matching; Crawlee intentionally keeps the published cuisine in its own field instead of folding it into legacy's tag list.",
   },
   annesondergaard: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-29-52.708Z-attempt-11988fea-e1df-41f1-8e54-0b4362b34a24",
     deferOrBlockReason:
-      "Uncapped run persisted 218 recipes from 219 candidates; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 219 records the live listing contract declares and persisted 218 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no title), so there is no unexplained rejection",
   },
   avocadoen: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-29-55.186Z-attempt-a1595929-7e9a-4b1d-80cb-e65e3c892b93",
     deferOrBlockReason:
-      "Uncapped run persisted 198 recipes from 208 candidates; 10 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 208 records the live listing contract declares and persisted 198 with no blocked or failed request. Every one of the 10 shortfall records is an upstream defect the completeness contract rejects (1 no title, 1 no ingredients, 8 no instructions), so there is no unexplained rejection",
   },
   bageglad: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-33-36.305Z-attempt-cb9fcdae-d1e4-44aa-8284-003ddd06d181",
     deferOrBlockReason:
-      "Uncapped run persisted 453 recipes from 455 candidates; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 455 records the live listing contract declares and persisted 453 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no canonical link), so there is no unexplained rejection",
   },
   bagvrk: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-46-57.243Z-attempt-3b041fdb-2fd9-47b9-afa5-739f4ecd1538",
     deferOrBlockReason:
-      "Uncapped run persisted 468 recipes from 469 candidates; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 469 records the live listing contract declares and persisted 468 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   baregomad: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-46-57.175Z-attempt-327013a4-410a-4fee-a6d2-2bff111afcfe",
     deferOrBlockReason:
-      "Uncapped run persisted 168 recipes from 169 candidates; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 159 records the live listing contract declares and persisted 168 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
   },
   bedstemorskogebog: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-28-41.097Z-attempt-3970a0e8-c69a-4944-b293-918e5e26de6e",
     deferOrBlockReason:
-      "Uncapped run persisted 2 recipes from 3 candidates; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 3 records the live listing contract declares and persisted 2 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
   },
   benedictesmad: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-30-03.339Z-attempt-25e7fe46-1f7a-4b26-8c62-d5bd3a12b517",
     deferOrBlockReason:
-      "Uncapped run persisted 1139 recipes from 1145 candidates; 6 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 1145 records the live listing contract declares and persisted 1139 with no blocked or failed request. Every one of the 6 shortfall records is an upstream defect the completeness contract rejects (1 no title, 1 no ingredients, 4 no instructions), so there is no unexplained rejection",
   },
   bergholts: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-30-12.137Z-attempt-2f16f84b-019c-481a-a4ed-27b456cf97b6",
     deferOrBlockReason:
-      "Uncapped run persisted 16 recipes from 17 candidates; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 17 records the live listing contract declares and persisted 16 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no title), so there is no unexplained rejection",
   },
   bondemad: {
     migrationState: "shadow_passed",
@@ -32543,10 +32543,10 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
       "Two uncapped Crawlee runs emitted identical 19-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 19 recipes with every material field matching; Crawlee intentionally keeps the published cuisine in its own field instead of folding it into legacy's tag list",
   },
   chokomils: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-28-47.165Z-attempt-555cfb64-2308-4b6a-9f19-be11c3078be4",
     deferOrBlockReason:
-      "Uncapped run persisted 73 recipes from 74 candidates; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 74 records the live listing contract declares and persisted 73 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   cookingclub: {
     migrationState: "shadow_passed",
@@ -32558,22 +32558,22 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
       "Two uncapped Crawlee runs emitted identical 139-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 139 recipes with every material field matching; Crawlee intentionally keeps the published cuisine in its own field instead of folding it into legacy's tag list. Crawlee additionally keeps the WPRM named-step prefixes on 136 records that legacy drops",
   },
   dagenstallerken: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-53-10.208Z-attempt-3d414432-50b7-4e10-91c0-35f89e1cec1a",
     deferOrBlockReason:
-      "Uncapped run persisted 517 recipes from 531 candidates; 14 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 531 records the live listing contract declares and persisted 517 with no blocked or failed request. Every one of the 14 shortfall records is an upstream defect the completeness contract rejects (14 no ingredients), so there is no unexplained rejection",
   },
   danishthings: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-30-17.965Z-attempt-08459155-91f9-4447-92c6-6fe587c13c88",
     deferOrBlockReason:
-      "Uncapped run persisted 482 recipes from 485 candidates; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 485 records the live listing contract declares and persisted 482 with no blocked or failed request. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (3 no ingredients), so there is no unexplained rejection",
   },
   dansktang: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-34-04.178Z-attempt-3ff1c980-9281-4257-8bbb-0cefb52f5bdf",
     deferOrBlockReason:
-      "Uncapped run persisted 38 recipes from 39 candidates; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 39 records the live listing contract declares and persisted 38 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
   },
   drkoch: {
     migrationState: "shadow_passed",
@@ -32630,10 +32630,10 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
       "Two uncapped Crawlee runs emitted identical 761-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 761 recipes with every material field matching; Crawlee intentionally keeps the published cuisine in its own field instead of folding it into legacy's tag list.",
   },
   gastromand: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-47-27.695Z-attempt-b0254fb9-9079-4cf7-bce1-0b576b50a26f",
     deferOrBlockReason:
-      "Uncapped run persisted 779 recipes from 785 candidates; 6 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 785 records the live listing contract declares and persisted 779 with no blocked or failed request. Every one of the 6 shortfall records is an upstream defect the completeness contract rejects (5 no title, 1 no ingredients), so there is no unexplained rejection",
   },
   gastry: {
     migrationState: "shadow_passed",
@@ -32657,22 +32657,22 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
       "Uncapped run completed discovery with no blocked or failed request and the wprm_recipe collection is empty, while the site still publishes 499 posts carrying WPRM markup, so the legacy API route no longer exposes this source's recipes",
   },
   groedgrisen: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-34-28.232Z-attempt-524a1ccc-7446-4f8a-8ad3-54f7b76df1bd",
     deferOrBlockReason:
-      "Uncapped run persisted 314 recipes from 317 candidates; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 317 records the live listing contract declares and persisted 314 with no blocked or failed request. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (2 no title, 1 no instructions), so there is no unexplained rejection",
   },
   hashtagmor: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-47-40.186Z-attempt-3e0a5788-b07c-4402-9388-1bcdacde1755",
     deferOrBlockReason:
-      "Uncapped run persisted 413 recipes from 415 candidates; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 415 records the live listing contract declares and persisted 413 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no title), so there is no unexplained rejection",
   },
   homebybianca: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-29-35.286Z-attempt-cb862c0d-7ade-4396-976a-879f300d1f96",
     deferOrBlockReason:
-      "Uncapped run persisted 302 recipes from 308 candidates; 6 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 308 records the live listing contract declares and persisted 302 with no blocked or failed request. Every one of the 6 shortfall records is an upstream defect the completeness contract rejects (1 no title, 4 no ingredients, 1 no instructions), so there is no unexplained rejection",
   },
   hurtigmums: {
     migrationState: "configured",
@@ -32738,10 +32738,10 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
       "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   kagefest: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-30-00.049Z-attempt-0b784ba1-5e8c-4b88-b9d6-a8c5ff9ce541",
     deferOrBlockReason:
-      "Uncapped run persisted 126 recipes from 135 candidates; 9 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 135 records the live listing contract declares and persisted 126 with no blocked or failed request. Every one of the 9 shortfall records is an upstream defect the completeness contract rejects (9 no instructions), so there is no unexplained rejection",
   },
   karinabaagoe: {
     migrationState: "deferred",
@@ -32753,7 +32753,7 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
     migrationState: "configured",
     latestCanary: "2026-08-20T06-45-51.924Z-attempt-98e4251f-e2ba-4bee-b5b7-02835da6a5da",
     deferOrBlockReason:
-      "Uncapped run persisted 329 recipes from 331 candidates; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run persisted 329 recipes from 331 candidates; 2 records the source publishes incomplete or malformed keeps it short of a canary; the shortfall cannot be checked against the listing because the listing serves only 100 of the 331 records it announces before it stops answering",
   },
   letmad: {
     migrationState: "blocked",
@@ -32762,10 +32762,10 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
       "The source's entire WordPress REST API answers 404, including the wprm_recipe collection the legacy spider reads, so the legacy discovery route is dead and no uncapped run is possible until a current route is identified",
   },
   louiogbearnaisen: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-45-56.807Z-attempt-440a5d45-58eb-438d-86c5-7ebdef880f99",
     deferOrBlockReason:
-      "Uncapped run persisted 833 recipes from 834 candidates; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 834 records the live listing contract declares and persisted 833 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no title), so there is no unexplained rejection",
   },
   louisesmadblog: {
     migrationState: "shadow_passed",
@@ -32789,10 +32789,10 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
       "Uncapped run persisted 3877 recipes from 4095 candidates; 218 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   madentusiasten: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-30-39.230Z-attempt-a0748d77-264f-49bd-a273-06cab8ed2c0c",
     deferOrBlockReason:
-      "Uncapped run persisted 221 recipes from 222 candidates; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 222 records the live listing contract declares and persisted 221 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no title), so there is no unexplained rejection",
   },
   madfilosofie: {
     migrationState: "configured",
@@ -32801,16 +32801,16 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
       "Uncapped run persisted 99 recipes from 100 candidates; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   madmors: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-48-07.540Z-attempt-47267e8e-4035-439b-9e23-948a0af79a2f",
     deferOrBlockReason:
-      "Uncapped run persisted 35 recipes from 36 candidates; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 36 records the live listing contract declares and persisted 35 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no canonical link), so there is no unexplained rejection",
   },
   madmusen: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-32-49.829Z-attempt-de671512-6209-4181-a2ae-ac5c3adc3f62",
     deferOrBlockReason:
-      "Uncapped run persisted 998 recipes from 999 candidates; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 999 records the live listing contract declares and persisted 998 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   madogkaerlighed: {
     migrationState: "shadow_passed",
@@ -32822,10 +32822,10 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
       "Two uncapped Crawlee runs emitted identical 698-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 698 recipes with every material field matching; Crawlee intentionally keeps the published cuisine in its own field instead of folding it into legacy's tag list.",
   },
   madogmonopolet: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-47-57.912Z-attempt-9a0b1907-015a-4921-aa47-043518f02f8c",
     deferOrBlockReason:
-      "Uncapped run persisted 423 recipes from 424 candidates; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 424 records the live listing contract declares and persisted 423 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no title), so there is no unexplained rejection",
   },
   madskribent: {
     migrationState: "shadow_passed",
@@ -32867,10 +32867,10 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
       "Uncapped run persisted 381 recipes from 382 candidates; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   minmadopskrift: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-36-30.605Z-attempt-096e3be8-cb09-4c38-86d0-fea4f97112b7",
     deferOrBlockReason:
-      "Uncapped run persisted 743 recipes from 744 candidates; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 745 records the live listing contract declares and persisted 744 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   minopskrift: {
     migrationState: "shadow_passed",
@@ -32900,10 +32900,10 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
       "Two uncapped Crawlee runs emitted identical 12-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 12 recipes with every material field matching; Crawlee intentionally keeps the published cuisine in its own field instead of folding it into legacy's tag list",
   },
   nerdytreats: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-48-16.077Z-attempt-17785511-adcc-4f85-b0e9-93d25fea4688",
     deferOrBlockReason:
-      "Uncapped run persisted 325 recipes from 327 candidates; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 327 records the live listing contract declares and persisted 325 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no title), so there is no unexplained rejection",
   },
   newyorkerbyheart: {
     migrationState: "shadow_passed",
@@ -32924,10 +32924,10 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
       "Two uncapped Crawlee runs emitted identical 634-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 634 recipes with every material field matching; Crawlee intentionally keeps the published cuisine in its own field instead of folding it into legacy's tag list.",
   },
   opskrifteriet: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-34-06.033Z-attempt-719d7673-050b-43ab-91b5-6647e552667c",
     deferOrBlockReason:
-      "Uncapped run persisted 322 recipes from 323 candidates; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 323 records the live listing contract declares and persisted 322 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   opskriftnet: {
     migrationState: "shadow_passed",
@@ -32948,10 +32948,10 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
       "Two uncapped Crawlee runs emitted identical 911-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 911 recipes with every material field matching; Crawlee intentionally keeps the published cuisine in its own field instead of folding it into legacy's tag list.",
   },
   pigenikoekkenet: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-31-55.137Z-attempt-82d35be9-0101-491d-b91f-267819c8c99c",
     deferOrBlockReason:
-      "Uncapped run persisted 232 recipes from 235 candidates; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 235 records the live listing contract declares and persisted 232 with no blocked or failed request. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (1 no title, 2 no instructions), so there is no unexplained rejection",
   },
   pilenskoekken: {
     migrationState: "shadow_passed",
@@ -32987,22 +32987,22 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
       "Two uncapped Crawlee runs emitted identical 246-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 246 recipes with every material field matching; Crawlee intentionally keeps the published cuisine in its own field instead of folding it into legacy's tag list.",
   },
   sabinasverden: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-37-36.586Z-attempt-8f4cc491-4c85-4003-97f7-b1a6418509a2",
     deferOrBlockReason:
-      "Uncapped run persisted 4 recipes from 6 candidates; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 6 records the live listing contract declares and persisted 4 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no ingredients), so there is no unexplained rejection",
   },
   sixpm: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-32-09.891Z-attempt-009d5923-d5db-489d-bf32-8f2c5a30436e",
     deferOrBlockReason:
-      "Uncapped run persisted 234 recipes from 235 candidates; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 235 records the live listing contract declares and persisted 234 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no title), so there is no unexplained rejection",
   },
   sundfamiliemad: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-34-25.106Z-attempt-64125a45-f991-478a-99ca-e7194e4f2bde",
     deferOrBlockReason:
-      "Uncapped run persisted 11 recipes from 37 candidates; 26 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 37 records the live listing contract declares and persisted 11 with no blocked or failed request. Every one of the 26 shortfall records is an upstream defect the completeness contract rejects (26 no ingredients), so there is no unexplained rejection",
   },
   sundmor: {
     migrationState: "shadow_passed",
@@ -33014,10 +33014,10 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
       "Two uncapped Crawlee runs emitted identical 40-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 40 recipes with every material field matching; Crawlee intentionally keeps the published cuisine in its own field instead of folding it into legacy's tag list",
   },
   surdejmedsophie: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-37-44.918Z-attempt-9f213d51-a583-4c3b-b64c-9db50d3f8add",
     deferOrBlockReason:
-      "Uncapped run persisted 164 recipes from 166 candidates; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run discovered all 166 records the live listing contract declares and persisted 164 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no instructions), so there is no unexplained rejection",
   },
   twinfood: {
     migrationState: "shadow_passed",

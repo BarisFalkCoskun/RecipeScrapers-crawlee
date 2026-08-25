@@ -568,7 +568,9 @@ describe("Danish JSON-LD source registry", () => {
     // HTTP 500 to everything; that is recorded rather than retried against it.
     expect(byId.get("airfryerkogebogen")?.deferOrBlockReason)
       .toMatch(/wait for the source to recover/u);
-    // koudahl discovered nothing until its page size came down.
+    // koudahl discovered nothing until its page size came down, and its
+    // shortfall still cannot be checked: the listing stops answering after 100
+    // of the 331 records it announces, so there is no set to check against.
     expect(byId.get("koudahl")?.migrationState).toBe("configured");
     expect(byId.get("koudahl")?.deferOrBlockReason).toMatch(/329 recipes/u);
     // Sources whose legacy API route no longer carries their recipes.
@@ -1245,5 +1247,34 @@ describe("Danish JSON-LD source registry", () => {
       .toEqual(["post-sitemap\\.xml$"]);
     expect(byId.get("nogetiovnen")?.sitemapDiscovery?.followPatterns)
       .toEqual(["post-sitemap"]);
+  });
+
+  it("states a shortfall as explained upstream defects or not at all", () => {
+    // The canary bar is zero *unexplained* rejection. A source may fall short of
+    // the catalog its own listing declares, but only where the upstream record
+    // cannot be used, and the reason has to say which records and why - a bare
+    // count would let a real extraction defect pass as upstream junk.
+    const explained =
+      /Every one of the \d+ shortfall records is an upstream defect the completeness contract rejects \(([^)]*)\), so there is no unexplained rejection/u;
+    const causes = /^(?:\d+ no (?:title|ingredients|instructions|canonical link)(?:, )?)+$/u;
+    let claimed = 0;
+    for (const source of DANISH_JSONLD_SOURCES) {
+      const reason = source.deferOrBlockReason ?? "";
+      const match = explained.exec(reason);
+      if (match === null) {
+        // Not claiming an explained shortfall is fine; claiming the canary while
+        // the reason still says something is unaccounted for is not.
+        if (/not explained by it|unexplained/u.test(reason)) {
+          expect(source.migrationState, `${source.id} claims the canary with an open shortfall`)
+            .toBe("configured");
+        }
+        continue;
+      }
+      claimed += 1;
+      expect(match[1], `${source.id} names an unrecognised cause`).toMatch(causes);
+      expect(["canary_passed", "shadow_passed"]).toContain(source.migrationState);
+    }
+    // The bar is only meaningful while sources actually rest on it.
+    expect(claimed).toBeGreaterThan(200);
   });
 });
