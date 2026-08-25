@@ -243,17 +243,25 @@ const strayC=onlyC.filter(k=>!siblings.includes(k));
 // emits a Recipe node that is missing any of them — mariavestergaard has five
 // with no instructions and eight with no title — so those records are named
 // rather than counted as a loss.
+//
+// A record with no URL is rejected for the same reason and belongs in the same
+// count. healthyseasonalrecipes publishes "maple spiced rum punch" with no link
+// at all, and without one there is no canonical URL to key the record on;
+// guessing one would attach the recipe to a page that may not exist. The
+// rejection explainer already names this cause as "no canonical link", so the
+// comparator has to recognise it too or the source reads as a record short.
 const legacyByKey=new Map(legacy.map(r=>[lk(r),r]));
 const incompleteOnlyLegacy=onlyL.filter(k=>{
   const r=legacyByKey.get(k);
   if(!r) return false;
   const steps=(r.instructions||[]).filter(x=>String((x&&x.text)||x||"").trim());
   const items=(r.ingredients||[]).filter(x=>String((x&&(x.original||x.name))||x||"").trim());
-  return steps.length===0 || items.length===0 || norm(r.title)==="";
+  return steps.length===0 || items.length===0 || norm(r.title)==="" ||
+    String(r.url||"").trim()==="";
 });
 const strayL=onlyL.filter(k=>!incompleteOnlyLegacy.includes(k));
 if(incompleteOnlyLegacy.length)
-  console.log(`\nrecords legacy accepts without ingredients or instructions, which the completeness contract rejects: ${incompleteOnlyLegacy.length}`);
+  console.log(`\nrecords legacy accepts without a name, ingredients, instructions or a link, which the completeness contract rejects: ${incompleteOnlyLegacy.length}`);
 const countsAgree = !strayL.length && !strayC.length;
 if(siblings.length) console.log(`\nsibling recipes V2 recovered from multi-recipe pages: ${siblings.length}`);
 if(!legacy.length || !crawlee.length){
