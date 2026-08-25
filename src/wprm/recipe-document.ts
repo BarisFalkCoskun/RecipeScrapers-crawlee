@@ -119,10 +119,24 @@ function flattenInstructions(groups: unknown): NormalizedRecipeInstruction[] {
       // in the step text is the only way to carry it in this shape. Headings
       // are authored both with and without a trailing separator, and the
       // rendered recipe shows one either way.
-      const heading = text(entry.name).replace(/[:\s]+$/u, "");
+      //
+      // Not every name is a heading, though. frommybowl fills `name` with the
+      // step's own body and puts the labelled version in `text`, so prefixing
+      // it produced "Preheat the oven...: Prep: Preheat the oven..." with the
+      // whole instruction written twice.
+      //
+      // What separates that from a real heading is proportion, not containment:
+      // a heading is a short label over a longer body ("For the sauce" against a
+      // paragraph), while this name *is* the body. Testing containment alone
+      // would drop any heading whose words happen to recur in its own step,
+      // which measured across the promoted WPRM sources would have rewritten
+      // 358 of 494 rather than the handful this is meant to catch.
+      const heading = plainText(entry.name).replace(/[:\s]+$/u, "");
+      const repeated = heading !== "" && body.includes(heading) &&
+        heading.length >= body.length / 2;
       steps.push({
         position: steps.length + 1,
-        text: heading === "" ? body : `${heading}: ${body}`,
+        text: heading === "" || repeated ? body : `${heading}: ${body}`,
       });
     }
   }

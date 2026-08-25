@@ -235,4 +235,31 @@ describe("WPRM API recipe extraction", () => {
     );
     expect(recipe.normalized.ingredients[0]).not.toContain("det.Stykkerne");
   });
+
+  it("does not repeat a step body that the source also put in its name", () => {
+    // frommybowl fills a step's name with the body itself and puts the labelled
+    // version in text, so prefixing the name wrote the whole instruction twice:
+    // "Preheat the oven...: Prep: Preheat the oven...".
+    const entry = structuredClone(fixture[0]) as Record<string, any>;
+    entry.recipe.instructions = [{ name: "", instructions: [{
+      name: "Preheat the oven to 425F.",
+      text: "<p><strong>Prep: </strong>Preheat the oven to 425F.</p>",
+    }] }];
+
+    const [recipe] = extractWprmRecipes([entry]).recipes;
+
+    expect(recipe.normalized.instructions[0].text).toBe("Prep: Preheat the oven to 425F.");
+  });
+
+  it("still keeps a name that heads the step rather than repeating it", () => {
+    const entry = structuredClone(fixture[0]) as Record<string, any>;
+    entry.recipe.instructions = [{ name: "", instructions: [{
+      name: "For the sauce",
+      text: "<p>Melt the butter.</p>",
+    }] }];
+
+    const [recipe] = extractWprmRecipes([entry]).recipes;
+
+    expect(recipe.normalized.instructions[0].text).toBe("For the sauce: Melt the butter.");
+  });
 });
