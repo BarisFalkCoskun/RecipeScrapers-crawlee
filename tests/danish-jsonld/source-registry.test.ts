@@ -1262,8 +1262,12 @@ describe("Danish JSON-LD source registry", () => {
     // the catalog its own listing declares, but only where the upstream record
     // cannot be used, and the reason has to say which records and why - a bare
     // count would let a real extraction defect pass as upstream junk.
+    // Two shapes state the same thing. A source cleared to canary says "Every one
+    // of the N shortfall records is..."; one that also took the legacy-unhealthy
+    // route says "the N it did not are...". Both end by naming the causes and
+    // claiming no unexplained rejection, which is the part under test.
     const explained =
-      /Every one of the \d+ shortfall records is an upstream defect the completeness contract rejects \(([^)]*)\), so there is no unexplained rejection/u;
+      /upstream defects? the completeness contract rejects \(([^)]*)\), so there is no unexplained rejection/u;
     const causes = /^(?:\d+ no (?:title|ingredients|instructions|canonical link)(?:, )?)+$/u;
     let claimed = 0;
     for (const source of DANISH_JSONLD_SOURCES) {
@@ -1272,7 +1276,9 @@ describe("Danish JSON-LD source registry", () => {
       if (match === null) {
         // Not claiming an explained shortfall is fine; claiming the canary while
         // the reason still says something is unaccounted for is not.
-        if (/not explained by it|unexplained/u.test(reason)) {
+        // "no unexplained rejection" is a claim of the opposite, so match the
+        // phrasings that actually leave something open.
+        if (/not explained by it|unexplained shortfall|records? (?:is|are) not explained/u.test(reason)) {
           expect(source.migrationState, `${source.id} claims the canary with an open shortfall`)
             .toBe("configured");
         }
