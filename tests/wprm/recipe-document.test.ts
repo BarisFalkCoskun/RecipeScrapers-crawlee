@@ -180,9 +180,10 @@ describe("WPRM API recipe extraction", () => {
 
     const [recipe] = extractWprmRecipes([entry]).recipes;
 
-    // Paragraphs concatenate without a separator here, which is what legacy
-    // produces too; the point is that "Add" survives intact.
-    expect(recipe.normalized.instructions[0].text).toBe("Pour over the stock.Add a lid and cook.");
+    // The paragraph boundary becomes a space, so the two sentences stay apart;
+    // the point of this case is that "Add" survives intact rather than being
+    // split into "A dd" by the zero-width character inside it.
+    expect(recipe.normalized.instructions[0].text).toBe("Pour over the stock. Add a lid and cook.");
     expect(recipe.normalized.instructions[0].text).not.toContain("A dd");
   });
 
@@ -214,4 +215,24 @@ describe("WPRM API recipe extraction", () => {
     expect(second.normalized.ingredients).toEqual(first.normalized.ingredients);
   });
 
+
+  it("keeps a block boundary from fusing two sentences", () => {
+    // dansktang writes an ingredient note across two paragraphs. Taking the
+    // text content directly concatenated them into "lægge det.Stykkerne",
+    // which is not what the note says and not what a reader sees on the page.
+    const entry = structuredClone(fixture[0]) as Record<string, any>;
+    entry.recipe.ingredients = [{ name: "", ingredients: [{
+      amount: "4",
+      unit: "stk.",
+      name: "Sukkertang",
+      notes: "så tør det ved at hænge det.</p><p>Stykkerne skal være 10-12 cm lange",
+    }] }];
+
+    const [recipe] = extractWprmRecipes([entry]).recipes;
+
+    expect(recipe.normalized.ingredients[0]).toBe(
+      "4 stk. Sukkertang (så tør det ved at hænge det. Stykkerne skal være 10-12 cm lange)"
+    );
+    expect(recipe.normalized.ingredients[0]).not.toContain("det.Stykkerne");
+  });
 });

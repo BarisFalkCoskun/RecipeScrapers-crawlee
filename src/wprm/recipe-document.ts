@@ -56,7 +56,16 @@ const text = (value: unknown): string =>
 const plainText = (value: unknown): string => {
   const source = text(value);
   if (source === "") return "";
-  return cheerio.load(source).text()
+  // A block boundary is a word boundary. Taking the text content directly
+  // concatenates the blocks, so a note written across two paragraphs comes back
+  // with its sentences fused: dansktang ends one ingredient note "...ved at
+  // lægge det.</p><p>Stykkerne skal..." and that reads as "det.Stykkerne".
+  // Turning the boundary into a space first keeps the two sentences apart,
+  // and the whitespace collapse below removes any doubled space it creates.
+  const separated = source
+    .replace(/<br\s*\/?>/giu, " ")
+    .replace(/<\/(?:p|div|li|ol|ul|h[1-6]|section|article|table|tr|td|th)\s*>/giu, " ");
+  return cheerio.load(separated).text()
     .replace(/[\u200B-\u200D\uFEFF]/gu, "")
     .replace(/\s+/gu, " ")
     .trim();
