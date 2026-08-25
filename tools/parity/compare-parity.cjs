@@ -45,7 +45,13 @@ const {decodeHTML}=require("entities");
 // puredansk states a section heading as "&lt;strong&gt;Dej&lt;/strong&gt;",
 // which legacy keeps as written and V2 renders down to "Dej". Decoding and
 // stripping twice reaches the same rendered text from either spelling.
-const stripMarkup=t=>decodeHTML(t).replace(/<[^>]+>/gu," ");
+// A tag needs its closing bracket to be recognised as one. elanaspantry ends an
+// instruction with an affiliate tracking pixel whose markup is cut off mid-tag -
+// `...glass jars<img src="..." style="border:none!important; margin:0px!important;`
+// with no `>` at all - so the tag pattern below cannot see it and the raw markup
+// survives into the comparison. V2 parses the document and drops the element, so
+// an unterminated tag running to the end of the field is stripped here too.
+const stripMarkup=t=>decodeHTML(t).replace(/<[^>]+>/gu," ").replace(/<[a-zA-Z][^>]*$/u," ");
 const norm=s=>stripMarkup(stripMarkup(String(s??"")))
   .replace(/[\u200B-\u200D\uFEFF]/gu,"").replace(/\s+/gu," ")
   // Legacy joins a WPRM step name to its body as "Name : body" where V2 uses
