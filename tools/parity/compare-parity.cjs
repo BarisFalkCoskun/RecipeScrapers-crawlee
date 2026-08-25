@@ -54,7 +54,13 @@ const norm=s=>stripMarkup(stripMarkup(String(s??"")))
   .replace(/\s+([:.,;!?)\]])/gu,"$1")
   // Stripping an inline tag can leave a space before a closing bracket the
   // same way it does before other punctuation.
-  .replace(/([(\[])\s+/gu,"$1").trim();
+  .replace(/([(\[])\s+/gu,"$1")
+  // Legacy appends a WPRM ingredient's notes in brackets unconditionally, so an
+  // ingredient carrying no note ends up as "1 cup heavy whipping cream ()".
+  // V2 omits the brackets when there is nothing to put in them. The empty pair
+  // holds no content either way, so it is dropped rather than read as a
+  // difference in the ingredient itself.
+  .replace(/\s*\(\)/gu,"").trim();
 // V2 canonicalizes: it drops the www host prefix, the recipe-id fragment, and
 // sorts query parameters. Comparing the canonical form keeps those formatting
 // choices out of the field comparison.

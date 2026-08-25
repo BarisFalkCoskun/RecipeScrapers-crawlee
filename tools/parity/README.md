@@ -176,3 +176,20 @@ drops a trailing partial line and says so. A short legacy run is still a failed
 comparison — the record sets will not agree — but it reports which records it
 did get instead of failing to parse at all. Raise `PARITY_SCRAPY_TIMEOUT` for a
 source whose legacy spider needs longer than the 2400s default.
+
+## A code change between the two runs reads as instability
+
+`repeat-queue.sh` dumps the stored records as its "before" side and re-crawls for
+the "after" side. Those two sides are produced by whatever code was current at
+the time, so landing an extraction fix between a source's canary crawl and its
+repeat run makes every record the fix touches come back `CHANGED` — the run is
+reporting the fix, not an unstable source. On 2026-08-25 the ingredient-markup
+fix did exactly this to twelve WPRM sources at once; the giveaway was that the
+counts were identical on both sides (`424->424`) while a large, arbitrary-looking
+share of records differed, and the differences were all improvements: markup
+rendered down, doubled spaces collapsed.
+
+Check `extractedAt` on the before side against the commit time of any recent
+extraction fix. If the stored records predate it, the pair proves nothing — the
+re-crawl has since rewritten them, so simply queue the source again and let the
+next pair run entirely on post-fix code.

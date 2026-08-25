@@ -27718,10 +27718,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 829 recipes from 830 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   connoisseurusveg: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-40-59.547Z-attempt-56d62e2a-a8f5-4e9a-8619-f35bbc383e21",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 1272 recipes from 1272 API records with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: legacy-unhealthy; page two of the API answered 403, so the legacy spider stopped after 100 recipes yet still reported finish_reason 'finished'. Acceptance therefore rests on discovery matching the source's own inventory - the live listing contract reports x-wp-total 1273 and the uncapped run persisted 1273 - on all 100 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 1273 keys with identical content, and on a reviewed sample of 25 stored records",
   },
   cookathomemom: {
     migrationState: "configured",
@@ -27840,10 +27841,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 698-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 698 recipes with every material field matching",
   },
   copykat: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-45-28.128Z-attempt-f5d407a4-5db1-4219-9d92-92163b6b995d",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 2005 recipes from 2005 API records with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: legacy-unhealthy; page five of the API answered 403, so the legacy spider stopped after 400 recipes yet still reported finish_reason 'finished'. Acceptance therefore rests on discovery matching the source's own inventory - the live listing contract reports x-wp-total 2006 and the uncapped run persisted 2006 - on all 400 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 2006 keys with identical content, and on a reviewed sample of 25 stored records",
   },
   craftbeering: {
     migrationState: "configured",
@@ -31408,10 +31410,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 482 recipes from 489 API records; 7 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   theviewfromgreatisland: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-19-51.036Z-attempt-f7cd9bb9-b687-47f8-a0c5-2d1e92fca1d6",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 2208 recipes from 2208 API records with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: legacy-unhealthy; page three of the API answered 403, so the legacy spider stopped after 200 recipes yet still reported finish_reason 'finished'. Acceptance therefore rests on discovery matching the source's own inventory - the live listing contract reports x-wp-total 2208 and the uncapped run persisted 2208 - on all 200 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 2208 keys with identical content, and on a reviewed sample of 25 stored records",
   },
   thevintagemixer: {
     migrationState: "configured",
@@ -31538,10 +31541,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 54-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 54 recipes with every material field matching; tags == keywords + cuisines; 2 records keep WPRM named-step prefixes legacy drops",
   },
   twopeasandtheirpod: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-22-25.100Z-attempt-91ed36c3-bd61-47f5-9232-2cac923a205c",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 2060 recipes from 2060 API records with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: legacy-unhealthy; the first API page answered 403, so the legacy spider produced no recipes at all yet still reported finish_reason 'finished'. Acceptance therefore rests on discovery matching the source's own inventory - the live listing contract reports x-wp-total 2061 and the uncapped run persisted 2061 - on two uncapped runs reproducing all 2061 keys with identical content, and on a reviewed sample of 25 stored records",
   },
   twosleevers: {
     migrationState: "configured",
@@ -32020,10 +32024,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 200-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 200 recipes with every material field matching; 200 records keep a cuisine legacy has no field for and the same 200 keep a yield legacy reduces to its first integer",
   },
   lurpak: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-16T08-25-46.444Z-attempt-57281cb6-110a-42b6-9766-efcee413d49f",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 211 recipes with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: 211 records match the isolated legacy run on every material field, and a second uncapped run reproduced all 211 keys with identical content. V2 additionally keeps a cuisine on 13 records that legacy has no field for, and a fuller yield than legacy's leading integer on 205",
   },
   /**
    * Clean enough to crawl but the JSON-LD coverage is poor: far more pages
