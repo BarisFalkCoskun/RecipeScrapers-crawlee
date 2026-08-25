@@ -42,9 +42,12 @@ const mongoUri = () =>
       const now = out.recipes[0] && out.recipes[0].normalized;
       if (!now) continue;
       const before = doc.normalized || {};
-      if (JSON.stringify(now.ingredients) !== JSON.stringify(before.ingredients) ||
-          JSON.stringify(now.instructions) !== JSON.stringify(before.instructions) ||
-          JSON.stringify(now.title) !== JSON.stringify(before.title)) {
+      // The whole normalized record, not a chosen few fields. Naming fields here
+      // once let a source through whose only rewritten field was description:
+      // chokomils was promoted as untouched and then reported CHANGED on its
+      // next repeat run, because the block boundary the fix repairs appears in
+      // prose as readily as in a step.
+      if (JSON.stringify(now) !== JSON.stringify(before)) {
         if (changed === 0) example = doc.canonicalUrl;
         changed += 1;
       }
