@@ -26030,9 +26030,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
 > = {
   arla: {
     migrationState: "canary_passed",
-    latestCanary: "2026-08-15T10-06-36.443Z-attempt-0550c74a-5637-4061-9509-d715fe054fc8",
+    latestCanary: "2026-08-25T12-46-58.315Z-attempt-87f1be80-56f3-48c7-b3ed-885740ea0149",
     deferOrBlockReason:
-      "Shadow comparison passed: legacy-unhealthy; 149 stable records over two uncapped runs against the five current category routes. Uncapped run persisted all 3062 discovered recipes with complete discovery and no blocked, failed or rejected record. The second uncapped run is outstanding: it was killed by the harness timeout before completing",
+      "Uncapped run persisted 3068 of 3069 discovered recipes with complete discovery, no blocked or rejected record and one failed request. A full isolated legacy run - the first to complete, after three attempts died on a two-hour ceiling and a fourth finished but wrote nothing through the broken feed exporter - emitted 3069 records, every one of which V2 also holds and matches on every material field. V2 additionally holds one recipe legacy never fetched, salat-med-rod-gronkal-abler-og-tranebar, stored complete with 12 ingredients, 7 steps, an image and a yield. The second uncapped run needed for idempotency is running",
   },
   /**
    * Six pages carry a canonical pointing at thise.dk, a separate brand whose
@@ -26904,10 +26904,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 540 recipes from 799 posts with complete discovery and no blocked, failed or rejected record",
   },
   thehappierhomemaker: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-19T23-39-29.465Z-attempt-8ba048ef-ea77-4860-b0b7-e7993eaebdae",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 655 recipes from 823 posts with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 655 keys with identical content; 649 records keep a cuisine legacy has no field for; 53 negative upstream durations V2 rejects and legacy keeps",
   },
   anicula: {
     migrationState: "shadow_passed",
