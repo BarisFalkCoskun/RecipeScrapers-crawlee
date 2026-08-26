@@ -26959,10 +26959,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: legacy-unhealthy; its listing answers 301 to drop the www prefix and the redirect target then answers 403, so the legacy spider reads nothing at all and still reports finish_reason 'finished', so there is no baseline to compare. Acceptance rests on V2 persisting 838 recipes from 879 discovered posts with complete discovery and no failed, blocked or rejected request, on two uncapped runs reproducing all 838 keys with identical content, and on a reviewed sample of 25 stored records",
   },
   tidymom: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-19T17-51-25.388Z-attempt-5cb21c6a-2b7b-466d-95ac-255b8ab29620",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 842 recipes from 1852 posts with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 841 keys with identical content; 734 records keep a cuisine legacy has no field for",
   },
   cookieandkate: {
     migrationState: "canary_passed",
@@ -32728,10 +32729,11 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
       "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 1139 keys with identical content; tags == keywords + cuisines; 69 records keep a space at a block boundary legacy fuses over. Every one of the 6 shortfall records is an upstream defect the completeness contract rejects (1 no title, 1 no ingredients, 4 no instructions), so there is no unexplained rejection",
   },
   bergholts: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-20T06-30-12.137Z-attempt-2f16f84b-019c-481a-a4ed-27b456cf97b6",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run discovered all 17 records the live listing contract declares and persisted 16 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no title), so there is no unexplained rejection",
+      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 16 keys with identical content",
   },
   bondemad: {
     migrationState: "shadow_passed",

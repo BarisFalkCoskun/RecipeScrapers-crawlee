@@ -230,14 +230,16 @@ for(const [k,l] of L){
     // record failing both: the prefix strip demanded exact equality afterwards,
     // which the whitespace difference then broke.
     const stripped=cs.map((t,i)=>{
-      // Equality after stripping is what makes this safe, not the length, so the
-      // bound only exists to keep the pattern from scanning an unbounded string.
-      // It was 160 and that was too tight: bergholts names one step with a
-      // 281-character summary of the whole method - "Soignér lårene, salt, gnid
-      // med krydderier. Lad hvile i køleskab 24-36 timer..." - over a body that
-      // spells the same method out at length. Comparing the stripped body
-      // without its spaces keeps a name that only differs there strippable.
-      const m=/^[^:]{1,400}:\s*(.*)$/su.exec(t);
+      // No length bound. Equality after stripping is what makes this safe, and
+      // every bound tried has been wrong for some source: 160 excluded
+      // bergholts, whose step name is a 281-character summary of the method,
+      // and 400 excluded frommybowl, whose name is the body itself at 434. A
+      // step name is whatever the author typed, so guessing a maximum only
+      // defers the next case. The pattern still requires a colon and still only
+      // strips when what remains equals legacy's text, which is the real guard.
+      // Comparing the stripped body without its spaces keeps a name that only
+      // differs there strippable.
+      const m=/^[^:]+:\s*(.*)$/su.exec(t);
       return m && bareText(m[1])===bareText(ls[i]) ? m[1] : t;
     });
     if(JSON.stringify(ls)===JSON.stringify(stripped)) namedSteps++;
