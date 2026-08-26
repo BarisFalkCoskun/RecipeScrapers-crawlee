@@ -245,3 +245,20 @@ So a large shortfall is a reason to look at the legacy side, not a number to
 accept because each entry has a label. Treat a source rejecting a substantial
 share of its catalog as unexplained until a legacy run has been compared against
 it.
+
+
+## One or two differing records on a large source is usually an upstream edit
+
+A comparison whose whole disagreement is one record out of several hundred, with
+no record-set gap, is nearly always the source having edited that recipe between
+the two runs. happyfoodstube's homemade sushi went from 12 ingredients to 11 and
+prep 30 to 40, and states its amounts as "((14 ounces/400 grams))" on one side
+and "((400g/14.1oz))" on the other - a rewrite, not an extraction difference.
+
+fresh-parity.sh gathers both sides in one window, but the window is a crawl plus
+a legacy run, which on a large source is hours. An edit inside it lands on one
+side only.
+
+Re-running is what separates this from a real difference: drift clears, because
+the second pair sees one version, and a genuine difference persists. Do that
+before reading a single-record disagreement as a defect.
