@@ -29271,10 +29271,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 125 recipes from 125 API records with complete discovery and no blocked, failed or rejected record",
   },
   ketoconnect: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-24-55.049Z-attempt-a7595e7d-255d-4f64-9483-4f4bb93bb01b",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run discovered all 441 records the live listing contract declares and persisted 439 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (1 no title, 1 no instructions), so there is no unexplained rejection",
+      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 439 keys with identical content",
   },
   ketocookingchristian: {
     migrationState: "shadow_passed",
@@ -29426,10 +29427,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1770 recipes from 1941 API records; 171 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   lexiscleankitchen: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-28-08.146Z-attempt-dd3dd642-cd58-40aa-b09d-fae3a1f49db8",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run discovered all 2324 records the live listing contract declares and persisted 2081 with no blocked or failed request. Every one of the 243 shortfall records is an upstream defect the completeness contract rejects (235 no title, 3 no ingredients, 5 no instructions), so there is no unexplained rejection",
+      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 2081 keys with identical content",
   },
   lifeloveandsugar: {
     migrationState: "shadow_passed",
@@ -30256,10 +30258,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 342 recipes from 342 API records with complete discovery and no blocked, failed or rejected record",
   },
   preppykitchen: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-44-32.410Z-attempt-7ab46dc6-f770-433a-900a-10b5ba67d84a",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run discovered all 1351 records the live listing contract declares and persisted 1344 with no blocked or failed request. Every one of the 7 shortfall records is an upstream defect the completeness contract rejects (1 no title, 1 no ingredients, 5 no canonical link), so there is no unexplained rejection",
+      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 1344 keys with identical content",
   },
   pressurecookingtoday: {
     migrationState: "configured",
@@ -30750,10 +30753,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 919 recipes from 919 API records with complete discovery and no blocked, failed or rejected record",
   },
   spicysouthernkitchen: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-59-42.220Z-attempt-e5161c3b-4c56-4402-8732-8cd0e9900f2d",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run discovered all 2433 records the live listing contract declares and persisted 2432 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no title), so there is no unexplained rejection",
+      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 2433 keys with identical content",
   },
   spoonforkbacon: {
     migrationState: "shadow_passed",

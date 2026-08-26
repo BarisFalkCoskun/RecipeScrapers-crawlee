@@ -230,12 +230,14 @@ for(const [k,l] of L){
     // record failing both: the prefix strip demanded exact equality afterwards,
     // which the whitespace difference then broke.
     const stripped=cs.map((t,i)=>{
-      // The bound is generous because equality after stripping is what makes
-      // this safe, not the length: culinaryginger names one step "If using
-      // wooden skewers, soak them in water for 30 minutes to prevent burning",
-      // which is 68 characters. Comparing the stripped body without its spaces
-      // keeps a name that only differs there strippable.
-      const m=/^[^:]{1,160}:\s*(.*)$/su.exec(t);
+      // Equality after stripping is what makes this safe, not the length, so the
+      // bound only exists to keep the pattern from scanning an unbounded string.
+      // It was 160 and that was too tight: bergholts names one step with a
+      // 281-character summary of the whole method - "Soignér lårene, salt, gnid
+      // med krydderier. Lad hvile i køleskab 24-36 timer..." - over a body that
+      // spells the same method out at length. Comparing the stripped body
+      // without its spaces keeps a name that only differs there strippable.
+      const m=/^[^:]{1,400}:\s*(.*)$/su.exec(t);
       return m && bareText(m[1])===bareText(ls[i]) ? m[1] : t;
     });
     if(JSON.stringify(ls)===JSON.stringify(stripped)) namedSteps++;
