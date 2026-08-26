@@ -535,8 +535,11 @@ describe("Danish JSON-LD source registry", () => {
     // API redirects across to the new name. Without it in allowedDomains every
     // response is rejected and the run ends with no candidates at all.
     expect(byId.get("therealfoodrds")?.allowedDomains).toContain("therealfooddietitians.com");
-    // The rebrand fix is what turned a zero-candidate failure into a canary.
-    expect(byId.get("therealfoodrds")?.migrationState).toBe("canary_passed");
+    // The rebrand fix is what turned a zero-candidate failure into a canary, and
+    // parity work has since carried it further - the same way it did gunris
+    // below, and recording that must not read as the canary having broken.
+    expect(["canary_passed", "shadow_passed"])
+      .toContain(byId.get("therealfoodrds")?.migrationState);
     expect(byId.get("brownedbutterblondie")?.allowedDomains).toContain("athomebyheather.com");
     expect(byId.get("lowcarbdelish")?.allowedDomains).toContain("wellportionedplate.com");
 

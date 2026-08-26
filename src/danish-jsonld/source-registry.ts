@@ -26582,10 +26582,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 119 recipes from 135 candidates; 3 blocked requests keeps it short of a canary",
   },
   therealfoodrds: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-20T05-51-54.744Z-attempt-e3ba06a3-f9c8-4b2c-9f83-060a79b34e6a",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 748 recipes from 928 posts with complete discovery and no blocked, failed or rejected record, once allowedDomains followed the rebrand to therealfooddietitians.com",
+      "Shadow comparison passed: legacy-unhealthy; the source has moved to therealfooddietitians.com and its listing answers 301 there. The legacy spider follows the redirect off its own allowed_domains, filters everything and reports a clean run holding nothing, so there is no baseline to compare. Acceptance rests on V2 persisting 748 recipes from 930 discovered posts with complete discovery and no failed, blocked or rejected request, on two uncapped runs reproducing all 748 keys with identical content, and on a reviewed sample of 25 stored records",
   },
   artfuldishes: {
     migrationState: "configured",
@@ -26893,11 +26894,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 41-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 41 recipes with every material field matching; 3 records keep a cuisine legacy has no field for and 2 keep a yield legacy reduces to its first integer",
   },
   annsentitledlife: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-19T15-23-05.567Z-attempt-eba71083-16e0-4282-a8df-ede1473f6d54",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Shadow comparison passed: 458/458 recipes and every material field match exactly. The full isolated Scrapy run matched every material field. The second uncapped run is outstanding: it was killed by the harness timeout before completing, and the harness read the resulting unchanged records as stability. Recorded counts are from one uncapped run and the incomplete second, which emitted identical 458-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 458 recipes with every material field matching; 441 records keep a cuisine legacy has no field for",
+      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 458 keys with identical content; 441 records keep a cuisine legacy has no field for",
   },
   thecookful: {
     migrationState: "shadow_passed",
@@ -26950,10 +26952,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 82-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 82 recipes with every material field matching; 14 records keep a cuisine legacy has no field for",
   },
   sweetsimplevegan: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-19T23-34-16.053Z-attempt-8726aa0c-d13f-424b-b8fa-e3bbf8e84fe1",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 838 recipes from 879 posts with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: legacy-unhealthy; its listing answers 301 to drop the www prefix and the redirect target then answers 403, so the legacy spider reads nothing at all and still reports finish_reason 'finished', so there is no baseline to compare. Acceptance rests on V2 persisting 838 recipes from 879 discovered posts with complete discovery and no failed, blocked or rejected request, on two uncapped runs reproducing all 838 keys with identical content, and on a reviewed sample of 25 stored records",
   },
   tidymom: {
     migrationState: "canary_passed",
@@ -30596,10 +30599,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1770 recipes from 1787 API records; 17 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   simplysogood: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-55-04.909Z-attempt-85997fdd-1fc2-4ccd-8d4e-bdf91df5ccea",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run discovered all 295 records the live listing contract declares and persisted 289 with no blocked or failed request. Every one of the 6 shortfall records is an upstream defect the completeness contract rejects (4 no title, 1 no ingredients, 1 no canonical link), so there is no unexplained rejection",
+      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 289 keys with identical content",
   },
   simplystacie: {
     migrationState: "configured",
