@@ -106,6 +106,27 @@ function flattenIngredients(groups: unknown): string[] {
   return lines;
 }
 
+// A source can predate the WPRM fields the rest of this file reads and keep its
+// recipe in custom fields instead. theinspiredhome publishes an empty
+// `ingredients` and `instructions` on 661 of its 1117 records while the text
+// sits in `custom_fields.old_ingredients` and `old_instructions` as an HTML
+// list; without this those records look like upstream stubs and are rejected,
+// which is what the legacy spider's use_legacy_custom_fields flag exists to
+// avoid. List items carry one entry each, and a source that wrote paragraphs
+// instead is read the same way.
+function legacyHtmlTexts(value: unknown): string[] {
+  const source = text(value);
+  if (source === "") return [];
+  const $ = cheerio.load(source);
+  const items = $("li").length > 0 ? $("li") : $("p");
+  const out: string[] = [];
+  items.each((_index, node) => {
+    const entry = plainText($.html(node));
+    if (entry !== "") out.push(entry);
+  });
+  return out;
+}
+
 function flattenInstructions(groups: unknown): NormalizedRecipeInstruction[] {
   if (!Array.isArray(groups)) return [];
   const steps: NormalizedRecipeInstruction[] = [];
@@ -149,11 +170,22 @@ function normalize(recipe: Record<string, unknown>): NormalizedRecipeV2 {
   const yieldText = [servings, servingsUnit].filter((part) => part !== "").join(" ");
   const image = text(recipe.image_url);
   const tags = isRecord(recipe.tags) ? recipe.tags : {};
+  const customFields = isRecord(recipe.custom_fields) ? recipe.custom_fields : {};
+  // Only where the standard fields came back empty: a source that fills both
+  // says what it means in the current shape, and the old fields on such a
+  // record are stale copies rather than the recipe.
+  let ingredients = flattenIngredients(recipe.ingredients);
+  if (ingredients.length === 0) ingredients = legacyHtmlTexts(customFields.old_ingredients);
+  let instructions = flattenInstructions(recipe.instructions);
+  if (instructions.length === 0) {
+    instructions = legacyHtmlTexts(customFields.old_instructions)
+      .map((step, index) => ({ position: index + 1, text: step }));
+  }
   return {
     title: text(recipe.name),
     ...(plainText(recipe.summary) === "" ? {} : { description: plainText(recipe.summary) }),
-    ingredients: flattenIngredients(recipe.ingredients),
-    instructions: flattenInstructions(recipe.instructions),
+    ingredients,
+    instructions,
     ...(minutes(recipe.prep_time) === undefined ? {} : { prepMinutes: minutes(recipe.prep_time) }),
     ...(minutes(recipe.cook_time) === undefined ? {} : { cookMinutes: minutes(recipe.cook_time) }),
     ...(minutes(recipe.total_time) === undefined ? {} : { totalMinutes: minutes(recipe.total_time) }),

@@ -262,4 +262,41 @@ describe("WPRM API recipe extraction", () => {
 
     expect(recipe.normalized.instructions[0].text).toBe("For the sauce: Melt the butter.");
   });
+
+  it("reads a recipe kept in the old custom fields", () => {
+    // theinspiredhome predates the WPRM fields the rest of the extractor reads:
+    // 661 of its 1117 records publish an empty ingredients and instructions
+    // while the text sits in custom_fields as an HTML list. Without this they
+    // look like upstream stubs and are rejected, losing recipes legacy keeps.
+    const entry = structuredClone(fixture[0]) as Record<string, any>;
+    entry.recipe.ingredients = [];
+    entry.recipe.instructions = [];
+    entry.recipe.custom_fields = {
+      old_ingredients: "<p><strong>For the Crust:</strong></p><ul><li>1 cup of all-purpose flour</li><li>Pinch of salt</li></ul>",
+      old_instructions: "<ol><li>Preheat the oven to 350&deg;</li><li>Process until combined.</li></ol>",
+    };
+
+    const [recipe] = extractWprmRecipes([entry]).recipes;
+
+    expect(recipe.normalized.ingredients).toEqual([
+      "1 cup of all-purpose flour",
+      "Pinch of salt",
+    ]);
+    expect(recipe.normalized.instructions.map((step) => step.text)).toEqual([
+      "Preheat the oven to 350°",
+      "Process until combined.",
+    ]);
+  });
+
+  it("prefers the current fields when a record fills both", () => {
+    const entry = structuredClone(fixture[0]) as Record<string, any>;
+    entry.recipe.ingredients = [{ name: "", ingredients: [
+      { amount: "2", unit: "cups", name: "flour" },
+    ] }];
+    entry.recipe.custom_fields = { old_ingredients: "<ul><li>stale copy</li></ul>" };
+
+    const [recipe] = extractWprmRecipes([entry]).recipes;
+
+    expect(recipe.normalized.ingredients).toEqual(["2 cups flour"]);
+  });
 });

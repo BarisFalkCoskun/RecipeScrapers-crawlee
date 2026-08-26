@@ -226,3 +226,22 @@ block-boundary fix looks like. The comparator cannot tell those apart from the
 text alone. What keeps a stale crawl from being promoted is `fix-impact.cjs`,
 which re-extracts every stored record with the current code, and it has to be
 run before promoting on a match that reports this class.
+
+
+## The rejection explainer cannot see a gap in V2 itself
+
+`explain-rejections.cjs` decides whether a missing record is an upstream defect
+by putting it through V2's own extractor. That is what makes its verdict the
+verdict the crawler reached - and it is also its blind spot. Where V2 has no path
+to a record legacy can read, the extractor rejects it, the explainer agrees, and
+the source reports ALL SHORTFALL EXPLAINED while genuinely losing recipes.
+
+theinspiredhome is the case: 661 of its 1117 records keep the recipe in
+`custom_fields.old_ingredients` and `old_instructions` rather than the current
+WPRM fields, and every one was counted as an upstream stub. What caught it was
+the comparison against legacy, which held the full text for the same records.
+
+So a large shortfall is a reason to look at the legacy side, not a number to
+accept because each entry has a label. Treat a source rejecting a substantial
+share of its catalog as unexplained until a legacy run has been compared against
+it.
