@@ -262,3 +262,11 @@ side only.
 Re-running is what separates this from a real difference: drift clears, because
 the second pair sees one version, and a genuine difference persists. Do that
 before reading a single-record disagreement as a defect.
+
+On the eleven sources that prompted this note, none cleared - so the drift
+reading was wrong, and re-running is what proved it. The cause was a shared key:
+happyfoodstube publishes two "Homemade Sushi" recipes on one URL, upstream ids
+6839 and 11293, and both sides store both. Keying by URL and title put them on
+one key and kept whichever arrived last on each side, so the comparison held one
+recipe against the other. The comparator now pairs the records under a shared key
+by their ingredients before comparing.

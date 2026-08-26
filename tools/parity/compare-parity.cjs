@@ -100,8 +100,48 @@ const caseInsensitive =
   noCollapse(legacy,legacyKey,lowerLegacyKey) && noCollapse(crawlee,crawleeKey,lowerCrawleeKey);
 const lk=caseInsensitive?lowerLegacyKey:legacyKey;
 const ck=caseInsensitive?lowerCrawleeKey:crawleeKey;
-const L=new Map(legacy.map(r=>[lk(r),r]));
-const C=new Map(crawlee.map(r=>[ck(r),r]));
+// A source can publish more than one recipe at a single URL under a single
+// title. happyfoodstube has two "Homemade Sushi" records on
+// /homemade-sushi/ - upstream ids 6839 and 11293, eleven ingredients and
+// twelve - and both sides store both. Keying by URL and title alone puts them
+// on the same key, and building a Map from that keeps whichever arrived last on
+// each side, so the comparison can end up holding 6839 against 11293 and
+// reporting a field difference between two recipes that were never the same
+// one. Pairing the records under a shared key by content is what stops that.
+const groupBy=(rows,fn)=>{
+  const out=new Map();
+  for(const r of rows){ const k=fn(r); (out.get(k)||out.set(k,[]).get(k)).push(r); }
+  return out;
+};
+const Lg=groupBy(legacy,lk), Cg=groupBy(crawlee,ck);
+// The signature only has to separate the records sharing a key, not describe
+// them: their ingredient list is what differs when a page carries two variants.
+const sigL=r=>JSON.stringify((r.ingredients||[]).map(x=>norm(x.original||x.name)));
+const sigC=r=>JSON.stringify(((r.normalized||{}).ingredients||[])
+  .map(x=>norm(typeof x==="string"?x:(x.original||x.text||x.name))));
+const pair=(ls,cs)=>{
+  if(ls.length<=1&&cs.length<=1) return [[ls[0],cs[0]]];
+  const remaining=cs.slice();
+  const pairs=[];
+  for(const l of ls){
+    let best=0;
+    for(let i=1;i<remaining.length;i++){
+      if(sigC(remaining[i])===sigL(l)){ best=i; break; }
+    }
+    pairs.push([l,remaining.splice(best,1)[0]]);
+  }
+  return pairs;
+};
+const L=new Map(), C=new Map();
+for(const [k,ls] of Lg){
+  const cs=Cg.get(k)||[];
+  if(cs.length===0){ L.set(k,ls[0]); continue; }
+  const pairs=pair(ls,cs);
+  // Extra records under one key are compared under a suffixed key so each pair
+  // is judged on its own rather than one of them being dropped silently.
+  pairs.forEach(([l,c],i)=>{ const key=i===0?k:`${k} #${i+1}`; if(l)L.set(key,l); if(c)C.set(key,c); });
+}
+for(const [k,cs] of Cg){ if(!Lg.has(k)) C.set(k,cs[0]); }
 console.log("legacy:",legacy.length,"(unique keys",L.size,")  crawlee:",crawlee.length,"(unique keys",C.size,")");
 const onlyL=[...L.keys()].filter(k=>!C.has(k)), onlyC=[...C.keys()].filter(k=>!L.has(k));
 console.log("only legacy:",onlyL.length,onlyL.slice(0,4));
