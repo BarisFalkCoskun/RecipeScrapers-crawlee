@@ -26862,7 +26862,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "canary_passed",
     latestCanary: "2026-08-20T01-44-10.244Z-attempt-d2a2eae9-a45d-4adf-804a-96cbd8f8d315",
     deferOrBlockReason:
-      "Uncapped run persisted 367 recipes from 452 posts with complete discovery and no blocked, failed or rejected record",
+      "Comparison passed on the legacy-unhealthy route, pending the second uncapped run. The legacy spider is blocked page by page rather than at the listing: its run answered 403 on 171 of 457 fetches, kept the 230 recipes it could read, and still reported finish_reason 'finished'. V2 persisted 367 from 452 discovered posts with complete discovery and no failed, blocked or rejected request, holds every one of legacy's 230 records, and differs from it on no field of any record. A reviewed sample of 25 stored records is clean",
   },
   butternutbakeryblog: {
     migrationState: "shadow_passed",
