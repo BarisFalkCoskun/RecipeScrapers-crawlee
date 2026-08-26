@@ -31257,16 +31257,17 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
    * comparison against legacy is what caught it.
    */
   /**
-   * The rejection explainer called this shortfall explained because it puts
-   * each missing record through V2's own extractor - so where V2 lacks a
-   * path legacy has, the two agree with each other and both are wrong. The
-   * comparison against legacy is what caught it.
+   * The rejection explainer called this source's shortfall explained because
+   * it puts each missing record through V2's own extractor - so where V2
+   * lacked a path legacy has, the two agreed with each other and both were
+   * wrong. Only the legacy comparison could catch it.
    */
   theinspiredhome: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-09-43.233Z-attempt-59bfba3d-83a6-4e68-9a73-c734895403de",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "The custom-fields fix works: rejections on this source fell from 661 records to 4 once the extractor read the older WPRM shape. Discovery is what is short now - page nine of the listing returned a malformed payload on the run after the fix, so paging stopped at eight of twelve pages and the run recorded discoveryComplete false rather than claiming the catalog. The listing serves all twelve pages when asked again, so this is a transient response and the source needs another uncapped run",
+      "Shadow comparison passed: the isolated legacy run emitted 1117 records and V2 matches every material field, with a second uncapped run reproducing all 1111 keys with identical content. The six records V2 does not store are ones legacy accepts without a name, ingredients or instructions, which the completeness contract rejects. This source keeps 661 of its recipes in the older WPRM shape, with an empty ingredients and instructions and the text in custom_fields.old_ingredients and old_instructions; before the extractor read that shape it stored 456 records and the rejection explainer called the missing 661 upstream defects, because the explainer asks V2's own extractor and so cannot see a path V2 lacks. The comparison against legacy is what caught it",
   },
   thekitchenmagpie: {
     migrationState: "configured",
