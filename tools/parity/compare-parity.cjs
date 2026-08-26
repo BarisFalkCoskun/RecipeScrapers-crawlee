@@ -138,14 +138,23 @@ const score=(a,b)=>Object.keys(a).reduce((n,k)=>n+(a[k]===b[k]?1:0),0);
 const pair=(ls,cs)=>{
   if(ls.length<=1&&cs.length<=1) return [[ls[0],cs[0]]];
   const remaining=cs.map(fieldsC).map((f,i)=>({f,r:cs[i]}));
-  const pairs=[];
-  for(const l of ls){
+  // Taking the legacy records in the order they arrived lets the first one claim
+  // the only match even when a later one fits it better. ketoconnect publishes
+  // two "Low Carb Pizza" records on one URL, one with no instructions at all;
+  // V2 stores only the usable one, and arrival order handed that match to the
+  // empty record and left the real one unpaired. Strongest match goes first.
+  const order=ls.map((l,i)=>{
     const lf=fieldsL(l);
+    const best=remaining.reduce((n,c)=>Math.max(n,score(lf,c.f)),-1);
+    return {l,lf,best,i};
+  }).sort((a,b)=>b.best-a.best||a.i-b.i);
+  const paired=new Map();
+  for(const {l,lf,i} of order){
     let best=0,bestScore=-1;
-    remaining.forEach((cand,i)=>{ const sc=score(lf,cand.f); if(sc>bestScore){bestScore=sc;best=i;} });
-    pairs.push([l,(remaining.splice(best,1)[0]||{}).r]);
+    remaining.forEach((cand,j)=>{ const sc=score(lf,cand.f); if(sc>bestScore){bestScore=sc;best=j;} });
+    paired.set(i,[l,(remaining.splice(best,1)[0]||{}).r]);
   }
-  return pairs;
+  return ls.map((_l,i)=>paired.get(i));
 };
 const L=new Map(), C=new Map();
 for(const [k,ls] of Lg){
@@ -329,7 +338,12 @@ const strayC=onlyC.filter(k=>!siblings.includes(k));
 // guessing one would attach the recipe to a page that may not exist. The
 // rejection explainer already names this cause as "no canonical link", so the
 // comparator has to recognise it too or the source reads as a record short.
-const legacyByKey=new Map(legacy.map(r=>[lk(r),r]));
+// Built from the paired map, not from the raw records: pairing gives the extra
+// records under a shared key a suffixed key ("... #2"), and looking those up by
+// the unsuffixed one finds nothing. ketoconnect publishes two "Low Carb Pizza"
+// records on one URL, one of them with no instructions at all, and that lookup
+// failing left the record V2 was right to reject reported as a loss.
+const legacyByKey=L;
 const incompleteOnlyLegacy=onlyL.filter(k=>{
   const r=legacyByKey.get(k);
   if(!r) return false;
