@@ -31255,11 +31255,17 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
    * path legacy has, the two agree with each other and both are wrong. The
    * comparison against legacy is what caught it.
    */
+  /**
+   * The rejection explainer called this shortfall explained because it puts
+   * each missing record through V2's own extractor - so where V2 lacks a
+   * path legacy has, the two agree with each other and both are wrong. The
+   * comparison against legacy is what caught it.
+   */
   theinspiredhome: {
     migrationState: "configured",
     latestCanary: "2026-08-21T12-09-43.233Z-attempt-59bfba3d-83a6-4e68-9a73-c734895403de",
     deferOrBlockReason:
-      "Awaiting a re-crawl: the 661 records this source did not store were recorded as upstream defects, and they are not. It keeps its recipes in the older WPRM shape, with an empty ingredients and instructions and the text in custom_fields.old_ingredients and old_instructions, which the extractor now reads. The count that was called a shortfall is more than half the catalog and the legacy run holds all of it",
+      "The custom-fields fix works: rejections on this source fell from 661 records to 4 once the extractor read the older WPRM shape. Discovery is what is short now - page nine of the listing returned a malformed payload on the run after the fix, so paging stopped at eight of twelve pages and the run recorded discoveryComplete false rather than claiming the catalog. The listing serves all twelve pages when asked again, so this is a transient response and the source needs another uncapped run",
   },
   thekitchenmagpie: {
     migrationState: "configured",
