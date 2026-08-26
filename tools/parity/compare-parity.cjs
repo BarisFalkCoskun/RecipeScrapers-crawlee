@@ -114,21 +114,36 @@ const groupBy=(rows,fn)=>{
   return out;
 };
 const Lg=groupBy(legacy,lk), Cg=groupBy(crawlee,ck);
-// The signature only has to separate the records sharing a key, not describe
-// them: their ingredient list is what differs when a page carries two variants.
-const sigL=r=>JSON.stringify((r.ingredients||[]).map(x=>norm(x.original||x.name)));
-const sigC=r=>JSON.stringify(((r.normalized||{}).ingredients||[])
-  .map(x=>norm(typeof x==="string"?x:(x.original||x.text||x.name))));
+// Pairing on ingredients alone is not enough: jessicalevinson has three
+// "grilled avocados stuffed with corn & black bean salsa" records on one URL and
+// all three carry the same eleven ingredients, differing only in their image and
+// their tags. So the records are scored across several fields and each legacy
+// record takes the best remaining match, which is what a reader comparing them
+// by hand would do.
+const fieldsL=r=>({
+  ing:JSON.stringify((r.ingredients||[]).map(x=>norm(x.original||x.name))),
+  ins:JSON.stringify((r.instructions||[]).map(x=>norm(typeof x==="string"?x:(x.text||x.name)))),
+  img:JSON.stringify((r.image_urls||[]).map(norm)),
+  tag:JSON.stringify((r.tags||[]).map(norm).sort()),
+  yld:norm(r.servings),
+});
+const fieldsC=r=>{ const n=r.normalized||{}; return {
+  ing:JSON.stringify((n.ingredients||[]).map(x=>norm(typeof x==="string"?x:(x.original||x.text||x.name)))),
+  ins:JSON.stringify((n.instructions||[]).map(x=>norm(typeof x==="string"?x:(x.text||x.name)))),
+  img:JSON.stringify((n.imageUrls||[]).map(norm)),
+  tag:JSON.stringify([...(n.keywords||[]),...(n.cuisines||[])].map(norm).sort()),
+  yld:norm(n.yieldText),
+}; };
+const score=(a,b)=>Object.keys(a).reduce((n,k)=>n+(a[k]===b[k]?1:0),0);
 const pair=(ls,cs)=>{
   if(ls.length<=1&&cs.length<=1) return [[ls[0],cs[0]]];
-  const remaining=cs.slice();
+  const remaining=cs.map(fieldsC).map((f,i)=>({f,r:cs[i]}));
   const pairs=[];
   for(const l of ls){
-    let best=0;
-    for(let i=1;i<remaining.length;i++){
-      if(sigC(remaining[i])===sigL(l)){ best=i; break; }
-    }
-    pairs.push([l,remaining.splice(best,1)[0]]);
+    const lf=fieldsL(l);
+    let best=0,bestScore=-1;
+    remaining.forEach((cand,i)=>{ const sc=score(lf,cand.f); if(sc>bestScore){bestScore=sc;best=i;} });
+    pairs.push([l,(remaining.splice(best,1)[0]||{}).r]);
   }
   return pairs;
 };
