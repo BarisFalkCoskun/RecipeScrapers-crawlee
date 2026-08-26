@@ -381,7 +381,9 @@ describe("Danish JSON-LD source registry", () => {
       latestScrapyOutcome: "partial",
       shadowParity: expect.stringMatching(/29\/29.*149-recipe/u),
     });
-    expect(byId.get("familiejournal")?.migrationState).toBe("canary_passed");
+    // familiejournal reached shadow parity once a legacy run finally completed
+    // for it, the same way arla did.
+    expect(byId.get("familiejournal")?.migrationState).toBe("shadow_passed");
     // Parity work carries a source past its canary, which must not read as a
     // break in the canary evidence this test is about.
     expect(["canary_passed", "shadow_passed"]).toContain(
