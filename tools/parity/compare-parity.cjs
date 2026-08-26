@@ -239,8 +239,19 @@ for(const [k,l] of L){
       // strips when what remains equals legacy's text, which is the real guard.
       // Comparing the stripped body without its spaces keeps a name that only
       // differs there strippable.
-      const m=/^[^:]+:\s*(.*)$/su.exec(t);
-      return m && bareText(m[1])===bareText(ls[i]) ? m[1] : t;
+      // Every colon is a candidate split, not just the first: a step name can
+      // contain one. spiceupthecurry names a step "Tip: you may need more or
+      // less water." over a body that begins "TIP: You may need more or less
+      // amount of water...", and splitting at the first colon leaves "you may
+      // need more or less water.: TIP: ..." - still not the body. Trying each
+      // in turn finds the one that does, and equality with legacy's text is
+      // what decides whether any of them counts.
+      const target=bareText(ls[i]);
+      for(let at=t.indexOf(":"); at!==-1; at=t.indexOf(":",at+1)){
+        const rest=t.slice(at+1).replace(/^\s+/u,"");
+        if(bareText(rest)===target) return rest;
+      }
+      return t;
     });
     if(JSON.stringify(ls)===JSON.stringify(stripped)) namedSteps++;
     else if(spacesOnly(ls,stripped)){
