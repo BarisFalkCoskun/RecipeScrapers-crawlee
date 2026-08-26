@@ -35,7 +35,11 @@ describe("Danish JSON-LD migration status", () => {
     expect(renderMigrationStatus(report, "markdown")).toContain(
       "| Source | Domain | Discovery | Fetch | Scrapy | Crawlee | Canary | Shadow parity | Cutover date | Reason |"
     );
-    expect(renderMigrationStatus(report, "markdown")).toContain("| arla | arla.dk | sitemap | cheerio | not_audited | canary_passed |");
+    // The row's shape is what this test is about. Pinning arla's migration state
+    // here made the renderer test fail every time the source was promoted, which
+    // is a fact about the migration rather than about rendering.
+    expect(renderMigrationStatus(report, "markdown"))
+      .toMatch(/\| arla \| arla\.dk \| sitemap \| cheerio \| not_audited \| [a-z_]+ \|/u);
   });
 
   it("reports Surdejsentusiasten as shadow-passed without claiming cutover", () => {

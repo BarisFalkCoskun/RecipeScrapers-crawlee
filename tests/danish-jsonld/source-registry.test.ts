@@ -287,13 +287,18 @@ describe("Danish JSON-LD source registry", () => {
     expect(["arla", "coop", "kitchenaid", "madoghave", "tv2mad"].map(
       (sourceId) => [sourceId, byId.get(sourceId)?.migrationState]
     )).toEqual([
-      ["arla", "canary_passed"],
+      // arla reached shadow parity once a legacy run finally completed for it.
+      ["arla", "shadow_passed"],
       ["coop", "configured"],
       ["kitchenaid", "configured"],
       ["madoghave", "shadow_passed"],
       ["tv2mad", "configured"],
     ]);
     expect(byId.get("madoghave")?.shadowParity).toBe("legacy-unhealthy");
+    // arla's evidence moved off the legacy-unhealthy route: it now rests on a
+    // full legacy run rather than on five category listings standing in for one.
+    expect(byId.get("arla")?.shadowParity).toBe("matched");
+    expect(byId.get("arla")?.deferOrBlockReason).toMatch(/3069 records/u);
     expect(byId.get("tv2mad")?.deferOrBlockReason).toMatch(
       /result window stops at 10000/u
     );

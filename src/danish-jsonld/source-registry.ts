@@ -26029,10 +26029,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   Record<string, Partial<DanishJsonLdSource>>
 > = {
   arla: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-25T12-46-58.315Z-attempt-87f1be80-56f3-48c7-b3ed-885740ea0149",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 3068 of 3069 discovered recipes with complete discovery, no blocked or rejected record and one failed request. A full isolated legacy run - the first to complete, after three attempts died on a two-hour ceiling and a fourth finished but wrote nothing through the broken feed exporter - emitted 3069 records, every one of which V2 also holds and matches on every material field. V2 additionally holds one recipe legacy never fetched, salat-med-rod-gronkal-abler-og-tranebar, stored complete with 12 ingredients, 7 steps, an image and a yield. The second uncapped run needed for idempotency is running",
+      "Shadow comparison passed: the isolated legacy run emitted 3069 records and V2 holds every one of them, matching on every material field with no difference in any field on any record. V2 additionally holds one recipe legacy never fetched, salat-med-rod-gronkal-abler-og-tranebar, stored complete with 12 ingredients, 7 steps, an image and a yield. A second uncapped run reproduced all 3070 keys with identical content. This is the first complete legacy run for the source: three earlier attempts were killed by a two-hour ceiling and a fourth finished but wrote nothing through the feed exporter, which is why its evidence previously rested on the legacy-unhealthy route against five category listings",
   },
   /**
    * Six pages carry a canonical pointing at thise.dk, a separate brand whose
