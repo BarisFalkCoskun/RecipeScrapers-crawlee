@@ -26900,10 +26900,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: 458/458 recipes and every material field match exactly. The full isolated Scrapy run matched every material field. The second uncapped run is outstanding: it was killed by the harness timeout before completing, and the harness read the resulting unchanged records as stability. Recorded counts are from one uncapped run and the incomplete second, which emitted identical 458-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 458 recipes with every material field matching; 441 records keep a cuisine legacy has no field for",
   },
   thecookful: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-20T00-12-02.988Z-attempt-7346b12e-67c3-4095-aefe-c23e878f35f3",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 540 recipes from 799 posts with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: legacy-unhealthy; the legacy spider is blocked page by page rather than at the listing, answering 403 on 333 of its 809 fetches, keeping the 322 recipes it could read and still reporting finish_reason 'finished'. V2 persisted 541 from 800 discovered posts with complete discovery and no failed, blocked or rejected request, holds every one of legacy's 322 records and differs on no field of any record. A second uncapped run reproduced all 541 keys with identical content, and a reviewed sample of 25 stored records is clean",
   },
   thehappierhomemaker: {
     migrationState: "shadow_passed",
