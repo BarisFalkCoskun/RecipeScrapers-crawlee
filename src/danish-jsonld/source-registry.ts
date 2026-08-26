@@ -27695,10 +27695,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 288 keys with identical content. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   chewoutloud: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-39-00.755Z-attempt-dcde88e2-f9c3-44eb-8fd9-665fe3b8dedb",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run discovered all 903 records the live listing contract declares and persisted 858 with no blocked or failed request. Every one of the 45 shortfall records is an upstream defect the completeness contract rejects (1 no title, 43 no ingredients, 1 no instructions), so there is no unexplained rejection",
+      "Shadow comparison passed: legacy-unhealthy; page 4 of the API answered 403, so the legacy spider stopped after 300 recipes yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 903 records the live listing declares, on all 300 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 859 keys with identical content, and on a reviewed sample of 25 stored records. The 45 records it does not store are upstream defects the completeness contract rejects (1 no title, 43 no ingredients, 1 no instructions); its 43 empty records were checked against the live listing and carry no ingredients, instructions, summary or custom fields.",
   },
   chicagojogger: {
     migrationState: "shadow_passed",
@@ -28624,10 +28625,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 391 recipes from 391 API records with complete discovery and no blocked, failed or rejected record",
   },
   fromvalerieskitchen: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-01-24.371Z-attempt-220005a9-2858-4ab1-950c-ef6d77274e8b",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run discovered all 850 records the live listing contract declares and persisted 848 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no canonical link), so there is no unexplained rejection",
+      "Shadow comparison passed: legacy-unhealthy; the first API page answered 403, so the legacy spider produced no recipes at all yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 851 records the live listing declares, on two uncapped runs reproducing all 849 keys with identical content, and on a reviewed sample of 25 stored records. The 2 records it does not store are upstream defects the completeness contract rejects (2 no canonical link); each is accounted for individually.",
   },
   fullofplants: {
     migrationState: "blocked",
@@ -29580,10 +29582,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 264 keys with identical content; tags == keywords + cuisines; 1 records legacy accepts without a name, ingredients or instructions. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   mamabearscookbook: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-31-38.702Z-attempt-05752156-0993-4f3a-b668-5f68d16ec69a",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run discovered all 223 records the live listing contract declares and persisted 221 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no canonical link), so there is no unexplained rejection",
+      "Shadow comparison passed: legacy-unhealthy; page 3 of the API answered 403, so the legacy spider stopped after 200 recipes yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 223 records the live listing declares, on all 200 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 221 keys with identical content, and on a reviewed sample of 25 stored records. The 2 records it does not store are upstream defects the completeness contract rejects (2 no canonical link); each is accounted for individually.",
   },
   mandysrecipeboxblog: {
     migrationState: "shadow_passed",
@@ -29786,11 +29789,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run discovered all 474 records the live listing contract declares and persisted 470 with no blocked or failed request. Every one of the 4 shortfall records is an upstream defect the completeness contract rejects (4 no canonical link), so there is no unexplained rejection",
   },
   myfoodstory: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-21T11-33-38.294Z-attempt-c0f1e843-9223-430c-bf3c-10878539d211",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Awaiting re-verification: the comparison and the pair of uncapped runs behind its shadow parity were made before the step-name fix, which rewrites steps whose name repeats the body, so that evidence no longer describes the extractor. Two uncapped Crawlee runs emitted identical 858-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 858 recipes with every material field matching; tags == keywords + cuisines; 569 records keep WPRM named-step prefixes legacy drops",
+      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 858 keys with identical content",
   },
   myheartbeets: {
     migrationState: "configured",
@@ -30871,10 +30875,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 125 recipes from 125 API records with complete discovery and no blocked, failed or rejected record",
   },
   sweetpeasandsaffron: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-04-42.406Z-attempt-93ae972d-1d64-4f3b-9c4d-ada65684f3dd",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run discovered all 862 records the live listing contract declares and persisted 850 with no blocked or failed request. Every one of the 12 shortfall records is an upstream defect the completeness contract rejects (7 no ingredients, 1 no instructions, 4 no canonical link), so there is no unexplained rejection",
+      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 850 keys with identical content",
   },
   sweetpeaskitchen: {
     migrationState: "shadow_passed",
@@ -30982,10 +30987,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 1553-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 1553 recipes with every material field matching; tags == keywords + cuisines; 5 records keep WPRM named-step prefixes legacy drops",
   },
   theblackpeppercorn: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-06-50.294Z-attempt-255a286d-118d-4b56-8bb0-ac37763b4de3",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run discovered all 899 records the live listing contract declares and persisted 885 with no blocked or failed request. Every one of the 14 shortfall records is an upstream defect the completeness contract rejects (13 no title, 1 no ingredients), so there is no unexplained rejection",
+      "Shadow comparison passed: legacy-unhealthy; the first API page answered 403, so the legacy spider produced no recipes at all yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 899 records the live listing declares, on two uncapped runs reproducing all 885 keys with identical content, and on a reviewed sample of 25 stored records. The 14 records it does not store are upstream defects the completeness contract rejects (13 no title, 1 no ingredients); each is accounted for individually.",
   },
   theblondcook: {
     migrationState: "shadow_passed",
@@ -31653,10 +31659,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 525 keys with identical content. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no canonical link), so there is no unexplained rejection",
   },
   tiffycooks: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-21-03.914Z-attempt-0b280632-8ba0-437e-98d1-b3ea3325ed28",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run discovered all 669 records the live listing contract declares and persisted 668 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no canonical link), so there is no unexplained rejection",
+      "Shadow comparison passed: legacy-unhealthy; page two of the API answered 403, so the legacy spider stopped after 100 recipes yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 670 records the live listing declares, on all 100 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 669 keys with identical content, and on a reviewed sample of 25 stored records. The 1 records it does not store are upstream defects the completeness contract rejects (1 no canonical link); each is accounted for individually.",
   },
   todaysdelight: {
     migrationState: "shadow_passed",
@@ -31994,10 +32001,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1766 recipes from 1771 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   yellowthyme: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-29-38.226Z-attempt-173cab58-e0aa-41fb-a23f-833a0d71447c",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run discovered all 714 records the live listing contract declares and persisted 653 with no blocked or failed request. Every one of the 61 shortfall records is an upstream defect the completeness contract rejects (61 no canonical link), so there is no unexplained rejection",
+      "Shadow comparison passed: legacy-unhealthy; page two of the API answered 403, so the legacy spider stopped after 100 recipes yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 714 records the live listing declares, on all 100 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 653 keys with identical content, and on a reviewed sample of 25 stored records. The 61 records it does not store are upstream defects the completeness contract rejects (61 no canonical link); its 61 link-less records were checked against the live listing one by one.",
   },
   yourhomebasedmom: {
     migrationState: "configured",
