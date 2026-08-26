@@ -160,16 +160,26 @@ for(const [k,l] of L){
     // WPRM lets a step carry a name. V2 keeps it as a "Name: body" prefix where
     // legacy drops it, so a step that matches once the prefix is removed is the
     // same step with more of the source preserved.
+    // The two allowances have to compose. flawlessfood needs both on the same
+    // record - V2 keeps a "Prep: " step name legacy drops, and puts a space at a
+    // block boundary legacy fuses over - and testing each on its own left the
+    // record failing both: the prefix strip demanded exact equality afterwards,
+    // which the whitespace difference then broke.
     const stripped=cs.map((t,i)=>{
       // The bound is generous because equality after stripping is what makes
       // this safe, not the length: culinaryginger names one step "If using
       // wooden skewers, soak them in water for 30 minutes to prevent burning",
-      // which is 68 characters.
+      // which is 68 characters. Comparing the stripped body without its spaces
+      // keeps a name that only differs there strippable.
       const m=/^[^:]{1,160}:\s*(.*)$/su.exec(t);
-      return m && m[1]===ls[i] ? m[1] : t;
+      return m && bareText(m[1])===bareText(ls[i]) ? m[1] : t;
     });
     if(JSON.stringify(ls)===JSON.stringify(stripped)) namedSteps++;
-    else if(spacesOnly(ls,cs)){ legacyIsSpacier(ls,cs)?spacedByLegacy++:fusedByLegacy++; }
+    else if(spacesOnly(ls,stripped)){
+      // Count both, since both are why this record is allowed through.
+      namedSteps++;
+      legacyIsSpacier(ls,stripped)?spacedByLegacy++:fusedByLegacy++;
+    }
     else add("instructions",k,ls,cs);
   }
   // A negative ISO duration is a broken upstream value. V2 reads it as no
