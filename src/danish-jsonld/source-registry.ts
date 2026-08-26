@@ -26986,10 +26986,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 891 recipes from 938 posts with complete discovery and no blocked, failed or rejected record",
   },
   lazycatkitchen: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-19T22-52-58.737Z-attempt-3dbd16c9-fa56-47ba-83b1-817b736baec2",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 933 recipes from 941 posts with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 934 keys with identical content; 934 records keep a cuisine legacy has no field for; 934 records keep a fuller yield than legacy leading-integer",
   },
   opskrifterforalle: {
     migrationState: "shadow_passed",
@@ -28778,10 +28779,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 153 recipes from 153 API records with complete discovery and no blocked, failed or rejected record",
   },
   greatgrubdelicioustreats: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-11-58.296Z-attempt-8e0f7cfc-6be1-4932-8630-d789da00fe23",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 1267 recipes from 1267 API records with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 1268 keys with identical content",
   },
   greenbowl2soul: {
     migrationState: "shadow_passed",
@@ -29436,10 +29438,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched none of its API pages, stored 0 recipes, and finished with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 645-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
   },
   lifemadesweeter: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-25-46.370Z-attempt-453ec82f-f7ec-4e4d-8309-82fd4ff46363",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run discovered all 1342 records the live listing contract declares and persisted 1339 with no blocked or failed request. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (2 no ingredients, 1 no instructions), so there is no unexplained rejection",
+      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 1339 keys with identical content",
   },
   lillieeatsandtells: {
     migrationState: "shadow_passed",
@@ -30553,10 +30556,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 476 recipes from 476 API records with complete discovery and no blocked, failed or rejected record",
   },
   showmetheyummy: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-54-22.453Z-attempt-0b84f152-9d0f-4715-8b48-8b06fcab6ca6",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 1224 recipes from 1224 API records with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 1225 keys with identical content",
   },
   shugarysweets: {
     migrationState: "shadow_passed",
