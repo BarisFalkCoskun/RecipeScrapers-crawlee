@@ -29968,10 +29968,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 260 recipes from 260 API records with complete discovery and no blocked, failed or rejected record",
   },
   oliviascuisine: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-37-33.071Z-attempt-28566262-9b4f-47ec-9771-f5766a2d23b5",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run discovered all 562 records the live listing contract declares and persisted 556 with no blocked or failed request. Every one of the 6 shortfall records is an upstream defect the completeness contract rejects (6 no ingredients), so there is no unexplained rejection",
+      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 556 keys with identical content",
   },
   omgyummy: {
     migrationState: "shadow_passed",
@@ -31013,10 +31014,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: legacy-unhealthy; the first API page answered 403, so the legacy spider produced no recipes at all yet still reported finish_reason 'finished'. A truncated run is not a baseline, so acceptance rests on discovery reaching all 1006 records the live listing declares, on two uncapped runs reproducing all 1004 keys with identical content, and on a reviewed sample of 25 stored records. The run stored 1004 of them; the 2 it did not are upstream defects the completeness contract rejects (2 no title), so there is no unexplained rejection.",
   },
   thebutterhalf: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-07-16.782Z-attempt-dc6fdc2b-073f-4865-94b4-21588ec7add4",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run discovered all 233 records the live listing contract declares and persisted 231 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no instructions), so there is no unexplained rejection",
+      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 231 keys with identical content; tags == keywords + cuisines; 2 records legacy accepts without a name, ingredients or instructions",
   },
   thecafesucrefarine: {
     migrationState: "shadow_passed",

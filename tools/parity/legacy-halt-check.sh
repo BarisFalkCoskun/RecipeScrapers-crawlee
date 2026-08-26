@@ -45,8 +45,17 @@ node tools/parity/dump-crawlee.cjs "$DB" "$SRC" "$CR" >/dev/null 2>&1
 STORED=$(node -e 'console.log(JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).length)' "$CR" 2>/dev/null || echo 0)
 
 CMP=$(SUBSET=1 node tools/parity/compare-parity.cjs "$LEG" "$CR" 2>&1)
-ONLYLEG=$(echo "$CMP" | grep -oE 'only legacy: [0-9]+' | grep -oE '[0-9]+' | head -1)
-: "${ONLYLEG:=?}"
+# "only legacy" is the raw count, before the comparator sorts out which of those
+# records V2 was right not to store. bowlofdelicious has exactly one - a recipe
+# the API publishes with no instructions at all, which legacy keeps and the
+# completeness contract rejects - and reading the raw number held the source back
+# over a record the comparator had already accounted for. What matters is the
+# remainder after that accounting.
+ONLYLEG_RAW=$(echo "$CMP" | grep -oE 'only legacy: [0-9]+' | grep -oE '[0-9]+' | head -1)
+EXPLAINED_L=$(echo "$CMP" | grep -oE 'which the completeness contract rejects: [0-9]+' | grep -oE '[0-9]+$' | head -1)
+: "${ONLYLEG_RAW:=0}" "${EXPLAINED_L:=0}"
+ONLYLEG=$(( ONLYLEG_RAW - EXPLAINED_L ))
+[ "$ONLYLEG" -lt 0 ] && ONLYLEG=0
 # Field differences print above the counts line; their absence is what lets the
 # overlap count as a genuine match rather than merely a shared key set.
 FIELDDIFF=$(echo "$CMP" | grep -cE '^### ')
@@ -56,4 +65,4 @@ if [ "$BLOCKED" -gt 0 ] && [ "$REASON" = "finished" ] && [ "$ONLYLEG" = "0" ] &&
    && [ "$EXPLAIN_OK" -eq 0 ]; then
   VERDICT="LEGACY-UNHEALTHY-CONFIRMED"
 fi
-echo "$SRC | $VERDICT | legacy=$ITEMS blocked=$BLOCKED reason=$REASON codes=[$CODES] | declared=${TOTAL:-none} stored=$STORED ${SHORTFALL:-} | only_legacy=$ONLYLEG field_diffs=$FIELDDIFF"
+echo "$SRC | $VERDICT | legacy=$ITEMS blocked=$BLOCKED reason=$REASON codes=[$CODES] | declared=${TOTAL:-none} stored=$STORED ${SHORTFALL:-} | only_legacy=$ONLYLEG (raw $ONLYLEG_RAW, $EXPLAINED_L rejected by the contract) field_diffs=$FIELDDIFF"
