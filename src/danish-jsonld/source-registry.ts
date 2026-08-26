@@ -30751,10 +30751,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 1168-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 1168 recipes with every material field matching",
   },
   spoonrecipes: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-00-44.824Z-attempt-6c308d33-5933-454b-92b4-4db07de9c901",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run discovered all 1900 records the live listing contract declares and persisted 1898 with no blocked or failed request. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no ingredients), so there is no unexplained rejection",
+      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 1898 keys with identical content",
   },
   staysnatched: {
     migrationState: "shadow_passed",
