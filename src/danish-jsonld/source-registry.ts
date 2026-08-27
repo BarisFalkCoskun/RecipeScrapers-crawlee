@@ -27505,10 +27505,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 533 recipes from 533 API records with complete discovery and no blocked, failed or rejected record",
   },
   boulderlocavore: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-34-23.900Z-attempt-500699a8-3416-4ed2-955b-cb5000f8a6ab",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run discovered all 1395 records the live listing contract declares and persisted 1392 with no blocked or failed request. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (2 no title, 1 no ingredients), so there is no unexplained rejection",
+      "Shadow comparison passed: legacy-unhealthy; page two of the API answered 403, so the legacy spider stopped after 100 recipes yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 1395 records the live listing declares, on all 100 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 1392 keys with identical content, and on a reviewed sample of 25 stored records. The 3 records V2 does not store are upstream defects the completeness contract rejects (2 no title, 1 no ingredients).. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (2 no title, 1 no ingredients), so there is no unexplained rejection",
   },
   bowlofdelicious: {
     migrationState: "shadow_passed",
@@ -29424,10 +29425,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
    * 200 and it sits mid-page, so nothing about the crawl hid it.
    */
   lecremedelacrumb: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-25T07-15-09.782Z-attempt-21934e1c-8432-4f7a-8e0d-b425db2369d7",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run discovered all 1472 records the live listing contract declares and persisted 1471 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
+      "Shadow comparison passed: legacy-unhealthy; the first API page answered 403, so the legacy spider produced no recipes at all yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 1472 records the live listing declares, on two uncapped runs reproducing all 1472 keys with identical content, and on a reviewed sample of 25 stored records.. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   lemonsandzest: {
     migrationState: "shadow_passed",
@@ -31133,10 +31135,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 312 recipes from 312 API records with complete discovery and no blocked, failed or rejected record",
   },
   thecreativebite: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-05-48.902Z-attempt-9d5d0b38-35e1-411b-8983-900b7a405d8f",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run discovered all 1292 records the live listing contract declares and persisted 1286 with no blocked or failed request. Every one of the 6 shortfall records is an upstream defect the completeness contract rejects (6 no ingredients), so there is no unexplained rejection",
+      "Shadow comparison passed: legacy-unhealthy; page 3 of the API answered 403, so the legacy spider stopped after 200 recipes yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 1292 records the live listing declares, on all 200 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 1286 keys with identical content, and on a reviewed sample of 25 stored records. The 6 records V2 does not store are upstream defects the completeness contract rejects (6 no ingredients).. Every one of the 6 shortfall records is an upstream defect the completeness contract rejects (6 no ingredients), so there is no unexplained rejection",
   },
   thecuriousplate: {
     migrationState: "shadow_passed",
