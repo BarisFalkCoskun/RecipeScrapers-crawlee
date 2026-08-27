@@ -66,7 +66,14 @@ const norm=s=>stripMarkup(stripMarkup(String(s??"")))
   // V2 omits the brackets when there is nothing to put in them. The empty pair
   // holds no content either way, so it is dropped rather than read as a
   // difference in the ingredient itself.
-  .replace(/\s*\(\)/gu,"").trim();
+  .replace(/\s*\(\)/gu,"")
+  // Stripping an unterminated tag can take a closing bracket with it and leave
+  // the opening one behind. carlsbadcravings gives an ingredient the note
+  // "&lt;click for recipe", which decodes to text that looks like a tag with no
+  // end, so "Avocado Corn Salsa (<click for recipe)" renders down to
+  // "Avocado Corn Salsa (". Legacy drops the note outright. A bracket opened at
+  // the end of the text and never closed holds nothing either way.
+  .replace(/\s*\(\s*$/u,"").trim();
 // V2 canonicalizes: it drops the www host prefix, the recipe-id fragment, and
 // sorts query parameters. Comparing the canonical form keeps those formatting
 // choices out of the field comparison.
@@ -323,9 +330,14 @@ for(const [k,l] of L){
     else add("images",k,l.image_urls,n.imageUrls);
   }
   if(JSON.stringify((l.categories||[]).map(norm).sort())!==JSON.stringify((n.categories||[]).map(norm).sort())) add("categories",k,l.categories,n.categories);
-  const lt=(l.tags||[]).map(norm).sort();
-  const kw=(n.keywords||[]).map(norm).sort();
-  const recomb=[...(n.keywords||[]).map(norm),...(n.cuisines||[]).map(norm)].sort();
+  // An empty tag is not a tag. allshecooks carries one on its Irish potato
+  // candy - legacy lists "", American, Irish Potato Candy, ... where V2 lists
+  // the same set without the blank - and comparing the lists with it in reads
+  // as a difference in what the recipe is tagged with.
+  const tags=v=>(v||[]).map(norm).filter(t=>t!=="");
+  const lt=tags(l.tags).sort();
+  const kw=tags(n.keywords).sort();
+  const recomb=[...tags(n.keywords),...tags(n.cuisines)].sort();
   // Legacy carries no cuisine field of its own. The WPRM family folds the
   // cuisine into its flat tag list, while the JSON-LD families drop it, so
   // legacy tags match V2 keywords either with the cuisines added back or
