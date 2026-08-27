@@ -27107,10 +27107,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1151 recipes from 1152 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   allshecooks: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-23-16.943Z-attempt-19b73b68-e458-4d91-b0f9-aebbc999d2c2",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run discovered all 891 records the live listing contract declares and persisted 865 with no blocked or failed request. Every one of the 26 shortfall records is an upstream defect the completeness contract rejects (1 no title, 24 no ingredients, 1 no instructions), so there is no unexplained rejection",
+      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 865 keys with identical content. Every one of the 26 shortfall records is an upstream defect the completeness contract rejects (1 no title, 24 no ingredients, 1 no instructions), so there is no unexplained rejection",
   },
   alphafoodie: {
     migrationState: "configured",
@@ -32719,7 +32720,7 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
     migrationState: "canary_passed",
     latestCanary: "2026-08-20T06-46-57.175Z-attempt-327013a4-410a-4fee-a6d2-2bff111afcfe",
     deferOrBlockReason:
-      "Uncapped run discovered all 159 records the live listing contract declares and persisted 168 with no blocked or failed request. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
+      "Comparison passed, pending the second uncapped run: the fresh run discovered all 145 records the live listing declares and persisted 144, the one shortfall being an upstream record with no ingredients. The isolated legacy run emitted 144 and V2 holds every one, differing on no field of any record. The store additionally holds 24 recipes the source has since withdrawn - crawled on 20 and 25 August, absent from the listing now - which is retention across crawls rather than a discovery difference",
   },
   bedstemorskogebog: {
     migrationState: "shadow_passed",
