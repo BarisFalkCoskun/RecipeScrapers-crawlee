@@ -31912,10 +31912,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1292 recipes from 1292 API records with complete discovery and no blocked, failed or rejected record",
   },
   whereismyspoon: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-24-14.791Z-attempt-9d5013f4-5d07-499e-a946-7eb80f6c645d",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run discovered all 1262 records the live listing contract declares and persisted 1243 with no blocked or failed request. Every one of the 22 shortfall records is an upstream defect the completeness contract rejects (22 no ingredients), so there is no unexplained rejection",
+      "Shadow comparison passed: the legacy run completed and emitted 1262 records, and V2 differs from it on no field of any record. The 22 records legacy holds and V2 does not are ones legacy accepts without a name, ingredients, instructions or a link, which the completeness contract rejects. The store holds 1243 records against the 1262 the listing declares: 1240 are still listed and 3 were withdrawn by the source after being crawled on 21 August, so nothing in it is unaccounted for. A second uncapped run reproduced all 1243 keys with identical content, and a reviewed sample of 25 stored records is clean. Every one of the 22 shortfall records is an upstream defect the completeness contract rejects (22 no ingredients), so there is no unexplained rejection",
   },
   whiskaffair: {
     migrationState: "shadow_passed",
