@@ -32654,10 +32654,11 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
       "The uncapped seven-request Crawlee and legacy runs both processed all 581 candidates, rejected the same three incomplete recipes, and emitted the same 578-record URL set with exact titles, ingredients, step counts, times, yields, images, and taxonomy; 509 instruction arrays are text-identical, while Crawlee intentionally preserves named-step prefixes on 69 records that legacy discards",
   },
   airfryerkogebogen: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-20T07-00-48.628Z-attempt-f6e01992-3c26-40ba-b7c1-d83c5fc54c52",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted the whole 4930-record catalog over 51 requests with complete discovery and no blocked, failed or rejected record, after a transient HTTP 500 on page 46 had cut an earlier run short at 4500. The legacy comparison is still outstanding: the source began answering HTTP 500 to every request at both page sizes shortly afterwards, and two legacy runs gave up on page 1, so the shadow run needs to wait for the source to recover rather than be retried against it",
+      "Shadow comparison passed: the legacy run completed and emitted 5047 records, and V2 differs from it on no field of any record and holds every one of them. The store now has 5089 records - it grew by 28 between the two uncapped runs, which is the source publishing - and every one of them is in the live listing. The second run reproduced all 5089 keys with identical content, and a reviewed sample of 25 stored records is clean The canary behind it is the whole 4930-record catalog over 51 requests, recorded only after a transient HTTP 500 on page 46 had cut an earlier run short at 4500.",
   },
   airfryermad: {
     migrationState: "shadow_passed",

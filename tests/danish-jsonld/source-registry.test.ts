@@ -585,10 +585,14 @@ describe("Danish JSON-LD source registry", () => {
     // cleared; the recorded run is the whole 4930-record catalog.
     expect(byId.get("airfryerkogebogen")?.deferOrBlockReason)
       .toMatch(/whole 4930-record catalog/u);
-    // Its legacy comparison is outstanding because the source began answering
-    // HTTP 500 to everything; that is recorded rather than retried against it.
+    // That comparison is no longer outstanding. The source had begun answering
+    // HTTP 500 to everything and two legacy runs gave up on page 1; it has since
+    // recovered, the legacy run completed with 5047 records, and V2 matches it
+    // on every field. The history above stays in the reason because it is how
+    // the canary was obtained; this half described a wait that is over.
+    expect(byId.get("airfryerkogebogen")?.migrationState).toBe("shadow_passed");
     expect(byId.get("airfryerkogebogen")?.deferOrBlockReason)
-      .toMatch(/wait for the source to recover/u);
+      .toMatch(/legacy run completed and emitted 5047 records/u);
     // koudahl discovered nothing until its page size came down, and its
     // shortfall still cannot be checked: the listing stops answering after 100
     // of the 331 records it announces, so there is no set to check against.
