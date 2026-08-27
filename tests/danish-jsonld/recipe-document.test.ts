@@ -890,4 +890,35 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
       })
     ).toThrow("Complete Recipe JSON-LD requires title, ingredients, and instructions");
   });
+
+  it("reads a duration written as a fraction with a slash", () => {
+    // iform states one recipe's total as "P0Y0M0DT1 1/2H0M0S". Stripping the
+    // space before reading the fraction leaves "11/2h", which offers "2h" to
+    // the loose hour pattern and turns an hour and a half into two hours.
+    const document = buildRecipeDocumentV2({
+      sourceId: "iform",
+      canonicalUrl: "https://iform.dk/opskrift",
+      pageUrl: "https://iform.dk/opskrift",
+      crawlRunId: "run-slash",
+      crawlAttemptId: "attempt-slash",
+      extractedAt: new Date("2026-08-27T10:00:00.000Z"),
+      rawRecipe: {
+        ...completeRecipe,
+        prepTime: "PT1/2H",
+        cookTime: "PT2 1/4H",
+        totalTime: "P0Y0M0DT1 1/2H0M0S",
+      },
+      language: "da",
+      languageConfidence: 1,
+      languageSignals: [],
+      extractorVersion: "2.0.0",
+      extractionSignals: [],
+    });
+
+    expect(document.normalized).toMatchObject({
+      prepMinutes: 30,
+      cookMinutes: 135,
+      totalMinutes: 90,
+    });
+  });
 });

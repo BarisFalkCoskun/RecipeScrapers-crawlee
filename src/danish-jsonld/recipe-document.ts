@@ -582,7 +582,10 @@ function parseIsoDurationMinutes(value: unknown): number | undefined {
   // Whitespace comes out before the fractions are expanded, or a value written
   // "3 ¼H" loses the gap between them and reads as 3 followed by 0.25 — thirty
   // and a quarter hours rather than three and a quarter.
-  const isoLike = expandFractions(normalized.replace(/\s+/gu, ""))
+  // The slashed form has to be expanded while the space is still there, and the
+  // single-character one after it is gone, so the two run either side of the
+  // whitespace strip rather than together.
+  const isoLike = expandFractions(expandSlashFractions(normalized).replace(/\s+/gu, ""))
     .replace(/(\d)t(?=\d|$)/gu, "$1h");
   const iso = /^p(?:\d+y)?(?:\d+m)?(?:\d+d)?t(?:(\d+(?:\.\d+)?)h)?(?:(\d+(?:\.\d+)?)m)?(?:\d+(?:\.\d+)?s)?$/u.exec(isoLike);
   if (iso) return positiveRoundedMinutes(
@@ -616,6 +619,21 @@ const FRACTION_VALUES: Record<string, string> = {
   "⅙": ".166667", "⅚": ".833333",
   "⅛": ".125", "⅜": ".375", "⅝": ".625", "⅞": ".875",
 };
+
+// A fraction written with a slash has to be read while its space is still
+// there: iform states a total time of "P0Y0M0DT1 1/2H0M0S", and once the space
+// is stripped "11/2h" offers "2h" to the loose hour pattern below, so the recipe
+// reads as two hours rather than one and a half.
+function expandSlashFractions(value: string): string {
+  return value.replace(
+    /(?:(\d+)[\s\u00a0]+)?(\d+)\/(\d+)/gu,
+    (match, whole: string | undefined, numerator: string, denominator: string) => {
+      const bottom = Number(denominator);
+      if (bottom === 0) return match;
+      return String(Number(whole ?? 0) + Number(numerator) / bottom);
+    }
+  );
+}
 
 function expandFractions(value: string): string {
   return value.replace(
