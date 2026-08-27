@@ -26149,10 +26149,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Three uncapped Crawlee runs and the full Scrapy run followed all eight listing pages, emitted the same 47 recipes, rejected the same two non-recipe articles, and matched every legacy field; Crawlee intentionally preserves full yield labels on eight records that Scrapy truncates",
   },
   rema1000: {
-    migrationState: "canary_passed",
+    migrationState: "configured",
     latestCanary: "2026-08-14T20-11-01.445Z-attempt-828a9ea6-ce87-48af-a902-ae534a4956fd",
     deferOrBlockReason:
-      "Uncapped run persisted 671 recipes with complete discovery and no blocked or failed request",
+      "Awaiting a fresh uncapped run: the store holds no records at all for this source. Its canary rested on a run whose data did not survive the database deletion and restore, so the claim cannot be checked and nothing is here to compare or promote. The run it rested on is recorded as: Uncapped run persisted 671 recipes with complete discovery and no blocked or failed request.",
   },
   beauvais: {
     migrationState: "shadow_passed",
