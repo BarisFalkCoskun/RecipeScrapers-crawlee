@@ -32206,10 +32206,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "The former recipe routes now redirect to the homepage and the full Scrapy sitemap crawl failed; two uncapped Crawlee API runs each recovered all 70 authoritative WordPress recipe bodies with identical keys and normalized records, complete discovery, and no failed, blocked, rejected, storage, or domain record",
   },
   iform: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-15T22-08-06.459Z-attempt-060c6cf8-a514-4802-be0a-2a5acc83025c",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 1664 recipes with complete discovery and no blocked or failed request; eleven pages carry Recipe JSON-LD without required fields and stay rejected",
+      "Shadow comparison passed: the isolated legacy run emitted 1629 records and V2 matches on every material field. The 5 records legacy holds and V2 does not are ones legacy accepts without a name, ingredients, instructions or a link. The 40 V2 holds beyond legacy are sibling recipes recovered from pages carrying more than one, which legacy stops at the first of. V2 additionally keeps a fuller yield than legacy's leading integer on 9 records and reads 10 loosely spelled durations legacy gives up on - one of them a total stated as \"P0Y0M0DT1 1/2H0M0S\", which V2 read as two hours until the fraction expander was taught to read a slash before whitespace is stripped. A second uncapped run reproduced all 1664 keys with identical content",
   },
   jonsmadklub: {
     migrationState: "shadow_passed",
