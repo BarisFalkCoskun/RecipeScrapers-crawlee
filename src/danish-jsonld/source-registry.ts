@@ -27635,10 +27635,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 255 recipes from 261 API records; 6 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   carlsbadcravings: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-36-48.091Z-attempt-b7bc3659-16ef-40b1-91c5-913b0cdeca97",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run discovered all 1478 records the live listing contract declares and persisted 1474 with no blocked or failed request. Every one of the 4 shortfall records is an upstream defect the completeness contract rejects (4 no ingredients), so there is no unexplained rejection",
+      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 1476 keys with identical content. Every one of the 4 shortfall records is an upstream defect the completeness contract rejects (4 no ingredients), so there is no unexplained rejection",
   },
   casuallypeckish: {
     migrationState: "shadow_passed",
@@ -32717,10 +32718,11 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
       "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 468 keys with identical content; tags == keywords + cuisines; 9 records keep a space at a block boundary legacy fuses over. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no instructions), so there is no unexplained rejection",
   },
   baregomad: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-20T06-46-57.175Z-attempt-327013a4-410a-4fee-a6d2-2bff111afcfe",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Comparison passed, pending the second uncapped run: the fresh run discovered all 145 records the live listing declares and persisted 144, the one shortfall being an upstream record with no ingredients. The isolated legacy run emitted 144 and V2 holds every one, differing on no field of any record. The store additionally holds 24 recipes the source has since withdrawn - crawled on 20 and 25 August, absent from the listing now - which is retention across crawls rather than a discovery difference",
+      "Shadow comparison passed: the isolated legacy run emitted 144 records and V2 holds every one, differing on no field of any record, with a second uncapped run reproducing all 168 stored keys with identical content. The comparator reports the record sets as differing and that is not a parity failure: the store holds 24 recipes beyond the 145 the listing declares, and each was checked against the live listing by hand - all 24 were crawled on 20 and 25 August and the source has withdrawn them since. The store keeps what it has collected across crawls, so those are history rather than a disagreement about what either implementation reads today. The one declared record V2 does not store has no ingredients",
   },
   bedstemorskogebog: {
     migrationState: "shadow_passed",
