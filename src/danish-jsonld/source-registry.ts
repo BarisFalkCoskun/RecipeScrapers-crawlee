@@ -27866,10 +27866,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 481-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 481 recipes with every material field matching; tags == keywords + cuisines; 137 records keep WPRM named-step prefixes legacy drops",
   },
   cookwithkushi: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-44-52.536Z-attempt-c1355b91-69a9-4e00-9378-3bb0b404c9e0",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run discovered all 952 records the live listing contract declares and persisted 949 with no blocked or failed request. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (3 no ingredients), so there is no unexplained rejection",
+      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 949 keys with identical content. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (3 no ingredients), so there is no unexplained rejection",
   },
   cookwithmanali: {
     migrationState: "shadow_passed",
