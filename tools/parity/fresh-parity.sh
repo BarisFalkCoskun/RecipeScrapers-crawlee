@@ -16,6 +16,13 @@ OUT="${PARITY_OUT_DIR:-${TMPDIR:-/tmp}/danish-parity}"
 STORAGE="${FRESH_STORAGE_ROOT:-${TMPDIR:-/tmp}/fresh-storage}"
 mkdir -p "$OUT" "$STORAGE"
 
+# Every comparison leaves a legacy dump, a crawlee dump and a scrapy log in $OUT,
+# and nothing was clearing them. Two days of rounds grew that directory to 13 GB
+# and filled the disk, which stopped MongoDB accepting connections mid-round. A
+# promoted source's dumps are not needed again, so each worker drops them as it
+# starts. Failure here must not stop the run.
+node "$REPO/tools/parity/prune-dumps.cjs" >/dev/null 2>&1 || true
+
 pop() {
   flock 9
   local line
