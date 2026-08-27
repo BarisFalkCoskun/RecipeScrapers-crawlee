@@ -26785,10 +26785,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 14-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 14 recipes with every material field matching; 11 records keep a cuisine legacy has no field for",
   },
   cookiesandcups: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-19T17-51-43.918Z-attempt-ed5ddaac-20f8-4ab2-a5a2-87a0aee110b1",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 1474 recipes from 1632 posts with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: legacy-unhealthy; 636 of the legacy run's 1649 fetches answered 403, so it kept 900 recipes and still reported finish_reason 'finished'. V2 holds every record legacy did produce and differs on no field of any of them. All 1474 stored records are still in the live listing. A second uncapped run reproduced all 1474 keys with identical content, and a reviewed sample of 25 stored records is clean",
   },
   afamilyfeast: {
     migrationState: "shadow_passed",
@@ -27541,11 +27542,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: legacy-unhealthy; the legacy run emitted 200 records while still reporting finish_reason 'finished', stopping after 200 recipes on a challenged API page. V2 holds every record legacy did produce and differs from it on no field of any record. Every one of the 1203 stored records is still in the live listing. A second uncapped run reproduced all 1203 keys with identical content, and a reviewed sample of 25 stored records is clean. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no canonical link), so there is no unexplained rejection",
   },
   budgetbytes: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestScrapyOutcome: "failed",
     latestCanary: "2026-08-21T10-34-41.787Z-attempt-813d6843-528b-4acf-96ec-6b597863ff44",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Awaiting re-verification: the comparison and the pair of uncapped runs behind its shadow parity were made before the step-name fix, which rewrites steps whose name repeats the body, so that evidence no longer describes the extractor. The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched 3 of the 19 pages its own header advertises, stored 300 recipes, and finished with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 1867-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
+      "Shadow comparison passed: legacy-unhealthy; the first API page answered 403, so the legacy run kept no recipes at all and still reported finish_reason 'finished'. Acceptance rests on V2 holding 1868 records, every one of them still in the live listing, on two uncapped runs reproducing all 1868 keys with identical content, and on a reviewed sample of 25 stored records The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched 3 of the 19 pages its own header advertises, stored 300 recipes, and finished with finish_reason finished.",
   },
   buildyourbite: {
     migrationState: "shadow_passed",
