@@ -26250,10 +26250,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Three uncapped Crawlee runs and the full Scrapy run completed the same 26 requests and emitted the same 25 recipes with exact legacy fields after handling text/plain recipe HTML, top-level string instructions, Danish duration text such as '1 time', and equivalent www and bare-host image URLs; Crawlee intentionally preserves yield ranges and units that Scrapy truncates to the first integer",
   },
   stinna: {
-    migrationState: "canary_passed",
+    migrationState: "configured",
     latestCanary: "2026-08-15T06-54-38.846Z-attempt-eaf3d49d-5daf-4a18-99af-552e24708b88",
     deferOrBlockReason:
-      "Uncapped run persisted 1430 recipes over 1934 pages with complete discovery and no blocked or failed request; six pages carry Recipe JSON-LD without required fields and stay rejected",
+      "Awaiting a fresh uncapped run: the store holds no records at all for this source. Its canary rested on a run whose data did not survive the database deletion and restore, so the claim cannot be checked and nothing is here to compare or promote. The run it rested on is recorded as: Uncapped run persisted 1430 recipes over 1934 pages with complete discovery and no blocked or failed request; six pages carry Recipe JSON-LD without required fields and stay rejected.",
   },
   bodylab: {
     migrationState: "shadow_passed",
@@ -32148,16 +32148,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 722-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 722 recipes with every material field matching; all 722 keep a cuisine legacy has no field for and all 722 keep a yield legacy reduces to its first integer",
   },
   oetker: {
-    migrationState: "canary_passed",
+    migrationState: "configured",
     latestCanary: "2026-08-18T14-24-59.150Z-attempt-66da8895-574b-4e42-8b0f-fdc20c5d9888",
     deferOrBlockReason:
-      "Uncapped run persisted 806 recipes with complete discovery and no blocked, failed or rejected record",
+      "Awaiting a fresh uncapped run: the store holds no records at all for this source. Its canary rested on a run whose data did not survive the database deletion and restore, so the claim cannot be checked and nothing is here to compare or promote. The run it rested on is recorded as: Uncapped run persisted 806 recipes with complete discovery and no blocked, failed or rejected record.",
   },
   odensemarcipan: {
-    migrationState: "canary_passed",
+    migrationState: "configured",
     latestCanary: "2026-08-18T13-45-21.279Z-attempt-f3be8023-e4c2-4645-80e2-08752d997dc1",
     deferOrBlockReason:
-      "Uncapped run persisted 1026 recipes with complete discovery and no blocked, failed or rejected record",
+      "Awaiting a fresh uncapped run: the store holds no records at all for this source. Its canary rested on a run whose data did not survive the database deletion and restore, so the claim cannot be checked and nothing is here to compare or promote. The run it rested on is recorded as: Uncapped run persisted 1026 recipes with complete discovery and no blocked, failed or rejected record.",
   },
   nogetiovnen: {
     migrationState: "canary_passed",
@@ -32403,10 +32403,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 494-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 494 recipes with every material field matching; tags == keywords + cuisines; 494 records keep a fuller yield than legacy leading-integer",
   },
   rosekylling: {
-    migrationState: "canary_passed",
+    migrationState: "configured",
     latestCanary: "2026-08-17T01-49-02.475Z-attempt-208ba086-e26c-4e06-a98b-f0c499ad3203",
     deferOrBlockReason:
-      "Uncapped run persisted 472 recipes with complete discovery and no blocked or failed request; six pages carry Recipe JSON-LD without required fields and stay rejected",
+      "Awaiting a fresh uncapped run: the store holds no records at all for this source. Its canary rested on a run whose data did not survive the database deletion and restore, so the claim cannot be checked and nothing is here to compare or promote. The run it rested on is recorded as: Uncapped run persisted 472 recipes with complete discovery and no blocked or failed request; six pages carry Recipe JSON-LD without required fields and stay rejected.",
   },
   /**
    * Cloudflare answers almost every recipe request with HTTP 403. The few that
@@ -32535,10 +32535,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Listing continues through a script-only load-more control; needs a discovery contract for its continuation route",
   },
   kikkoman: {
-    migrationState: "canary_passed",
+    migrationState: "configured",
     latestCanary: "2026-08-15T23-25-27.820Z-attempt-6f1cdd5f-5e2d-4cee-b14c-c786765a0550",
     deferOrBlockReason:
-      "Uncapped run persisted 836 recipes with complete discovery and no blocked, failed or rejected record, validating the literal-control-character JSON-LD repair",
+      "Awaiting a fresh uncapped run: the store holds no records at all for this source. Its canary rested on a run whose data did not survive the database deletion and restore, so the claim cannot be checked and nothing is here to compare or promote. The run it rested on is recorded as: Uncapped run persisted 836 recipes with complete discovery and no blocked, failed or rejected record, validating the literal-control-character JSON-LD repair.",
   },
   gamleopskrifter: {
     discovery: "sitemap",

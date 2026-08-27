@@ -303,7 +303,12 @@ describe("Danish JSON-LD source registry", () => {
       /result window stops at 10000/u
     );
     expect(byId.get("surdejsentusiasten")?.migrationState).toBe("shadow_passed");
-    expect(byId.get("kikkoman")?.migrationState).toBe("canary_passed");
+    // kikkoman's canary rested on a run whose data did not survive the database
+    // deletion and restore: the store holds no records at all for it now, so
+    // there is nothing to compare or promote and the claim cannot be rechecked.
+    // It waits on a fresh uncapped run.
+    expect(byId.get("kikkoman")?.migrationState).toBe("configured");
+    expect(byId.get("kikkoman")?.deferOrBlockReason).toMatch(/did not survive the database deletion/u);
     expect(byId.get("gamleopskrifter")?.migrationState).toBe("shadow_passed");
     expect(byId.get("sundpaabudget")).toMatchObject({
       migrationState: "canary_passed",
@@ -389,8 +394,14 @@ describe("Danish JSON-LD source registry", () => {
     expect(["canary_passed", "shadow_passed"]).toContain(
       byId.get("nordmad")?.migrationState
     );
-    expect(byId.get("oetker")?.migrationState).toBe("canary_passed");
-    expect(byId.get("odensemarcipan")?.migrationState).toBe("canary_passed");
+    // oetker and odensemarcipan are in the same position as kikkoman above: the
+    // runs their canaries rested on left no records behind, so both wait on a
+    // fresh uncapped run rather than carrying a claim nothing can check.
+    for (const id of ["oetker", "odensemarcipan"]) {
+      expect(byId.get(id)?.migrationState).toBe("configured");
+      expect(byId.get(id)?.deferOrBlockReason)
+        .toMatch(/did not survive the database deletion/u);
+    }
     expect(byId.get("nogetiovnen")?.migrationState).toBe("canary_passed");
     expect(byId.get("nogetiovnen")?.deferOrBlockReason).toMatch(
       /no blocked, failed or rejected record/u
