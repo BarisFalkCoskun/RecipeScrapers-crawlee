@@ -310,13 +310,18 @@ describe("Danish JSON-LD source registry", () => {
     expect(byId.get("kikkoman")?.migrationState).toBe("configured");
     expect(byId.get("kikkoman")?.deferOrBlockReason).toMatch(/did not survive the database deletion/u);
     expect(byId.get("gamleopskrifter")?.migrationState).toBe("shadow_passed");
+    // sundpaabudget is in the same position as kikkoman and the others: the run
+    // its canary rested on left no records behind, so it waits on a fresh
+    // uncapped run. The run itself is still recorded in the reason.
     expect(byId.get("sundpaabudget")).toMatchObject({
-      migrationState: "canary_passed",
+      migrationState: "configured",
       fetchMode: "playwright",
     });
     expect(byId.get("sundpaabudget")?.deferOrBlockReason).toMatch(
       /no blocked or failed request/u
     );
+    expect(byId.get("sundpaabudget")?.deferOrBlockReason)
+      .toMatch(/did not survive the database deletion/u);
     // First source of the WordPress posts family to pass, now shadow-verified.
     expect(byId.get("gunris")).toMatchObject({
       migrationState: "shadow_passed",
