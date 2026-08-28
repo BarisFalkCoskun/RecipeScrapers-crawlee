@@ -32479,10 +32479,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
    * source rather than a broken one.
    */
   frederikkewaerens: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-17T22-36-29.973Z-attempt-50710db1-c5c7-4b30-a88c-757de4e91336",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 3350 recipes with complete discovery and no blocked or failed request; 37 pages carry Recipe JSON-LD without required fields and stay rejected",
+      "Shadow comparison passed: the isolated legacy run emitted 680 records and V2 matches on every material field. This source publishes pages carrying several recipes each, and 2694 of V2's 3382 records are siblings recovered from them; legacy keeps one record per page. That is also why 68 records show ingredients in V2 and none in legacy - legacy captured a fragment of one list where the page holds five recipes. The 3 records legacy holds and V2 does not are ones legacy accepts without a name, ingredients, instructions or a link. V2 additionally keeps a fuller yield than legacy's leading integer on 539 records. A second uncapped run reproduced all 3382 keys with identical content, and a reviewed sample of 25 stored records is clean",
   },
   greatbritishchefs: {
     migrationState: "configured",
