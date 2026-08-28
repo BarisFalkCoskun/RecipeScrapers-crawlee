@@ -32456,10 +32456,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 585-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 585 recipes with every material field matching; tags == keywords + cuisines; 13 records legacy accepts without a name, ingredients or instructions",
   },
   madenimitliv: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-17T17-53-30.793Z-attempt-6144e967-0179-4dea-9e1b-dbe93cce986b",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Comparison passed, pending the second uncapped run. The 19 records legacy holds and V2 does not are accounted for: 15 of those URLs declare a canonical pointing at a page V2 already stores - /hveder-kanel/ says /hveder/, /rocky-road-chokoladebrownies/ says /brownie/ - so V2 keeps one record per canonical where legacy keeps one per URL it crawled, and the recipe is present under the name the source itself gives it. The other 4 are meal-plan pages the completeness contract rejects, carrying ingredients and no instructions. The uncapped run completes with 1869 candidates, 1102 persisted and no failed or blocked request",
+      "Shadow comparison passed: the isolated legacy run emitted 1106 records and V2 matches on every material field. The 19 records legacy holds and V2 does not are accounted for: 15 of those URLs declare a canonical pointing at a page V2 already stores - /hveder-kanel/ says /hveder/, /rocky-road-chokoladebrownies/ says /brownie/ - so V2 keeps one record per canonical where legacy keeps one per URL it crawled, and each recipe is present under the name the source itself gives it. The other 4 are meal-plan pages carrying ingredients and no instructions, which the completeness contract rejects. V2 additionally holds 10 sibling recipes recovered from pages carrying more than one. A second uncapped run reproduced all 1100 keys with identical content, and a reviewed sample of 25 stored records is clean",
   },
   pillsbury: {
     migrationState: "configured",
