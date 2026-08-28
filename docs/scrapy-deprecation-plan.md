@@ -416,3 +416,34 @@ Crawlee deliberately retains named-step prefixes that Scrapy discarded on 69
 records. TheFoodClub's intermittent 454/455
 protection now clears through the hybrid browser-escalation path but still needs
 an uncapped run, and production consumers and schedulers have not been cut over.
+
+## Evidence gathered before the extraction fixes of 26–28 August
+
+708 sources have reached `shadow_passed`, and a run of `fix-impact.cjs` over the
+598 promoted WPRM sources that still have a database shows how much of that
+evidence describes an extractor that has since changed. It re-extracts every
+stored record from its own `rawRecipe` with the current code and compares:
+
+| | sources |
+|---|---|
+| unchanged by the current extractor | 269 |
+| would be rewritten | 329 |
+
+The 329 are not equally affected: 7 would have 90% or more of their records
+rewritten, 93 between a quarter and nine tenths, and 229 under a quarter. The
+heaviest are bakeitwithlove (1335 of 2951 records), cookwithmanali (476 of 1078),
+biancazapatka (437 of 1527), altonbrown (404 of 947) and bluebowlrecipes (404 of
+533).
+
+Every one of those sources passed a comparison that was internally consistent
+when it was made — the legacy run against the extractor as it then stood — so
+this is aging evidence rather than wrong evidence. But their recorded reasons
+say two uncapped runs reproduced identical content, and that is a statement about
+an extractor which has since gained the block-boundary, step-name, custom-field
+and slashed-fraction fixes. A fresh crawl today would store different text for
+329 of them.
+
+Re-verifying those 329 means re-crawling and re-comparing each, which is roughly
+a day of machine time. It is recorded here rather than done, because deciding
+whether shadow parity has to be re-established against the current extractor is a
+judgement about what the deprecation gate means, not a defect to fix.
