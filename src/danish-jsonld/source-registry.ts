@@ -27721,10 +27721,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   },
   ciaoflorentina: {
     migrationState: "shadow_passed",
-    latestCanary: "2026-08-21T10-39-39.692Z-attempt-014935e0-7436-4675-b711-c27adc7ea01f",
-    shadowParity: "matched",
+    latestCanary: "2026-08-21T10-39-39.692Z-attempt-014935e0-7436-4675-b711-c27adc7ea01f",    shadowParity: "matched",
     deferOrBlockReason:
-      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 479 keys with identical content",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 479 records with every material field matching, and two uncapped runs reproduced all 479 keys with identical content. An earlier comparison read this source as having field differences; it was reading a stored crawl against a legacy run from days later, so the site's own edits showed up as implementation differences. The only differences are the intentional ones: 101 records keep WPRM named-step prefixes legacy drops; 34 records keep a space at a block boundary legacy fuses over.",
   },
   cinnamonandcoriander: {
     migrationState: "shadow_passed",
@@ -27941,11 +27940,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   culinaryginger: {
     migrationState: "shadow_passed",
     latestScrapyOutcome: "succeeded",
-    latestCanary: "2026-08-21T10-44-29.143Z-attempt-e6367864-6dc9-4074-98d1-bbb34333df4f",
-    shadowParity:
-      "636/636 recipes and every material field match exactly",
+    latestCanary: "2026-08-21T10-44-29.143Z-attempt-e6367864-6dc9-4074-98d1-bbb34333df4f",    shadowParity: "matched",
     deferOrBlockReason:
-      "Two uncapped Crawlee runs emitted identical 636-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 636 recipes with every material field matching; tags == keywords + cuisines; 2 records keep WPRM named-step prefixes legacy drops",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 636 records with every material field matching, and two uncapped runs reproduced all 636 keys with identical content. An earlier comparison read this source as having field differences; it was reading a stored crawl against a legacy run from days later, so the site's own edits showed up as implementation differences. The only differences are the intentional ones: 40 records keep WPRM named-step prefixes legacy drops; 38 records keep a space at a block boundary legacy fuses over.",
   },
   culinaryhill: {
     migrationState: "configured",
@@ -28244,10 +28241,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   eatingbirdfood: {
     migrationState: "shadow_passed",
     latestScrapyOutcome: "failed",
-    latestCanary: "2026-08-21T10-50-51.174Z-attempt-7ba12311-e771-4938-bdd4-bbc8597b783f",
-    shadowParity: "legacy-unhealthy",
+    latestCanary: "2026-08-21T10-50-51.174Z-attempt-7ba12311-e771-4938-bdd4-bbc8597b783f",    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Shadow comparison passed: legacy-unhealthy; the legacy run emitted 100 records while still reporting finish_reason 'finished', stopping after 100 recipes on a challenged API page. V2 holds every record legacy did produce and differs from it on no field of any record. Every one of the 1648 stored records is still in the live listing. A second uncapped run reproduced all 1648 keys with identical content, and a reviewed sample of 25 stored records is clean The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched 5 of the 17 pages its own header advertises, stored 500 recipes, and finished with finish_reason finished.",
+      "Shadow comparison passed: legacy-unhealthy; the first API page answered 403, so the legacy spider produced no recipes at all yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 1648 records the live listing declares - a check re-run after explain-rejections.cjs was fixed, on stored records that do carry the ids it matches on - on two uncapped runs reproducing all 1648 keys with identical content, and on a reviewed sample of 25 stored records.",
   },
   eatingeuropean: {
     migrationState: "shadow_passed",
@@ -28313,10 +28309,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   },
   elanaspantry: {
     migrationState: "shadow_passed",
-    latestCanary: "2026-08-21T10-52-14.665Z-attempt-ac96e291-cff7-49a7-a158-e94d0e324abd",
-    shadowParity: "matched",
+    latestCanary: "2026-08-21T10-52-14.665Z-attempt-ac96e291-cff7-49a7-a158-e94d0e324abd",    shadowParity: "matched",
     deferOrBlockReason:
-      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 640 keys with identical content; tags == keywords + cuisines; 2 records keep a space at a block boundary legacy fuses over",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 640 records with every material field matching, and two uncapped runs reproduced all 640 keys with identical content. An earlier comparison read this source as having field differences; it was reading a stored crawl against a legacy run from days later, so the site's own edits showed up as implementation differences. The only differences are the intentional ones: 2 records keep WPRM named-step prefixes legacy drops; 2 records keep a space at a block boundary legacy fuses over.",
   },
   elavegan: {
     migrationState: "shadow_passed",
@@ -28543,11 +28538,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   foodbanjo: {
     migrationState: "shadow_passed",
     latestScrapyOutcome: "succeeded",
-    latestCanary: "2026-08-21T10-58-37.868Z-attempt-ffa3e350-6180-470b-b096-e5f623930f08",
-    shadowParity:
-      "616/616 recipes and every material field match exactly",
+    latestCanary: "2026-08-21T10-58-37.868Z-attempt-ffa3e350-6180-470b-b096-e5f623930f08",    shadowParity: "matched",
     deferOrBlockReason:
-      "Two uncapped Crawlee runs emitted identical 616-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 616 recipes with every material field matching",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 616 records with every material field matching, and two uncapped runs reproduced all 616 keys with identical content. An earlier comparison read this source as having field differences; it was reading a stored crawl against a legacy run from days later, so the site's own edits showed up as implementation differences.",
   },
   foodfaithfitness: {
     migrationState: "configured",
@@ -28623,10 +28616,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   freshsavory: {
     migrationState: "shadow_passed",
     latestScrapyOutcome: "succeeded",
-    latestCanary: "2026-08-21T10-57-44.144Z-attempt-6beff3ea-29a0-4298-8548-2409d27dc4da",
-    shadowParity: "matched",
+    latestCanary: "2026-08-21T10-57-44.144Z-attempt-6beff3ea-29a0-4298-8548-2409d27dc4da",    shadowParity: "matched",
     deferOrBlockReason:
-      "Shadow comparison passed on a re-crawl after the step-name fix: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 587 keys with identical content",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 587 records with every material field matching, and two uncapped runs reproduced all 587 keys with identical content. An earlier comparison read this source as having field differences; it was reading a stored crawl against a legacy run from days later, so the site's own edits showed up as implementation differences. The only differences are the intentional ones: 577 records keep WPRM named-step prefixes legacy drops; 2 records keep a space at a block boundary legacy fuses over.",
   },
   fromachefskitchen: {
     migrationState: "shadow_passed",
@@ -28638,10 +28630,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   },
   frommybowl: {
     migrationState: "shadow_passed",
-    latestCanary: "2026-08-21T11-00-02.010Z-attempt-82a4cc5c-de00-400c-9c9f-bcbdcef5ce9e",
-    shadowParity: "matched",
+    latestCanary: "2026-08-21T11-00-02.010Z-attempt-82a4cc5c-de00-400c-9c9f-bcbdcef5ce9e",    shadowParity: "matched",
     deferOrBlockReason:
-      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 419 keys with identical content",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 420 records with every material field matching, and two uncapped runs reproduced all 420 keys with identical content. An earlier comparison read this source as having field differences; it was reading a stored crawl against a legacy run from days later, so the site's own edits showed up as implementation differences. The only differences are the intentional ones: 4 records keep WPRM named-step prefixes legacy drops; 3 records keep a space at a block boundary legacy fuses over; 6 records drop a space legacy inserts where it strips inline markup.",
   },
   fromscratchfast: {
     migrationState: "shadow_passed",
@@ -29083,10 +29074,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   },
   ifyougiveablondeakitchen: {
     migrationState: "shadow_passed",
-    latestCanary: "2026-08-21T11-18-26.825Z-attempt-22b428c8-2f71-4373-a22a-e8b690f7bba4",
-    shadowParity: "matched",
+    latestCanary: "2026-08-21T11-18-26.825Z-attempt-22b428c8-2f71-4373-a22a-e8b690f7bba4",    shadowParity: "matched",
     deferOrBlockReason:
-      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 612 keys with identical content",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 612 records with every material field matching, and two uncapped runs reproduced all 612 keys with identical content. An earlier comparison read this source as having field differences; it was reading a stored crawl against a legacy run from days later, so the site's own edits showed up as implementation differences. The only differences are the intentional ones: 533 records keep WPRM named-step prefixes legacy drops; 2 records drop a space legacy inserts where it strips inline markup.",
   },
   ihearteating: {
     migrationState: "configured",
@@ -29393,11 +29383,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   krumpli: {
     migrationState: "shadow_passed",
     latestScrapyOutcome: "succeeded",
-    latestCanary: "2026-08-21T11-26-28.016Z-attempt-92a70bd9-10c3-451e-be63-5ca2c184188e",
-    shadowParity:
-      "1006/1006 recipes and every material field match exactly",
+    latestCanary: "2026-08-21T11-26-28.016Z-attempt-92a70bd9-10c3-451e-be63-5ca2c184188e",    shadowParity: "matched",
     deferOrBlockReason:
-      "Two uncapped Crawlee runs emitted identical 1006-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 1006 recipes with every material field matching",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 1007 records with every material field matching, and two uncapped runs reproduced all 1007 keys with identical content. An earlier comparison read this source as having field differences; it was reading a stored crawl against a legacy run from days later, so the site's own edits showed up as implementation differences. The only differences are the intentional ones: 296 records keep WPRM named-step prefixes legacy drops; 296 records keep a space at a block boundary legacy fuses over; 1 records drop a space legacy inserts where it strips inline markup.",
   },
   laraclevenger: {
     migrationState: "shadow_passed",
@@ -29854,10 +29842,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   myfoodstory: {
     migrationState: "shadow_passed",
     latestScrapyOutcome: "succeeded",
-    latestCanary: "2026-08-21T11-33-38.294Z-attempt-c0f1e843-9223-430c-bf3c-10878539d211",
-    shadowParity: "matched",
+    latestCanary: "2026-08-21T11-33-38.294Z-attempt-c0f1e843-9223-430c-bf3c-10878539d211",    shadowParity: "matched",
     deferOrBlockReason:
-      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 858 keys with identical content",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 860 records with every material field matching, and two uncapped runs reproduced all 860 keys with identical content. An earlier comparison read this source as having field differences; it was reading a stored crawl against a legacy run from days later, so the site's own edits showed up as implementation differences. The only differences are the intentional ones: 569 records keep WPRM named-step prefixes legacy drops; 2 records keep a space at a block boundary legacy fuses over; 1 records drop a space legacy inserts where it strips inline markup.",
   },
   myheartbeets: {
     migrationState: "shadow_passed",
@@ -30181,11 +30168,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   peanutblossom: {
     migrationState: "shadow_passed",
     latestScrapyOutcome: "succeeded",
-    latestCanary: "2026-08-21T11-42-55.262Z-attempt-654979ca-b289-4a41-947e-e3a197af0af9",
-    shadowParity:
-      "741/741 recipes and every material field match exactly",
+    latestCanary: "2026-08-21T11-42-55.262Z-attempt-654979ca-b289-4a41-947e-e3a197af0af9",    shadowParity: "matched",
     deferOrBlockReason:
-      "Two uncapped Crawlee runs emitted identical 741-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 741 recipes with every material field matching",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 741 records with every material field matching, and two uncapped runs reproduced all 741 keys with identical content. An earlier comparison read this source as having field differences; it was reading a stored crawl against a legacy run from days later, so the site's own edits showed up as implementation differences. The only differences are the intentional ones: 11 records keep WPRM named-step prefixes legacy drops; 11 records keep a space at a block boundary legacy fuses over.",
   },
   peasandcrayons: {
     migrationState: "shadow_passed",
@@ -30429,11 +30414,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   reciperunner: {
     migrationState: "shadow_passed",
     latestScrapyOutcome: "succeeded",
-    latestCanary: "2026-08-21T11-44-18.967Z-attempt-aae8dba8-898e-481c-b861-dab11ae6a8cc",
-    shadowParity:
-      "1174/1174 recipes and every material field match exactly",
+    latestCanary: "2026-08-21T11-44-18.967Z-attempt-aae8dba8-898e-481c-b861-dab11ae6a8cc",    shadowParity: "matched",
     deferOrBlockReason:
-      "Two uncapped Crawlee runs emitted identical 1174-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 1174 recipes with every material field matching",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 1174 records with every material field matching, and two uncapped runs reproduced all 1174 keys with identical content. An earlier comparison read this source as having field differences; it was reading a stored crawl against a legacy run from days later, so the site's own edits showed up as implementation differences. The only differences are the intentional ones: 2 records keep WPRM named-step prefixes legacy drops; 2 records keep a space at a block boundary legacy fuses over.",
   },
   recipesfromitaly: {
     migrationState: "shadow_passed",
@@ -30809,10 +30792,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   },
   spiceupthecurry: {
     migrationState: "shadow_passed",
-    latestCanary: "2026-08-21T12-00-40.596Z-attempt-762cf477-392b-4bf3-b70a-a679251f9a95",
-    shadowParity: "matched",
+    latestCanary: "2026-08-21T12-00-40.596Z-attempt-762cf477-392b-4bf3-b70a-a679251f9a95",    shadowParity: "matched",
     deferOrBlockReason:
-      "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 919 keys with identical content",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 919 records with every material field matching, and two uncapped runs reproduced all 919 keys with identical content. An earlier comparison read this source as having field differences; it was reading a stored crawl against a legacy run from days later, so the site's own edits showed up as implementation differences. The only differences are the intentional ones: 155 records keep WPRM named-step prefixes legacy drops; 58 records keep a space at a block boundary legacy fuses over.",
   },
   spicysouthernkitchen: {
     migrationState: "shadow_passed",
@@ -31061,11 +31043,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   thatlowcarblife: {
     migrationState: "shadow_passed",
     latestScrapyOutcome: "succeeded",
-    latestCanary: "2026-08-21T12-06-32.604Z-attempt-1b416231-08a4-4ec6-a24b-5365b4fa960e",
-    shadowParity:
-      "462/462 recipes and every material field match exactly",
+    latestCanary: "2026-08-21T12-06-32.604Z-attempt-1b416231-08a4-4ec6-a24b-5365b4fa960e",    shadowParity: "matched",
     deferOrBlockReason:
-      "Two uncapped Crawlee runs emitted identical 462-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 462 recipes with every material field matching",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 463 records with every material field matching, and two uncapped runs reproduced all 463 keys with identical content. An earlier comparison read this source as having field differences; it was reading a stored crawl against a legacy run from days later, so the site's own edits showed up as implementation differences.",
   },
   thebeachhousekitchen: {
     migrationState: "shadow_passed",
@@ -31186,10 +31166,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   },
   thecuriousplate: {
     migrationState: "shadow_passed",
-    latestCanary: "2026-08-21T12-09-34.295Z-attempt-cd66e53f-a487-427f-a8e3-4815926a2e3e",
-    shadowParity: "matched",
+    latestCanary: "2026-08-21T12-09-34.295Z-attempt-cd66e53f-a487-427f-a8e3-4815926a2e3e",    shadowParity: "matched",
     deferOrBlockReason:
-      "Shadow comparison passed: 325 records match the isolated legacy run on every material field, and a second uncapped run reproduced all 325 keys with identical content; tags == keywords + cuisines",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 326 records with every material field matching, and two uncapped runs reproduced all 326 keys with identical content. An earlier comparison read this source as having field differences; it was reading a stored crawl against a legacy run from days later, so the site's own edits showed up as implementation differences. The only differences are the intentional ones: 7 records keep WPRM named-step prefixes legacy drops; 7 records keep a space at a block boundary legacy fuses over.",
   },
   thedefineddish: {
     migrationState: "shadow_passed",
@@ -31814,11 +31793,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   triedandtruerecipe: {
     migrationState: "shadow_passed",
     latestScrapyOutcome: "succeeded",
-    latestCanary: "2026-08-21T12-21-47.196Z-attempt-0189b79c-603b-4609-beec-922df9d2e843",
-    shadowParity:
-      "1037/1037 recipes and every material field match exactly",
+    latestCanary: "2026-08-21T12-21-47.196Z-attempt-0189b79c-603b-4609-beec-922df9d2e843",    shadowParity: "matched",
     deferOrBlockReason:
-      "Two uncapped Crawlee runs emitted identical 1037-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 1037 recipes with every material field matching; tags == keywords + cuisines; 1 records keep WPRM named-step prefixes legacy drops",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 1038 records with every material field matching, and two uncapped runs reproduced all 1038 keys with identical content. An earlier comparison read this source as having field differences; it was reading a stored crawl against a legacy run from days later, so the site's own edits showed up as implementation differences. The only differences are the intentional ones: 5 records keep WPRM named-step prefixes legacy drops; 4 records keep a space at a block boundary legacy fuses over.",
   },
   twocupsflour: {
     migrationState: "shadow_passed",
@@ -31831,11 +31808,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   twohealthykitchens: {
     migrationState: "shadow_passed",
     latestScrapyOutcome: "succeeded",
-    latestCanary: "2026-08-21T12-23-53.241Z-attempt-f02fc51f-dc36-478d-a197-fa5eef15f37d",
-    shadowParity:
-      "54/54 recipes and every material field match exactly",
+    latestCanary: "2026-08-21T12-23-53.241Z-attempt-f02fc51f-dc36-478d-a197-fa5eef15f37d",    shadowParity: "matched",
     deferOrBlockReason:
-      "Two uncapped Crawlee runs emitted identical 54-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 54 recipes with every material field matching; tags == keywords + cuisines; 2 records keep WPRM named-step prefixes legacy drops",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 54 records with every material field matching, and two uncapped runs reproduced all 54 keys with identical content. An earlier comparison read this source as having field differences; it was reading a stored crawl against a legacy run from days later, so the site's own edits showed up as implementation differences. The only differences are the intentional ones: 3 records keep WPRM named-step prefixes legacy drops; 1 records keep a space at a block boundary legacy fuses over; 1 records drop a space legacy inserts where it strips inline markup.",
   },
   twopeasandtheirpod: {
     migrationState: "shadow_passed",
