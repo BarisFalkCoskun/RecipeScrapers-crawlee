@@ -287,23 +287,21 @@ describe("Danish JSON-LD source registry", () => {
     expect(["arla", "coop", "kitchenaid", "madoghave", "tv2mad"].map(
       (sourceId) => [sourceId, byId.get(sourceId)?.migrationState]
     )).toEqual([
-      // arla reached shadow parity once a legacy run finally completed for it,
-      // then went back to configured: half that evidence was a completeness
-      // check that could not see this source's ids and passed vacuously.
-      ["arla", "configured"],
+      // arla reached shadow parity once a legacy run finally completed for it.
+      // It was briefly withdrawn with the sources whose completeness check passed
+      // vacuously and does not belong with them: a complete legacy run is its
+      // baseline, so no discovery check stands in for one here.
+      ["arla", "shadow_passed"],
       ["coop", "configured"],
       ["kitchenaid", "configured"],
       ["madoghave", "shadow_passed"],
       ["tv2mad", "configured"],
     ]);
     expect(byId.get("madoghave")?.shadowParity).toBe("legacy-unhealthy");
-    // arla's evidence moved off the legacy-unhealthy route onto a full legacy
-    // run, and was then withdrawn along with the twelve other sources whose
-    // completeness check could not read their ids. The legacy comparison it
-    // records still stands; the parity verdict waits on a working check.
-    expect(byId.get("arla")?.shadowParity).toBeUndefined();
+    // arla's evidence moved off the legacy-unhealthy route onto a full legacy run.
+    expect(byId.get("arla")?.shadowParity).toBe("matched");
     expect(byId.get("arla")?.deferOrBlockReason).toMatch(/3069 records/u);
-    expect(byId.get("arla")?.deferOrBlockReason).toMatch(/WITHDRAWN 2026-08-28/u);
+    expect(byId.get("arla")?.deferOrBlockReason).toMatch(/Restored the same day/u);
     expect(byId.get("tv2mad")?.deferOrBlockReason).toMatch(
       /result window stops at 10000/u
     );
