@@ -53,6 +53,10 @@ while true; do
   fi
 
   out=$(bash "$REPO/tools/parity/shadow-parity.sh" "$src" "$db" 2>&1)
+  # Only the verdict line was being kept, so a MISMATCH could be counted but not
+  # read: nineteen sources reported "field differences above" with the diff that
+  # named them already discarded. Keep the whole comparison next to the dumps.
+  printf '%s\n' "$out" > "$OUT/$src-diff.txt"
   verdict=$(printf '%s' "$out" | tail -1)
   counts=$(printf '%s' "$out" | grep -m1 '^legacy:' || true)
   block=$(printf '%s' "$out" | grep -m1 'legacy answered HTTP 403' || true)
