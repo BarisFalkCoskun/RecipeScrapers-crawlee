@@ -28243,7 +28243,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     latestScrapyOutcome: "failed",
     latestCanary: "2026-08-21T10-50-51.174Z-attempt-7ba12311-e771-4938-bdd4-bbc8597b783f",    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Shadow comparison passed: legacy-unhealthy; the first API page answered 403, so the legacy spider produced no recipes at all yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 1648 records the live listing declares - a check re-run after explain-rejections.cjs was fixed, on stored records that do carry the ids it matches on - on two uncapped runs reproducing all 1648 keys with identical content, and on a reviewed sample of 25 stored records.",
+      "Shadow comparison passed: legacy-unhealthy; the first API page answered 403, so the legacy spider produced no recipes at all yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 1648 records the live listing declares - a check re-run after explain-rejections.cjs was fixed, on stored records that do carry the ids it matches on - on two uncapped runs reproducing all 1648 keys with identical content, and on a reviewed sample of 25 stored records. A second uncapped run reproduced all 1648 keys with identical content, and a reviewed sample of 25 stored records is clean The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched 5 of the 17 pages its own header advertises, stored 500 recipes, and finished with finish_reason finished.",
   },
   eatingeuropean: {
     migrationState: "shadow_passed",
