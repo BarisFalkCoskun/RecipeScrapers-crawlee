@@ -57,6 +57,12 @@ async function fetchJson(url) {
   let blocked = 0;
   let announced = NaN;
   let size = perPage;
+  // One expression for a declared record's identity, used by both the walk and
+  // the comparison below; they read different fields once and the mismatch made
+  // the whole check vacuous.
+  const declaredId = (post) =>
+    String((post && post.recipe && post.recipe.id) ?? (post && post.id) ?? "");
+
   for (let page = 1; page <= 1000; page += 1) {
     const { status, body, total } = await fetchJson(`${base}?per_page=${size}&page=${page}`);
     if (status === 403 || status === 429 || status === 454 || status === 455) { blocked += 1; break; }
@@ -67,7 +73,7 @@ async function fetchJson(url) {
     if (!Array.isArray(body) || body.length === 0) break;
     let added = 0;
     for (const post of body) {
-      const id = String((post && post.recipe && post.recipe.id) ?? (post && post.id) ?? "");
+      const id = declaredId(post);
       if (id === "" || seen.has(id)) continue;
       seen.add(id);
       declared.push(post);
@@ -90,12 +96,25 @@ async function fetchJson(url) {
   const stored = await client.db(dbName).collection("recipes_v2")
     .find({ sourceId }, { projection: { "rawRecipe.id": 1 } }).toArray();
   await client.close();
-  const storedIds = new Set(stored.map((d) => String(d.rawRecipe && d.rawRecipe.id)));
+  // The walk keys a declared post on recipe.id falling back to post.id, but this
+  // comparison used to read recipe.id alone. On a listing whose posts carry no
+  // recipe.id every declared post yielded undefined, every stored doc yielded
+  // undefined, and String(undefined) matched itself - so thecastawaykitchen came
+  // back "declared=452 stored=1 missing=0", a pass that had examined nothing.
+  // Use one id expression for both sides, and refuse to answer when either side
+  // has no usable ids rather than reporting a vacuous zero.
+  const storedIds = new Set(
+    stored.map((d) => String((d.rawRecipe && d.rawRecipe.id) ?? "")).filter((id) => id !== ""),
+  );
+  if (storedIds.size === 0 && stored.length > 0) {
+    console.log(
+      `${sourceId} | INCONCLUSIVE: ${stored.length} stored records carry no rawRecipe.id, ` +
+        `so declared ids cannot be matched against them`,
+    );
+    process.exit(1);
+  }
 
-  const missing = declared.filter((post) => {
-    const id = post && post.recipe && post.recipe.id;
-    return !storedIds.has(String(id));
-  });
+  const missing = declared.filter((post) => !storedIds.has(declaredId(post)));
 
   const reasons = {
     "no title": [], "no ingredients": [], "no instructions": [],

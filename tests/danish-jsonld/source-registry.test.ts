@@ -287,18 +287,23 @@ describe("Danish JSON-LD source registry", () => {
     expect(["arla", "coop", "kitchenaid", "madoghave", "tv2mad"].map(
       (sourceId) => [sourceId, byId.get(sourceId)?.migrationState]
     )).toEqual([
-      // arla reached shadow parity once a legacy run finally completed for it.
-      ["arla", "shadow_passed"],
+      // arla reached shadow parity once a legacy run finally completed for it,
+      // then went back to configured: half that evidence was a completeness
+      // check that could not see this source's ids and passed vacuously.
+      ["arla", "configured"],
       ["coop", "configured"],
       ["kitchenaid", "configured"],
       ["madoghave", "shadow_passed"],
       ["tv2mad", "configured"],
     ]);
     expect(byId.get("madoghave")?.shadowParity).toBe("legacy-unhealthy");
-    // arla's evidence moved off the legacy-unhealthy route: it now rests on a
-    // full legacy run rather than on five category listings standing in for one.
-    expect(byId.get("arla")?.shadowParity).toBe("matched");
+    // arla's evidence moved off the legacy-unhealthy route onto a full legacy
+    // run, and was then withdrawn along with the twelve other sources whose
+    // completeness check could not read their ids. The legacy comparison it
+    // records still stands; the parity verdict waits on a working check.
+    expect(byId.get("arla")?.shadowParity).toBeUndefined();
     expect(byId.get("arla")?.deferOrBlockReason).toMatch(/3069 records/u);
+    expect(byId.get("arla")?.deferOrBlockReason).toMatch(/WITHDRAWN 2026-08-28/u);
     expect(byId.get("tv2mad")?.deferOrBlockReason).toMatch(
       /result window stops at 10000/u
     );
@@ -430,7 +435,8 @@ describe("Danish JSON-LD source registry", () => {
       shadowParity: expect.stringMatching(/42\/42 recipes/u),
     });
     expect(byId.get("netto")?.migrationState).toBe("deferred");
-    expect(["canary_passed", "shadow_passed"]).toContain(
+    // configured joins the set for madrejsen's withdrawal on 2026-08-28.
+    expect(["canary_passed", "shadow_passed", "configured"]).toContain(
       byId.get("madrejsen")?.migrationState
     );
     expect(byId.get("madrejsen")?.deferOrBlockReason).toMatch(
@@ -537,8 +543,11 @@ describe("Danish JSON-LD source registry", () => {
 
     // Sources whose uncapped run came back clean. Parity work can carry one
     // past its canary, which is progress rather than a break.
+    // cookiesandcups and inspiredtaste were promoted and withdrawn again, so
+    // configured belongs in this set too - it is where a withdrawal lands.
     for (const id of ["cookiesandcups", "opskrifterforalle", "inspiredtaste"]) {
-      expect(["canary_passed", "shadow_passed"]).toContain(byId.get(id)?.migrationState);
+      expect(["canary_passed", "shadow_passed", "configured"])
+        .toContain(byId.get(id)?.migrationState);
       expect(byId.get(id)?.latestCanary).toBeTruthy();
     }
     // Short of a canary on records the source itself publishes badly.
@@ -557,7 +566,9 @@ describe("Danish JSON-LD source registry", () => {
     // The rebrand fix is what turned a zero-candidate failure into a canary, and
     // parity work has since carried it further - the same way it did gunris
     // below, and recording that must not read as the canary having broken.
-    expect(["canary_passed", "shadow_passed"])
+    // configured is in the set because therealfoodrds was withdrawn from
+    // shadow_passed; the rebrand fix this test guards is untouched either way.
+    expect(["canary_passed", "shadow_passed", "configured"])
       .toContain(byId.get("therealfoodrds")?.migrationState);
     expect(byId.get("brownedbutterblondie")?.allowedDomains).toContain("athomebyheather.com");
     expect(byId.get("lowcarbdelish")?.allowedDomains).toContain("wellportionedplate.com");
@@ -663,7 +674,9 @@ describe("Danish JSON-LD source registry", () => {
 
     // /opskrifter/ answers 200 with a page listing the five categories and no
     // recipes, so the legacy spider starts somewhere that cannot yield any.
-    expect(madrejsen?.migrationState).toBe("shadow_passed");
+    // Withdrawn from shadow_passed: its completeness check read no ids at all.
+    // The routing this test is really about is unaffected.
+    expect(madrejsen?.migrationState).toBe("configured");
     expect(madrejsen?.latestScrapyOutcome).toBe("failed");
     expect(madrejsen?.deferOrBlockReason).toMatch(/category hub carrying no recipe links/u);
     // Crawlee starts from the five category routes instead.
@@ -706,10 +719,15 @@ describe("Danish JSON-LD source registry", () => {
     // the alternative evidence instead and say why.
     for (const id of ["butternutbakeryblog", "tasteandsee", "brownedbutterblondie", "choosingchia"]) {
       const source = byId.get(id);
-      expect(source?.migrationState).toBe("shadow_passed");
+      // All four were withdrawn on 2026-08-28. The legacy-unhealthy route leans
+      // on discovery completeness in place of a legacy baseline, and for these
+      // four that half was never actually checked, so shadowParity is cleared
+      // until a URL-keyed check re-establishes it.
+      expect(source?.migrationState).toBe("configured");
       expect(source?.latestScrapyOutcome).toBe("failed");
-      expect(source?.shadowParity).toMatch(/legacy-unhealthy/u);
+      expect(source?.shadowParity).toBeUndefined();
       expect(source?.deferOrBlockReason).toMatch(/manual read of 25 stored records/u);
+      expect(source?.deferOrBlockReason).toMatch(/WITHDRAWN 2026-08-28/u);
     }
     expect(byId.get("brownedbutterblondie")?.deferOrBlockReason)
       .toMatch(/redirects to athomebyheather\.com/u);
