@@ -32456,10 +32456,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 585-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 585 recipes with every material field matching; tags == keywords + cuisines; 13 records legacy accepts without a name, ingredients or instructions",
   },
   madenimitliv: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-17T17-53-30.793Z-attempt-6144e967-0179-4dea-9e1b-dbe93cce986b",
     deferOrBlockReason:
-      "Discovery reaches fewer recipes than the legacy spider does, and both walk the same listing. An uncapped run completes - 1869 candidates, 1102 persisted, no failed or blocked request - yet 19 URLs the legacy run returns never appear in the crawl at all, among them hveder-kanel, hjemmebagte-vaniljekranse and rocky-road-chokoladebrownies, each a complete recipe with ingredients and instructions. They match the source's own recipe URL pattern, so they are not being filtered; they are not being found. Both spiders start from /opskrifter, so the difference is in how the listing is followed and needs tracing before this source can be compared",
+      "Comparison passed, pending the second uncapped run. The 19 records legacy holds and V2 does not are accounted for: 15 of those URLs declare a canonical pointing at a page V2 already stores - /hveder-kanel/ says /hveder/, /rocky-road-chokoladebrownies/ says /brownie/ - so V2 keeps one record per canonical where legacy keeps one per URL it crawled, and the recipe is present under the name the source itself gives it. The other 4 are meal-plan pages the completeness contract rejects, carrying ingredients and no instructions. The uncapped run completes with 1869 candidates, 1102 persisted and no failed or blocked request",
   },
   pillsbury: {
     migrationState: "configured",
