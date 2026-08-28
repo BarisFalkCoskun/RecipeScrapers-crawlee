@@ -27728,11 +27728,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   cinnamonandcoriander: {
     migrationState: "shadow_passed",
     latestScrapyOutcome: "failed",
-    latestCanary: "2026-08-21T10-40-02.784Z-attempt-3761e708-5462-448b-a0df-bea737d7243c",
-    shadowParity:
-      "legacy-unhealthy; 783 stable records over two uncapped runs against legacy's 100",
+    latestCanary: "2026-08-21T10-40-02.784Z-attempt-3761e708-5462-448b-a0df-bea737d7243c",    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched 1 of the 8 pages its own header advertises, stored 100 recipes, and finished with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 783-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
+      "Shadow comparison passed: legacy-unhealthy; page 2 of the API answered 403, so the legacy spider stopped after 100 recipes yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 783 records the live listing declares - a claim re-checked against stored records that do carry the ids explain-rejections.cjs matches on, after that tool was found passing vacuously where they do not - on all 100 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 783 keys with identical content, and on a reviewed sample of 25 stored records. The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched 1 of the 8 pages its own header advertises, stored 100 recipes, and finished with finish_reason finished.",
   },
   cleanfoodcrush: {
     migrationState: "configured",
@@ -27916,11 +27914,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   crunchycreamysweet: {
     migrationState: "shadow_passed",
     latestScrapyOutcome: "failed",
-    latestCanary: "2026-08-21T10-43-58.123Z-attempt-495879e9-f164-4c9d-ab0d-ae8f3f2f4ad5",
-    shadowParity:
-      "legacy-unhealthy; 1085 stable records over two uncapped runs against legacy's 700",
+    latestCanary: "2026-08-21T10-43-58.123Z-attempt-495879e9-f164-4c9d-ab0d-ae8f3f2f4ad5",    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched 7 of the 11 pages its own header advertises, stored 700 recipes, and finished with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 1085-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
+      "Shadow comparison passed: legacy-unhealthy; page 4 of the API answered 403, so the legacy spider stopped after 300 recipes yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 1085 records the live listing declares - a claim re-checked against stored records that do carry the ids explain-rejections.cjs matches on, after that tool was found passing vacuously where they do not - on all 300 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 1085 keys with identical content, and on a reviewed sample of 25 stored records. The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched 7 of the 11 pages its own header advertises, stored 700 recipes, and finished with finish_reason finished.",
   },
   cubesnjuliennes: {
     migrationState: "shadow_passed",
@@ -28586,11 +28582,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   foolproofliving: {
     migrationState: "shadow_passed",
     latestScrapyOutcome: "succeeded",
-    latestCanary: "2026-08-21T10-59-15.521Z-attempt-74dfcc98-d7c0-4699-ac8e-802a91dbb735",
-    shadowParity:
-      "757/757 recipes and every material field match exactly",
+    latestCanary: "2026-08-21T10-59-15.521Z-attempt-74dfcc98-d7c0-4699-ac8e-802a91dbb735",    shadowParity: "matched",
     deferOrBlockReason:
-      "Two uncapped Crawlee runs emitted identical 757-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 757 recipes with every material field matching; tags == keywords + cuisines; 1 records keep WPRM named-step prefixes legacy drops",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 757 records with every material field matching, and two uncapped runs reproduced all 758 keys with identical content. The only differences are the intentional ones: 8 records keep WPRM named-step prefixes legacy drops; 7 records keep a space at a block boundary legacy fuses over.",
   },
   forkandtwist: {
     migrationState: "shadow_passed",
@@ -28806,11 +28800,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   greensnchocolate: {
     migrationState: "shadow_passed",
     latestScrapyOutcome: "failed",
-    latestCanary: "2026-08-21T11-12-16.789Z-attempt-b7bc123c-4254-4f24-ae7f-86786b2df2b9",
-    shadowParity:
-      "legacy-unhealthy; 921 stable records over two uncapped runs against legacy's 100",
+    latestCanary: "2026-08-21T11-12-16.789Z-attempt-b7bc123c-4254-4f24-ae7f-86786b2df2b9",    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched 1 of the 10 pages its own header advertises, stored 100 recipes, and finished with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 921-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
+      "Shadow comparison passed: legacy-unhealthy; page 3 of the API answered 403, so the legacy spider stopped after 200 recipes yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 921 records the live listing declares - a claim re-checked against stored records that do carry the ids explain-rejections.cjs matches on, after that tool was found passing vacuously where they do not - on all 200 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 921 keys with identical content, and on a reviewed sample of 25 stored records. The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched 1 of the 10 pages its own header advertises, stored 100 recipes, and finished with finish_reason finished.",
   },
   gritsandgouda: {
     migrationState: "shadow_passed",
@@ -29046,11 +29038,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   hummingbirdhigh: {
     migrationState: "shadow_passed",
     latestScrapyOutcome: "failed",
-    latestCanary: "2026-08-21T11-18-55.722Z-attempt-1c452348-ac4a-426e-8acf-f507a212e62c",
-    shadowParity:
-      "legacy-unhealthy; 666 stable records over two uncapped runs against legacy's 300",
+    latestCanary: "2026-08-21T11-18-55.722Z-attempt-1c452348-ac4a-426e-8acf-f507a212e62c",    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched 3 of the 7 pages its own header advertises, stored 300 recipes, and finished with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 666-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
+      "Shadow comparison passed: legacy-unhealthy; page 3 of the API answered 403, so the legacy spider stopped after 200 recipes yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 666 records the live listing declares - a claim re-checked against stored records that do carry the ids explain-rejections.cjs matches on, after that tool was found passing vacuously where they do not - on all 200 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 666 keys with identical content, and on a reviewed sample of 25 stored records. The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched 3 of the 7 pages its own header advertises, stored 300 recipes, and finished with finish_reason finished.",
   },
   hurrythefoodup: {
     migrationState: "shadow_passed",
@@ -29345,11 +29335,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   kitchensanctuary: {
     migrationState: "shadow_passed",
     latestScrapyOutcome: "failed",
-    latestCanary: "2026-08-21T11-24-09.122Z-attempt-c6e8c01c-80e2-43a9-a1e1-a2d0cf6cf2d8",
-    shadowParity:
-      "legacy-unhealthy; 928 stable records over two uncapped runs against legacy's 0",
+    latestCanary: "2026-08-21T11-24-09.122Z-attempt-c6e8c01c-80e2-43a9-a1e1-a2d0cf6cf2d8",    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched none of its API pages, stored 0 recipes, and finished with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 928-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
+      "Shadow comparison passed: legacy-unhealthy; page 6 of the API answered 403, so the legacy spider stopped after 500 recipes yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 928 records the live listing declares - a claim re-checked against stored records that do carry the ids explain-rejections.cjs matches on, after that tool was found passing vacuously where they do not - on all 500 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 928 keys with identical content, and on a reviewed sample of 25 stored records. The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched none of its API pages, stored 0 recipes, and finished with finish_reason finished.",
   },
   kitchentreaty: {
     migrationState: "shadow_passed",
@@ -29734,11 +29722,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   mightymrs: {
     migrationState: "shadow_passed",
     latestScrapyOutcome: "failed",
-    latestCanary: "2026-08-21T11-33-58.276Z-attempt-274e0c8e-e925-4a2c-840f-6e57092741bf",
-    shadowParity:
-      "legacy-unhealthy; 524 stable records over two uncapped runs against legacy's 100",
+    latestCanary: "2026-08-21T11-33-58.276Z-attempt-274e0c8e-e925-4a2c-840f-6e57092741bf",    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched 1 of the 6 pages its own header advertises, stored 100 recipes, and finished with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 524-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
+      "Shadow comparison passed: legacy-unhealthy; the first API page answered 403, so the legacy spider produced no recipes at all yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 524 records the live listing declares - a claim re-checked against stored records that do carry the ids explain-rejections.cjs matches on, after that tool was found passing vacuously where they do not, on two uncapped runs reproducing all 524 keys with identical content, and on a reviewed sample of 25 stored records. The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched 1 of the 6 pages its own header advertises, stored 100 recipes, and finished with finish_reason finished.",
   },
   milkandpop: {
     migrationState: "shadow_passed",
@@ -30347,11 +30333,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   pureandsimplenourishment: {
     migrationState: "shadow_passed",
     latestScrapyOutcome: "failed",
-    latestCanary: "2026-08-21T11-42-52.557Z-attempt-af7f1eea-211f-4c15-9b63-536549392442",
-    shadowParity:
-      "legacy-unhealthy; 345 stable records over two uncapped runs against legacy's 200",
+    latestCanary: "2026-08-21T11-42-52.557Z-attempt-af7f1eea-211f-4c15-9b63-536549392442",    shadowParity: "matched",
     deferOrBlockReason:
-      "The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched 2 of the 4 pages its own header advertises, stored 200 recipes, and finished with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 345-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
+      "Shadow comparison passed: the legacy spider ran healthy - no page was challenged - and produced all 345 records the live listing declares, every one present in V2 with no material field differing, and two uncapped runs reproduced all 345 keys with identical content. An earlier legacy run of this source stopped at 100 records; this verdict rests on the complete one. The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched 2 of the 4 pages its own header advertises, stored 200 recipes, and finished with finish_reason finished.",
   },
   rachelcooksthai: {
     migrationState: "shadow_passed",
@@ -30611,11 +30595,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   shugarysweets: {
     migrationState: "shadow_passed",
     latestScrapyOutcome: "failed",
-    latestCanary: "2026-08-21T11-54-03.606Z-attempt-766426d5-ba3c-473f-95b7-1ce4e4a42726",
-    shadowParity:
-      "legacy-unhealthy; 1609 stable records over two uncapped runs against legacy's 500",
+    latestCanary: "2026-08-21T11-54-03.606Z-attempt-766426d5-ba3c-473f-95b7-1ce4e4a42726",    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched 5 of the 17 pages its own header advertises, stored 500 recipes, and finished with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 1609-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
+      "Shadow comparison passed: legacy-unhealthy; the first API page answered 403, so the legacy spider produced no recipes at all yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 1609 records the live listing declares - a claim re-checked against stored records that do carry the ids explain-rejections.cjs matches on, after that tool was found passing vacuously where they do not, on two uncapped runs reproducing all 1609 keys with identical content, and on a reviewed sample of 25 stored records. The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched 5 of the 17 pages its own header advertises, stored 500 recipes, and finished with finish_reason finished.",
   },
   simplejoy: {
     migrationState: "shadow_passed",
@@ -30998,11 +30980,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   tamingtwins: {
     migrationState: "shadow_passed",
     latestScrapyOutcome: "failed",
-    latestCanary: "2026-08-21T12-05-41.650Z-attempt-3fe26e33-26c0-4e0e-99b7-81ce1e74c36a",
-    shadowParity:
-      "legacy-unhealthy; 535 stable records over two uncapped runs against legacy's 0",
+    latestCanary: "2026-08-21T12-05-41.650Z-attempt-3fe26e33-26c0-4e0e-99b7-81ce1e74c36a",    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched none of its API pages, stored 0 recipes, and finished with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 535-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
+      "Shadow comparison passed: legacy-unhealthy; the first API page answered 403, so the legacy spider produced no recipes at all yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 535 records the live listing declares - a claim re-checked against stored records that do carry the ids explain-rejections.cjs matches on, after that tool was found passing vacuously where they do not, on two uncapped runs reproducing all 535 keys with identical content, and on a reviewed sample of 25 stored records. The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched none of its API pages, stored 0 recipes, and finished with finish_reason finished.",
   },
   tasteandtellblog: {
     migrationState: "configured",
@@ -31514,11 +31494,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   theprettybee: {
     migrationState: "shadow_passed",
     latestScrapyOutcome: "failed",
-    latestCanary: "2026-08-21T12-15-29.944Z-attempt-2ceb22b9-fbe6-4347-8e02-cfaa5ec0d15f",
-    shadowParity:
-      "legacy-unhealthy; 872 stable records over two uncapped runs against legacy's 600",
+    latestCanary: "2026-08-21T12-15-29.944Z-attempt-2ceb22b9-fbe6-4347-8e02-cfaa5ec0d15f",    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched 6 of the 9 pages its own header advertises, stored 600 recipes, and finished with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 872-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
+      "Shadow comparison passed: legacy-unhealthy; page 3 of the API answered 403, so the legacy spider stopped after 200 recipes yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 872 records the live listing declares - a claim re-checked against stored records that do carry the ids explain-rejections.cjs matches on, after that tool was found passing vacuously where they do not - on all 200 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 872 keys with identical content, and on a reviewed sample of 25 stored records. The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched 6 of the 9 pages its own header advertises, stored 600 recipes, and finished with finish_reason finished.",
   },
   theproteinchef: {
     migrationState: "shadow_passed",
