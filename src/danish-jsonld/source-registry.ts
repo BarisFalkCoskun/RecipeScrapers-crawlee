@@ -27639,10 +27639,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 389 keys with identical content. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no title), so there is no unexplained rejection",
   },
   caribbeangreenliving: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-37-15.866Z-attempt-71d19532-d6e7-4212-9227-297ec8ff361e",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 807 recipes from 814 API records; 7 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Shadow comparison passed: legacy-unhealthy; page 2 of the API answered 403, so the legacy spider stopped after 100 recipes yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 815 records the live listing declares, on all 100 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 808 keys with identical content, and on a reviewed sample of 25 stored records. An earlier pair of runs differed on 14 records; this verdict rests on a clean pair rather than on that one. The 7 records V2 does not store are upstream defects the completeness contract rejects (1 no instructions, 6 no canonical link).",
   },
   caribbeanpot: {
     migrationState: "configured",
@@ -31546,10 +31547,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 367 keys with identical content. Every one of the 3 shortfall records is an upstream defect the completeness contract rejects (1 no title, 2 no ingredients), so there is no unexplained rejection",
   },
   theplantbasedschool: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-12-29.024Z-attempt-ce573734-f0d0-4220-956b-919bfb3a7846",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 1033 recipes from 1096 API records; 63 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Shadow comparison passed: legacy-unhealthy; page 3 of the API answered 403, so the legacy spider stopped after 200 recipes yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 1100 records the live listing declares, on all 200 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 1037 keys with identical content, and on a reviewed sample of 25 stored records. An earlier pair of runs differed on one record; this verdict rests on a clean pair rather than on that one. The 63 records V2 does not store are upstream defects the completeness contract rejects (1 no ingredients, 62 no canonical link).",
   },
   theppk: {
     migrationState: "shadow_passed",
