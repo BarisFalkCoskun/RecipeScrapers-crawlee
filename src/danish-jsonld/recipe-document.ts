@@ -19,6 +19,7 @@ export interface CompleteJsonLdExtraction {
     | "incomplete-json-ld"
     | "malformed-json-ld"
     | "json-ld-control-character-repaired"
+    | "json-ld-name-taken-from-page"
   >;
 }
 
@@ -59,6 +60,7 @@ export function extractCompleteJsonLdRecipes(
   let incompleteJsonLdCount = 0;
   let malformedJsonLdCount = 0;
   let repairedJsonLdCount = 0;
+  let nameFromPageCount = 0;
 
   for (const rawScript of rawScripts) {
     // A blank script tag carries no recipe claim, so it is absent rather than
@@ -79,8 +81,24 @@ export function extractCompleteJsonLdRecipes(
       // A bare @type/@id pair is a JSON-LD reference to a node defined
       // elsewhere, not a recipe claim, so it is neither kept nor rejected.
       if (isNodeReference(recipe)) continue;
-      if (isCompleteRecipe(recipe)) {
-        recipes.push(recipe);
+      // A recipe with ingredients and steps is not incomplete because one field
+      // is blank, and the page states its title in three other places. Fill the
+      // name from the page before judging completeness, and signal that it was
+      // filled so the record stays auditable.
+      let candidate = recipe;
+      if (
+        !firstString(recipe["name"], recipe["headline"], recipe["title"]) &&
+        normalizeIngredientStrings(recipe["recipeIngredient"] ?? recipe["ingredients"]).length > 0 &&
+        normalizeInstructions(recipe["recipeInstructions"]).length > 0
+      ) {
+        const stated = pageStatedTitle(html);
+        if (stated !== "") {
+          candidate = { ...recipe, name: stated };
+          nameFromPageCount += 1;
+        }
+      }
+      if (isCompleteRecipe(candidate)) {
+        recipes.push(candidate);
       } else {
         rejectedReasons.push("incomplete-json-ld");
         incompleteJsonLdCount += 1;
@@ -97,6 +115,7 @@ export function extractCompleteJsonLdRecipes(
     repairedJsonLdCount,
     signals: Array.from(new Set([
       ...rejectedReasons,
+      ...(nameFromPageCount > 0 ? ["json-ld-name-taken-from-page" as const] : []),
       ...(repairedJsonLdCount > 0
         ? ["json-ld-control-character-repaired" as const]
         : []),
@@ -420,6 +439,31 @@ function isRecipeType(type: unknown): boolean {
     return value === "recipe" || /^https?:\/\/schema\.org\/recipe$/u.test(value);
   }
   return Array.isArray(type) && type.some(isRecipeType);
+}
+
+/**
+ * The page's own statement of its title, used only when a Recipe node carries
+ * ingredients and steps but a blank name.
+ *
+ * stegeso serves the same recipe with `"name": ""` and thirteen ingredients that
+ * an hour earlier carried the name the legacy run recorded, so the blank is the
+ * site's own intermittent defect rather than anything about the recipe. Dropping
+ * a complete recipe over it cost that source 25 of its 26 records. The h1 is
+ * preferred because it is the recipe's own heading; og:title and <title> tend to
+ * carry a site suffix.
+ */
+function pageStatedTitle(html: string): string {
+  const patterns = [
+    /<h1\b[^>]*>([\s\S]*?)<\/h1\s*>/iu,
+    /<meta\b[^>]*\bproperty\s*=\s*["']og:title["'][^>]*\bcontent\s*=\s*["']([^"']*)["']/iu,
+    /<title\b[^>]*>([\s\S]*?)<\/title\s*>/iu,
+  ];
+  for (const pattern of patterns) {
+    const match = html.match(pattern);
+    const text = cleanText(String(match?.[1] ?? ""));
+    if (text !== "") return text;
+  }
+  return "";
 }
 
 function isCompleteRecipe(recipe: Record<string, unknown>): boolean {

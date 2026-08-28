@@ -921,4 +921,64 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
       totalMinutes: 90,
     });
   });
+
+  it("takes a blank recipe name from the page rather than dropping the recipe", () => {
+    // stegeso serves the same recipe with "name": "" that carried a name an hour
+    // earlier, when the legacy run recorded "Karry koteletter i stegeso". The
+    // blank is the site's own intermittent defect and cost the source 25 of its
+    // 26 records, so a recipe with ingredients and steps is filled from the page
+    // rather than rejected.
+    const html = `<html><head>
+      <meta property="og:title" content="Karry koteletter i Stegeso - Nem og smagfuld opskrift">
+      <title>Karry koteletter i Stegeso - Nem og smagfuld opskrift</title>
+      <script type="application/ld+json">${JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Recipe",
+        name: "",
+        recipeIngredient: ["4 stk svine koteletter", "1 stk stort løg"],
+        recipeInstructions: [{ "@type": "HowToStep", text: "Vask og skræl gulerødder." }],
+      })}</script>
+      </head><body><h1>Karry koteletter i stegeso</h1></body></html>`;
+
+    const extraction = extractCompleteJsonLdRecipes(html);
+
+    expect(extraction.recipes).toHaveLength(1);
+    // The h1 wins over og:title, which carries a site suffix the recipe's own
+    // heading does not - and it is what the legacy run recorded.
+    expect(extraction.recipes[0]?.["name"]).toBe("Karry koteletter i stegeso");
+    expect(extraction.incompleteJsonLdCount).toBe(0);
+    expect(extraction.signals).toContain("json-ld-name-taken-from-page");
+  });
+
+  it("still rejects a nameless recipe when the page states no title either", () => {
+    const html = `<html><head><script type="application/ld+json">${JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Recipe",
+      name: "",
+      recipeIngredient: ["1 stk stort løg"],
+      recipeInstructions: [{ "@type": "HowToStep", text: "Pil løget." }],
+    })}</script></head><body></body></html>`;
+
+    const extraction = extractCompleteJsonLdRecipes(html);
+
+    expect(extraction.recipes).toHaveLength(0);
+    expect(extraction.incompleteJsonLdCount).toBe(1);
+    expect(extraction.signals).not.toContain("json-ld-name-taken-from-page");
+  });
+
+  it("leaves a recipe that has a name untouched", () => {
+    const html = `<html><head><script type="application/ld+json">${JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Recipe",
+      name: "Citronkylling med tahin i stegeso",
+      recipeIngredient: ["1 hel kylling"],
+      recipeInstructions: [{ "@type": "HowToStep", text: "Pil hvidløg og løg." }],
+    })}</script></head><body><h1>Something else entirely</h1></body></html>`;
+
+    const extraction = extractCompleteJsonLdRecipes(html);
+
+    expect(extraction.recipes[0]?.["name"]).toBe("Citronkylling med tahin i stegeso");
+    expect(extraction.signals).not.toContain("json-ld-name-taken-from-page");
+  });
+
 });
