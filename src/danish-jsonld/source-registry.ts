@@ -32235,10 +32235,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Awaiting a fresh uncapped run: the store holds no records at all for this source. Its canary rested on a run whose data did not survive the database deletion and restore, so the claim cannot be checked and nothing is here to compare or promote. The run it rested on is recorded as: Uncapped run persisted 1026 recipes with complete discovery and no blocked, failed or rejected record.",
   },
   nogetiovnen: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-18T09-40-09.367Z-attempt-7887aaad-74c8-4c12-b66d-a12c31a16d02",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 3098 recipes with complete discovery and no blocked, failed or rejected record",
+      "Shadow comparison passed: the isolated legacy run completed with 3100 recipes over 3747 requests, all answering 200, and V2 holds every one of them with no record legacy has that it does not and no difference in any field. V2 additionally keeps a cuisine on all 3100 that legacy has no field for, a fuller yield than legacy's leading integer on 2, and 7 sibling recipes recovered from pages carrying more than one. A second uncapped run reproduced all 3107 keys with identical content, and a reviewed sample of 25 stored records is clean. This source is throttled to one request every three seconds, so both halves needed roughly three hours each; earlier attempts were cut off by the harness rather than by anything the source did",
   },
   bobsredmill: {
     migrationState: "configured",

@@ -407,9 +407,12 @@ describe("Danish JSON-LD source registry", () => {
       expect(byId.get(id)?.deferOrBlockReason)
         .toMatch(/did not survive the database deletion/u);
     }
-    expect(byId.get("nogetiovnen")?.migrationState).toBe("canary_passed");
+    // nogetiovnen has since reached shadow parity: its legacy run completed with
+    // 3100 recipes and V2 matches every one. Both halves take about three hours
+    // because the source is throttled to one request every three seconds.
+    expect(byId.get("nogetiovnen")?.migrationState).toBe("shadow_passed");
     expect(byId.get("nogetiovnen")?.deferOrBlockReason).toMatch(
-      /no blocked, failed or rejected record/u
+      /3100 recipes over 3747 requests/u
     );
     expect(byId.get("klinksgaard")?.migrationState).toBe("blocked");
     expect(byId.get("bornholms")).toMatchObject({
