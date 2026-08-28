@@ -696,6 +696,35 @@ describe("Danish JSON-LD discovery", () => {
     )).toBe(true);
   });
 
+  it("does not parse a JSON listing looking for an HTTP-200 block shell", () => {
+    // easysavory's WPRM listing is 1.9 MB of JSON carrying HTML fragments in its
+    // fields. Parsing it here built a tree deep enough to overflow the stack, so
+    // the page failed every retry, paging stopped, and the source held 200 of
+    // the 642 recipes it declares. A challenge shell is small and HTML.
+    const jsonListing = JSON.stringify(
+      Array.from({ length: 200 }, (_, index) => ({
+        id: index,
+        recipe: { name: `Opskrift ${index}`, ingredients_flat: [] },
+        content: { rendered: "<div><p>Checking your browser</p></div>".repeat(50) },
+      })),
+    );
+
+    expect(looksLikeHttp200BlockShell(jsonListing)).toBe(false);
+  });
+
+  it("does not parse a body far larger than any challenge shell", () => {
+    const huge = `<html><body>Cloudflare challenge${"<p>x</p>".repeat(80_000)}</body></html>`;
+
+    expect(huge.length).toBeGreaterThan(512_000);
+    expect(looksLikeHttp200BlockShell(huge)).toBe(false);
+  });
+
+  it("still recognises a challenge shell after the guards", () => {
+    expect(looksLikeHttp200BlockShell(
+      "<html><title>Access denied</title><body>unusual traffic detected</body></html>"
+    )).toBe(true);
+  });
+
   it("reads a WordPress posts listing that a browser rendered in its JSON viewer", () => {
     const dittejulie = DANISH_JSONLD_SOURCES.find(
       (entry) => entry.id === "dittejulie"

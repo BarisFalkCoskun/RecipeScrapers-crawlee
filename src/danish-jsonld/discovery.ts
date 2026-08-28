@@ -482,7 +482,24 @@ function jsonPathHasExpectedEmptyCollection(root: unknown, path: string): boolea
 }
 
 export function looksLikeHttp200BlockShell(body: string): boolean {
-  const $ = cheerio.load(body);
+  // A challenge shell is a small HTML page, so anything large or JSON-shaped is
+  // not one and does not need parsing to find out. easysavory's WPRM listing is
+  // 1.9 MB of JSON carrying HTML fragments; parsing it here built a tree deep
+  // enough that domutils' recursive textContent overflowed the stack, failing
+  // the page through every retry. Paging stopped there and the source held 200
+  // of the 642 recipes it declares, with no discovery failure recorded because
+  // the throw looked like a network fault.
+  if (body.length > 512_000) return false;
+  const opening = body.trimStart().slice(0, 1);
+  if (opening === "{" || opening === "[") return false;
+  // Depth is not bounded by either check, so a page that still cannot be parsed
+  // is reported as what it is - not a shell we can recognise.
+  let $: cheerio.CheerioAPI;
+  try {
+    $ = cheerio.load(body);
+  } catch {
+    return false;
+  }
   $("script, style, noscript, template").remove();
   const title = $("title").first().text().trim();
   const visibleBody = $("body").text().replace(/\s+/gu, " ").trim();
