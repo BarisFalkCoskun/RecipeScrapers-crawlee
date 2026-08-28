@@ -32456,10 +32456,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 585-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 585 recipes with every material field matching; tags == keywords + cuisines; 13 records legacy accepts without a name, ingredients or instructions",
   },
   madenimitliv: {
-    migrationState: "canary_passed",
+    migrationState: "configured",
     latestCanary: "2026-08-17T17-53-30.793Z-attempt-6144e967-0179-4dea-9e1b-dbe93cce986b",
     deferOrBlockReason:
-      "Uncapped run persisted 1101 recipes with complete discovery and no blocked or failed request; eight pages carry Recipe JSON-LD without required fields and stay rejected",
+      "Discovery reaches fewer recipes than the legacy spider does, and both walk the same listing. An uncapped run completes - 1869 candidates, 1102 persisted, no failed or blocked request - yet 19 URLs the legacy run returns never appear in the crawl at all, among them hveder-kanel, hjemmebagte-vaniljekranse and rocky-road-chokoladebrownies, each a complete recipe with ingredients and instructions. They match the source's own recipe URL pattern, so they are not being filtered; they are not being found. Both spiders start from /opskrifter, so the difference is in how the listing is followed and needs tracing before this source can be compared",
   },
   pillsbury: {
     migrationState: "configured",
