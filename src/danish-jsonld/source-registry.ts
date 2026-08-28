@@ -33979,11 +33979,15 @@ const AUTHENTICATED_API_RECIPE_SOURCES: DanishJsonLdSource[] =
       deferOrBlockReason:
         "Bounded token-plus-first-page live shadow matched all 250 recipes and every material field with no request, extraction, storage, or domain failures; the current 15465-recipe catalog spans 62 API pages and still requires uncapped validation",
     } : {
-      migrationState: "canary_passed" as const,
+      // madforfattigroeve holds no records at all now: the two uncapped runs its
+      // canary rested on left nothing behind that survived the database deletion
+      // and restore, so the claim cannot be rechecked and there is nothing to
+      // compare or promote. The run itself stays in the reason.
+      migrationState: "configured" as const,
       latestScrapyOutcome: "no_data" as const,
       latestCanary: "2026-08-19T19-09-13.765Z",
       deferOrBlockReason:
-        "Two uncapped two-request runs each persisted the complete current 588-recipe GraphQL catalog with identical keys and normalized records and no failures, blocks, rejects, page cap, storage errors, or domain admissions; five rendered recipe-page payloads matched titles, ingredient identities, instructions, and images exactly, while the retired legacy numeric sitemap remains HTTP 404 and cannot provide a current shadow",
+        "Awaiting a fresh uncapped run: the store holds no records at all for this source. Its canary rested on runs whose data did not survive the database deletion and restore. The runs are recorded as: two uncapped two-request runs each persisted the complete current 588-recipe GraphQL catalog with identical keys and normalized records and no failures, blocks, rejects, page cap, storage errors, or domain admissions",
     }),
   }));
 

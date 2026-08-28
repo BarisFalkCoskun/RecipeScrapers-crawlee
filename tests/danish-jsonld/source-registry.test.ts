@@ -1070,7 +1070,10 @@ describe("Danish JSON-LD source registry", () => {
         legacySpider: "MadForFattigroeveSpider",
         legacyFamily: "DirectRecipeApiSpider",
         recipeExtractor: "madforfattigroeve-nextjs",
-        migrationState: "canary_passed",
+        // Its canary rested on runs whose data did not survive the database
+        // deletion and restore; the store holds nothing for it now, so it waits
+        // on a fresh uncapped run like kikkoman and the others.
+        migrationState: "configured",
       });
     expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "meny"))
       .toMatchObject({
