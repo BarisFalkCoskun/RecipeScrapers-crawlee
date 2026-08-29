@@ -150,9 +150,24 @@ async function fetchJson(url) {
       else reasons.unexplained.push(post);
       continue;
     }
+    // Count entries that survive the cleaning the extractor applies, not raw
+    // array length. healthydelicious publishes recipes whose only instruction is
+    // {"name":"","text":"<br/>"} - one entry by length, nothing at all once the
+    // markup is stripped. Counting the array said "1 instruction", none of the
+    // reasons matched, and two records the extractor had rejected for cause were
+    // reported as unexplained rejections.
+    const usable = (entries, ...fields) =>
+      (Array.isArray(entries) ? entries : []).filter((entry) =>
+        fields.some((field) =>
+          String((entry && entry[field]) || "")
+            .replace(/<[^>]*>/gu, "")
+            .replace(/&nbsp;|\u00a0/gu, " ")
+            .trim() !== "",
+        ),
+      ).length;
     const name = String(recipe.name || "").trim();
-    const ingredients = Array.isArray(recipe.ingredients_flat) ? recipe.ingredients_flat.length : 0;
-    const instructions = Array.isArray(recipe.instructions_flat) ? recipe.instructions_flat.length : 0;
+    const ingredients = usable(recipe.ingredients_flat, "name", "original");
+    const instructions = usable(recipe.instructions_flat, "text", "name");
     if (name === "") reasons["no title"].push(post);
     else if (ingredients === 0) reasons["no ingredients"].push(post);
     else if (instructions === 0) reasons["no instructions"].push(post);
