@@ -26625,10 +26625,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window produced 1081 and 1080 records with every material field matching, and two uncapped runs reproduced all 1080 keys with identical content. The only differences are the intentional ones: 938 records keep a cuisine legacy has no field for, and 1 record legacy accepts without a name, ingredients or instructions.",
   },
   pinchofyum: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-19T20-10-56.360Z-attempt-96d2c5ca-c273-4013-9244-4f97bb464ea8",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 1160 recipes from 1590 posts; discovery that did not complete keeps it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 1160 records with every material field matching, and two uncapped runs reproduced all 1160 keys with identical content. The only difference is the intentional one: 1160 records keep a cuisine legacy has no field for.",
   },
   gimmesomeoven: {
     migrationState: "shadow_passed",
