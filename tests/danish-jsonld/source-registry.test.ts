@@ -715,34 +715,32 @@ describe("Danish JSON-LD source registry", () => {
     // A legacy run that is being blocked, or pointed at an abandoned domain, is
     // not a sound comparison, so these cannot be promoted on parity. They carry
     // the alternative evidence instead and say why.
-    // All four were withdrawn on 2026-08-28. The legacy-unhealthy route leans on
-    // discovery completeness in place of a legacy baseline, and for these four
-    // that half had been produced by a check that walks wprm_recipe - a listing
-    // none of them publishes - so shadowParity was cleared until the check they
-    // can actually answer re-established it.
-    for (const id of ["butternutbakeryblog", "brownedbutterblondie"]) {
+    //
+    // All of these were withdrawn on 2026-08-28 and restored on 2026-08-29. The
+    // legacy-unhealthy route leans on discovery completeness in place of a legacy
+    // baseline, and for them that half had been produced by a check that walks
+    // wprm_recipe - a listing none of them publishes. Asked the question they can
+    // actually answer, every one accounts for its whole shortfall.
+    const shortfall: Record<string, RegExp> = {
+      butternutbakeryblog: /19 of the difference are posts that carry no recipe/u,
+      brownedbutterblondie: /31 of the difference are posts that carry no recipe/u,
+      tasteandsee: /all 47 of the difference are posts that carry no recipe/u,
+      choosingchia: /all 91 of the difference are posts that carry no recipe/u,
+      sweetsimplevegan: /all 41 of the difference are posts that carry no recipe/u,
+      therealfoodrds: /181 of the difference are posts that carry no recipe/u,
+    };
+    for (const [id, missing] of Object.entries(shortfall)) {
       const source = byId.get(id);
-      expect(source?.migrationState).toBe("configured");
-      expect(source?.latestScrapyOutcome).toBe("failed");
-      expect(source?.shadowParity).toBeUndefined();
-      expect(source?.deferOrBlockReason).toMatch(/manual read of 25 stored records/u);
-      expect(source?.deferOrBlockReason).toMatch(/WITHDRAWN 2026-08-28/u);
+      expect(source?.migrationState).toBe("shadow_passed");
+      expect(source?.shadowParity).toBe("legacy-unhealthy");
+      expect(source?.deferOrBlockReason).toMatch(missing);
+      expect(source?.deferOrBlockReason).toMatch(/restored on 2026-08-29/u);
     }
+    // The legacy faults themselves are unchanged by any of that.
     expect(byId.get("brownedbutterblondie")?.deferOrBlockReason)
       .toMatch(/redirects to athomebyheather\.com/u);
-    // tasteandsee is the same case resolved: explain-jsonld-rejections.ts walked
-    // the posts listing it does publish and found all 47 of its shortfall to be
-    // posts carrying no recipe, so it went back to shadow_passed on 2026-08-29.
-    expect(byId.get("tasteandsee")?.migrationState).toBe("shadow_passed");
-    expect(byId.get("tasteandsee")?.shadowParity).toBe("legacy-unhealthy");
-    expect(byId.get("tasteandsee")?.deferOrBlockReason)
-      .toMatch(/all 47 of the difference are posts that carry no recipe/u);
-    // choosingchia resolved the same way on 2026-08-29: 825 posts declared, 734
-    // stored, and all 91 of the difference carrying no recipe.
-    expect(byId.get("choosingchia")?.migrationState).toBe("shadow_passed");
-    expect(byId.get("choosingchia")?.shadowParity).toBe("legacy-unhealthy");
-    expect(byId.get("choosingchia")?.deferOrBlockReason)
-      .toMatch(/all 91 of the difference are posts that carry no recipe/u);
+    expect(byId.get("therealfoodrds")?.deferOrBlockReason)
+      .toMatch(/moved to therealfooddietitians\.com/u);
     expect(byId.get("tasteandsee")?.deferOrBlockReason).toMatch(/HTTP 403/u);
   });
 
