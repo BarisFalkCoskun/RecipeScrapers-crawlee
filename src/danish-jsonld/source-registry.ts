@@ -27964,10 +27964,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 636 records with every material field matching, and two uncapped runs reproduced all 636 keys with identical content. An earlier comparison read this source as having field differences; it was reading a stored crawl against a legacy run from days later, so the site's own edits showed up as implementation differences. The only differences are the intentional ones: 40 records keep WPRM named-step prefixes legacy drops; 38 records keep a space at a block boundary legacy fuses over.",
   },
   culinaryhill: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-44-57.306Z-attempt-37af04ec-b65b-42ba-89a3-d3819308e3cd",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 1309 recipes from 1321 API records; 12 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Shadow comparison passed: legacy-unhealthy; page two of the API answered 403, so the legacy spider stopped after 100 recipes yet still reported finish_reason 'finished'. Every record it did produce is present in V2 with no material field differing. Discovery reaches all 1324 records the live listing declares; the 12 V2 does not store are upstream defects the completeness contract rejects (10 no ingredients, 1 no instructions, 1 no canonical link). Two uncapped runs reproduced all 1312 keys with identical content.",
   },
   cupcakesandkalechips: {
     migrationState: "shadow_passed",
@@ -29418,10 +29419,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 742 keys with identical content. Every one of the 1 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients), so there is no unexplained rejection",
   },
   laughingspatula: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-27-00.799Z-attempt-4cfd468f-72cc-4387-81be-555b73644dbc",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 791 recipes from 806 API records; 15 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Shadow comparison passed: legacy-unhealthy; page three of the API answered 403, so the legacy spider stopped after 199 recipes yet still reported finish_reason 'finished'. Every record it did produce is present in V2 with no material field differing. Discovery reaches all 808 records the live listing declares; the 15 V2 does not store are upstream defects the completeness contract rejects (1 no title, 8 no ingredients, 6 no instructions). Two uncapped runs reproduced all 793 keys with identical content.",
   },
   laurenslatest: {
     migrationState: "configured",
@@ -31633,10 +31635,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 1458-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 1458 recipes with every material field matching; tags == keywords + cuisines; 195 records keep WPRM named-step prefixes legacy drops",
   },
   thestonesoup: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-15-45.184Z-attempt-fe6e34ea-2ec8-43e5-a573-8867c08b8179",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 300 recipes from 300 API records; 1 blocked request and discovery that did not complete keeps it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 370 records with every material field matching, and two uncapped runs reproduced all 370 keys with identical content. The only difference is the intentional one: tags == keywords + cuisines.",
   },
   thesuburbansoapbox: {
     migrationState: "shadow_passed",
@@ -33440,10 +33443,11 @@ const DANISH_WP_POSTS_EVIDENCE_OVERRIDES: Record<
       "Bounded three-request live canary persisted both sampled recipes without request, extraction, storage, or domain failures; both overlapping Scrapy records matched all material recipe fields, while Crawlee intentionally preserves the full yield text that legacy reduced to an integer, and the 35-page catalog remains unvalidated",
   },
   dittejulie: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-20T06-10-47.943Z-attempt-a2f54483-89a1-43a9-8721-ae2b4d6dc0e5",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 386 recipes from 547 candidates; 14 records the source publishes incomplete or malformed and 5 failed requests keeps it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 386 records with every material field matching, and two uncapped runs reproduced all 386 keys with identical content. The only differences are the intentional ones: tags == keywords + cuisines; 378 records keep a fuller yield than legacy's leading integer; and 1 loosely spelled duration V2 reads and legacy gives up on.",
   },
   hoerup: {
     migrationState: "shadow_passed",
@@ -33461,10 +33465,11 @@ const DANISH_WP_POSTS_EVIDENCE_OVERRIDES: Record<
       "The source restricts its WordPress REST API: the posts collection the legacy spider reads answers HTTP 401 itsec_rest_api_access_restricted on every attempt, so the legacy discovery route is closed for both implementations while the sitemap route remains unproven behind the host's browser check",
   },
   madhang: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-20T06-42-34.363Z-attempt-cfd8f004-bebf-4857-a6ee-e2ae1bd5c865",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 55 recipes from 62 candidates; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window produced 56 and 55 records with every material field matching, and two uncapped runs reproduced all 55 keys with identical content. The only differences are the intentional ones: 23 records keep a cuisine legacy has no field for, 23 keep a fuller yield than legacy's leading integer, and 1 record legacy accepts without a name, ingredients or instructions.",
   },
   madopskriften: {
     migrationState: "shadow_passed",
