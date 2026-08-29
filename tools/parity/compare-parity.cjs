@@ -51,7 +51,21 @@ const {decodeHTML}=require("entities");
 // with no `>` at all - so the tag pattern below cannot see it and the raw markup
 // survives into the comparison. V2 parses the document and drops the element, so
 // an unterminated tag running to the end of the field is stripped here too.
-const stripMarkup=t=>decodeHTML(t).replace(/<[^>]+>/gu," ").replace(/<[a-zA-Z][^>]*$/u," ");
+// Strip markup before decoding entities, not after. therecipecritic has an
+// ingredient whose anchor href contains an entity-encoded HTML comment:
+// <a href="http://&lt;!-- wp:paragraph --&gt; ...">Disco Balls</a>. Decoding
+// first turns those &lt; and &gt; into real brackets inside the attribute, so
+// the tag strip ends at the wrong place and the href leaks into the text as
+// "Disco Balls: https://www.amazon.com/...". V2 already reads it as "Disco
+// Balls"; it was the comparison that could not normalise legacy to match.
+const dropTags=t=>String(t).replace(/<[^>]+>/gu," ").replace(/<[a-zA-Z][^>]*$/u," ");
+// Tags have to come off on both sides of the entity decode. Decoding first turns
+// the &lt; and &gt; inside therecipecritic's anchor href - which encodes an HTML
+// comment - into real brackets, so the tag strip ends in the wrong place and the
+// href leaks into the text as "Disco Balls: https://...". Decoding last leaves
+// entity-encoded markup standing, which is how dansktang writes its notes. Strip,
+// decode, strip.
+const stripMarkup=t=>dropTags(decodeHTML(dropTags(t)));
 const norm=s=>stripMarkup(stripMarkup(String(s??"")))
   .replace(/[\u200B-\u200D\uFEFF]/gu,"").replace(/\s+/gu," ")
   // Legacy joins a WPRM step name to its body as "Name : body" where V2 uses
