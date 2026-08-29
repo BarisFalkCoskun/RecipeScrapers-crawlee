@@ -26618,10 +26618,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window produced 1082 and 1079 records with every material field matching, and two uncapped runs reproduced all 1079 keys with identical content. The only differences are the intentional ones: 1072 records keep a cuisine legacy has no field for; 2 keep a fuller yield than legacy's leading integer; 26 negative upstream durations V2 rejects and legacy keeps; and 3 records legacy accepts without a name, ingredients or instructions.",
   },
   lavenderandlovage: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-19T16-42-48.471Z-attempt-1400462b-cccf-4d0d-99e9-5823f79c2316",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 1079 recipes from 1765 posts; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window produced 1081 and 1080 records with every material field matching, and two uncapped runs reproduced all 1080 keys with identical content. The only differences are the intentional ones: 938 records keep a cuisine legacy has no field for, and 1 record legacy accepts without a name, ingredients or instructions.",
   },
   pinchofyum: {
     migrationState: "configured",
@@ -30951,10 +30952,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   sweetcsdesigns: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-03-15.409Z-attempt-5e6a0696-9aa6-4a1d-a6e4-44b361600a83",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 2240 recipes from 2777 API records; 537 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window match on every material field, and two uncapped runs reproduced all 2242 keys with identical content. The only differences are the intentional ones: tags == keywords + cuisines; 15 records keep WPRM named-step prefixes legacy drops; 15 keep a space at a block boundary legacy fuses over; and 533 of legacy's 2778 records are ones it accepts without a name, ingredients or instructions, which the completeness contract rejects.",
   },
   sweetlysplendid: {
     migrationState: "shadow_passed",
@@ -31551,10 +31553,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run reached no recipe candidates (loaded-url-domain-not-allowed), so the route needs review before a canary",
   },
   therecipecritic: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-16-13.296Z-attempt-7db419d3-668e-40ee-8955-4bf65d477b1b",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 3376 recipes from 3821 API records; 445 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window match on every material field, and two uncapped runs reproduced all 3382 keys with identical content. The only differences are the intentional ones: tags == keywords + cuisines; 2012 records keep WPRM named-step prefixes legacy drops; 2 keep a space at a block boundary legacy fuses over; and 445 of legacy's 3827 records are ones it accepts with no link at all - every one of that shortfall - which the completeness contract rejects. This source read as a whole-catalog field mismatch until the comparison was fixed to strip tags on both sides of the entity decode: one ingredient's anchor href carries an entity-encoded HTML comment, and decoding first broke the tag strip so the href leaked into legacy's normalised text.",
   },
   thereciperebel: {
     migrationState: "configured",
