@@ -28753,7 +28753,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-21T11-11-26.572Z-attempt-c565c294-d08e-4783-822c-a8ab00f51932",
     deferOrBlockReason:
-      "Uncapped run persisted 100 recipes from 100 API records; 1 blocked request and discovery that did not complete keeps it short of a canary",
+      "The shortfall is upstream blocking, not a discovery defect: the API declares 2756 records across 28 pages and answers 403 partway through paging, so the run stops with what it has - 600 records at the default pace on 2026-08-29, and the legacy spider produced nothing at all against the same listing. Twelve pages fetched five seconds apart from the same host all answered 200 beforehand, so the limit is the request rate rather than the depth, and delaySeconds is now 5 at concurrency 1. That pacing reached only three pages on the next attempt, the site having tightened against this host over an evening of repeated crawls, so the catalog cannot be established from here without a fresh request identity or a long pause. Not eligible for the legacy-unhealthy route either: discovery completeness is what that route rests on and it is precisely what cannot be shown",
   },
   gooddinnermom: {
     migrationState: "shadow_passed",
@@ -32629,6 +32629,11 @@ const LEGACY_REQUEST_SETTING_OVERRIDES: Record<
   madsvin: { delaySeconds: 3, maxConcurrency: 1 },
   mariavestergaard: { delaySeconds: 3, maxConcurrency: 1 },
   nogetiovnen: { delaySeconds: 3, maxConcurrency: 1 },
+  // godairyfree answers 403 on the seventh listing page at the default pace, so
+  // paging stopped there and the source held 600 of the 2756 recipes its API
+  // declares. Twelve pages fetched five seconds apart all answered 200, so the
+  // block is the rate rather than the depth.
+  godairyfree: { delaySeconds: 5, maxConcurrency: 1 },
   spicytwist: { maxConcurrency: 1 },
   spisekunst: { maxConcurrency: 1 },
   surdejsentusiasten: { maxConcurrency: 1 },
