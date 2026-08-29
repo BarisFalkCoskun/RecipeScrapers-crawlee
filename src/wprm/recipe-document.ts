@@ -62,7 +62,21 @@ const plainText = (value: unknown): string => {
   // lægge det.</p><p>Stykkerne skal..." and that reads as "det.Stykkerne".
   // Turning the boundary into a space first keeps the two sentences apart,
   // and the whitespace collapse below removes any doubled space it creates.
+  // WPRM splits an ingredient across name and notes on a comma, and a comma
+  // inside an attribute splits the tag too. beamingbaker stores one anchor as
+  // name='<a class="thirstylink" title="Natural' and notes='Unsalted Creamy
+  // Peanut Butter (Pack of 6)" href="..." rel="nofollow noopener">unsalted,
+  // creamy natural peanut butter</a>'. The notes half opens with the tail of an
+  // attribute list that no tag in this field ever opened, so nothing recognises
+  // it as markup and the whole lot reads out as ingredient text. Drop a leading
+  // run that closes an attribute list - it cannot be anything a reader should
+  // see - before the parser looks at the rest.
+  // Requires an actual attribute assignment before the closing bracket, so
+  // ordinary text that happens to contain a quote and a greater-than - a note
+  // reading `use 2" > 3" pieces` - is left alone.
+  const orphanedAttributeTail = /^[^<>]*=\s*["'][^<>]*>/u;
   const separated = source
+    .replace(orphanedAttributeTail, "")
     .replace(/<br\s*\/?>/giu, " ")
     .replace(/<\/(?:p|div|li|ol|ul|h[1-6]|section|article|table|tr|td|th)\s*>/giu, " ");
   return cheerio.load(separated).text()

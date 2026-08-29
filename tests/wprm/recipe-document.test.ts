@@ -236,6 +236,48 @@ describe("WPRM API recipe extraction", () => {
     expect(recipe.normalized.ingredients[0]).not.toContain("det.Stykkerne");
   });
 
+  it("drops an attribute tail that WPRM split off the tag it belonged to", () => {
+    // beamingbaker links an ingredient, and the link's title attribute contains a
+    // comma - which is what WPRM splits name from notes on. The tag ends up torn
+    // in half: name holds '<a class="thirstylink" title="Natural' and notes opens
+    // with the rest of the attribute list. Nothing in the notes field is a tag any
+    // parser would recognise, so the href, target and rel all read out as if they
+    // were part of the ingredient.
+    const entry = structuredClone(fixture[0]) as Record<string, any>;
+    entry.recipe.ingredients = [{ name: "", ingredients: [{
+      amount: "1",
+      unit: "cup",
+      name: '<a class="thirstylink" title="Natural',
+      notes: 'Unsalted Creamy Peanut Butter (Pack of 6)" href="https://beamingbaker.com/'
+        + 'recommends/natural-unsalted-creamy-peanut-butter-pack-of-6/" target="_blank" '
+        + 'rel="nofollow noopener">unsalted, creamy natural peanut butter</a>',
+    }] }];
+
+    const [recipe] = extractWprmRecipes([entry]).recipes;
+
+    expect(recipe.normalized.ingredients[0]).toBe(
+      "1 cup (unsalted, creamy natural peanut butter)"
+    );
+    expect(recipe.normalized.ingredients[0]).not.toContain("href");
+    expect(recipe.normalized.ingredients[0]).not.toContain("nofollow");
+  });
+
+  it("leaves a note that merely contains a quote and a greater-than alone", () => {
+    // The tail is only dropped when it closes an attribute list, so ordinary
+    // measurements survive.
+    const entry = structuredClone(fixture[0]) as Record<string, any>;
+    entry.recipe.ingredients = [{ name: "", ingredients: [{
+      amount: "1",
+      unit: "cup",
+      name: "chopped nuts",
+      notes: 'use 2" > 3" pieces',
+    }] }];
+
+    const [recipe] = extractWprmRecipes([entry]).recipes;
+
+    expect(recipe.normalized.ingredients[0]).toBe('1 cup chopped nuts (use 2" > 3" pieces)');
+  });
+
   it("does not repeat a step body that the source also put in its name", () => {
     // frommybowl fills a step's name with the body itself and puts the labelled
     // version in text, so prefixing the name wrote the whole instruction twice:
