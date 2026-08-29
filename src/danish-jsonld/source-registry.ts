@@ -26695,10 +26695,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 381 records with every material field matching, and two uncapped runs reproduced all 381 keys with identical content. The only differences are the intentional ones: tags == keywords + cuisines; 376 records keep a fuller yield than legacy leading-integer.",
   },
   peaceloveandlowcarb: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-20T01-23-36.166Z-attempt-a62f74b6-9859-4511-8a49-dd78c64e227c",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 431 recipes from 500 posts; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window produced 432 and 431 records with every material field matching, and two uncapped runs reproduced all 431 keys with identical content. The only differences are the intentional ones: 200 records keep a cuisine legacy has no field for; 2 negative upstream durations V2 rejects and legacy keeps; 1 record legacy accepts without a name, ingredients or instructions.",
   },
   bellalimento: {
     migrationState: "configured",
@@ -26893,9 +26894,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 458 keys with identical content; 441 records keep a cuisine legacy has no field for",
   },
   thecookful: {
-    migrationState: "configured",
-    latestCanary: "2026-08-20T00-12-02.988Z-attempt-7346b12e-67c3-4095-aefe-c23e878f35f3",    deferOrBlockReason:
-      "Shadow comparison passed: legacy-unhealthy; the legacy spider is blocked page by page rather than at the listing, answering 403 on 333 of its 809 fetches, keeping the 322 recipes it could read and still reporting finish_reason 'finished'. V2 persisted 541 from 800 discovered posts with complete discovery and no failed, blocked or rejected request, holds every one of legacy's 322 records and differs on no field of any record. A second uncapped run reproduced all 541 keys with identical content, and a reviewed sample of 25 stored records is clean WITHDRAWN 2026-08-28: the discovery-completeness half of this evidence was produced by explain-rejections.cjs at a time when it read a declared record's id from recipe.id alone while the walk that built the declared set fell back to post.id. This source stores no rawRecipe.id, so both sides collapsed to the string 'undefined', every declared record matched itself and the check reported missing=0 without examining anything. The tool now refuses to answer in that case. Nothing here is known to be wrong - the field-level comparison stands - but the completeness claim that substitutes for a legacy baseline was never actually made, so the source returns to configured until a URL-keyed check re-establishes it.",
+    migrationState: "shadow_passed",
+    latestCanary: "2026-08-20T00-12-02.988Z-attempt-7346b12e-67c3-4095-aefe-c23e878f35f3",    shadowParity: "legacy-unhealthy",
+    deferOrBlockReason:
+      "Shadow comparison passed: legacy-unhealthy; the legacy spider is blocked page by page rather than at the listing, answering 403 on 333 of its 809 fetches, so it produced 300 records while still reporting finish_reason 'finished'. Every record it did produce is present in V2 with no material field differing. Discovery completeness rests on the posts listing this source actually publishes: it declares 806 posts, V2 stores 541, and all 265 of the difference are posts that carry no recipe at all, each one fetched and put through the crawler's own extractor. Two uncapped runs reproduced all 541 keys with identical content. Withdrawn on 2026-08-28 and restored on 2026-08-29: the completeness half had been produced by explain-rejections.cjs, which walks wprm_recipe and keys on a WPRM record id - this source has neither, so that check was comparing recipes against blog posts and, before its id handling was fixed, passing without examining anything. explain-jsonld-rejections.ts answers the question this source can actually be asked.",
   },
   thehappierhomemaker: {
     migrationState: "shadow_passed",
@@ -26950,9 +26952,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 841 keys with identical content; 734 records keep a cuisine legacy has no field for",
   },
   cookieandkate: {
-    migrationState: "configured",
-    latestCanary: "2026-08-19T23-02-56.177Z-attempt-b6a88566-8e2d-409f-ab59-44edbb93339d",    deferOrBlockReason:
-      "Shadow comparison passed: legacy-unhealthy; the legacy run emitted 512 records while still reporting finish_reason 'finished', answering 403 on 372 of its 934 fetches. V2 holds every record legacy did produce and differs from it on no field of any record. Every one of the 851 stored records is still in the live listing. A second uncapped run reproduced all 851 keys with identical content, and a reviewed sample of 25 stored records is clean WITHDRAWN 2026-08-28: the discovery-completeness half of this evidence was produced by explain-rejections.cjs at a time when it read a declared record's id from recipe.id alone while the walk that built the declared set fell back to post.id. This source stores no rawRecipe.id, so both sides collapsed to the string 'undefined', every declared record matched itself and the check reported missing=0 without examining anything. The tool now refuses to answer in that case. Nothing here is known to be wrong - the field-level comparison stands - but the completeness claim that substitutes for a legacy baseline was never actually made, so the source returns to configured until a URL-keyed check re-establishes it.",
+    migrationState: "shadow_passed",
+    latestCanary: "2026-08-19T23-02-56.177Z-attempt-b6a88566-8e2d-409f-ab59-44edbb93339d",    shadowParity: "legacy-unhealthy",
+    deferOrBlockReason:
+      "Shadow comparison passed: legacy-unhealthy; the legacy spider is blocked page by page rather than at the listing, answering 403 on 372 of its fetches, so it produced 543 records while still reporting finish_reason 'finished'. Every record it did produce is present in V2 with no material field differing. Discovery completeness rests on the posts listing this source actually publishes: it declares 925 posts, V2 stores 852, and all 73 of the difference are posts that carry no recipe at all, each one fetched and put through the crawler's own extractor. Two uncapped runs reproduced all 852 keys with identical content. Withdrawn on 2026-08-28 and restored on 2026-08-29: the completeness half had been produced by explain-rejections.cjs, which walks wprm_recipe and keys on a WPRM record id - this source has neither, so that check was comparing recipes against blog posts and, before its id handling was fixed, passing without examining anything. explain-jsonld-rejections.ts answers the question this source can actually be asked.",
   },
   pickledplum: {
     migrationState: "shadow_passed",

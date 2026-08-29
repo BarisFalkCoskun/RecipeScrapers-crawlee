@@ -130,11 +130,14 @@ async function main() {
   const parts = Object.entries(reasons).map(([why, n]) => `${n} ${why}`);
   if (unexplained.length > 0) parts.push(`${unexplained.length} unexplained`);
   const verdict = unexplained.length === 0 ? "ALL SHORTFALL EXPLAINED" : "UNEXPLAINED SHORTFALL";
+  // The examples print first so the verdict is the last line: callers that keep
+  // only the tail of this output were silently dropping the verdict for every
+  // source that had an example to show, which is every source that failed.
+  for (const link of unexplained.slice(0, 5)) console.log(`  unexplained: ${link}`);
   console.log(
     `${sourceId} | ${verdict} | declared=${declared.size} stored=${stored.length} ` +
       `missing=${missing.length}${parts.length ? ` (${parts.join(", ")})` : ""}`,
   );
-  for (const link of unexplained.slice(0, 5)) console.log(`  unexplained: ${link}`);
   process.exit(unexplained.length === 0 ? 0 : 1);
 }
 
