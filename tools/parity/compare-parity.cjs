@@ -174,6 +174,30 @@ for(const [k,ls] of Lg){
 }
 for(const [k,cs] of Cg){ if(!Lg.has(k)) C.set(k,cs[0]); }
 console.log("legacy:",legacy.length,"(unique keys",L.size,")  crawlee:",crawlee.length,"(unique keys",C.size,")");
+// caribbeanpot's legacy run emits nine records with an empty url, so their keys
+// are " :: <title>" and cannot meet the crawlee record for the same recipe,
+// which carries the real link. Both sides then report the recipe as unmatched.
+// A blank url is legacy's own defect - the completeness contract rejects those
+// records - so pair such a key on its title when exactly one crawlee key shares
+// it, and leave it unmatched when the title is ambiguous.
+const titleOf=k=>String(k).split(" :: ").slice(1).join(" :: ");
+const urlOf=k=>String(k).split(" :: ")[0];
+{
+  const byTitle=new Map();
+  for(const k of C.keys()){
+    const t=titleOf(k);
+    byTitle.set(t,(byTitle.get(t)??0)+1);
+  }
+  for(const k of [...L.keys()]){
+    if(urlOf(k).trim()!=="" || C.has(k)) continue;
+    const t=titleOf(k);
+    if(t==="" || byTitle.get(t)!==1) continue;
+    const match=[...C.keys()].find(c=>titleOf(c)===t && !L.has(c));
+    if(!match) continue;
+    L.set(match,L.get(k));
+    L.delete(k);
+  }
+}
 const onlyL=[...L.keys()].filter(k=>!C.has(k)), onlyC=[...C.keys()].filter(k=>!L.has(k));
 console.log("only legacy:",onlyL.length,onlyL.slice(0,4));
 console.log("only crawlee:",onlyC.length,onlyC.slice(0,4));
