@@ -26740,10 +26740,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 609 recipes from 1748 posts; 27 blocked requests and 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   thehealthymaven: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-19T21-44-21.936Z-attempt-63207f43-7e6a-4579-afb8-84c193befabb",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 662 recipes from 1036 posts; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 662 records with every material field matching, and two uncapped runs reproduced all 662 keys with identical content. The only differences are the intentional ones: 238 records keep a cuisine legacy has no field for, 1 keeps a fuller yield than legacy's leading integer, and 9 negative upstream durations V2 rejects and legacy keeps.",
   },
   goodlifeeats: {
     migrationState: "shadow_passed",
@@ -33157,10 +33158,11 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
       "Two uncapped Crawlee runs emitted identical 22-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 22 recipes with every material field matching; Crawlee intentionally keeps the published cuisine in its own field instead of folding it into legacy's tag list",
   },
   majspassion: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-20T06-30-50.119Z-attempt-c906f1c7-c2d7-4d6c-a0a1-0d014ca8948c",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 936 recipes from 938 candidates; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 939 records with no material field differing on any record they share, and two uncapped runs reproduced all 939 keys with identical content. The four records the two sides do not share are accounted for: the 2 only legacy holds are records it accepts without a name, ingredients, instructions or a link, which the completeness contract rejects, and V2's side was checked against the live listing - 938 of its 939 are still listed and 1 was withdrawn after the crawl.",
   },
   marialottes: {
     migrationState: "shadow_passed",
