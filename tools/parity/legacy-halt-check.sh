@@ -70,8 +70,20 @@ ONLYLEG=$(( ONLYLEG_RAW - EXPLAINED_L ))
 # overlap count as a genuine match rather than merely a shared key set.
 FIELDDIFF=$(echo "$CMP" | grep -cE '^### ')
 
+# The spider's own wprm_api_blocked_count is not the only evidence of a block.
+# gimmesomeoven's run made one request, got 403, produced nothing and called
+# itself finished, yet that counter stayed at zero - so a plainly blocked run was
+# refused. A run that produced no items at all and saw a 403 is blocked whatever
+# the spider recorded. Both routes still require everything else: a finished run,
+# nothing legacy has that V2 lacks, no field differences, and complete discovery.
+FORBIDDEN=$(printf '%s' "$CODES" | grep -oE '403: [0-9]+' | grep -oE '[0-9]+$' | head -1)
+: "${FORBIDDEN:=0}"
+BLOCK_EVIDENCE=0
+[ "$BLOCKED" -gt 0 ] && BLOCK_EVIDENCE=1
+[ "$ITEMS" -eq 0 ] && [ "$FORBIDDEN" -gt 0 ] && BLOCK_EVIDENCE=1
+
 VERDICT="NOT-ELIGIBLE"
-if [ "$BLOCKED" -gt 0 ] && [ "$REASON" = "finished" ] && [ "$ONLYLEG" = "0" ] && [ "$FIELDDIFF" = "0" ] \
+if [ "$BLOCK_EVIDENCE" -eq 1 ] && [ "$REASON" = "finished" ] && [ "$ONLYLEG" = "0" ] && [ "$FIELDDIFF" = "0" ] \
    && [ "$EXPLAIN_OK" -eq 0 ]; then
   VERDICT="LEGACY-UNHEALTHY-CONFIRMED"
 fi

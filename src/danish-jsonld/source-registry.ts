@@ -29291,7 +29291,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-21T11-24-14.251Z-attempt-419f6f67-de72-437d-9b22-861ea9b2ba94",
     deferOrBlockReason:
-      "Uncapped run persisted 1044 recipes from 1046 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "The legacy half is settled and the discovery half cannot be shown from here. Legacy is a confirmed halt: page three of the API answered 403, so it stopped after 200 recipes yet still reported finish_reason 'finished', and V2 holds every record it did produce with no material field differing. What is missing is completeness: the recipe API answers 403 to this host even with browser headers, so the live listing cannot be walked and there is no count to check the store against. The 1044 stored records are not in question; the claim that nothing is missing is the one that cannot be made. Needs a request identity this project does not have, or a pause long enough for the block to lift.",
   },
   katiebirdbakes: {
     migrationState: "shadow_passed",
