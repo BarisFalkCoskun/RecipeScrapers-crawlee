@@ -26681,16 +26681,18 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 3197 recipes from 4022 posts; 53 failed requests keeps it short of a canary",
   },
   nyssaskitchen: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-20T02-42-35.608Z-attempt-64b34f70-1282-4378-b57c-12980e8c34fc",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 344 recipes from 350 posts; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window legacy produced 346 records and the crawl 345 with every material field matching, and two uncapped runs reproduced all 345 keys with identical content. The only differences are the intentional ones: 256 records keep a cuisine legacy has no field for; 24 negative upstream durations V2 rejects and legacy keeps; 1 records legacy accepts without a name, ingredients or instructions.",
   },
   carrotstick: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-20T00-38-40.345Z-attempt-c7147cd9-b95a-4658-9f84-e6f81a1c1fe5",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 381 recipes from 595 posts; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 381 records with every material field matching, and two uncapped runs reproduced all 381 keys with identical content. The only differences are the intentional ones: tags == keywords + cuisines; 376 records keep a fuller yield than legacy leading-integer.",
   },
   peaceloveandlowcarb: {
     migrationState: "configured",
