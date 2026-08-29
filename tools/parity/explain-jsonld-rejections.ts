@@ -1,0 +1,144 @@
+/**
+ * Accounts for every page a JSON-LD source's listing declares but V2 does not
+ * store, by putting each one through the crawler's own extractor.
+ *
+ * explain-rejections.cjs walks wprm_recipe and keys on a WPRM record id. The
+ * WordPress-posts sources have neither: they list /wp/v2/posts and their stored
+ * records are JSON-LD carrying no such id. Running that tool against them
+ * compared recipes to blog posts and reported a shortfall that was mostly posts
+ * with no recipe on them - and, before its id handling was fixed, reported
+ * missing=0 having compared nothing at all.
+ *
+ * A post the listing declares is accounted for when it is stored, or when
+ * fetching it shows the crawler was right not to store it. Anything else is an
+ * unexplained rejection and the source is not complete.
+ *
+ *   npx tsx tools/parity/explain-jsonld-rejections.ts <sourceId> <dbName>
+ */
+import { MongoClient } from "mongodb";
+import { readFileSync } from "node:fs";
+import { DANISH_JSONLD_SOURCES } from "../../src/danish-jsonld/source-registry.js";
+import { extractCompleteJsonLdRecipes } from "../../src/danish-jsonld/recipe-document.js";
+
+const [sourceId, dbName] = process.argv.slice(2);
+if (!sourceId || !dbName) {
+  console.error("usage: explain-jsonld-rejections.ts <sourceId> <dbName>");
+  process.exit(2);
+}
+
+const mongoUri = (): string => {
+  const line = readFileSync(".env", "utf8")
+    .split("\n")
+    .find((l) => l.startsWith("MONGODB_URI"));
+  return line
+    ? line.split("=").slice(1).join("=").trim().replace(/^["']|["']$/gu, "")
+    : "mongodb://127.0.0.1:27017";
+};
+
+/** Compare links the way the crawler stores them: no scheme, www or trailing slash. */
+const key = (url: string): string =>
+  String(url)
+    .replace(/^https?:\/\//u, "")
+    .replace(/^www\./u, "")
+    .replace(/[#?].*$/u, "")
+    .replace(/\/+$/u, "")
+    .toLowerCase();
+
+async function main() {
+  const source = DANISH_JSONLD_SOURCES.find((s) => s.id === sourceId);
+  if (!source?.startUrls?.length) {
+    console.log(`${sourceId} | UNKNOWN: no listing URL in the registry`);
+    process.exit(1);
+  }
+  const start = new URL(source.startUrls[0]!);
+  const base = `${start.origin}${start.pathname}`;
+  let size = Number(start.searchParams.get("per_page")) || 100;
+
+  const declared = new Map<string, string>();
+  let announced = Number.NaN;
+  for (let page = 1; page <= 1000; page += 1) {
+    const res = await fetch(`${base}?per_page=${size}&page=${page}`, {
+      signal: AbortSignal.timeout(90_000),
+    });
+    if ([403, 429, 454, 455].includes(res.status)) {
+      console.log(`${sourceId} | INCONCLUSIVE: the listing answered ${res.status}, so the declared set is partial`);
+      process.exit(1);
+    }
+    const total = Number(res.headers.get("x-wp-total"));
+    if (page === 1 && Number.isFinite(total)) announced = total;
+    const body = (await res.json().catch(() => null)) as Array<{ link?: string }> | null;
+    if (!Array.isArray(body) || body.length === 0) break;
+    if (page === 1 && body.length < size) size = body.length;
+    let added = 0;
+    for (const post of body) {
+      const link = String(post?.link ?? "");
+      if (link === "" || declared.has(key(link))) continue;
+      declared.set(key(link), link);
+      added += 1;
+    }
+    if (added === 0) break;
+    if (Number.isFinite(announced) && declared.size >= announced) break;
+  }
+  if (Number.isFinite(announced) && declared.size !== announced) {
+    console.log(`${sourceId} | INCONCLUSIVE: walked ${declared.size} posts but the listing announces ${announced}`);
+    process.exit(1);
+  }
+
+  const client = new MongoClient(mongoUri());
+  await client.connect();
+  const stored = await client
+    .db(dbName)
+    .collection("recipes_v2")
+    .find({ sourceId }, { projection: { canonicalUrl: 1, pageUrl: 1 } })
+    .toArray();
+  await client.close();
+  const storedKeys = new Set<string>();
+  for (const doc of stored) {
+    if (doc.canonicalUrl) storedKeys.add(key(String(doc.canonicalUrl)));
+    if (doc.pageUrl) storedKeys.add(key(String(doc.pageUrl)));
+  }
+
+  const missing = [...declared.entries()].filter(([k]) => !storedKeys.has(k));
+  const reasons: Record<string, number> = {};
+  const unexplained: string[] = [];
+  for (const [, link] of missing) {
+    let html = "";
+    try {
+      const res = await fetch(link, { signal: AbortSignal.timeout(90_000) });
+      if (!res.ok) {
+        reasons[`page answers ${res.status}`] = (reasons[`page answers ${res.status}`] ?? 0) + 1;
+        continue;
+      }
+      html = await res.text();
+    } catch {
+      reasons["page could not be fetched"] = (reasons["page could not be fetched"] ?? 0) + 1;
+      continue;
+    }
+    const extraction = extractCompleteJsonLdRecipes(html);
+    if (extraction.recipes.length > 0) {
+      unexplained.push(link);
+    } else if (extraction.incompleteJsonLdCount > 0) {
+      reasons["recipe json-ld missing a name, ingredients or instructions"] =
+        (reasons["recipe json-ld missing a name, ingredients or instructions"] ?? 0) + 1;
+    } else if (extraction.malformedJsonLdCount > 0) {
+      reasons["recipe json-ld does not parse"] = (reasons["recipe json-ld does not parse"] ?? 0) + 1;
+    } else {
+      reasons["post carries no recipe"] = (reasons["post carries no recipe"] ?? 0) + 1;
+    }
+  }
+
+  const parts = Object.entries(reasons).map(([why, n]) => `${n} ${why}`);
+  if (unexplained.length > 0) parts.push(`${unexplained.length} unexplained`);
+  const verdict = unexplained.length === 0 ? "ALL SHORTFALL EXPLAINED" : "UNEXPLAINED SHORTFALL";
+  console.log(
+    `${sourceId} | ${verdict} | declared=${declared.size} stored=${stored.length} ` +
+      `missing=${missing.length}${parts.length ? ` (${parts.join(", ")})` : ""}`,
+  );
+  for (const link of unexplained.slice(0, 5)) console.log(`  unexplained: ${link}`);
+  process.exit(unexplained.length === 0 ? 0 : 1);
+}
+
+main().catch((error) => {
+  console.error(String(error));
+  process.exit(1);
+});
