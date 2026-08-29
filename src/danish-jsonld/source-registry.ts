@@ -26632,10 +26632,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1237 recipes from 1361 posts; 19 failed requests keeps it short of a canary",
   },
   stegeso: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-19T15-11-54.184Z-attempt-127d9565-aea8-400d-ba09-bad52f84535e",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 1 recipes from 26 posts; 50 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 26 records with every material field matching, and two uncapped runs reproduced all 26 keys with identical content. The only differences are the intentional ones: tags == keywords + cuisines; 20 records keep a fuller yield than legacy leading-integer. Its records were being dropped by the completeness contract over a blank JSON-LD name the site publishes intermittently: V2 held 1 of the 26 recipes the API declares. The name is now taken from the page's own heading, which is what the legacy run recorded.",
   },
   rachlmansfield: {
     migrationState: "configured",
@@ -28231,10 +28232,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 219 recipes from 219 API records with complete discovery and no blocked, failed or rejected record",
   },
   easysavory: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-49-04.443Z-attempt-b0d0b5aa-a92f-4266-84d8-e04e18306c4d",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 200 recipes from 200 API records; 1 failed request and discovery that did not complete keeps it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 642 records with every material field matching, and two uncapped runs reproduced all 642 keys with identical content. The only differences are the intentional ones: tags == keywords + cuisines; 560 records keep WPRM named-step prefixes legacy drops. Its listing was being truncated at 200 of the 642 recipes the API declares: page three is 1.9 MB of JSON carrying HTML fragments, and the HTTP-200 block-shell check cheerio-loaded it into a tree deep enough to overflow the stack, failing that page through every retry. Large and JSON-shaped bodies are no longer parsed looking for a challenge shell.",
   },
   eatingbirdfood: {
     migrationState: "shadow_passed",
