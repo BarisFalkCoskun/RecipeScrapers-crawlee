@@ -720,7 +720,7 @@ describe("Danish JSON-LD source registry", () => {
     // that half had been produced by a check that walks wprm_recipe - a listing
     // none of them publishes - so shadowParity was cleared until the check they
     // can actually answer re-established it.
-    for (const id of ["butternutbakeryblog", "brownedbutterblondie", "choosingchia"]) {
+    for (const id of ["butternutbakeryblog", "brownedbutterblondie"]) {
       const source = byId.get(id);
       expect(source?.migrationState).toBe("configured");
       expect(source?.latestScrapyOutcome).toBe("failed");
@@ -737,6 +737,12 @@ describe("Danish JSON-LD source registry", () => {
     expect(byId.get("tasteandsee")?.shadowParity).toBe("legacy-unhealthy");
     expect(byId.get("tasteandsee")?.deferOrBlockReason)
       .toMatch(/all 47 of the difference are posts that carry no recipe/u);
+    // choosingchia resolved the same way on 2026-08-29: 825 posts declared, 734
+    // stored, and all 91 of the difference carrying no recipe.
+    expect(byId.get("choosingchia")?.migrationState).toBe("shadow_passed");
+    expect(byId.get("choosingchia")?.shadowParity).toBe("legacy-unhealthy");
+    expect(byId.get("choosingchia")?.deferOrBlockReason)
+      .toMatch(/all 91 of the difference are posts that carry no recipe/u);
     expect(byId.get("tasteandsee")?.deferOrBlockReason).toMatch(/HTTP 403/u);
   });
 

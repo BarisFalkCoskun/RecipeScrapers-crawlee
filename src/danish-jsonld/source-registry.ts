@@ -26921,10 +26921,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 6-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 6 recipes with every material field matching; every taxonomy value matches as published",
   },
   choosingchia: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestScrapyOutcome: "failed",
-    latestCanary: "2026-08-20T23-00-00.000Z",    deferOrBlockReason:
-      "The legacy spider cannot produce a sound comparison for this source: it emitted a strict subset of Crawlee's 730 recipes with no material field differing, because the site blocks it. Measured on a run with nothing else competing for the address, 320 of its 821 detail requests answered HTTP 403 and json_ld_missing_no_script_count is exactly 320, so the spider records every blocked page as one without a recipe. Parity rests on the documented legacy-unhealthy route instead - two uncapped runs emitted identical 730-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete WITHDRAWN 2026-08-28: the discovery-completeness half of this evidence was produced by explain-rejections.cjs at a time when it read a declared record's id from recipe.id alone while the walk that built the declared set fell back to post.id. This source stores no rawRecipe.id, so both sides collapsed to the string 'undefined', every declared record matched itself and the check reported missing=0 without examining anything. The tool now refuses to answer in that case. Nothing here is known to be wrong - the field-level comparison stands - but the completeness claim that substitutes for a legacy baseline was never actually made, so the source returns to configured until a URL-keyed check re-establishes it.",
+    latestCanary: "2026-08-20T23-00-00.000Z",    shadowParity: "legacy-unhealthy",
+    deferOrBlockReason:
+      "Shadow comparison passed: legacy-unhealthy; the legacy run emits a strict subset of what V2 holds, differing on no material field of any record it does produce. Discovery completeness rests on the posts listing this source actually publishes: it declares 825 posts, V2 stores 734, and all 91 of the difference are posts that carry no recipe at all, each one fetched and put through the crawler's own extractor. Two uncapped runs reproduced all 734 keys with identical content. Withdrawn on 2026-08-28 and restored on 2026-08-29: the completeness half had been produced by explain-rejections.cjs, which walks wprm_recipe and keys on a WPRM record id - this source publishes neither, so that check was answering a question that did not apply to it.",
   },
   thecakeblog: {
     migrationState: "shadow_passed",
