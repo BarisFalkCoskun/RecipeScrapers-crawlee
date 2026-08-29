@@ -156,15 +156,23 @@ async function fetchJson(url) {
     // markup is stripped. Counting the array said "1 instruction", none of the
     // reasons matched, and two records the extractor had rejected for cause were
     // reported as unexplained rejections.
+    // A WPRM entry of type "group" is a section heading, not a step or an
+    // ingredient. foodiewithfamily has a recipe whose only instructions_flat
+    // entry is a group whose name holds the entire method - 317 characters, with
+    // text empty. The extractor rejects it because the recipe has no steps at
+    // all; counting the heading as one made the record look complete and it was
+    // reported as an unexplained rejection.
     const usable = (entries, ...fields) =>
-      (Array.isArray(entries) ? entries : []).filter((entry) =>
-        fields.some((field) =>
-          String((entry && entry[field]) || "")
-            .replace(/<[^>]*>/gu, "")
-            .replace(/&nbsp;|\u00a0/gu, " ")
-            .trim() !== "",
-        ),
-      ).length;
+      (Array.isArray(entries) ? entries : [])
+        .filter((entry) => String((entry && entry.type) || "") !== "group")
+        .filter((entry) =>
+          fields.some((field) =>
+            String((entry && entry[field]) || "")
+              .replace(/<[^>]*>/gu, "")
+              .replace(/&nbsp;|\u00a0/gu, " ")
+              .trim() !== "",
+          ),
+        ).length;
     const name = String(recipe.name || "").trim();
     const ingredients = usable(recipe.ingredients_flat, "name", "original");
     const instructions = usable(recipe.instructions_flat, "text", "name");
