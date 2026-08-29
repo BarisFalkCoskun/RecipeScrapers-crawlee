@@ -26611,10 +26611,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run processed all 388 posts with complete discovery and no blocked or failed request, and none carried Recipe JSON-LD, so there is nothing for a strict JSON-LD crawl to extract",
   },
   joyfulhealthyeats: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-19T21-40-46.724Z-attempt-3f1f02c8-a8d5-4357-a76b-9ef980cb67d2",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 1078 recipes from 1191 posts; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window produced 1082 and 1079 records with every material field matching, and two uncapped runs reproduced all 1079 keys with identical content. The only differences are the intentional ones: 1072 records keep a cuisine legacy has no field for; 2 keep a fuller yield than legacy's leading integer; 26 negative upstream durations V2 rejects and legacy keeps; and 3 records legacy accepts without a name, ingredients or instructions.",
   },
   lavenderandlovage: {
     migrationState: "configured",
@@ -26754,10 +26755,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: legacy-unhealthy; the legacy spider is blocked page by page rather than at the listing, answering 403 on 90 of its 203 fetches, so it produced 109 records while still reporting finish_reason 'finished'. Every record it did produce is present in V2 with no material field differing. Discovery completeness rests on the posts listing: it declares 1102 posts, V2 stores 923, and all 179 of the difference are accounted for - 174 posts that carry no recipe, 4 listing links that redirect to a page already stored, and 1 page that no longer answers. Two uncapped runs reproduced all 923 keys with identical content.",
   },
   shelikesfood: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-19T20-59-30.448Z-attempt-8f712af5-ee34-4ddc-9a62-36fbccc9de9e",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 935 recipes from 1090 posts; 23 failed requests and 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window produced 936 and 935 records with every material field matching, and two uncapped runs reproduced all 935 keys with identical content. The only differences are the intentional ones: 655 records keep a cuisine legacy has no field for; 15 negative upstream durations V2 rejects and legacy keeps; and 1 record legacy accepts without a name, ingredients or instructions.",
   },
   kalynskitchen: {
     migrationState: "shadow_passed",
@@ -27117,10 +27119,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 865 keys with identical content. Every one of the 26 shortfall records is an upstream defect the completeness contract rejects (1 no title, 24 no ingredients, 1 no instructions), so there is no unexplained rejection",
   },
   alphafoodie: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-23-00.647Z-attempt-dc395e3e-e1c7-4abd-a0d7-01670871e7bf",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 1207 recipes from 1214 API records; 7 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window produced 1224 and 1219 records, and two uncapped runs reproduced all 1219 keys with identical content. Every difference is accounted for. The 7 records only legacy holds are ones it accepts without a name, ingredients, instructions or a link, which the completeness contract rejects. V2's side was checked against the live listing: 1218 of its 1219 are still listed and 1 was withdrawn after the crawl. The one ingredient list that differs is one where V2 is the fuller of the two - its shrimp cocktail keeps a sliced half lemon that legacy drops.",
   },
   altonbrown: {
     migrationState: "shadow_passed",
@@ -32039,10 +32042,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 58 recipes from 58 API records with complete discovery and no blocked, failed or rejected record",
   },
   wholesomeyum: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-28-13.525Z-attempt-ea05f4ee-fd25-44a0-832c-50f185ababcc",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 800 recipes from 800 API records; 1 blocked request and discovery that did not complete keeps it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 1203 records with every material field matching, and two uncapped runs reproduced all 1203 keys with identical content. The only differences are the intentional ones: tags == keywords + cuisines; 77 records keep WPRM named-step prefixes legacy drops; 77 keep a space at a block boundary legacy fuses over; and 1 drops a space legacy inserts where it strips inline markup. An earlier crawl held 800 of these records because the ninth listing page answered 403 at the default pace - the crawler being rate limited, not a discovery defect - so this source runs at delaySeconds 5 and concurrency 1.",
   },
   willcookforsmiles: {
     migrationState: "shadow_passed",
