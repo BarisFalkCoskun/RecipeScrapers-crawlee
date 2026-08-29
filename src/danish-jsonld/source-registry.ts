@@ -26574,10 +26574,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: legacy-unhealthy; the domain now redirects to athomebyheather.com, which the legacy spider's allowed_domains does not list, so every response is filtered off-domain and it emits nothing. Discovery completeness rests on the posts listing this source actually publishes: it declares 279 posts, V2 stores 246, and 31 of the difference are posts that carry no recipe at all and 2 are listing links that redirect to pages already stored, each one fetched and put through the crawler's own extractor. Two uncapped runs reproduced all 246 keys with identical content. Withdrawn on 2026-08-28 and restored on 2026-08-29: the completeness half had been produced by explain-rejections.cjs, which walks wprm_recipe and keys on a WPRM record id - this source publishes neither, so that check was answering a question that did not apply to it.",
   },
   lowcarbdelish: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-20T06-41-01.873Z-attempt-bb9aaa3a-35a1-47e6-b58f-4a847fc3772d",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 119 recipes from 135 candidates; 3 blocked requests keeps it short of a canary",
+      "Shadow comparison passed: legacy-unhealthy; the site has moved to wellportionedplate.com and its listing answers 301 there. The legacy spider's allowed_domains lists only lowcarbdelish.com, so it filters the redirect target off-domain, produces no records at all and still reports finish_reason 'finished' - there is no baseline to compare. Discovery completeness rests on the posts listing instead: it declares 135 posts, V2 stores 122, and all 13 of the difference are posts that carry no recipe at all, each one fetched and put through the crawler's own extractor. Two uncapped runs reproduced all 122 keys with identical content.",
   },
   therealfoodrds: {
     migrationState: "shadow_passed",
@@ -26743,10 +26744,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 662 recipes from 1036 posts; 1 record the source publishes incomplete or malformed keeps it short of a canary",
   },
   goodlifeeats: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-19T21-26-49.446Z-attempt-5be79d7f-5baa-43de-8af4-68e332010d26",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 927 recipes from 1102 posts; 1 failed request keeps it short of a canary",
+      "Shadow comparison passed: legacy-unhealthy; the legacy spider is blocked page by page rather than at the listing, answering 403 on 90 of its 203 fetches, so it produced 109 records while still reporting finish_reason 'finished'. Every record it did produce is present in V2 with no material field differing. Discovery completeness rests on the posts listing: it declares 1102 posts, V2 stores 923, and all 179 of the difference are accounted for - 174 posts that carry no recipe, 4 listing links that redirect to a page already stored, and 1 page that no longer answers. Two uncapped runs reproduced all 923 keys with identical content.",
   },
   shelikesfood: {
     migrationState: "configured",
@@ -28407,10 +28409,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: legacy-unhealthy; page two of the API answered 403, so the legacy spider stopped after 100 recipes yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 762 records the live listing declares, on all 100 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 759 keys with identical content, and on a reviewed sample of 25 stored records. The 3 records V2 does not store are upstream defects the completeness contract rejects (3 no title).",
   },
   evolvingtable: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-51-00.014Z-attempt-4862dd41-0f8b-4a68-8bd0-275c7ac00ee8",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 853 recipes from 922 API records; 69 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Shadow comparison passed: legacy-unhealthy; page three of the API answered 403, so the legacy spider stopped after 200 recipes yet still reported finish_reason 'finished'. Every record it did produce is present in V2 with no material field differing. Discovery reaches all 923 records the live listing declares; the 67 V2 does not store are upstream defects the completeness contract rejects (2 no ingredients, 1 no instructions, 64 no canonical link). Two uncapped runs reproduced all 856 keys with identical content.",
   },
   fabfood4all: {
     migrationState: "shadow_passed",
@@ -29090,10 +29093,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 612 records with every material field matching, and two uncapped runs reproduced all 612 keys with identical content. An earlier comparison read this source as having field differences; it was reading a stored crawl against a legacy run from days later, so the site's own edits showed up as implementation differences. The only differences are the intentional ones: 533 records keep WPRM named-step prefixes legacy drops; 2 records drop a space legacy inserts where it strips inline markup.",
   },
   ihearteating: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-18-34.056Z-attempt-e3458cf3-6ac6-490b-a656-19aba88f53ee",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 1013 recipes from 1016 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Shadow comparison passed: legacy-unhealthy; page four of the API answered 403, so the legacy spider stopped after 300 recipes yet still reported finish_reason 'finished'. Every record it did produce is present in V2 with no material field differing. Discovery reaches all 1018 records the live listing declares; the 3 V2 does not store are upstream defects the completeness contract rejects (1 no ingredients, 2 no canonical link). Two uncapped runs reproduced all 1015 keys with identical content.",
   },
   iheartnaptime: {
     migrationState: "shadow_passed",
