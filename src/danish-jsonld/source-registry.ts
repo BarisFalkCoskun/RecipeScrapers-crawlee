@@ -26666,10 +26666,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1646 recipes from 1917 posts; 6 records the source publishes incomplete or malformed keeps it short of a canary",
   },
   aggieskitchen: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-19T23-50-16.550Z-attempt-27b6c415-e4b9-4501-b4e4-d04d55085a2a",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 215 recipes from 892 posts; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Shadow comparison passed: legacy-unhealthy; the source answers HTTP 200 with a zero-byte body for any per_page of 50 or more - 25 and below return normally - and the legacy WpPostsJsonLdSpider requests per_page=100 (base.py:1440), so it reads nothing at all and reports finish_reason 'finished' with no block recorded. There is no baseline to compare. V2 asks for per_page=20 and gets served. Discovery completeness rests on the posts listing: it declares 892 posts, V2 stores 215, and all 677 of the difference are accounted for - 675 posts that carry no recipe and 2 whose recipe JSON-LD is missing a name, ingredients or instructions - each one fetched and put through the crawler's own extractor. Two uncapped runs reproduced all 215 keys with identical content.",
   },
   grownupdish: {
     migrationState: "configured",
@@ -28904,10 +28905,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 245 recipes from 245 API records with complete discovery and no blocked, failed or rejected record",
   },
   healthydelicious: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-13-20.052Z-attempt-0001ebeb-382b-4dd6-9ff4-9cce7b0b2806",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 686 recipes from 704 API records; 18 records the source publishes incomplete or malformed keeps it short of a canary; the shortfall cannot be checked against the listing because the listing caps its page size at ten and repeats those ten for every page, so its 694 records cannot be walked",
+      "Shadow comparison passed: legacy-unhealthy; the site has moved to healthy-delicious.com and its listing answers 301 there. The legacy spider's allowed_domains lists only healthydelicious.com, so it filters the redirect target off-domain, produces no records at all and still reports finish_reason 'finished' - there is no baseline to compare. Discovery reaches all 694 records the live listing declares once the start URL points at the domain the site moved to; the old host's redirect drops the query string, so every paged request lands back on page one. The 18 records V2 does not store are upstream defects the completeness contract rejects (1 no title, 15 no ingredients, 2 no instructions - the last two publishing a single instruction whose entire text is a <br/>). Two uncapped runs reproduced all 676 keys with identical content.",
   },
   healthyfitnessmeals: {
     migrationState: "shadow_passed",
