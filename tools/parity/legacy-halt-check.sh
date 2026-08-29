@@ -36,7 +36,17 @@ CODES=$(grep -oE "'downloader/response_status_count/[0-9]+': [0-9]+" "$STATS" | 
 # being one to fifteen records short, every one of those records an upstream
 # defect the explainer already accounts for. So ask the explainer rather than
 # compare the counts.
-EXPLAIN=$(node tools/parity/explain-rejections.cjs "$SRC" "$DB" 2>&1)
+# Route to the completeness check this source's listing can answer.
+# explain-rejections.cjs walks wprm_recipe and keys on a WPRM record id; a
+# WordPress-posts source publishes neither, and running it against one compares
+# recipes to blog posts. That mismatch withdrew twelve promoted sources on
+# 2026-08-28 before it was found.
+LISTING=$(npx tsx --eval 'import{DANISH_JSONLD_SOURCES as S}from"./src/danish-jsonld/source-registry.ts";
+const s=S.find(x=>x.id===process.argv[1]);process.stdout.write(String(s&&s.startUrls&&s.startUrls[0]||""));' "$SRC" 2>/dev/null)
+case "$LISTING" in
+  *wprm_recipe*) EXPLAIN=$(node tools/parity/explain-rejections.cjs "$SRC" "$DB" 2>&1) ;;
+  *)             EXPLAIN=$(npx tsx tools/parity/explain-jsonld-rejections.ts "$SRC" "$DB" 2>&1) ;;
+esac
 EXPLAIN_OK=$?
 TOTAL=$(printf '%s' "$EXPLAIN" | grep -oE 'declared=[0-9]+' | grep -oE '[0-9]+')
 SHORTFALL=$(printf '%s' "$EXPLAIN" | grep -oE 'missing=[0-9]+[^|]*' | head -1)

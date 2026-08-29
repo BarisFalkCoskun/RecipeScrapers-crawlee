@@ -12678,7 +12678,7 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
     "discovery": "listing",
     "sitemapUrls": [],
     "startUrls": [
-      "https://www.healthydelicious.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+      "https://www.healthy-delicious.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
     ],
     "recipeUrlPatterns": [
       "^https?://"
