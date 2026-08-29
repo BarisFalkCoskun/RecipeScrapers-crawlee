@@ -116,6 +116,7 @@ async function main() {
   const unexplained: string[] = [];
   for (const [, link] of missing) {
     let html = "";
+    let finalUrl = link;
     try {
       const res = await fetch(link, {
         headers: BROWSER_HEADERS,
@@ -125,11 +126,27 @@ async function main() {
         reasons[`page answers ${res.status}`] = (reasons[`page answers ${res.status}`] ?? 0) + 1;
         continue;
       }
+      finalUrl = res.url || link;
       html = await res.text();
     } catch {
       reasons["page could not be fetched"] = (reasons["page could not be fetched"] ?? 0) + 1;
       continue;
     }
+    // A listing link can point at a post the site has since renamed: it answers
+    // 200 after a redirect, and the page names a different canonical - the one
+    // V2 stored. butternutbakeryblog lists peanut-butter-brownie-ice-cream-
+    // sandwiches, which lands on brownie-cookie-ice-cream-sandwiches. Comparing
+    // only the listing's own link reported those as recipes V2 had missed.
+    const canonicalMatch = html.match(
+      /<link\b[^>]*\brel\s*=\s*["']canonical["'][^>]*\bhref\s*=\s*["']([^"']+)["']/iu,
+    );
+    const alternatives = [finalUrl, canonicalMatch?.[1]].filter(Boolean) as string[];
+    if (alternatives.some((url) => storedKeys.has(key(url)))) {
+      reasons["listing link redirects to a page already stored"] =
+        (reasons["listing link redirects to a page already stored"] ?? 0) + 1;
+      continue;
+    }
+
     const extraction = extractCompleteJsonLdRecipes(html);
     if (extraction.recipes.length > 0) {
       unexplained.push(link);
