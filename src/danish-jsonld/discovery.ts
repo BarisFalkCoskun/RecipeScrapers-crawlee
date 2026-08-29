@@ -15,6 +15,7 @@ export interface DiscoveryResult {
 
 export type DiscoveryIncompleteReason =
   | "malformed-listing-payload"
+  | "truncated-listing-payload"
   | "unexpected-listing-shape"
   | "http-200-block-shell"
   | "script-gated-continuation"
@@ -105,9 +106,22 @@ export function discoverListingPage(input: {
     try {
       parsed = JSON.parse(unwrapBrowserJsonDocument(input.body));
     } catch {
-      increment(result.rejectedByReason, "malformed-listing-payload");
+      // A body that starts like JSON but does not end like it was cut off in
+      // transit, and that is this crawler's problem rather than the source's.
+      // allergylicious returned nothing under two concurrent crawls on a host
+      // low on memory and stored 324 records with complete discovery when run
+      // on its own; the run had recorded it as a malformed listing either way.
+      // Say which it was, so a shortfall is not written off as an upstream fault.
+      const trimmed = input.body.trim();
+      // Only a substantial body can have been cut off in transit; a short one
+      // that does not parse is simply malformed, whatever bracket it opens with.
+      const truncated = trimmed.length > 64_000
+        && /^[[{]/u.test(trimmed)
+        && !/[\]}]$/u.test(trimmed);
+      const reason = truncated ? "truncated-listing-payload" : "malformed-listing-payload";
+      increment(result.rejectedByReason, reason);
       result.complete = false;
-      result.incompleteReasons.push("malformed-listing-payload");
+      result.incompleteReasons.push(reason);
       return result;
     }
     if (payload) {

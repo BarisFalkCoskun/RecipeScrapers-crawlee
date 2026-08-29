@@ -163,6 +163,7 @@ export type SourceOutcomeReason =
   | "max-pages-cap-reached"
   | "discovery-incomplete"
   | "malformed-listing-payload"
+  | "truncated-listing-payload"
   | "unexpected-listing-shape"
   | "http-200-block-shell"
   | "script-gated-continuation"

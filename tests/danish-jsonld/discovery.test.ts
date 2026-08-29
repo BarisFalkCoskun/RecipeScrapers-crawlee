@@ -559,6 +559,40 @@ describe("Danish JSON-LD discovery", () => {
     expect(result.rejectedByReason).toMatchObject({ "sitemap-skip": 1 });
   });
 
+  it("calls a large half-arrived listing truncated rather than malformed", () => {
+    // allergylicious stored nothing under two concurrent crawls on a host low on
+    // memory and stored 324 records with complete discovery on its own. Either
+    // way the run recorded "malformed-listing-payload", which reads as the
+    // source publishing a broken listing when the body was cut off in transit.
+    const ferrero = DANISH_JSONLD_SOURCES.find((entry) => entry.id === "ferrerorocher")!;
+    const halfArrived = `[{"id":1,"content":"${"x".repeat(70_000)}"},{"id":2,"cont`;
+
+    const result = discoverListingPage({
+      source: ferrero,
+      pageUrl: ferrero.startUrls[0],
+      body: halfArrived,
+      contentType: "application/json",
+    });
+
+    expect(result).toMatchObject({
+      complete: false,
+      incompleteReasons: ["truncated-listing-payload"],
+    });
+  });
+
+  it("still calls a short unparseable body malformed", () => {
+    const ferrero = DANISH_JSONLD_SOURCES.find((entry) => entry.id === "ferrerorocher")!;
+
+    const result = discoverListingPage({
+      source: ferrero,
+      pageUrl: ferrero.startUrls[0],
+      body: "{not-json",
+      contentType: "application/json",
+    });
+
+    expect(result.incompleteReasons).toEqual(["malformed-listing-payload"]);
+  });
+
   it("fails closed for malformed and unexpected typed JSON listing payloads", () => {
     const ferrero = DANISH_JSONLD_SOURCES.find(
       (entry) => entry.id === "ferrerorocher"
