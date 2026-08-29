@@ -26629,10 +26629,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1160 recipes from 1590 posts; discovery that did not complete keeps it short of a canary",
   },
   gimmesomeoven: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-19T20-04-01.468Z-attempt-3dfc888d-4547-4938-b601-75a753c7bbdc",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 1237 recipes from 1361 posts; 19 failed requests keeps it short of a canary",
+      "Shadow comparison passed: legacy-unhealthy; the legacy run's single request answered 403, so it produced no recipes at all and still reported finish_reason 'finished' - there is no baseline to compare. The spider's own wprm_api_blocked_count stayed at zero, which is why this needed the halt check to read the downloader's 403 alongside a run that produced nothing. Discovery completeness rests on the posts listing: it declares 1363 posts, V2 stores 1231, and all 133 of the difference are accounted for - 106 posts that carry no recipe, 9 listing links that redirect to a page already stored, and 18 pages that now answer 410 Gone. Two uncapped runs reproduced all 1231 keys with identical content; an earlier pair differed by a single newly published record, so this rests on the clean pair.",
   },
   stegeso: {
     migrationState: "shadow_passed",
@@ -29611,10 +29612,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 657-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 657 recipes with every material field matching",
   },
   lowcarbspark: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-32-09.071Z-attempt-7d7e2b5d-36b3-428d-b231-def7a875207b",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 722 recipes from 723 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 725 records with every material field matching, and two uncapped runs reproduced all 725 keys with identical content. The only differences are the intentional ones: tags == keywords + cuisines; 2 records keep WPRM named-step prefixes legacy drops; and 2 keep a space at a block boundary legacy fuses over.",
   },
   macheesmo: {
     migrationState: "shadow_passed",
@@ -31458,10 +31460,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   thenaturalnurturer: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-14-21.157Z-attempt-deb1fc64-62a5-4db0-a221-a6a459bf5c89",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 684 recipes from 685 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 685 records with every material field matching, and two uncapped runs reproduced all 685 keys with identical content. The only differences are the intentional ones: tags == keywords + cuisines; 121 records keep WPRM named-step prefixes legacy drops; 120 keep a space at a block boundary legacy fuses over; and 4 drop a space legacy inserts where it strips inline markup.",
   },
   thenovicechefblog: {
     migrationState: "shadow_passed",
