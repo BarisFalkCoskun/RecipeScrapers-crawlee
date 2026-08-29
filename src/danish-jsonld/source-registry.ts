@@ -28578,10 +28578,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 479 keys with identical content",
   },
   foodiewithfamily: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-58-59.065Z-attempt-f34fc0e4-b2fc-49b3-8e48-26ca120d99c3",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Uncapped run persisted 1100 recipes from 1110 API records; 10 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Shadow comparison passed: legacy-unhealthy; page five of the API answered 403, so the legacy spider stopped after 397 recipes yet still reported finish_reason 'finished'. Every record it did produce is present in V2 with no material field differing. Discovery reaches all 1110 records the live listing declares; the 10 V2 does not store are upstream defects the completeness contract rejects (6 no title, 2 no ingredients, 2 no instructions - one of those publishing its entire method inside a group heading, with no instruction step at all). Two uncapped runs reproduced all 1100 keys with identical content.",
   },
   foodmeanderings: {
     migrationState: "shadow_passed",
@@ -32660,6 +32661,11 @@ const LEGACY_REQUEST_SETTING_OVERRIDES: Record<
   // declares. Twelve pages fetched five seconds apart all answered 200, so the
   // block is the rate rather than the depth.
   godairyfree: { delaySeconds: 5, maxConcurrency: 1 },
+  // wholesomeyum answers 403 on the ninth listing page at the default pace, so
+  // the crawl stopped with 800 of the 1203 records its API declares while the
+  // legacy run - which paces itself differently - reached all of them. This is
+  // the crawler being rate-limited, not a discovery defect.
+  wholesomeyum: { delaySeconds: 5, maxConcurrency: 1 },
   spicytwist: { maxConcurrency: 1 },
   spisekunst: { maxConcurrency: 1 },
   surdejsentusiasten: { maxConcurrency: 1 },
