@@ -20,6 +20,18 @@ import { readFileSync } from "node:fs";
 import { DANISH_JSONLD_SOURCES } from "../../src/danish-jsonld/source-registry.js";
 import { extractCompleteJsonLdRecipes } from "../../src/danish-jsonld/recipe-document.js";
 
+// inspiredtaste answers 406 to a request with Node's default user agent and 200
+// to a browser one, on every page including the first. The crawler sends
+// browser-like headers, so a tool checking its work has to as well or it reports
+// the source unreachable when the crawl had no trouble at all.
+const BROWSER_HEADERS = {
+  "user-agent":
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
+  + "Chrome/125.0.0.0 Safari/537.36",
+  accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+  "accept-language": "en-US,en;q=0.9",
+};
+
 const [sourceId, dbName] = process.argv.slice(2);
 if (!sourceId || !dbName) {
   console.error("usage: explain-jsonld-rejections.ts <sourceId> <dbName>");
@@ -58,9 +70,10 @@ async function main() {
   let announced = Number.NaN;
   for (let page = 1; page <= 1000; page += 1) {
     const res = await fetch(`${base}?per_page=${size}&page=${page}`, {
+      headers: BROWSER_HEADERS,
       signal: AbortSignal.timeout(90_000),
     });
-    if ([403, 429, 454, 455].includes(res.status)) {
+    if ([403, 406, 429, 454, 455].includes(res.status)) {
       console.log(`${sourceId} | INCONCLUSIVE: the listing answered ${res.status}, so the declared set is partial`);
       process.exit(1);
     }
@@ -104,7 +117,10 @@ async function main() {
   for (const [, link] of missing) {
     let html = "";
     try {
-      const res = await fetch(link, { signal: AbortSignal.timeout(90_000) });
+      const res = await fetch(link, {
+        headers: BROWSER_HEADERS,
+        signal: AbortSignal.timeout(90_000),
+      });
       if (!res.ok) {
         reasons[`page answers ${res.status}`] = (reasons[`page answers ${res.status}`] ?? 0) + 1;
         continue;

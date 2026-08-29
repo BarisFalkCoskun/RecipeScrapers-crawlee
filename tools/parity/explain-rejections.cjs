@@ -27,8 +27,19 @@ const mongoUri = () =>
   fs.readFileSync(".env", "utf8").split("\n").find((l) => l.startsWith("MONGODB_URI"))
     .split("=").slice(1).join("=").trim().replace(/^"|"$/gu, "");
 
+// A source can answer 406 to Node's default user agent and 200 to a browser one
+// - inspiredtaste does, on every page. The crawler sends browser-like headers,
+// so a tool checking its work has to as well.
+const BROWSER_HEADERS = {
+  "user-agent":
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
+    + "Chrome/125.0.0.0 Safari/537.36",
+  accept: "application/json,text/html;q=0.9,*/*;q=0.8",
+  "accept-language": "en-US,en;q=0.9",
+};
+
 async function fetchJson(url) {
-  const res = await fetch(url, { signal: AbortSignal.timeout(90_000) });
+  const res = await fetch(url, { headers: BROWSER_HEADERS, signal: AbortSignal.timeout(90_000) });
   const total = Number(res.headers.get("x-wp-total"));
   if (!res.ok) return { status: res.status, body: null, total };
   return { status: res.status, body: await res.json().catch(() => null), total };
@@ -65,7 +76,7 @@ async function fetchJson(url) {
 
   for (let page = 1; page <= 1000; page += 1) {
     const { status, body, total } = await fetchJson(`${base}?per_page=${size}&page=${page}`);
-    if (status === 403 || status === 429 || status === 454 || status === 455) { blocked += 1; break; }
+    if (status === 403 || status === 406 || status === 429 || status === 454 || status === 455) { blocked += 1; break; }
     if (page === 1) {
       if (Number.isFinite(total)) announced = total;
       if (Array.isArray(body) && body.length > 0 && body.length < size) size = body.length;

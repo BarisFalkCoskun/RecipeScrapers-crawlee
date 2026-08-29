@@ -715,12 +715,13 @@ describe("Danish JSON-LD source registry", () => {
     // A legacy run that is being blocked, or pointed at an abandoned domain, is
     // not a sound comparison, so these cannot be promoted on parity. They carry
     // the alternative evidence instead and say why.
-    for (const id of ["butternutbakeryblog", "tasteandsee", "brownedbutterblondie", "choosingchia"]) {
+    // All four were withdrawn on 2026-08-28. The legacy-unhealthy route leans on
+    // discovery completeness in place of a legacy baseline, and for these four
+    // that half had been produced by a check that walks wprm_recipe - a listing
+    // none of them publishes - so shadowParity was cleared until the check they
+    // can actually answer re-established it.
+    for (const id of ["butternutbakeryblog", "brownedbutterblondie", "choosingchia"]) {
       const source = byId.get(id);
-      // All four were withdrawn on 2026-08-28. The legacy-unhealthy route leans
-      // on discovery completeness in place of a legacy baseline, and for these
-      // four that half was never actually checked, so shadowParity is cleared
-      // until a URL-keyed check re-establishes it.
       expect(source?.migrationState).toBe("configured");
       expect(source?.latestScrapyOutcome).toBe("failed");
       expect(source?.shadowParity).toBeUndefined();
@@ -729,6 +730,13 @@ describe("Danish JSON-LD source registry", () => {
     }
     expect(byId.get("brownedbutterblondie")?.deferOrBlockReason)
       .toMatch(/redirects to athomebyheather\.com/u);
+    // tasteandsee is the same case resolved: explain-jsonld-rejections.ts walked
+    // the posts listing it does publish and found all 47 of its shortfall to be
+    // posts carrying no recipe, so it went back to shadow_passed on 2026-08-29.
+    expect(byId.get("tasteandsee")?.migrationState).toBe("shadow_passed");
+    expect(byId.get("tasteandsee")?.shadowParity).toBe("legacy-unhealthy");
+    expect(byId.get("tasteandsee")?.deferOrBlockReason)
+      .toMatch(/all 47 of the difference are posts that carry no recipe/u);
     expect(byId.get("tasteandsee")?.deferOrBlockReason).toMatch(/HTTP 403/u);
   });
 
