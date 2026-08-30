@@ -34111,11 +34111,13 @@ const SITECORE_API_RECIPE_SOURCES: DanishJsonLdSource[] =
     requestSettings: { delaySeconds: 2, rateLimitPerMinute: null, maxConcurrency: 2, maxRetries: 3 },
     requireCompleteJsonLd: true,
     recipeExtractor: "nemlig-sitecore",
-    migrationState: "canary_passed",
+    // This family has one member, so setting the state here sets nemlig's alone.
+    migrationState: "shadow_passed",
     latestScrapyOutcome: "partial",
     latestCanary: "2026-08-19T18-36-18.085Z",
+    shadowParity: "legacy-unhealthy",
     deferOrBlockReason:
-      "Bounded 50-request live canary completed without request, extraction, storage, or domain failures, discovered 370 candidates, and persisted 25 recipes; those exact 25 live documents matched the legacy parser on every material field, while the stock legacy browser-profile middleware is now diverted into Queue-it and the full catalog remains unvalidated",
+      "Shadow comparison passed: legacy-unhealthy; the legacy run followed seven redirects, produced no records at all and still reported finish_reason 'finished' - one 200 and seven 302s - so there is no baseline to compare against. That was invisible until the capture pipeline began keeping the run's stats: the harness runs Scrapy at LOG_LEVEL=WARNING, which had been suppressing them. Acceptance rests on an uncapped run of 1523 recipes with discovery complete, no failed, blocked or rejected requests and no page cap reached; on two uncapped runs reproducing all 1523 keys with identical content; and on a reviewed sample of 25 stored records, every one carrying a title, ingredients, instructions and a canonical URL. This replaces a bounded 50-request probe that could never meet the uncapped bar it was being measured against, and which recorded that the stock legacy browser-profile middleware is diverted into Queue-it.",
   }));
 
 const LEGACY_BODY_HTML_RECIPE_SOURCES: DanishJsonLdSource[] =

@@ -1136,7 +1136,12 @@ describe("Danish JSON-LD source registry", () => {
         legacySpider: "NemligSpider",
         recipeExtractor: "nemlig-sitecore",
         disableHeaderGenerator: true,
-        migrationState: "canary_passed",
+        // Promoted on 2026-08-30. Its legacy run follows seven redirects and
+        // produces nothing while reporting finish_reason finished, which the
+        // harness could not show until the capture pipeline kept the stats; the
+        // uncapped run behind this replaces a bounded 50-request probe.
+        migrationState: "shadow_passed",
+        shadowParity: "legacy-unhealthy",
       });
     expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "kagerogsager"))
       .toMatchObject({
