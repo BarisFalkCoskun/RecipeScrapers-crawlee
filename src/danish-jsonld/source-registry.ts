@@ -32473,10 +32473,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 494-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 494 recipes with every material field matching; tags == keywords + cuisines; 494 records keep a fuller yield than legacy leading-integer",
   },
   rosekylling: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-17T01-49-02.475Z-attempt-208ba086-e26c-4e06-a98b-f0c499ad3203",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Awaiting a fresh uncapped run: the store holds no records at all for this source. Its canary rested on a run whose data did not survive the database deletion and restore, so the claim cannot be checked and nothing is here to compare or promote. The run it rested on is recorded as: Uncapped run persisted 472 recipes with complete discovery and no blocked or failed request; six pages carry Recipe JSON-LD without required fields and stay rejected.",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 472 records with every material field matching, and two uncapped runs reproduced all 472 keys with identical content. The only difference is the intentional one: tags == keywords + cuisines. This source's records had been lost in the database deletion and restore, so the crawl behind this comparison is a fresh uncapped run rather than the one its earlier canary rested on.",
   },
   /**
    * Cloudflare answers almost every recipe request with HTTP 403. The few that
