@@ -32601,7 +32601,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-15T23-25-27.820Z-attempt-6f1cdd5f-5e2d-4cee-b14c-c786765a0550",
     deferOrBlockReason:
-      "Awaiting a fresh uncapped run: the store holds no records at all for this source. Its canary rested on a run whose data did not survive the database deletion and restore, so the claim cannot be checked and nothing is here to compare or promote. The run it rested on is recorded as: Uncapped run persisted 836 recipes with complete discovery and no blocked, failed or rejected record, validating the literal-control-character JSON-LD repair.",
+      "Cannot be crawled from this host: kikkoman.dk answers every URL with a 30 KB 'Security Check' interstitial under HTTP 503, robots.txt and every sitemap path included, confirmed 2026-08-30 with browser headers. The source also has no startUrls at all while its discovery is sitemap-based, so a run makes no requests and reports one failure; that gap is real but fixing it would not help while the site turns this host away. Its canary rested on a run whose data did not survive the database deletion and restore, so the earlier claim cannot be rechecked either. Needs a request identity this project does not have.",
   },
   gamleopskrifter: {
     discovery: "sitemap",
