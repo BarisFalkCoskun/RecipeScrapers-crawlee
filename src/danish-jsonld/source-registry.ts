@@ -32695,8 +32695,11 @@ const LEGACY_REQUEST_SETTING_OVERRIDES: Record<
   // run - discovery complete, nothing failed - so the run cannot meet a canary
   // bar that requires zero blocked requests. Their legacy runs are no baseline
   // either: blenderopskrifter's took 25 responses of 429.
-  diabetesopskrifter: { delaySeconds: 5, maxConcurrency: 1 },
-  blenderopskrifter: { delaySeconds: 5, maxConcurrency: 1 },
+  // At 5 seconds the blocks roughly halved - 52 to 22 and 52 to 33 - so the
+  // pacing is the lever, but 5 was not far enough. These are small catalogs of
+  // about 200 records each, so the extra time costs little.
+  diabetesopskrifter: { delaySeconds: 10, maxConcurrency: 1 },
+  blenderopskrifter: { delaySeconds: 10, maxConcurrency: 1 },
   spicytwist: { maxConcurrency: 1 },
   spisekunst: { maxConcurrency: 1 },
   surdejsentusiasten: { maxConcurrency: 1 },
