@@ -26351,10 +26351,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 124 recipes with complete discovery; 6 malformed pages keep it short of a canary",
   },
   becel: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-14T22-52-15.704Z-attempt-5203ef6c-2a88-4012-a058-92a7cf67fdab",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 66 recipes with complete discovery; 2 incomplete pages and 74 malformed pages keep it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 66 records with every material field matching, and two uncapped runs reproduced all 66 keys with identical content. The only differences are the intentional ones: 11 records keep a cuisine legacy has no field for. This source's records had been lost in the database deletion and restore, so the crawl behind this comparison is a fresh uncapped run rather than the one its earlier canary rested on.",
   },
   blenderopskrifter: {
     migrationState: "configured",
@@ -26384,10 +26385,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 25 recipes with complete discovery; 1 failed request keep it short of a canary",
   },
   heinz: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-14T20-03-43.529Z-attempt-17ba5f17-b778-4122-948c-800bf1b07019",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 3 recipes with complete discovery; 2 failed requests keep it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 3 records with every material field matching, and two uncapped runs reproduced all 3 keys with identical content. The only differences are the intentional ones: tags == keywords + cuisines, and 2 records keep a fuller yield than legacy's leading integer. This source's records had been lost in the database deletion and restore, so the crawl behind this comparison is a fresh uncapped run rather than the one its earlier canary rested on.",
   },
   maduniverset: {
     migrationState: "configured",
@@ -26408,10 +26410,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 4048 recipes with complete discovery; 76 failed requests and 8 incomplete pages keep it short of a canary",
   },
   plantepusherne: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-14T22-16-18.944Z-attempt-3228faac-3030-41d5-adf7-975860999b7f",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 31 recipes but discovery did not complete; 3 blocked requests and 1 malformed page as well",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 58 records with every material field matching, and two uncapped runs reproduced all 58 keys with identical content. The only differences are the intentional ones: 2 records keep a cuisine legacy has no field for, and 3 keep a fuller yield than legacy's leading integer. This source's records had been lost in the database deletion and restore, so the crawl behind this comparison is a fresh uncapped run rather than the one its earlier canary rested on.",
   },
   skolemaelk: {
     migrationState: "configured",
