@@ -26492,10 +26492,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 4466 recipes with complete discovery; 1 failed request and 12 incomplete pages keep it short of a canary",
   },
   nordicfoodliving: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-16T20-42-51.101Z-attempt-c3ccd963-f866-4391-9591-38a47075f175",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 130 recipes with complete discovery; 25 blocked requests keep it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 144 records with every material field matching, and two uncapped runs reproduced all 144 keys with identical content. The only differences are the intentional ones: 140 records keep a cuisine legacy has no field for. This source's records had been lost in the database deletion and restore, so the crawl behind this comparison is a fresh uncapped run rather than the one its earlier canary rested on.",
   },
   olivemagazine: {
     migrationState: "configured",
@@ -26510,10 +26511,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 22 recipes but discovery stopped because the listing canonicals point at a domain the source does not allow",
   },
   spam: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-16T20-08-48.852Z-attempt-418f3456-c0eb-4462-b07e-228dde978b75",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 130 recipes with complete discovery; 25 failed requests and 2 malformed pages keep it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 140 records with every material field matching, and two uncapped runs reproduced all 140 keys with identical content. The only differences are the intentional ones: 140 records keep a cuisine legacy has no field for; 1 keeps a fuller yield than legacy's leading integer; and 1 declines a paragraph legacy stores as an image - the source states that recipe's image as a sentence of prose. This source's records had been lost in the database deletion and restore, so the crawl behind this comparison is a fresh uncapped run rather than the one its earlier canary rested on.",
   },
   sunset: {
     migrationState: "configured",
