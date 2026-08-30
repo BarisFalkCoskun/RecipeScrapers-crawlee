@@ -1052,12 +1052,21 @@ describe("legacy request-settings audit", () => {
       Object.entries(expectedSettings).filter(([sourceId]) => !wprmIds.has(sourceId))
     );
 
-    expect(Object.fromEntries(DANISH_JSONLD_SOURCES
-      .filter((source) =>
-        source.legacyFamily !== "WprmApiSpider" &&
-        !newlyRegisteredWpPostsIds.has(source.id) &&
-        !customDanishIds.has(source.id)
-      )
+    // A source may be paced slower than its legacy spider when the site blocks
+    // the crawler at legacy's pace - diabetesopskrifter and blenderopskrifter
+    // each answered 52 requests with a block during an otherwise clean uncapped
+    // run, and blenderopskrifter's own legacy run took 25 responses of 429. What
+    // this audit is really protecting is that V2 is never more aggressive than
+    // legacy, so slower is allowed and faster is not.
+    const deliberatelySlower = new Set(["diabetesopskrifter", "blenderopskrifter"]);
+    const audited = DANISH_JSONLD_SOURCES.filter((source) =>
+      source.legacyFamily !== "WprmApiSpider" &&
+      !newlyRegisteredWpPostsIds.has(source.id) &&
+      !customDanishIds.has(source.id)
+    );
+
+    expect(Object.fromEntries(audited
+      .filter((source) => !deliberatelySlower.has(source.id))
       .map((source) => [
       source.id,
       {
@@ -1065,6 +1074,16 @@ describe("legacy request-settings audit", () => {
         maxConcurrency: source.requestSettings.maxConcurrency,
         maxRetries: source.requestSettings.maxRetries,
       },
-    ]))).toEqual(expectedNonWprmSettings);
+    ]))).toEqual(Object.fromEntries(
+      Object.entries(expectedNonWprmSettings)
+        .filter(([sourceId]) => !deliberatelySlower.has(sourceId))
+    ));
+
+    for (const source of audited.filter((entry) => deliberatelySlower.has(entry.id))) {
+      const legacy = expectedNonWprmSettings[source.id as keyof typeof expectedNonWprmSettings];
+      expect(source.requestSettings.delaySeconds).toBeGreaterThan(legacy.delaySeconds);
+      expect(source.requestSettings.maxConcurrency).toBeLessThanOrEqual(legacy.maxConcurrency);
+      expect(source.requestSettings.maxRetries).toBe(legacy.maxRetries);
+    }
   });
 });

@@ -32690,6 +32690,12 @@ const LEGACY_REQUEST_SETTING_OVERRIDES: Record<
   // legacy run - which paces itself differently - reached all of them. This is
   // the crawler being rate-limited, not a discovery defect.
   wholesomeyum: { delaySeconds: 5, maxConcurrency: 1 },
+  // Both answered 52 requests with a block during an otherwise clean uncapped
+  // run - discovery complete, nothing failed - so the run cannot meet a canary
+  // bar that requires zero blocked requests. Their legacy runs are no baseline
+  // either: blenderopskrifter's took 25 responses of 429.
+  diabetesopskrifter: { delaySeconds: 5, maxConcurrency: 1 },
+  blenderopskrifter: { delaySeconds: 5, maxConcurrency: 1 },
   spicytwist: { maxConcurrency: 1 },
   spisekunst: { maxConcurrency: 1 },
   surdejsentusiasten: { maxConcurrency: 1 },
