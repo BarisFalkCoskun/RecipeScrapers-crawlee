@@ -26440,7 +26440,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-16T23-33-26.130Z-attempt-03bc4b65-0ded-4ba6-906b-cf69afd1dcca",
     deferOrBlockReason:
-      "Uncapped run persisted 410 recipes with complete discovery; 61 blocked requests and 5 failed requests keep it short of a canary",
+      "V2 holds 424 records against the legacy run's 471 and there is nothing V2 holds that legacy does not. The legacy run was healthy - finish_reason 'finished', 472 responses of 200 and 6 of 404 - so this is a real shortfall on V2's side, not a truncated baseline. Cause, confirmed 2026-08-30: the site is a Next.js application and some pages deliver their recipe JSON-LD inside a streaming payload rather than a script tag - <script>self.__next_f.push([1,\"{\\\"@context\\\":...\\\"@type\\\":\\\"Recipe\\\"...\"]) - with every quote escaped. extractCompleteJsonLdRecipes reads only <script type=\"application/ld+json\"> blocks, finds none on those pages, and stores nothing; /recipes/kaalkaos is one of the 47. Reading the escaped payload is a genuine extension to the extractor rather than a fix to a defect, so this source waits on that being done deliberately.",
   },
   sydhavnsbloggen: {
     migrationState: "shadow_passed",
