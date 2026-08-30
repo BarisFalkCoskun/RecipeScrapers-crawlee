@@ -790,15 +790,26 @@ describe("Danish JSON-LD source registry", () => {
       .toMatch(/WordPress critical-error page/u);
   });
 
-  it("requests koudahl's WPRM collection at a page size its server can build", () => {
+  it("requests a WPRM collection at a page size its server can build", () => {
     const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
 
-    // koudahl answers per_page=100 with HTTP 500 and an empty body, so the
-    // whole source discovered nothing; 50 is served reliably.
-    expect(byId.get("koudahl")?.startUrls[0]).toContain("per_page=50");
+    // Some servers cannot build the full page and answer 200 with an empty body
+    // rather than an error, so the source discovers nothing and the run reads as
+    // a malformed listing. Halving the page size is all any of them needs.
+    const reducedPageSize: Record<string, string> = {
+      // Answers per_page=100 with HTTP 500 and an empty body.
+      koudahl: "per_page=50",
+      // 200 with zero bytes at 100; 90715 bytes and fifty records at 50.
+      bakingamoment: "per_page=50",
+      // 200 with one byte at 100; 54891 bytes and fifty records at 50.
+      familyfreshmeals: "per_page=50",
+    };
+    for (const [id, expected] of Object.entries(reducedPageSize)) {
+      expect(byId.get(id)?.startUrls[0]).toContain(expected);
+    }
     // Every other WPRM source keeps the default page size.
     for (const source of DANISH_JSONLD_SOURCES) {
-      if (source.legacyFamily !== "WprmApiSpider" || source.id === "koudahl") continue;
+      if (source.legacyFamily !== "WprmApiSpider" || reducedPageSize[source.id]) continue;
       expect(source.startUrls[0]).toContain("per_page=100");
     }
   });

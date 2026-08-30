@@ -6736,7 +6736,7 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
     "discovery": "listing",
     "sitemapUrls": [],
     "startUrls": [
-      "https://www.bakingamoment.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+      "https://www.bakingamoment.com/wp-json/wp/v2/wprm_recipe?per_page=50&page=1"
     ],
     "recipeUrlPatterns": [
       "^https?://"
@@ -10854,7 +10854,7 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
     "discovery": "listing",
     "sitemapUrls": [],
     "startUrls": [
-      "https://www.familyfreshmeals.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+      "https://www.familyfreshmeals.com/wp-json/wp/v2/wprm_recipe?per_page=50&page=1"
     ],
     "recipeUrlPatterns": [
       "^https?://"
@@ -28443,7 +28443,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-21T10-51-35.026Z-attempt-152cc76d-79d7-4b84-b32b-cd4063f9c57e",
     deferOrBlockReason:
-      "The recipe API this source is configured against answers HTTP 200 with an empty body - zero bytes uncompressed, one byte compressed - so the run stores no recipes and records a malformed listing payload. Confirmed 2026-08-30 with browser headers. Nothing here is a crawler fault; the source needs a different route in.",
+      "The listing answers HTTP 200 with an empty body at per_page=100 and serves normally at 50 - 54891 bytes and fifty records - so the start URL now asks for 50. An earlier reason recorded on 2026-08-30 said the API served nothing and the source needed a different route in; that was read off the one page size the crawler happened to ask for, and is wrong.",
   },
   familystylefood: {
     migrationState: "shadow_passed",
