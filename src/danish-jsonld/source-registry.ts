@@ -33119,10 +33119,11 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
       "Two uncapped attempts had the discovery request time out after 30 seconds with no response, and the endpoint does not answer a plain request either, so the source is unreachable rather than misconfigured",
   },
   madensverden: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-20T06-34-58.364Z-attempt-9bbbfb08-9956-4f1d-9af9-bc86885b9f61",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 3877 recipes from 4095 candidates; 218 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Shadow comparison passed: an isolated legacy run produced 4077 records and a crawl gathered in the same window 3880, with no material field differing on any record they share. Both sides of the difference are accounted for individually. The 218 records only legacy holds are ones it accepts without a name, ingredients, instructions or a link, which the completeness contract rejects. V2's side was checked against the live listing: 3859 of its 3880 are still listed and 21 were withdrawn after the crawl. Two uncapped runs reproduce all 3880 keys, 3878 of them byte-identical; the site rewrote the descriptions of /lasagne and /kagecreme between the runs and sourceHash moved with them, so those two were read from pages that had changed rather than crawled differently.",
   },
   madentusiasten: {
     migrationState: "shadow_passed",
