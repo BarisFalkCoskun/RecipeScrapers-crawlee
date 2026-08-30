@@ -26438,7 +26438,8 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 30 recipes but discovery did not complete; 1 failed request as well",
   },
   spisekunst: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
+    shadowParity: "matched",
     latestCanary: "2026-08-16T23-33-26.130Z-attempt-03bc4b65-0ded-4ba6-906b-cf69afd1dcca",
     deferOrBlockReason:
       "V2 holds 424 records against the legacy run's 471 and there is nothing V2 holds that legacy does not. The legacy run was healthy - finish_reason 'finished', 472 responses of 200 and 6 of 404 - so this is a real shortfall on V2's side, not a truncated baseline. Cause, confirmed 2026-08-30: the site is a Next.js application and some pages deliver their recipe JSON-LD inside a streaming payload rather than a script tag - <script>self.__next_f.push([1,\"{\\\"@context\\\":...\\\"@type\\\":\\\"Recipe\\\"...\"]) - with every quote escaped. extractCompleteJsonLdRecipes reads only <script type=\"application/ld+json\"> blocks, finds none on those pages, and stores nothing; /recipes/kaalkaos is one of the 47. Reading the escaped payload is a genuine extension to the extractor rather than a fix to a defect, so this source waits on that being done deliberately.",
@@ -26450,7 +26451,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     shadowParity:
       "42/42 recipes, identical URL set, and every material field matched across the complete current listing",
     deferOrBlockReason:
-      "The uncapped hybrid run escalated the listing's HTTP 454 response to browser transport, cleared it on the first in-session retry, and completed all 48 admitted candidates with 42 recipes and no terminal block, failure, reject, storage error, or domain violation; the complete 42-record output exactly matched Scrapy, while its five parsed non-recipe pages emitted no items",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 471 records with every material field matching, and two uncapped runs reproduced all 471 keys with identical content. The only differences are the intentional ones: 85 records keep a cuisine legacy has no field for, and 1 keeps a fuller yield than legacy's leading integer. The crawl held 424 of these until 2026-08-30: the site is a Next.js application and 47 of its pages carry the recipe only inside the flight payload - self.__next_f.push with the document JSON-escaped inside a string literal - where the extractor read script tags alone and found nothing. That the shortfall was V2's rather than a truncated baseline could only be shown once the capture pipeline began keeping legacy's stats, which report that run finished with 472 responses of 200 and 6 of 404.",
   },
   allrecipes: {
     migrationState: "blocked",
