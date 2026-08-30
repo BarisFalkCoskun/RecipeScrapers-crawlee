@@ -26345,10 +26345,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 2091 recipes with complete discovery and no blocked or failed request; 48 pages publish Recipe JSON-LD with unescaped quotes in the description and 56 more are incomplete, which keeps it short of a canary",
   },
   aurion: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-18T09-20-45.164Z-attempt-085969f5-fd04-4a17-938a-b8855227448a",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 124 recipes with complete discovery; 6 malformed pages keep it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window produced 113 and 125 records, with no material field differing on any record they share and nothing legacy holds that V2 lacks, and two uncapped runs reproduced all 125 keys with identical content. The only differences are the intentional ones: the 12 records only V2 holds are pages the site publishes under a second category path. Each of those pages declares itself as its own canonical, so V2 is following the site's own statement rather than inventing a record; 21 of its 125 are duplicate content for that reason. This source's records had been lost in the database deletion and restore, so the crawl behind this comparison is a fresh uncapped run rather than the one its earlier canary rested on.",
   },
   becel: {
     migrationState: "shadow_passed",
@@ -26423,10 +26424,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the configured sitemap URL serves application/rss+xml rather than a sitemap and the site answered with HTTP 455, so discovery never completed",
   },
   slagterlampe: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-16T21-56-10.861Z-attempt-c785d1b8-9ac7-4ac5-abeb-3c306bbdfbc0",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 272 recipes but discovery did not complete; 22 blocked requests as well",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window produced 309 and 310 records with every material field matching, and two uncapped runs reproduced all 310 keys with identical content. The only differences are the intentional ones: 309 records keep a cuisine legacy has no field for. The crawl's 310 records carry 309 distinct keys: the site publishes one recipe at two URLs. This source's records had been lost in the database deletion and restore, so the crawl behind this comparison is a fresh uncapped run rather than the one its earlier canary rested on.",
   },
   spicytwist: {
     migrationState: "configured",
@@ -26566,10 +26568,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: 42 requests were blocked, so discovery could not complete",
   },
   allergylicious: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-19T15-14-26.506Z-attempt-e41f5546-983c-4a46-b9da-18d6f608bff7",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 0 recipes from 0 posts; discovery that did not complete keeps it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 324 records with every material field matching, and two uncapped runs reproduced all 324 keys with identical content. The only differences are the intentional ones: 181 records keep a cuisine legacy has no field for. This source's records had been lost in the database deletion and restore, so the crawl behind this comparison is a fresh uncapped run rather than the one its earlier canary rested on.",
   },
   brownedbutterblondie: {
     migrationState: "shadow_passed",
