@@ -32220,7 +32220,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-18T14-24-59.150Z-attempt-66da8895-574b-4e42-8b0f-fdc20c5d9888",
     deferOrBlockReason:
-      "Awaiting a fresh uncapped run: the store holds no records at all for this source. Its canary rested on a run whose data did not survive the database deletion and restore, so the claim cannot be checked and nothing is here to compare or promote. The run it rested on is recorded as: Uncapped run persisted 806 recipes with complete discovery and no blocked, failed or rejected record.",
+      "The field comparison is clean - an isolated legacy run and a crawl in the same window match on every material field, the only differences being the intentional ones - but discovery does not reproduce between runs, so the idempotency half cannot pass. Each uncapped run reports 806 candidates, 806 persisted, discoveryComplete true and no failed requests, yet successive runs return slightly different sets: the store holds 815 records contributed by three runs, 9 of them from earlier runs that the latest did not find again, and a repeat pair read 810 then 815. The five the second run added were published in 2021 and 2022, so they are not new material the first run could not have seen. Something in listing discovery is returning about 99% of the catalog on each pass rather than all of it while reporting itself complete. Not promotable until that is understood; observed 2026-08-30.",
   },
   odensemarcipan: {
     migrationState: "configured",
