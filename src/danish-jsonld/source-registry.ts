@@ -27827,10 +27827,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: legacy-unhealthy; page 6 of the API answered 403, so the legacy spider stopped after 500 recipes yet still reported finish_reason 'finished'. A truncated run is not a baseline, so acceptance rests on discovery matching the source's own inventory - the live listing contract reports x-wp-total 1206 and the uncapped run persisted 1206 - on all 500 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 1206 keys with identical content, and on a reviewed sample of 25 stored records",
   },
   cookingchew: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-41-07.568Z-attempt-8bf7562e-189f-4a46-9e08-d9402b7b1181",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 3329 recipes from 3385 API records; 56 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Shadow comparison passed: an isolated legacy run produced 3389 records and a crawl gathered in the same window 3345, with no material field differing on any record they share, and two uncapped runs reproduced all 3345 keys with identical content. Both sides of the difference are accounted for individually rather than by count. The 55 records only legacy holds are ones it accepts without a name, ingredients, instructions or a link, which the completeness contract rejects; the crawler's own extractor was run over each of them and named the fault (1 with no title, 40 with no ingredients and 15 with no instructions). V2's side was checked against the live listing: all 3345 are still listed.",
   },
   cookingclassy: {
     migrationState: "shadow_passed",
@@ -29443,10 +29444,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: legacy-unhealthy; page three of the API answered 403, so the legacy spider stopped after 199 recipes yet still reported finish_reason 'finished'. Every record it did produce is present in V2 with no material field differing. Discovery reaches all 808 records the live listing declares; the 15 V2 does not store are upstream defects the completeness contract rejects (1 no title, 8 no ingredients, 6 no instructions). Two uncapped runs reproduced all 793 keys with identical content.",
   },
   laurenslatest: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-26-10.541Z-attempt-5848c7ec-5ea6-4ea0-8158-9ac53f804f74",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 1457 recipes from 1507 API records; 50 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Shadow comparison passed: an isolated legacy run produced 1509 records and a crawl gathered in the same window 1462, with no material field differing on any record they share, and two uncapped runs reproduced all 1462 keys with identical content. Both sides of the difference are accounted for individually rather than by count. The 50 records only legacy holds are ones it accepts without a name, ingredients, instructions or a link, which the completeness contract rejects; the crawler's own extractor was run over each of them and named the fault (49 with no ingredients and 1 with no instructions). V2's side was checked against the live listing: 1459 of its 1462 are still listed and 3 were withdrawn after the crawl.",
   },
   layersofhappiness: {
     migrationState: "shadow_passed",
