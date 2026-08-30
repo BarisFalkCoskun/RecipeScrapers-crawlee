@@ -491,8 +491,16 @@ function instructionTexts(value: unknown): string[] {
   if (!value || typeof value !== "object") return [];
 
   const node = value as Record<string, unknown>;
-  if (Array.isArray(node["itemListElement"])) {
-    return node["itemListElement"].flatMap((item) =>
+  // A container that declares its own steps is answered by those steps, even
+  // when the list is empty. delmonte publishes
+  // {"@type":"HowTo","name":"How to Make Sides in 5: Margarita Carrots","step":[]}
+  // - a heading with no steps under it - and falling through to the name below
+  // turned that heading into the recipe's single instruction. The legacy parser
+  // reads no instructions there, and it is right: there are none.
+  const container = ["itemListElement", "step", "steps"]
+    .find((key) => Array.isArray(node[key]));
+  if (container) {
+    return (node[container] as unknown[]).flatMap((item) =>
       instructionTexts(
         item && typeof item === "object"
           ? ((item as Record<string, unknown>)["item"] ?? item)

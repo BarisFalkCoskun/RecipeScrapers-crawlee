@@ -981,4 +981,52 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
     expect(extraction.signals).not.toContain("json-ld-name-taken-from-page");
   });
 
+
+  it("reads no instructions from a HowTo heading whose step list is empty", () => {
+    // delmonte publishes {"@type":"HowTo","name":"How to Make Sides in 5:
+    // Margarita Carrots","step":[]} - a heading with nothing under it. Falling
+    // through to the name made that heading the recipe's single instruction,
+    // where the legacy parser reads none. There are none.
+    const html = `<html><head><script type="application/ld+json">${JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Recipe",
+      name: "Sides in 5: Margarita Carrots",
+      recipeIngredient: ["1 can sliced carrots"],
+      recipeInstructions: [
+        { "@type": "HowTo", name: "How to Make Sides in 5: Margarita Carrots", step: [] },
+      ],
+    })}</script></head><body></body></html>`;
+
+    const extraction = extractCompleteJsonLdRecipes(html);
+
+    // No instructions means the completeness contract rejects it, exactly as it
+    // would for a recipe that stated none at all.
+    expect(extraction.recipes).toHaveLength(0);
+    expect(extraction.incompleteJsonLdCount).toBe(1);
+  });
+
+  it("still reads the steps a HowTo does declare", () => {
+    const html = `<html><head><script type="application/ld+json">${JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Recipe",
+      name: "Margarita Carrots",
+      recipeIngredient: ["1 can sliced carrots"],
+      recipeInstructions: [
+        {
+          "@type": "HowTo",
+          name: "How to Make Margarita Carrots",
+          step: [
+            { "@type": "HowToStep", text: "Drain the carrots." },
+            { "@type": "HowToStep", text: "Warm them through." },
+          ],
+        },
+      ],
+    })}</script></head><body></body></html>`;
+
+    const [recipe] = extractCompleteJsonLdRecipes(html).recipes;
+
+    expect(recipe?.["recipeInstructions"]).toBeTruthy();
+    expect(extractCompleteJsonLdRecipes(html).recipes).toHaveLength(1);
+  });
+
 });
