@@ -50,10 +50,29 @@ while true; do
     if(!b||!a||!a.length){console.log("INCONCLUSIVE no records");process.exit(0)}
     const kb=b.map(r=>r.sourceRecipeKey).sort(), ka=a.map(r=>r.sourceRecipeKey).sort();
     const dup=new Set(ka).size!==ka.length;
-    const prev=new Map(b.map(r=>[r.sourceRecipeKey,JSON.stringify(r.normalized)]));
-    let same=0; for(const r of a) if(prev.get(r.sourceRecipeKey)===JSON.stringify(r.normalized)) same++;
-    const ok=JSON.stringify(kb)===JSON.stringify(ka)&&!dup&&same===a.length;
-    console.log(`${ok?"STABLE":"CHANGED"} ${b.length}->${a.length} identical=${same}/${a.length}${dup?" DUPLICATE-KEYS":""}`);
+    // The gate is on the crawler producing the same output for the same input,
+    // not on the site holding still. madensverden rewrote the descriptions of
+    // /lasagne and /kagecreme between two runs - different marketing copy, and
+    // sourceHash changed with it - so the pair could never come back clean while
+    // the site kept editing. A record whose sourceHash moved was read from a
+    // different page and is reported as an upstream edit; every record whose
+    // page did not change must still be byte-identical.
+    const prev=new Map(b.map(r=>[r.sourceRecipeKey,r]));
+    let same=0, edited=0;
+    for(const r of a){
+      const p=prev.get(r.sourceRecipeKey);
+      if(!p) continue;
+      if(JSON.stringify(p.normalized)===JSON.stringify(r.normalized)){ same++; continue; }
+      if(p.sourceHash && r.sourceHash && p.sourceHash!==r.sourceHash) edited++;
+    }
+    // Excusing an edited page must not excuse a site that rewrites everything on
+    // every fetch - rotating copy inside the recipe would then pass forever. A
+    // handful of edits across a catalog is a site being maintained; a twentieth
+    // of it changing between two runs minutes apart is not, and still reports
+    // CHANGED so someone looks.
+    const churn = a.length > 0 && edited / a.length > 0.05;
+    const ok=JSON.stringify(kb)===JSON.stringify(ka)&&!dup&&same+edited===a.length&&!churn;
+    console.log(`${ok?"STABLE":"CHANGED"} ${b.length}->${a.length} identical=${same}/${a.length}${edited?` upstream-edited=${edited}`:""}${churn?" EXCESSIVE-CHURN":""}${dup?" DUPLICATE-KEYS":""}`);
   ' "$before" "$after")
   rm -rf "$STORAGE_ROOT/st-$src"
   { flock 8; printf '%s | %s\n' "$src" "$verdict" >> "$RESULTS"; } 8>>"$RESULTS.lock"
