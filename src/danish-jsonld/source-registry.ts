@@ -28443,7 +28443,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-21T10-51-35.026Z-attempt-152cc76d-79d7-4b84-b32b-cd4063f9c57e",
     deferOrBlockReason:
-      "Uncapped run persisted 0 recipes from 1 API records; 1 record the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary",
+      "The recipe API this source is configured against answers HTTP 200 with an empty body - zero bytes uncompressed, one byte compressed - so the run stores no recipes and records a malformed listing payload. Confirmed 2026-08-30 with browser headers. Nothing here is a crawler fault; the source needs a different route in.",
   },
   familystylefood: {
     migrationState: "shadow_passed",
@@ -31794,7 +31794,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-21T12-21-41.647Z-attempt-6a7bd55a-59c8-47b0-bcab-4418d737da1b",
     deferOrBlockReason:
-      "Uncapped run persisted 0 recipes from 1 API records; 1 record the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary",
+      "The recipe API this source is configured against no longer serves it: https://toriavey.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1 answers HTTP 200 with the twelve-byte body 'Hello World!'. There is nothing to page through and nothing to parse, so the run stores no recipes and records a malformed listing payload. Confirmed 2026-08-30 with browser headers, both compressed and not. This needs a different route into the site, not a crawler fix.",
   },
   tornadoughalli: {
     migrationState: "shadow_passed",
