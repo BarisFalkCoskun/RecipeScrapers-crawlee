@@ -26399,10 +26399,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 9811 recipes with complete discovery; 2 failed requests and 42 incomplete pages keep it short of a canary",
   },
   micadeli: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-17T00-48-14.000Z-attempt-5abdda54-3e59-44aa-a0c0-1342ce7b42fa",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 409 recipes with complete discovery; 41 blocked requests and 64 incomplete pages keep it short of a canary",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window match on every material field, and two uncapped runs reproduced all 444 keys with identical content. The only differences are the intentional ones: 203 records keep a cuisine legacy has no field for, and 430 keep a fuller yield than legacy's leading integer. This source's records had been lost in the database deletion and restore, so the crawl behind this comparison is a fresh uncapped run rather than the one its earlier canary rested on.",
   },
   opskrifterdk: {
     migrationState: "configured",
