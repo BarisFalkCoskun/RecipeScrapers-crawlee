@@ -20,6 +20,7 @@ export interface CompleteJsonLdExtraction {
     | "malformed-json-ld"
     | "json-ld-control-character-repaired"
     | "json-ld-name-taken-from-page"
+    | "json-ld-from-streamed-payload"
   >;
 }
 
@@ -54,7 +55,11 @@ export interface BuildRecipeDocumentV2Input {
 export function extractCompleteJsonLdRecipes(
   html: string
 ): CompleteJsonLdExtraction {
-  const rawScripts = extractJsonLdScriptBodies(html);
+  const scriptBodies = extractJsonLdScriptBodies(html);
+  const streamed = scriptBodies.some((body) => /"@type"\s*:\s*"?Recipe/u.test(body))
+    ? []
+    : streamedJsonLdBodies(html);
+  const rawScripts = [...scriptBodies, ...streamed];
   const recipes: Record<string, unknown>[] = [];
   const rejectedReasons: CompleteJsonLdExtraction["rejectedReasons"] = [];
   let incompleteJsonLdCount = 0;
@@ -116,6 +121,7 @@ export function extractCompleteJsonLdRecipes(
     signals: Array.from(new Set([
       ...rejectedReasons,
       ...(nameFromPageCount > 0 ? ["json-ld-name-taken-from-page" as const] : []),
+      ...(streamed.length > 0 ? ["json-ld-from-streamed-payload" as const] : []),
       ...(repairedJsonLdCount > 0
         ? ["json-ld-control-character-repaired" as const]
         : []),
@@ -381,6 +387,56 @@ function createSourceRecipeKey({
     pageRecipeDiscriminator: upstreamId ? null : pageRecipeDiscriminator ?? null,
   });
   return `${sourceId}:${keyHash}`;
+}
+
+/**
+ * Recipe JSON-LD carried in a Next.js flight payload rather than a script tag.
+ *
+ * spisekunst serves some pages as <script>self.__next_f.push([1,"..."])</script>
+ * with the whole document JSON-escaped inside that string literal. Reading
+ * script tags alone found nothing there, and the source stored 424 of the 471
+ * records a healthy legacy run produced.
+ *
+ * Only consulted when the page's own script tags yield no recipe, so a page that
+ * states its recipe properly is read from that statement and a streamed copy of
+ * the same recipe cannot become a second record.
+ */
+function streamedJsonLdBodies(html: string): string[] {
+  const bodies: string[] = [];
+  const pushes = /self\.__next_f\.push\(\s*\[\s*\d+\s*,\s*("(?:[^"\\]|\\.)*")\s*\]\s*\)/gu;
+  for (const push of html.matchAll(pushes)) {
+    let text: string;
+    try {
+      text = JSON.parse(push[1] as string) as string;
+    } catch {
+      continue;
+    }
+    for (let at = text.indexOf('{"@context'); at !== -1; at = text.indexOf('{"@context', at + 1)) {
+      const body = balancedJsonObject(text, at);
+      if (body && /"@type"\s*:\s*"?Recipe/u.test(body)) bodies.push(body);
+    }
+  }
+  return bodies;
+}
+
+/** The complete JSON object starting at `from`, or null if it never closes. */
+function balancedJsonObject(text: string, from: number): string | null {
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  for (let at = from; at < text.length; at += 1) {
+    const character = text[at];
+    if (escaped) { escaped = false; continue; }
+    if (character === "\\") { escaped = true; continue; }
+    if (character === '"') { inString = !inString; continue; }
+    if (inString) continue;
+    if (character === "{") depth += 1;
+    else if (character === "}") {
+      depth -= 1;
+      if (depth === 0) return text.slice(from, at + 1);
+    }
+  }
+  return null;
 }
 
 function extractJsonLdScriptBodies(html: string): string[] {

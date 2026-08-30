@@ -1029,4 +1029,61 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
     expect(extractCompleteJsonLdRecipes(html).recipes).toHaveLength(1);
   });
 
+
+  it("reads recipe JSON-LD out of a Next.js streaming payload", () => {
+    // spisekunst is a Next.js application and some of its pages carry the recipe
+    // only inside the flight payload - <script>self.__next_f.push([1,"..."])</script>
+    // with the whole document JSON-escaped inside that string. Reading script
+    // tags alone found nothing on those pages, and the source stored 424 of the
+    // 471 records a healthy legacy run produced.
+    const recipe = {
+      "@context": "https://schema.org/",
+      "@type": "Recipe",
+      name: "Kålkaos",
+      recipeIngredient: ["500 gram hakket oksekød", "1 hoved spidskål"],
+      recipeInstructions: [{ "@type": "HowToStep", text: "Brun kødet." }],
+    };
+    // JSON.stringify twice is exactly how the payload nests it: once for the
+    // document, once for the string literal that carries it.
+    const payload = JSON.stringify(`0:${JSON.stringify(recipe)}\n`);
+    const html = `<html><body><script>self.__next_f.push([1,${payload}])</script></body></html>`;
+
+    const extraction = extractCompleteJsonLdRecipes(html);
+
+    expect(extraction.recipes).toHaveLength(1);
+    expect(extraction.recipes[0]?.["name"]).toBe("Kålkaos");
+    expect(extraction.signals).toContain("json-ld-from-streamed-payload");
+  });
+
+  it("prefers a real script tag and does not double-count the same recipe", () => {
+    // A page can carry both. The streamed copy must not add a second record.
+    const recipe = {
+      "@context": "https://schema.org/",
+      "@type": "Recipe",
+      name: "Kålkaos",
+      recipeIngredient: ["500 gram hakket oksekød"],
+      recipeInstructions: [{ "@type": "HowToStep", text: "Brun kødet." }],
+    };
+    const html = `<html><head>`
+      + `<script type="application/ld+json">${JSON.stringify(recipe)}</script>`
+      + `</head><body><script>self.__next_f.push([1,${JSON.stringify(JSON.stringify(recipe))}])</script>`
+      + `</body></html>`;
+
+    const extraction = extractCompleteJsonLdRecipes(html);
+
+    expect(extraction.recipes).toHaveLength(1);
+  });
+
+  it("ignores a streaming payload that carries no recipe", () => {
+    const html = `<html><body><script>self.__next_f.push([1,${JSON.stringify(
+      '1:HL["/_next/static/css/app.css","style"]\n'
+    )}])</script></body></html>`;
+
+    const extraction = extractCompleteJsonLdRecipes(html);
+
+    expect(extraction.recipes).toHaveLength(0);
+    expect(extraction.malformedJsonLdCount).toBe(0);
+    expect(extraction.incompleteJsonLdCount).toBe(0);
+  });
+
 });
