@@ -559,6 +559,30 @@ describe("Danish JSON-LD discovery", () => {
     expect(result.rejectedByReason).toMatchObject({ "sitemap-skip": 1 });
   });
 
+  it("recognises a proof-of-work challenge that carries no words", () => {
+    // pinoyrecipe answers the crawler with a 1994-byte document whose only
+    // content is the altcha script, while the same API returns JSON with 100
+    // records to a plain client. Matching on visible text cannot see it - the
+    // page has none - so the run recorded a malformed listing payload, which
+    // reads as our parsing fault rather than the source turning the crawler away.
+    const challenge = `<!DOCTYPE html><html><head>`
+      + `<meta name="viewport" content="width=device-width, initial-scale=1">`
+      + `</head><body><script src="https://cdn.jsdelivr.net/npm/altcha/dist/altcha.js" async defer>`
+      + `</script></body></html>`;
+
+    expect(looksLikeHttp200BlockShell(challenge)).toBe(true);
+  });
+
+  it("does not call an ordinary page a challenge for mentioning a script", () => {
+    const page = `<html><head><title>Opskrifter</title></head><body><main>`
+      + `<h1>Opskrifter</h1><p>altcha.js is a proof-of-work library.</p>`
+      + `<a href="/opskrifter/kage">Kage</a></main></body></html>`;
+
+    // The wording appears as prose rather than a script reference, and nothing
+    // here is an interstitial.
+    expect(looksLikeHttp200BlockShell(page)).toBe(false);
+  });
+
   it("calls a large half-arrived listing truncated rather than malformed", () => {
     // allergylicious stored nothing under two concurrent crawls on a host low on
     // memory and stored 324 records with complete discovery on its own. Either

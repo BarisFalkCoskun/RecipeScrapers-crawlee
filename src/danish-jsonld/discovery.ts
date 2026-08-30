@@ -514,6 +514,15 @@ export function looksLikeHttp200BlockShell(body: string): boolean {
   } catch {
     return false;
   }
+  // A proof-of-work challenge carries no words at all - pinoyrecipe serves a
+  // 1994-byte document whose only content is the altcha script, and the same API
+  // answers with JSON to a plain client. Matching on visible text cannot see it,
+  // so the run recorded a malformed listing payload and the shortfall read as
+  // our parsing fault rather than the source turning the crawler away. The
+  // script reference is the identifying mark, and it is only trusted on a
+  // document small enough to be an interstitial.
+  const challengeScript = /<script\b[^>]*\baltcha(?:\.min)?\.js\b|<altcha-widget\b/iu;
+  if (body.length < 16_000 && challengeScript.test(body)) return true;
   $("script, style, noscript, template").remove();
   const title = $("title").first().text().trim();
   const visibleBody = $("body").text().replace(/\s+/gu, " ").trim();
