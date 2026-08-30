@@ -1086,4 +1086,42 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
     expect(extraction.incompleteJsonLdCount).toBe(0);
   });
 
+
+  it("drops a step whose only value is the plural UI label", () => {
+    // odensemarcipan appends {"@type":"HowToStep","name":"Steps","text":" "} -
+    // blank text, so the name is used, and four recipes ended up with the single
+    // instruction "Steps". The guard already covered the singular; the label is
+    // not an instruction in either number.
+    const html = `<html><head><script type="application/ld+json">${JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Recipe",
+      name: "Eplekake med salt karamell",
+      recipeIngredient: ["200 g marcipan"],
+      recipeInstructions: [{ "@type": "HowToStep", name: "Steps", text: " " }],
+    })}</script></head><body></body></html>`;
+
+    const extraction = extractCompleteJsonLdRecipes(html);
+
+    // No usable instruction leaves the recipe incomplete, which is what legacy
+    // reads for these pages too.
+    expect(extraction.recipes).toHaveLength(0);
+    expect(extraction.incompleteJsonLdCount).toBe(1);
+  });
+
+  it("keeps a step that merely begins with the word step", () => {
+    const html = `<html><head><script type="application/ld+json">${JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Recipe",
+      name: "Marcipanbrød",
+      recipeIngredient: ["200 g marcipan"],
+      recipeInstructions: [
+        { "@type": "HowToStep", text: "Steps should be followed in order." },
+      ],
+    })}</script></head><body></body></html>`;
+
+    const [recipe] = extractCompleteJsonLdRecipes(html).recipes;
+
+    expect(recipe).toBeTruthy();
+  });
+
 });

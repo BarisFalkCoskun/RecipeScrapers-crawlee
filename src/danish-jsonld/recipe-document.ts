@@ -569,7 +569,11 @@ function instructionTexts(value: unknown): string[] {
   // label "Step". It is not an instruction and the legacy parser correctly
   // ignored it because it had no text. Keep meaningful name-only steps, while
   // dropping generic ordinal placeholders.
-  if (text && !/^(?:step|trin)(?:\s+\d+)?[:.]?$/iu.test(text)) return [text];
+  // odensemarcipan uses the plural: {"name":"Steps","text":" "} on four recipes,
+  // whose only instruction then read "Steps". The label is not an instruction in
+  // either number. The anchors keep this from matching a step that merely opens
+  // with the word.
+  if (text && !/^(?:steps?|trin)(?:\s+\d+)?[:.]?$/iu.test(text)) return [text];
   return numericKeyValues(node).flatMap(instructionTexts);
 }
 
