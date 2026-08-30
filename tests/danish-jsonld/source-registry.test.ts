@@ -402,14 +402,18 @@ describe("Danish JSON-LD source registry", () => {
     expect(["canary_passed", "shadow_passed"]).toContain(
       byId.get("nordmad")?.migrationState
     );
-    // oetker and odensemarcipan are in the same position as kikkoman above: the
-    // runs their canaries rested on left no records behind, so both wait on a
-    // fresh uncapped run rather than carrying a claim nothing can check.
-    for (const id of ["oetker", "odensemarcipan"]) {
-      expect(byId.get(id)?.migrationState).toBe("configured");
-      expect(byId.get(id)?.deferOrBlockReason)
-        .toMatch(/did not survive the database deletion/u);
-    }
+    // odensemarcipan is in the same position as kikkoman above: the run its
+    // canary rested on left no records behind, so it waits on a fresh uncapped
+    // run rather than carrying a claim nothing can check.
+    expect(byId.get("odensemarcipan")?.migrationState).toBe("configured");
+    expect(byId.get("odensemarcipan")?.deferOrBlockReason)
+      .toMatch(/did not survive the database deletion/u);
+    // oetker has had that fresh run and its field comparison is clean, but
+    // discovery does not reproduce: successive uncapped runs each report 806
+    // candidates and completeness while returning slightly different sets.
+    expect(byId.get("oetker")?.migrationState).toBe("configured");
+    expect(byId.get("oetker")?.deferOrBlockReason)
+      .toMatch(/discovery does not reproduce between runs/u);
     // nogetiovnen has since reached shadow parity: its legacy run completed with
     // 3100 recipes and V2 matches every one. Both halves take about three hours
     // because the source is throttled to one request every three seconds.
