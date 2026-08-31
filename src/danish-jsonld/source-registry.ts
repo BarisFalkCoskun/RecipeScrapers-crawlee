@@ -26342,9 +26342,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
    */
   chelsea_nz: {
     migrationState: "configured",
-    latestCanary: "2026-08-18T13-05-11.809Z-attempt-0b3fbf74-dd09-438c-9849-d5c1be0dcd01",
+    latestCanary: "2026-08-30T05-47-00.524Z-attempt-7c993708-1bae-4a41-890e-0d615f6e50a9",
     deferOrBlockReason:
-      "Uncapped run persisted 2091 recipes with complete discovery and no blocked or failed request; 48 pages publish Recipe JSON-LD with unescaped quotes in the description and 56 more are incomplete, which keeps it short of a canary",
+      "The comparison is close and every difference in it is understood, but the run is not clean and the source needs re-crawling on the current extractor before it can be judged. The isolated legacy run emitted 2103 records against V2's 2091, with no difference in any field on any record the two share.\n\nThe 27 legacy holds that V2 does not all carry recipeInstructions of \"\" in the site's own JSON-LD - checked live on blackcurrant-jam and apple-crumble-cake - so legacy stores instruction-less records and V2's completeness contract rejects them, which matches the run's rejectedIncompleteJsonLd of exactly 27. The 15 V2 holds that legacy does not are complete recipes with ingredients and instructions that legacy's sitemap walk never fetched.\n\nWhat holds it: 3 failed requests, and 22 pages still rejected as malformed JSON-LD. The malformed ones are the defect this source's reason has named since 2026-08-18, and it is now fixed - the site embeds raw HTML in its recipe fields without escaping the attribute quotes, and the extractor gained a repair for exactly that. A fresh uncapped run should recover them.\n\nOne shape worth recording so it is not mistaken for a V2 fault later: 1370 of V2's 2091 records hold their whole ingredient list as a single unsplit string, because the site publishes it that way. Legacy reproduces the same blob on 1367 of its 2103. Neither system is splitting it, and the counts track the record-set difference exactly.",
   },
   aurion: {
     migrationState: "shadow_passed",
