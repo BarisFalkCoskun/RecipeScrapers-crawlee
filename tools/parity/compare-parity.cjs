@@ -110,23 +110,37 @@ const url=u=>{
   }
   catch{ return raw; }
 };
-const K=(u,t)=>url(u)+" :: "+norm(t);
 // A path that differs only in case is the same page where the site redirects
-// either spelling, as gastrologik does for /Asiatiske%20laksefrikadeller. The
-// keys are lowered only when doing so collapses nothing on either side, so a
-// site that really does serve case-distinct URLs still reports them apart.
-const lowerK=(u,t)=>K(u,t).toLowerCase();
+// either spelling, as gastrologik does for /Asiatiske%20laksefrikadeller. A
+// path that differs only in a .html suffix is the same page too: heidiogper
+// serves /recipes/tiramisu.html and /recipes/tiramisu with one body, declares
+// the .html form as its canonical and redirects to the other, so legacy keyed
+// all 25 of its records one way and V2 all 34 the other and nothing paired.
+// Both relaxations are applied only when they collapse nothing on either side,
+// so a site that really does serve /x and /x.html apart still reports them so.
+const K=(u,t,opts)=>{
+  const o=opts||{};
+  const raw=o.stripExt?url(u).replace(/\.html?$/iu,""):url(u);
+  const key=raw+" :: "+norm(t);
+  return o.lower?key.toLowerCase():key;
+};
 const keysOf=(rows,fn)=>rows.map(r=>fn(r));
-const legacyKey=r=>K(r.url,r.title);
-const crawleeKey=r=>K(r.canonicalUrl,r.normalized&&r.normalized.title);
-const lowerLegacyKey=r=>lowerK(r.url,r.title);
-const lowerCrawleeKey=r=>lowerK(r.canonicalUrl,r.normalized&&r.normalized.title);
+const legacyKeyWith=o=>r=>K(r.url,r.title,o);
+const crawleeKeyWith=o=>r=>K(r.canonicalUrl,r.normalized&&r.normalized.title,o);
+const legacyKey=legacyKeyWith();
+const crawleeKey=crawleeKeyWith();
 const noCollapse=(rows,fn,lowFn)=>
   new Set(keysOf(rows,fn)).size===new Set(keysOf(rows,lowFn)).size;
-const caseInsensitive =
-  noCollapse(legacy,legacyKey,lowerLegacyKey) && noCollapse(crawlee,crawleeKey,lowerCrawleeKey);
-const lk=caseInsensitive?lowerLegacyKey:legacyKey;
-const ck=caseInsensitive?lowerCrawleeKey:crawleeKey;
+const safeOn=o =>
+  noCollapse(legacy,legacyKey,legacyKeyWith(o)) &&
+  noCollapse(crawlee,crawleeKey,crawleeKeyWith(o));
+// Each relaxation is checked on its own and then again together: two that are
+// each harmless can still collapse a pair between them, and the combination is
+// what actually keys the comparison.
+const candidate={lower:safeOn({lower:true}),stripExt:safeOn({stripExt:true})};
+const keyOpts=safeOn(candidate)?candidate:{lower:candidate.lower};
+const lk=legacyKeyWith(keyOpts);
+const ck=crawleeKeyWith(keyOpts);
 // A source can publish more than one recipe at a single URL under a single
 // title. happyfoodstube has two "Homemade Sushi" records on
 // /homemade-sushi/ - upstream ids 6839 and 11293, eleven ingredients and
@@ -429,7 +443,13 @@ for(const [f,v] of Object.entries(diffs)){console.log(`\n### ${f}: ${v.length}`)
 // A page can carry several sibling Recipe nodes. Legacy stops at the first, so
 // extra V2 records that share a URL with a matched legacy record are additional
 // recipes recovered from that page rather than a diverging record set.
-const legacyUrls=new Set(legacy.map(r=>caseInsensitive?url(r.url).toLowerCase():url(r.url)));
+// The URL half of a key has to be built the same way the key was, or the
+// sibling test stops recognizing its own keys under the relaxations above.
+const urlKey=u=>{
+  const raw=keyOpts.stripExt?url(u).replace(/\.html?$/iu,""):url(u);
+  return keyOpts.lower?raw.toLowerCase():raw;
+};
+const legacyUrls=new Set(legacy.map(r=>urlKey(r.url)));
 const siblings=onlyC.filter(k=>legacyUrls.has(k.split(" :: ")[0]));
 const strayC=onlyC.filter(k=>!siblings.includes(k));
 // V2 holds a completeness contract that most legacy spiders do not: a recipe
