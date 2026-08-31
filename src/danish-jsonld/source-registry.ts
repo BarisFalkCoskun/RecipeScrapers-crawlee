@@ -33948,7 +33948,7 @@ const JSONLD_HTML_RECIPE_SOURCES: DanishJsonLdSource[] =
     latestScrapyOutcome: "partial",
     latestCanary: "2026-08-19T17-34-06.299Z",
     deferOrBlockReason:
-      "Bounded live canary persisted all five selected recipes without failures using current responsive step rows; the legacy spider now emits zero instructions on a direct live parse, and the 1081-recipe catalog still requires an uncapped Crawlee validation",
+      "Uncapped run persisted 1080 recipes with discovery complete and no failed requests, replacing a bounded 50-request probe. The legacy comparison is characterised but not settled. Legacy holds 1081 records to V2's 1080 and reads no instructions at all on any of them while V2 keeps the real steps; that is legacy discarding what V2 keeps, and the comparison now allows it. What remains is ingredients on 216 records, splitting two ways. On 200 the sides hold the same distinct ingredients and differ only in repeat counts - legacy lists an entry twice where the source's JSON-LD lists it once, so V2 is the faithful side. On the other 15 the source itself splits an ingredient across two entries - tuna-melt states '4 tsk.' and 'BBQ-sovs' separately - and legacy rejoins them while V2 stores what the page says. Joining a dangling quantity to the entry after it would be an improvement, but it changes ingredient output for every source and 842 promoted sources rest on the current output, so that belongs in a deliberate corpus-wide change rather than one source's promotion. Characterised 2026-08-31. This family has one member, so the state here is gocook's alone.",
   }));
 
 const REDIRECTED_JSONLD_RECIPE_SOURCES: DanishJsonLdSource[] =
