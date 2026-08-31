@@ -26658,16 +26658,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 26 records with every material field matching, and two uncapped runs reproduced all 26 keys with identical content. The only differences are the intentional ones: tags == keywords + cuisines; 20 records keep a fuller yield than legacy leading-integer. Its records were being dropped by the completeness contract over a blank JSON-LD name the site publishes intermittently: V2 held 1 of the 26 recipes the API declares. The name is now taken from the page's own heading, which is what the legacy run recorded.",
   },
   rachlmansfield: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-19T18-57-04.004Z-attempt-a52c65fb-427c-4cbd-8a7b-0dfe00ac99a1",
     deferOrBlockReason:
-      "Uncapped run persisted 1369 recipes from 1571 posts; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Discovery is complete and every rejection is accounted for. The listing declares 1574 posts and V2 stores 1372: 201 of the remainder carry no recipe, and the single page that first read as an unexplained rejection, /street-corn-chicken-taquitos/, was published 2026-08-31T11:14 - two days after the newest record in the store, so it did not exist when the crawl ran. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   orwhateveryoudo: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-19T20-39-24.554Z-attempt-876ed245-a332-48e1-be6b-6d8836b289cf",
     deferOrBlockReason:
-      "Uncapped run persisted 1378 recipes from 1510 posts; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Discovery is complete and every rejection is accounted for. The listing declares 1514 posts and V2 stores 1382: 131 of the remainder carry no recipe, and the last one is a named upstream defect - /2017/07/spicy-yaki-udon.html publishes Recipe JSON-LD missing a name, ingredients or instructions. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   thatskinnychickcanbake: {
     migrationState: "configured",
@@ -26676,10 +26676,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1522 recipes from 1615 posts; 1 failed request keeps it short of a canary",
   },
   rockrecipes: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-19T17-10-44.450Z-attempt-803e2ab7-6591-4e32-b57c-af4caaaba5ea",
     deferOrBlockReason:
-      "Uncapped run persisted 1646 recipes from 1917 posts; 6 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Discovery is complete and every rejection is accounted for. The listing declares 1919 posts and V2 stores 1649: 268 of the remainder carry no recipe, and the last 2 are named upstream defects - /lemon-herb-grilled-chicken-with-spicy-roasted-red-pepper-sauce/ and /roast-leg-of-lamb-with-mint-gremolata/ both publish Recipe JSON-LD missing a name, ingredients or instructions. The first completeness check of this source reported the same verdict while never examining 170 of the 270 missing pages, which had answered 429; the walk was re-run at 1.5s per page and every page was read. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   aggieskitchen: {
     migrationState: "shadow_passed",
@@ -26689,10 +26689,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: legacy-unhealthy; the source answers HTTP 200 with a zero-byte body for any per_page of 50 or more - 25 and below return normally - and the legacy WpPostsJsonLdSpider requests per_page=100 (base.py:1440), so it reads nothing at all and reports finish_reason 'finished' with no block recorded. There is no baseline to compare. V2 asks for per_page=20 and gets served. Discovery completeness rests on the posts listing: it declares 892 posts, V2 stores 215, and all 677 of the difference are accounted for - 675 posts that carry no recipe and 2 whose recipe JSON-LD is missing a name, ingredients or instructions - each one fetched and put through the crawler's own extractor. Two uncapped runs reproduced all 215 keys with identical content.",
   },
   grownupdish: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-20T01-02-34.609Z-attempt-a3ff64e8-034e-4651-a138-41ebde5d90e6",
     deferOrBlockReason:
-      "Uncapped run persisted 229 recipes from 539 posts; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Discovery is complete and every rejection is accounted for. The listing declares 541 posts and V2 stores 229: 310 of the remainder carry no recipe at all, which is ordinary for a blog, and the last 2 are named upstream defects - /thai-chicken-salad-with-honey-peanut-dressing/ and /pork-chops-with-peach-jalapeno-glaze/ both publish Recipe JSON-LD missing a name, ingredients or instructions. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   acouplecooks: {
     migrationState: "configured",
