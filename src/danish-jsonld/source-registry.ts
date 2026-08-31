@@ -26266,10 +26266,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs traversed all ten current listing pages and emitted identical 149-record keys and normalized content across 175 responses with no operational failure. Scrapy stopped after the first visible-anchor listing window and emitted 29 recipes; every overlapping recipe and material field matches exactly. Crawlee correctly retains the complete paginated catalog and rejects one incomplete page",
   },
   starbucksathome: {
-    migrationState: "configured",
+    migrationState: "blocked",
     latestCanary: "2026-08-15T08-24-54.313Z-attempt-38f62583-6ad2-4d4f-8e4f-9744e05bcbc8",
     deferOrBlockReason:
-      "Crawl is clean but the source rejects more than it keeps: 96 pages carry Recipe JSON-LD without required fields against 28 persisted, so its JSON-LD coverage needs review before a canary",
+      "The host no longer exists and the Danish site behind it is gone. On 2026-08-31 every URL on starbucksathome.com - the /dk/ section, the bare root and the sitemap alike - answered HTTP 500 with a 292-byte body reading \"Fastly error: unknown domain: www.starbucksathome.com. Please check that this domain has been added to a service.\" That is the CDN saying the hostname is not configured at all, not a site with a fault.\n\nThe brand has moved to athome.starbucks.com, which answers 200 and publishes a 507-URL sitemap, but it carries no Danish locale: /dk/ and /da/ both answer 404. There is no Danish source here to migrate, so this is blocked rather than a route needing rework.\n\nThe previous reason - 96 pages carrying Recipe JSON-LD without required fields against 28 persisted - described a site that was still answering. It is superseded rather than resolved.",
   },
   klank: {
     migrationState: "shadow_passed",
