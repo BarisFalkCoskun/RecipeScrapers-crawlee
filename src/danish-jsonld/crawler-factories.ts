@@ -19,10 +19,22 @@ export interface DanishJsonLdCrawlerSettings {
   sameDomainDelaySecs: number;
 }
 
-/** Content types that carry recipe HTML despite not being declared as HTML. */
+/**
+ * Content types that carry recipe HTML, or a sitemap, despite not being
+ * declared as HTML.
+ *
+ * skolemaelk serves a perfectly ordinary sitemap - 341 <loc> entries, 164 of
+ * them under /madpakker-og-opskrifter - as application/rss+xml, and Crawlee
+ * refused the only request the crawl made: "served Content-Type
+ * application/rss+xml, but only text/html, ... are allowed". The run recorded 0
+ * completed requests and 1 failed, which reads as a source with no recipes.
+ * What a sitemap is declared as says nothing about what it contains.
+ */
 export const DANISH_JSONLD_ADDITIONAL_MIME_TYPES = [
   "text/plain",
   "application/graphql-response+json",
+  "application/rss+xml",
+  "application/atom+xml",
 ] as const;
 
 export const DANISH_JSONLD_PLAYWRIGHT_BROWSER_POOL_OPTIONS = {

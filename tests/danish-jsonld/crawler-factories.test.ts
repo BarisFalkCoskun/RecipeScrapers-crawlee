@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { ProxyConfiguration } from "crawlee";
 import {
+  DANISH_JSONLD_ADDITIONAL_MIME_TYPES,
   DANISH_JSONLD_PLAYWRIGHT_BROWSER_POOL_OPTIONS,
   createDanishJsonLdCheerioCrawler,
   createDanishJsonLdPlaywrightCrawler,
@@ -170,5 +171,14 @@ describe("Danish JSON-LD crawler factories", () => {
 
     expect(cheerio.respectRobotsTxtFile).toBe(false);
     expect(playwright.respectRobotsTxtFile).toBe(false);
+  });
+
+  it("accepts a sitemap served as an RSS or Atom content type", () => {
+    // skolemaelk serves an ordinary sitemap - 341 <loc> entries, 164 of them
+    // under /madpakker-og-opskrifter - as application/rss+xml. Crawlee refused
+    // the only request the crawl made and the run recorded 0 completed and 1
+    // failed, which reads as a source publishing no recipes at all.
+    expect(DANISH_JSONLD_ADDITIONAL_MIME_TYPES).toContain("application/rss+xml");
+    expect(DANISH_JSONLD_ADDITIONAL_MIME_TYPES).toContain("application/atom+xml");
   });
 });
