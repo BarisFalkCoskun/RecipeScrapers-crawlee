@@ -100,6 +100,12 @@ const url=u=>{
     // is invisible to the earlier strip when a query string follows:
     // cookcookgo serves /dk/?p=932 and /dk?p=932 as one recipe.
     if(p.pathname.length>1) p.pathname=p.pathname.replace(/\/+$/u,"");
+    // http and https address the same page, and a site can hand out both for
+    // one recipe: artfuldishes declares an https @id and an http site URL, so
+    // legacy keyed 22 records on https that V2 keyed on http. Every record on
+    // both sides paired once the scheme was ignored. This is the same kind of
+    // host-identity normalization as dropping www just above.
+    if(p.protocol==="http:") p.protocol="https:";
     return p.toString().replace(/\/$/,"");
   }
   catch{ return raw; }
