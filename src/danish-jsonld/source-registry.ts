@@ -32240,10 +32240,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: the isolated legacy run completed with 3100 recipes over 3747 requests, all answering 200, and V2 holds every one of them with no record legacy has that it does not and no difference in any field. V2 additionally keeps a cuisine on all 3100 that legacy has no field for, a fuller yield than legacy's leading integer on 2, and 7 sibling recipes recovered from pages carrying more than one. A second uncapped run reproduced all 3107 keys with identical content, and a reviewed sample of 25 stored records is clean. This source is throttled to one request every three seconds, so both halves needed roughly three hours each; earlier attempts were cut off by the harness rather than by anything the source did",
   },
   bobsredmill: {
-    migrationState: "configured",
-    latestCanary: "2026-08-18T10-40-06.655Z-attempt-ccf075fd-ed04-4a77-9483-63fd07c5968e",
+    migrationState: "shadow_passed",
+    latestCanary: "2026-08-31T20-47-04.666Z-attempt-316fd295-9f86-43e7-9969-c8a42f6eb1af",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 2867 recipes with complete discovery and no blocked or failed request; 30 incomplete pages keep it short of a canary",
+      "Shadow comparison passed: the isolated legacy run emitted 2884 records and V2 holds 2870 of them, matching on every material field with no difference in any field on any record, and there is nothing V2 holds that legacy does not. 2423 additionally keep a fuller yield than legacy's leading integer, and V2 keeps cuisines in their own field where legacy folds them into tags.\n\nThe 14 legacy holds that V2 does not are records legacy accepts with no instructions at all, which V2's completeness contract rejects by design - checked live on /recipes/how-to-make/roasted-soybeans and /recipes/how-to-make/musaka-with-soybeans, both of which publish Recipe JSON-LD with an empty instruction list, and legacy stores both at zero steps. The accounting is exact: 2884 candidates discovered, 2870 persisted, 14 rejected as incomplete.\n\nBoth uncapped runs are clean and identical - 2911 requests, no failed, blocked or rejected request beyond those 14, discovery complete, nothing malformed - and the second reproduced all 2870 keys with identical content. Its legacy baseline took three attempts to obtain: the parity lane kills a Scrapy run at two hours and this one needs longer, so it was run standalone with a six-hour ceiling.",
   },
   gastrotools: {
     migrationState: "shadow_passed",
