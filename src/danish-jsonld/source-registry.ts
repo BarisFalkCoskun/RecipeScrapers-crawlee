@@ -26533,7 +26533,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-17T15-33-33.254Z-attempt-fb290c0e-c0a1-40d1-bbc3-2d1f1d2b082a",
     deferOrBlockReason:
-      "Uncapped run persisted 20027 recipes with complete discovery; 5 blocked requests, 5 failed requests and 2 incomplete pages keep it short of a canary",
+      "Parked on arithmetic, not on a defect, alongside bettycrocker and coop. The run that reached its full catalog persisted 20027 recipes with complete discovery, and what keeps it short of a canary is small - 5 blocked requests, 5 failed requests and 2 incomplete pages - so what it needs is one more clean uncapped run.\n\nThat run cannot be had in any window this host has offered. The source is paced at delaySeconds 3 with maxConcurrency 1 to stay no faster than its legacy spider, which puts a floor of 20027 x 3s = 16.7 hours on the recipe pages alone, before listing pages or any latency at all; the realistic figure is over 20. A crawl lane that kills at four hours has burned that window twice already on sources of this size. It is not being crawled again until there is a window that can actually finish it, and the pacing is not being raised to manufacture one - the legacy-settings audit exists to keep V2 from crawling any source harder than its legacy spider did, and that invariant is worth more than this source.",
   },
   /**
    * A Nuxt app that serves no JSON-LD until hydration, so every page routes
