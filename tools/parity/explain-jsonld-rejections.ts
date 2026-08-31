@@ -67,6 +67,7 @@ async function main() {
   let size = Number(start.searchParams.get("per_page")) || 100;
 
   const declared = new Map<string, string>();
+  const publishedAt = new Map<string, number>();
   let announced = Number.NaN;
   for (let page = 1; page <= 1000; page += 1) {
     const res = await fetch(`${base}?per_page=${size}&page=${page}`, {
@@ -79,7 +80,8 @@ async function main() {
     }
     const total = Number(res.headers.get("x-wp-total"));
     if (page === 1 && Number.isFinite(total)) announced = total;
-    const body = (await res.json().catch(() => null)) as Array<{ link?: string }> | null;
+    const body = (await res.json().catch(() => null)) as
+      Array<{ link?: string; date_gmt?: string }> | null;
     if (!Array.isArray(body) || body.length === 0) break;
     if (page === 1 && body.length < size) size = body.length;
     let added = 0;
@@ -87,6 +89,8 @@ async function main() {
       const link = String(post?.link ?? "");
       if (link === "" || declared.has(key(link))) continue;
       declared.set(key(link), link);
+      const published = Date.parse(`${String(post?.date_gmt ?? "")}Z`);
+      if (Number.isFinite(published)) publishedAt.set(key(link), published);
       added += 1;
     }
     if (added === 0) break;
@@ -102,7 +106,7 @@ async function main() {
   const stored = await client
     .db(dbName)
     .collection("recipes_v2")
-    .find({ sourceId }, { projection: { canonicalUrl: 1, pageUrl: 1 } })
+    .find({ sourceId }, { projection: { canonicalUrl: 1, pageUrl: 1, extractedAt: 1 } })
     .toArray();
   await client.close();
   const storedKeys = new Set<string>();
@@ -111,18 +115,36 @@ async function main() {
     if (doc.pageUrl) storedKeys.add(key(String(doc.pageUrl)));
   }
 
+  // The commonest reason a listing declares a post this store does not hold is
+  // simply that the post is newer than the crawl. Reading that as a rejection
+  // is what put most of the WPRM family at configured with a shortfall that was
+  // never a defect. A post published after the newest record here was not
+  // rejected - it did not exist yet.
+  const crawledUpTo = stored.reduce((newest, doc) => {
+    const at = Date.parse(String(doc.extractedAt ?? ""));
+    return Number.isFinite(at) && at > newest ? at : newest;
+  }, 0);
+
   const missing = [...declared.entries()].filter(([k]) => !storedKeys.has(k));
   const reasons: Record<string, number> = {};
   const unexplained: string[] = [];
   const defective: string[] = [];
   const unchecked: string[] = [];
+  const newerThanCrawl: string[] = [];
   // The tool fetches as fast as the event loop allows, which is how rockrecipes
   // turned 170 of its missing pages into 429s. EXPLAIN_DELAY_MS paces the walk
   // so a source that rate-limits can still be checked; it only ever slows this
   // tool down, and it does not touch how the crawler itself is paced.
   const delayMs = Number(process.env.EXPLAIN_DELAY_MS ?? 0);
   let first = true;
-  for (const [, link] of missing) {
+  for (const [postKey, link] of missing) {
+    const published = publishedAt.get(postKey);
+    if (crawledUpTo > 0 && published !== undefined && published > crawledUpTo) {
+      reasons["post published after this crawl"] =
+        (reasons["post published after this crawl"] ?? 0) + 1;
+      newerThanCrawl.push(`${link} (published ${new Date(published).toISOString()})`);
+      continue;
+    }
     if (!first && delayMs > 0) await new Promise((r) => setTimeout(r, delayMs));
     first = false;
     let html = "";
@@ -180,6 +202,9 @@ async function main() {
     }
   }
 
+  if (crawledUpTo > 0) {
+    console.log(`  newest stored record extracted ${new Date(crawledUpTo).toISOString()}`);
+  }
   const parts = Object.entries(reasons).map(([why, n]) => `${n} ${why}`);
   if (unexplained.length > 0) parts.push(`${unexplained.length} unexplained`);
   const verdict = unchecked.length > 0
@@ -198,6 +223,7 @@ async function main() {
   // the count back. "post carries no recipe" stays a bulk category - most of a
   // blog's posts are not recipes and naming them proves nothing.
   for (const link of defective) console.log(`  defect: ${link}`);
+  for (const link of newerThanCrawl.slice(0, 5)) console.log(`  newer than crawl: ${link}`);
   for (const link of unchecked.slice(0, 5)) console.log(`  unchecked: ${link}`);
   if (unchecked.length > 0) {
     console.log(
