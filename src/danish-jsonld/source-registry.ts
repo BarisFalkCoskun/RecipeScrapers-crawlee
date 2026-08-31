@@ -26377,9 +26377,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   },
   diabetesopskrifter: {
     migrationState: "configured",
-    latestCanary: "2026-08-14T20-45-43.602Z-attempt-f42c07f8-e65e-470f-bfaf-920baa7d27a6",
+    latestCanary: "2026-08-31T18-15-18.351Z-attempt-64eb0b33-13e6-4450-bebc-a96ea80ac03e",
     deferOrBlockReason:
-      "Uncapped run persisted 132 recipes with complete discovery; 52 failed requests keep it short of a canary",
+      "Held at configured by rate limiting, not by extraction, exactly as its sibling blenderopskrifter is. The comparison is clean: the isolated legacy run emitted 24 records, V2 holds every one of them and the comparator reports no difference in any field on any record. Legacy finds only 24 because its spider takes the recipe links off /opskrifter and that page carries exactly 24; V2 traverses the link graph to 136, and no stored record for this source is empty or untitled.\n\nWhat blocks it is the run's own counters: 22 of 195 requests answered 429 while delaySeconds was already 10 with maxConcurrency 1. A blocked request is a page never read, so the pace moves to 20s and the source needs a fresh uncapped run rather than a promotion.",
   },
   heidiogper: {
     migrationState: "configured",
@@ -32700,10 +32700,11 @@ const LEGACY_REQUEST_SETTING_OVERRIDES: Record<
   // At 5 seconds the blocks roughly halved - 52 to 22 and 52 to 33 - so the
   // pacing is the lever, but 5 was not far enough. These are small catalogs of
   // about 200 records each, so the extra time costs little.
-  diabetesopskrifter: { delaySeconds: 10, maxConcurrency: 1 },
-  // Still 429ing 14 of 238 requests at 10s. The site rate-limits harder than
-  // its size suggests, and a blocked request is a page we never read, so the
-  // pace goes up rather than the shortfall being written off.
+  // Both of these 429 at 10s - 22 of 195 requests on diabetesopskrifter, 14 of
+  // 238 on blenderopskrifter. They are the same publisher and rate-limit harder
+  // than their size suggests, and a blocked request is a page we never read, so
+  // the pace goes up rather than the shortfall being written off.
+  diabetesopskrifter: { delaySeconds: 20, maxConcurrency: 1 },
   blenderopskrifter: { delaySeconds: 20, maxConcurrency: 1 },
   spicytwist: { maxConcurrency: 1 },
   spisekunst: { maxConcurrency: 1 },
