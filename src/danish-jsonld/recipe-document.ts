@@ -19,6 +19,7 @@ export interface CompleteJsonLdExtraction {
     | "incomplete-json-ld"
     | "malformed-json-ld"
     | "json-ld-control-character-repaired"
+    | "json-ld-embedded-quote-repaired"
     | "json-ld-name-taken-from-page"
     | "json-ld-from-streamed-payload"
   >;
@@ -27,6 +28,7 @@ export interface CompleteJsonLdExtraction {
 export interface ParsedJsonLdScript {
   parsed: unknown;
   repairedControlCharacterCount: number;
+  repairedQuoteCount: number;
 }
 
 export interface BuildRecipeDocumentV2Input {
@@ -65,6 +67,7 @@ export function extractCompleteJsonLdRecipes(
   let incompleteJsonLdCount = 0;
   let malformedJsonLdCount = 0;
   let repairedJsonLdCount = 0;
+  let repairedQuoteScriptCount = 0;
   let nameFromPageCount = 0;
 
   for (const rawScript of rawScripts) {
@@ -80,6 +83,9 @@ export function extractCompleteJsonLdRecipes(
     }
     if (parsedScript.repairedControlCharacterCount > 0) {
       repairedJsonLdCount += 1;
+    }
+    if (parsedScript.repairedQuoteCount > 0) {
+      repairedQuoteScriptCount += 1;
     }
 
     for (const recipe of findRecipeNodes(parsedScript.parsed)) {
@@ -125,6 +131,9 @@ export function extractCompleteJsonLdRecipes(
       ...(repairedJsonLdCount > 0
         ? ["json-ld-control-character-repaired" as const]
         : []),
+      ...(repairedQuoteScriptCount > 0
+        ? ["json-ld-embedded-quote-repaired" as const]
+        : []),
     ])),
   };
 }
@@ -139,7 +148,11 @@ export function parseJsonLdScript(rawScript: string): ParsedJsonLdScript | null 
   // Trimming it is outside the JSON value, so no quoted content is touched.
   const script = rawScript.trim().replace(/;+$/u, "");
   try {
-    return { parsed: JSON.parse(script), repairedControlCharacterCount: 0 };
+    return {
+      parsed: JSON.parse(script),
+      repairedControlCharacterCount: 0,
+      repairedQuoteCount: 0,
+    };
   } catch {
     const repaired = escapeLiteralJsonControlCharacters(script);
     if (repaired.count > 0) {
@@ -147,24 +160,102 @@ export function parseJsonLdScript(rawScript: string): ParsedJsonLdScript | null 
         return {
           parsed: JSON.parse(repaired.value),
           repairedControlCharacterCount: repaired.count,
+          repairedQuoteCount: 0,
+        };
+      } catch {
+        // Fall through to the quote repair below.
+      }
+    }
+    // santamariaworld embeds raw HTML in recipeInstructions and does not escape
+    // the attribute quotes in it, so a value reading
+    // "<ol>...<span lang="da">..." ends its own string early. 47 of its pages
+    // were rejected as malformed for that alone, and legacy cannot read them
+    // either. Escaping only the quotes that cannot be closing a string
+    // recovers them without guessing.
+    const quoted = escapeEmbeddedStringQuotes(
+      repaired.count > 0 ? repaired.value : script
+    );
+    if (quoted.count > 0) {
+      try {
+        return {
+          parsed: JSON.parse(quoted.value),
+          repairedControlCharacterCount: repaired.count,
+          repairedQuoteCount: quoted.count,
         };
       } catch {
         // Fall through to the trailing-comma repair below.
       }
     }
-    const trimmed = removeTrailingCommas(
-      repaired.count > 0 ? repaired.value : script
-    );
+    const base = quoted.count > 0
+      ? quoted.value
+      : repaired.count > 0 ? repaired.value : script;
+    const trimmed = removeTrailingCommas(base);
     if (trimmed.count === 0) return null;
     try {
       return {
         parsed: JSON.parse(trimmed.value),
         repairedControlCharacterCount: repaired.count,
+        repairedQuoteCount: quoted.count,
       };
     } catch {
       return null;
     }
   }
+}
+
+/**
+ * Escapes a double quote that sits inside a JSON string and cannot be closing
+ * it. In well-formed JSON the quote that ends a string is always followed, past
+ * any whitespace, by one of `,` `}` `]` or `:` - so a quote followed by
+ * anything else is literal content the publisher failed to escape. Quotes that
+ * could legitimately close a string are left exactly as they are, which keeps
+ * this from rewriting a document that merely has a different fault.
+ */
+function escapeEmbeddedStringQuotes(rawScript: string): {
+  value: string;
+  count: number;
+} {
+  let value = "";
+  let insideString = false;
+  let escaped = false;
+  let count = 0;
+
+  for (let index = 0; index < rawScript.length; index += 1) {
+    const character = rawScript[index]!;
+    if (!insideString) {
+      value += character;
+      if (character === '"') insideString = true;
+      continue;
+    }
+    if (escaped) {
+      value += character;
+      escaped = false;
+      continue;
+    }
+    if (character === "\\") {
+      value += character;
+      escaped = true;
+      continue;
+    }
+    if (character !== '"') {
+      value += character;
+      continue;
+    }
+    let lookahead = index + 1;
+    while (lookahead < rawScript.length && /\s/u.test(rawScript[lookahead]!)) {
+      lookahead += 1;
+    }
+    const next = rawScript[lookahead];
+    if (next === undefined || next === "," || next === "}" || next === "]" || next === ":") {
+      value += character;
+      insideString = false;
+      continue;
+    }
+    value += '\\"';
+    count += 1;
+  }
+
+  return { value, count };
 }
 
 /**

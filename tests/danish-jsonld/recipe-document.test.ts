@@ -1124,4 +1124,44 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
     expect(recipe).toBeTruthy();
   });
 
+  it("recovers a recipe whose embedded HTML leaves its attribute quotes unescaped", () => {
+    // santamariaworld publishes recipeInstructions as raw HTML inside a JSON
+    // string and does not escape the quotes in it, so the value ends its own
+    // string early and the whole script reads as malformed. 47 of its pages
+    // were rejected for this alone and legacy cannot read them either.
+    const html = `<html><body><script type="application/ld+json">{
+      "@context": "https://schema.org",
+      "@type": "Recipe",
+      "name": "Smoothie med hindbaer",
+      "recipeIngredient": ["2.5 dl vand", "150 g frossen hindbaer"],
+      "recipeInstructions": "<ol>
+<li>Mix <span lang="da">alt</span> til smoothie.</li>
+</ol>"
+    }</script></body></html>`;
+    const extraction = extractCompleteJsonLdRecipes(html);
+    expect(extraction.malformedJsonLdCount).toBe(0);
+    expect(extraction.recipes).toHaveLength(1);
+    expect(extraction.recipes[0]!["name"]).toBe("Smoothie med hindbaer");
+    expect(extraction.signals).toContain("json-ld-embedded-quote-repaired");
+  });
+
+  it("leaves a quote that legitimately closes a string alone", () => {
+    // The repair must not rewrite a document whose quotes are all correct: a
+    // quote followed by , } ] or : is closing its string and is left as it is,
+    // so a script with a different fault is still reported malformed rather
+    // than silently reshaped into something that parses.
+    const html = `<html><body><script type="application/ld+json">{
+      "@context": "https://schema.org",
+      "@type": "Recipe",
+      "name": "Fin kage",
+      "recipeIngredient": ["1 dl maelk"],
+      "recipeInstructions": ["Rør rundt."],
+      "danglingKey":
+    }</script></body></html>`;
+    const extraction = extractCompleteJsonLdRecipes(html);
+    expect(extraction.recipes).toHaveLength(0);
+    expect(extraction.malformedJsonLdCount).toBe(1);
+    expect(extraction.signals).not.toContain("json-ld-embedded-quote-repaired");
+  });
+
 });
