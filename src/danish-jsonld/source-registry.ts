@@ -26327,10 +26327,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
    * every request, not a crawl defect.
    */
   danishcrown: {
-    migrationState: "configured",
-    latestCanary: "2026-08-18T12-31-16.022Z-attempt-01cb0baf-68b3-43fd-a41f-1cdfc52f2f66",
+    migrationState: "shadow_passed",
+    latestCanary: "2026-08-31T15-10-07.663Z-attempt-49ab9b84-7aa3-49b6-be30-bdb913292c8d",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 1891 recipes with complete discovery and no blocked or rejected record; one sitemap URL (rugbroed-med-surdej) answers 500 at the source, which keeps it short of a canary",
+      "Shadow comparison passed: the isolated legacy run emitted 1899 records and V2 holds exactly those 1899, matching on every material field with no difference in any field on any record. 783 of them additionally keep a cuisine, which legacy has no field for. A second uncapped run reproduced all 1899 keys with identical content. The uncapped crawl completed discovery over 2003 requests with no failed, blocked or rejected record - the rugbroed-med-surdej sitemap URL that answered 500 on the 2026-08-18 run and held this source at configured now redirects to danishcrown.com/da-dk/opskrifter/rugbroed-med-surdej and answers 200, and V2 holds that recipe with 12 ingredients and 6 steps, so nothing is outstanding against this source.",
   },
   /**
    * The malformed blocks carry unescaped double quotes inside the Recipe
