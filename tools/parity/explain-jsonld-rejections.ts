@@ -115,7 +115,16 @@ async function main() {
   const reasons: Record<string, number> = {};
   const unexplained: string[] = [];
   const defective: string[] = [];
+  const unchecked: string[] = [];
+  // The tool fetches as fast as the event loop allows, which is how rockrecipes
+  // turned 170 of its missing pages into 429s. EXPLAIN_DELAY_MS paces the walk
+  // so a source that rate-limits can still be checked; it only ever slows this
+  // tool down, and it does not touch how the crawler itself is paced.
+  const delayMs = Number(process.env.EXPLAIN_DELAY_MS ?? 0);
+  let first = true;
   for (const [, link] of missing) {
+    if (!first && delayMs > 0) await new Promise((r) => setTimeout(r, delayMs));
+    first = false;
     let html = "";
     let finalUrl = link;
     try {
@@ -124,13 +133,21 @@ async function main() {
         signal: AbortSignal.timeout(90_000),
       });
       if (!res.ok) {
+        // A 404 or 410 explains the shortfall: the page the listing declares is
+        // gone, so V2 was right to hold nothing for it. A 429 or a 5xx explains
+        // nothing at all - it says this tool was turned away and never got to
+        // look. Counting those as explanations is how rockrecipes reported ALL
+        // SHORTFALL EXPLAINED with 170 of its 270 missing pages unexamined.
+        const refused = res.status === 429 || res.status >= 500;
         reasons[`page answers ${res.status}`] = (reasons[`page answers ${res.status}`] ?? 0) + 1;
+        if (refused) unchecked.push(`${link} (answered ${res.status})`);
         continue;
       }
       finalUrl = res.url || link;
       html = await res.text();
     } catch {
       reasons["page could not be fetched"] = (reasons["page could not be fetched"] ?? 0) + 1;
+      unchecked.push(`${link} (could not be fetched)`);
       continue;
     }
     // A listing link can point at a post the site has since renamed: it answers
@@ -165,7 +182,11 @@ async function main() {
 
   const parts = Object.entries(reasons).map(([why, n]) => `${n} ${why}`);
   if (unexplained.length > 0) parts.push(`${unexplained.length} unexplained`);
-  const verdict = unexplained.length === 0 ? "ALL SHORTFALL EXPLAINED" : "UNEXPLAINED SHORTFALL";
+  const verdict = unchecked.length > 0
+    ? "INCONCLUSIVE"
+    : unexplained.length === 0
+      ? "ALL SHORTFALL EXPLAINED"
+      : "UNEXPLAINED SHORTFALL";
   // The examples print first so the verdict is the last line: callers that keep
   // only the tail of this output were silently dropping the verdict for every
   // source that had an example to show, which is every source that failed.
@@ -177,11 +198,18 @@ async function main() {
   // the count back. "post carries no recipe" stays a bulk category - most of a
   // blog's posts are not recipes and naming them proves nothing.
   for (const link of defective) console.log(`  defect: ${link}`);
+  for (const link of unchecked.slice(0, 5)) console.log(`  unchecked: ${link}`);
+  if (unchecked.length > 0) {
+    console.log(
+      `  ${unchecked.length} of ${missing.length} missing pages were never examined; ` +
+        "re-run more slowly before reading the verdict as completeness",
+    );
+  }
   console.log(
     `${sourceId} | ${verdict} | declared=${declared.size} stored=${stored.length} ` +
       `missing=${missing.length}${parts.length ? ` (${parts.join(", ")})` : ""}`,
   );
-  process.exit(unexplained.length === 0 ? 0 : 1);
+  process.exit(unexplained.length === 0 && unchecked.length === 0 ? 0 : 1);
 }
 
 main().catch((error) => {
