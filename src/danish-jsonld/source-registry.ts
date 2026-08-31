@@ -34102,7 +34102,7 @@ const DAGROFA_API_RECIPE_SOURCES: DanishJsonLdSource[] =
     latestCanary: "2026-08-19T18-24-35.758Z",
     ...("aliasFor" in definition ? { aliasFor: definition.aliasFor } : {}),
     deferOrBlockReason:
-      "Bounded first-page live shadow matched all 50 recipes and every material field without request, extraction, storage, or domain failures; the Aarstiderne alias deduplicated to the canonical Meny execution, while the 3049-recipe catalog still requires uncapped validation",
+      "The catalog cannot be reached through this endpoint and an uncapped run does not show it. SearchRecipes declares totalHits 3049 in every response, yet pageOffset stops serving after 100 records: offsets 0 and 50 return 50 products each and every offset from 100 onward returns an empty 234-byte body. The crawl therefore stores 100 recipes and reports discoveryComplete true, because the API told it there was nothing more - a completeness flag that is honest about the endpoint and wrong about the source. A page parameter is accepted but ignored: page=1 and page=30 return byte-identical product sets. So 2949 of the 3049 recipes are unreachable from here and neither meny nor its aarstiderne alias can be promoted on a 100-record run. Probed 2026-08-31. Needs a different route into the catalog rather than another crawl.",
   }));
 
 const SITECORE_API_RECIPE_SOURCES: DanishJsonLdSource[] =
