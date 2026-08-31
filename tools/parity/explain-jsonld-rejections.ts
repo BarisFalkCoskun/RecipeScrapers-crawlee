@@ -114,6 +114,7 @@ async function main() {
   const missing = [...declared.entries()].filter(([k]) => !storedKeys.has(k));
   const reasons: Record<string, number> = {};
   const unexplained: string[] = [];
+  const defective: string[] = [];
   for (const [, link] of missing) {
     let html = "";
     let finalUrl = link;
@@ -153,8 +154,10 @@ async function main() {
     } else if (extraction.incompleteJsonLdCount > 0) {
       reasons["recipe json-ld missing a name, ingredients or instructions"] =
         (reasons["recipe json-ld missing a name, ingredients or instructions"] ?? 0) + 1;
+      defective.push(`${link} (recipe json-ld missing a name, ingredients or instructions)`);
     } else if (extraction.malformedJsonLdCount > 0) {
       reasons["recipe json-ld does not parse"] = (reasons["recipe json-ld does not parse"] ?? 0) + 1;
+      defective.push(`${link} (recipe json-ld does not parse)`);
     } else {
       reasons["post carries no recipe"] = (reasons["post carries no recipe"] ?? 0) + 1;
     }
@@ -167,6 +170,13 @@ async function main() {
   // only the tail of this output were silently dropping the verdict for every
   // source that had an example to show, which is every source that failed.
   for (const link of unexplained.slice(0, 5)) console.log(`  unexplained: ${link}`);
+  // A page whose markup is broken is explained but not thereby anonymous. The
+  // promotion bar accepts a shortfall only where every missing record is an
+  // individually named upstream defect, and this tool was counting those
+  // without saying which pages they were, so a reason could only ever repeat
+  // the count back. "post carries no recipe" stays a bulk category - most of a
+  // blog's posts are not recipes and naming them proves nothing.
+  for (const link of defective) console.log(`  defect: ${link}`);
   console.log(
     `${sourceId} | ${verdict} | declared=${declared.size} stored=${stored.length} ` +
       `missing=${missing.length}${parts.length ? ` (${parts.join(", ")})` : ""}`,
