@@ -26250,10 +26250,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Three uncapped Crawlee runs and the full Scrapy run completed the same 26 requests and emitted the same 25 recipes with exact legacy fields after handling text/plain recipe HTML, top-level string instructions, Danish duration text such as '1 time', and equivalent www and bare-host image URLs; Crawlee intentionally preserves yield ranges and units that Scrapy truncates to the first integer",
   },
   stinna: {
-    migrationState: "configured",
-    latestCanary: "2026-08-15T06-54-38.846Z-attempt-eaf3d49d-5daf-4a18-99af-552e24708b88",
+    migrationState: "shadow_passed",
+    latestCanary: "2026-08-31T16-25-40.722Z-attempt-3a675b10-353d-452a-b44e-ec141f3e05af",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Awaiting a fresh uncapped run: the store holds no records at all for this source. Its canary rested on a run whose data did not survive the database deletion and restore, so the claim cannot be checked and nothing is here to compare or promote. The run it rested on is recorded as: Uncapped run persisted 1430 recipes over 1934 pages with complete discovery and no blocked or failed request; six pages carry Recipe JSON-LD without required fields and stay rejected.",
+      "Shadow comparison passed: the isolated legacy run emitted 1441 records and V2 holds 1438 of them, matching on every material field with no difference in any field on any record. 1321 additionally keep a cuisine, which legacy has no field for, and 2 keep a fuller yield than legacy's leading integer. The three legacy holds that V2 does not are records legacy accepts with no name, ingredients or instructions, which V2's completeness contract rejects by design. The uncapped crawl completed discovery over 1832 requests with no failed, blocked or rejected record, replacing the canary whose data did not survive the database restore.\n\nThe idempotency gate reported CHANGED 1438->1440 rather than STABLE, and that verdict is the gate being strict about the site rather than about the crawler: nothing was lost, no key duplicated, and all 1438 records carried over byte-identical. The two additions are recipes stinna published between the two runs, /blondie-med-citron and /okonomiyaki, both stored complete. Read by hand because the gate cannot yet tell an addition from a defect.",
   },
   bodylab: {
     migrationState: "shadow_passed",
