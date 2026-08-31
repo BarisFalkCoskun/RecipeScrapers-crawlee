@@ -26046,7 +26046,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-18T04-14-18.237Z-attempt-d753a334-1b6d-4ab1-a48f-415ab84a90a8",
     deferOrBlockReason:
-      "Uncapped run persisted 4913 recipes with no blocked or failed request, but six syndicated pages declare a thise.dk canonical and are rejected at the domain boundary, leaving discovery incomplete",
+      "Uncapped run persisted 4913 recipes with no blocked or failed request, but six syndicated pages declare a thise.dk canonical and are rejected at the domain boundary, leaving discovery incomplete Re-crawling this source is a multi-day job at its legacy-matched pacing, not a session-scale one: measured on 2026-08-31 it stores about 105 recipes an hour at delaySeconds 3 and concurrency 1, so its 4913-recipe catalog needs roughly 47 hours of continuous crawling. A four-hour ceiling reached 199 records and a twelve-hour one would not finish either. Raising the pace is not the answer - the legacy-settings audit exists to keep V2 from crawling any source harder than its legacy spider did. Parked deliberately so the lanes can clear sources that do complete; it needs a long uninterrupted window rather than another attempt between other work.",
   },
   /**
    * The pagination widget mixes absolute, root-relative and document-relative
@@ -26475,7 +26475,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-17T08-53-05.050Z-attempt-86195030-47bd-4018-bb4e-1206d9d13900",
     deferOrBlockReason:
-      "Uncapped run persisted 6243 recipes with complete discovery; 52 failed requests and 4 incomplete pages keep it short of a canary",
+      "Uncapped run persisted 6243 recipes with complete discovery; 52 failed requests and 4 incomplete pages keep it short of a canary Re-crawling this source is a multi-day job at its legacy-matched pacing, not a session-scale one: measured on 2026-08-31 it stores about 71 recipes an hour at delaySeconds 3 and concurrency 1, so its 6243-recipe catalog needs roughly 88 hours of continuous crawling. A four-hour ceiling reached 162 records and a twelve-hour one would not finish either. Raising the pace is not the answer - the legacy-settings audit exists to keep V2 from crawling any source harder than its legacy spider did. Parked deliberately so the lanes can clear sources that do complete; it needs a long uninterrupted window rather than another attempt between other work.",
   },
   delmonte: {
     migrationState: "configured",
