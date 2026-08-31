@@ -26671,10 +26671,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Discovery is complete and every rejection is accounted for. The listing declares 1514 posts and V2 stores 1382: 131 of the remainder carry no recipe, and the last one is a named upstream defect - /2017/07/spicy-yaki-udon.html publishes Recipe JSON-LD missing a name, ingredients or instructions. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   thatskinnychickcanbake: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-19T19-34-51.297Z-attempt-e10f9b86-eb95-4ea2-96c2-27acf694c944",
     deferOrBlockReason:
-      "Completeness is not yet established, and the honest verdict is INCONCLUSIVE rather than a shortfall. The listing declares 1615 posts and the store holds 1479. Of the 138 it does not hold, 82 carry no recipe, 24 are listing links redirecting to a page already stored, 1 answers 410, and 1 was published after the crawl - but 30 answered 429 and were never examined at all. A page that refuses the check explains nothing about itself, so no completeness claim can rest on this walk. Being re-walked at a slower pace; the source itself is not implicated by anything seen so far.",
+      "Discovery is complete and every rejection is accounted for. The listing declares 1615 posts and V2 stores 1479; of the 138 it does not hold, 91 carry no recipe, 45 are listing links redirecting to a page already stored, 1 answers 410 at the source, and 1 was published after the crawl. Nothing is unexplained.\n\nThe first walk of this source read INCONCLUSIVE, not because the source was short but because 30 of those pages answered 429 and were never examined. Re-walked at two seconds a page, every page answered and the account closes. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   rockrecipes: {
     migrationState: "canary_passed",
