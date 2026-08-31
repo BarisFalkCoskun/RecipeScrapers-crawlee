@@ -26362,9 +26362,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   },
   blenderopskrifter: {
     migrationState: "configured",
-    latestCanary: "2026-08-14T20-37-08.750Z-attempt-ff928238-b1c9-465e-9c96-0748ec465f13",
+    latestCanary: "2026-08-31T17-34-29.285Z-attempt-671b8c9c-9b2b-40d4-ac59-3e8e7a7f1082",
     deferOrBlockReason:
-      "Uncapped run persisted 173 recipes with complete discovery; 52 failed requests keep it short of a canary",
+      "Held at configured by rate limiting, not by extraction. The comparison itself is clean: the isolated legacy run emitted 24 records, V2 holds every one of them and the comparator reports no difference in any field on any record. Legacy finds only 24 because its spider takes the recipe links off /opskrifter and that page carries exactly 24; V2 traverses the link graph to 178, and the extras are real - /opskrift/moerk-chokoladesorbet was fetched by hand and carries 8 ingredients and 9 instructions, and no stored record for this source is empty or untitled.\n\nWhat blocks it is the 2026-08-31 run's own counters: 14 of 238 requests answered 429 while delaySeconds was already 10 with maxConcurrency 1, five times slower than the legacy spider's DOWNLOAD_DELAY of 2. A blocked request is a page never read, so the pace moves to 20s and the source needs a fresh uncapped run rather than a promotion. Note that the repeat gate reported only CHANGED 217->223 here: the store accumulates across runs, so a run that reached fewer pages still shows nothing lost, and the run observations have to be read alongside the gate.",
   },
   bornholms: {
     migrationState: "shadow_passed",
@@ -32701,7 +32701,10 @@ const LEGACY_REQUEST_SETTING_OVERRIDES: Record<
   // pacing is the lever, but 5 was not far enough. These are small catalogs of
   // about 200 records each, so the extra time costs little.
   diabetesopskrifter: { delaySeconds: 10, maxConcurrency: 1 },
-  blenderopskrifter: { delaySeconds: 10, maxConcurrency: 1 },
+  // Still 429ing 14 of 238 requests at 10s. The site rate-limits harder than
+  // its size suggests, and a blocked request is a page we never read, so the
+  // pace goes up rather than the shortfall being written off.
+  blenderopskrifter: { delaySeconds: 20, maxConcurrency: 1 },
   spicytwist: { maxConcurrency: 1 },
   spisekunst: { maxConcurrency: 1 },
   surdejsentusiasten: { maxConcurrency: 1 },
