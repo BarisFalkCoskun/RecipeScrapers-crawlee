@@ -4941,7 +4941,7 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
       "discovery": "listing",
       "sitemapUrls": [],
       "startUrls": [
-        "https://www.projectmealplan.com/wp-json/wp/v2/posts?per_page=100&page=1"
+        "https://www.projectmealplan.com/wp-json/wp/v2/posts?per_page=25&page=1"
       ],
       "recipeUrlPatterns": [
         "^https?://"
@@ -26609,7 +26609,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-20T01-49-27.334Z-attempt-c2fabda1-ad6e-40f2-ae4e-0a4d3942cb8e",
     deferOrBlockReason:
-      "Uncapped run persisted 0 recipes from 0 posts; 1 failed request and discovery that did not complete keeps it short of a canary",
+      "The route was asking for a page the server cannot build. projectmealplan.com is alive - its homepage answers 200 with 651 KB - but /wp-json/wp/v2/posts answers HTTP 500 at per_page=100 and at 50, and 200 at 25. Its posts are unusually large, 4.7 MB for 25 of them, which is why the bigger pages fail. The listing announces 436 posts over 18 pages at that size. startUrls now asks for 25 and the source needs a fresh uncapped run; the 0 recipes in its reason were never the site having none.",
   },
   closetcooking: {
     migrationState: "deferred",
