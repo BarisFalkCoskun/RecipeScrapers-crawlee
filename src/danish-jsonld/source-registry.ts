@@ -31610,10 +31610,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched 7 of the 10 pages its own header advertises, stored 700 recipes, and finished with finish_reason finished. Parity rests on the documented legacy-unhealthy route instead - two uncapped Crawlee runs emitted identical 934-record keys and normalized content with idempotent upserts, and a manual read of 25 stored records found every one complete",
   },
   thesavory: {
-    migrationState: "configured",
+    migrationState: "blocked",
     latestCanary: "2026-08-21T12-18-52.811Z-attempt-93180089-17b1-4874-9136-0109ff713393",
     deferOrBlockReason:
-      "Uncapped run reached no recipe candidates, so the route needs review before a canary",
+      "The site is down, not the route: on 2026-08-31 every path tried - /, /recipes/, /wp-json/ and /sitemap.xml - answered HTTP 503 with the same 73,849-byte \"Site Currently Unavailable\" page. There is nothing to crawl and nothing to compare against until thesavory.com serves again",
   },
   theseasonedmom: {
     migrationState: "configured",
@@ -31673,10 +31673,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed on a fresh crawl: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 2101 keys with identical content. Its earlier shortfall was stale stored data rather than a defect - the records it appeared to be missing were recipes the source published after the last crawl",
   },
   thesugarkitchen: {
-    migrationState: "configured",
+    migrationState: "blocked",
     latestCanary: "2026-08-21T12-20-14.514Z-attempt-050aec54-c10c-4594-8211-86d0ee791200",
     deferOrBlockReason:
-      "Uncapped run reached no recipe candidates, so the route needs review before a canary",
+      "The domain no longer hosts the site: on 2026-08-31 https://thesugarkitchen.com/ answered 302 to https://domains.atom.com/lpd/name/thesugarkitchen.com, a domain-marketplace listing, and the WPRM endpoint answered 404. The route needs no review because there is no site behind it",
   },
   thetoastykitchen: {
     migrationState: "shadow_passed",
