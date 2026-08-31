@@ -373,7 +373,14 @@ for(const [k,l] of L){
     else if(ly==="" && cy!=="" && !first) richerYield++;
     else add("yield",k,ly,cy);
   }
-  const limg=(l.image_urls||[]).map(norm), cimg=(n.imageUrls||[]).map(norm);
+  // The same image URL can be written with its non-ASCII characters percent
+  // encoded or not: thefoodclub's legacy run holds
+  // ".../IMG_6424_Smørristede-rosenkål-med-mynte-cashewnødder-2-900x1350.jpg"
+  // where V2 holds the same path with %C3%B8 and %C3%A5. That is one image
+  // spelled two ways, not two images, so decode before comparing. A malformed
+  // escape is left as it stands rather than throwing.
+  const decodeUrl=u=>{ try { return decodeURIComponent(u); } catch { return u; } };
+  const limg=(l.image_urls||[]).map(u=>decodeUrl(norm(u))), cimg=(n.imageUrls||[]).map(u=>decodeUrl(norm(u)));
   if(JSON.stringify(limg)!==JSON.stringify(cimg)){
     // Legacy ends up with no images on whole sources where V2 has them, for
     // more than one reason: it keeps only absolute URLs, so a source stating
