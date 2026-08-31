@@ -33916,11 +33916,12 @@ const ARTICLE_HTML_RECIPE_SOURCES: DanishJsonLdSource[] =
     },
     requireCompleteJsonLd: true,
     recipeExtractor: "femina-html",
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    shadowParity: "matched",
     latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-19T17-27-48.705Z",
     deferOrBlockReason:
-      "Bounded live canary persisted both selected recipes without failures and both exact direct Scrapy parses matched every material field; the 324-candidate catalog still requires an uncapped shadow run",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 1366 records, the legacy run finishing healthy with no blocked or failed requests, and two uncapped runs reproduced all 1366 keys with identical content. Exactly one record differs and the difference is a single entry: on /mad/broed/groft-hvedebroed legacy keeps a fragment reading ', (link fjernet)' - the residue of a stripped link - which V2 discards. Both sides carry the method steps inside the ingredient list because the page is authored that way; neither is misreading it. This replaces a bounded 50-request probe. The legacy run needed a six-hour ceiling: the harness default of two hours truncated it twice, which read as a source problem and was not one. This family has one member, so the state here is femina's alone.",
   }));
 
 const JSONLD_HTML_RECIPE_SOURCES: DanishJsonLdSource[] =

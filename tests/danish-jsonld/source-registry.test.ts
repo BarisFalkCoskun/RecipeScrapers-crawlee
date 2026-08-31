@@ -1045,7 +1045,10 @@ describe("Danish JSON-LD source registry", () => {
         sitemapUrls: ["https://www.femina.dk/sitemap.xml"],
         recipeExtractor: "femina-html",
         fetchMode: "cheerio",
-        migrationState: "canary_passed",
+        // Promoted 2026-08-31 on an uncapped run of 1366 records matching a
+        // healthy legacy run, replacing the bounded probe. The legacy half needed
+        // a six-hour ceiling; the harness default truncated it twice.
+        migrationState: "shadow_passed",
         latestScrapyOutcome: "succeeded",
         latestCanary: "2026-08-19T17-27-48.705Z",
       });
