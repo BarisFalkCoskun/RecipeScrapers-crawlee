@@ -26469,9 +26469,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   },
   bertolli: {
     migrationState: "configured",
-    latestCanary: "2026-08-18T09-25-59.830Z-attempt-7bf68bc2-a43b-4080-8e98-95efd18f2e37",
+    latestCanary: "2026-08-29T23-04-23.500Z-attempt-0fb3404c-059a-4150-b9b5-e3613eee8c2e",
     deferOrBlockReason:
-      "Uncapped run persisted 559 recipes with complete discovery; 7 blocked requests and 21 malformed pages keep it short of a canary",
+      "Three things stand between this source and a canary, and the reason previously named two of them wrongly. The most recent uncapped run persisted 566 recipes over 357 requests with 4 blocked requests, at least one a 403, and reported discoveryComplete false - not the 7 blocked and complete discovery recorded before. Incomplete discovery is the more serious of the two: the run stopped short and the store cannot show how much it missed.\n\nThe third is 22 pages rejected as malformed JSON-LD, and those are likely to clear on their own now. Two other sources named the same fault - unescaped attribute quotes in raw HTML embedded in a recipe field - and the extractor gained a repair for it, so a fresh uncapped run is the next step rather than any change here.",
   },
   bettycrocker: {
     migrationState: "configured",
