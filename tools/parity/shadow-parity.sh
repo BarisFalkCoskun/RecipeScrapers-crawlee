@@ -21,12 +21,19 @@ OUT="${PARITY_OUT_DIR:-${TMPDIR:-/tmp}/danish-parity}"
 mkdir -p "$OUT"
 
 cd "$LEGACY_DIR"
+# Some hosts answer honestly but slowly enough that Scrapy's 30s download
+# timeout gives up before the body arrives, which reads as a dead source rather
+# than a slow one. PARITY_SCRAPY_EXTRA passes extra "-s KEY=VALUE" settings so a
+# run can be made more patient without being made faster than the legacy spider.
+read -r -a scrapy_extra <<< "${PARITY_SCRAPY_EXTRA:-}"
+
 RECIPE_FEED_EXPORT_ENABLED=0 \
 PARITY_CAPTURE_PATH="$OUT/$SRC.json" \
 PYTHONPATH="$REPO/tools/parity${PYTHONPATH:+:$PYTHONPATH}" \
 timeout "${PARITY_SCRAPY_TIMEOUT:-2400}" .venv/bin/scrapy crawl "$SRC" \
   -s ITEM_PIPELINES='{"capture_pipeline.CaptureJsonPipeline": 100}' \
   -s LOG_LEVEL="${PARITY_LOG_LEVEL:-WARNING}" \
+  ${scrapy_extra[@]+"${scrapy_extra[@]}"} \
   > "$OUT/$SRC.scrapy.log" 2>&1
 scrapy_status=$?
 echo "scrapy exit=$scrapy_status for $SRC"
