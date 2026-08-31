@@ -34159,7 +34159,7 @@ const LEGACY_BODY_HTML_RECIPE_SOURCES: DanishJsonLdSource[] =
     } : {}),
     deferOrBlockReason: definition.id === "nipunijulie"
       ? "Two full Crawlee traversals completed all 233 candidates with stable source keys and no terminal block, failed request, storage failure, or domain violation; the final 140-record output is exactly equal to the full legacy output, while 93 ordinary posts do not satisfy the recipe contract"
-      : "Two bounded live canaries persisted complete recipes with no terminal block or request failure; a forced-browser run cleared an HTTP 454 challenge on an in-session retry, and the hybrid HTTP run completed normally. Two exact pages match the legacy parser on every material field, while all 756 sitemap candidates remain uncapped",
+      : "Uncapped run persisted 478 recipes with discovery complete and no failed requests, replacing the bounded canaries this reason used to describe, and it finds four recipes legacy's discovery misses - guide-til-berlin among them, stored with 23 ingredients and 7 steps. It is not promotable: on four records V2 extracts the wrong element entirely. lun-graeskarsalat's ingredient list comes back as fragments of a prose paragraph - a sentence split at each inline link - where legacy holds the real ingredients, hokkaidograeskar and olivenolie and citronskal among them. The body-HTML extractor is reading a related-recipes paragraph as the ingredient list; four records show it on ingredients and four on instructions. A forced-browser run has previously cleared an HTTP 454 challenge here, and the site answers 454 to this host again as of 2026-08-31. Needs an extractor fix rather than another run",
   }));
 
 export const DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
