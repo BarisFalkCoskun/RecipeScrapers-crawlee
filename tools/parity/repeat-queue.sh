@@ -44,6 +44,19 @@ while true; do
     continue
   fi
   node tools/parity/dump-crawlee.cjs "$db" "$src" "$after" >/dev/null 2>&1
+  # The dumps come from a store that accumulates, so they cannot show a run that
+  # reached fewer pages than the last one. The run's own counters can.
+  run_flags=$(node -e '
+    const fs=require("fs");
+    let d; try{ d=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); }catch{ process.exit(0); }
+    const o=(d.observations||[])[0]||{};
+    const bad=[];
+    if(o.blockedRequests>0) bad.push(`BLOCKED=${o.blockedRequests}`);
+    if(o.failedRequests>0) bad.push(`FAILED=${o.failedRequests}`);
+    if(o.discoveryComplete===false) bad.push("DISCOVERY-INCOMPLETE");
+    if(o.pageCapReached) bad.push("PAGE-CAP-REACHED");
+    if(bad.length) process.stdout.write(" "+bad.join(" "));
+  ' "$STORAGE_ROOT/$src-run.json")
   verdict=$(node -e '
     const fs=require("fs");
     const [b,a]=process.argv.slice(1).map(p=>{try{return JSON.parse(fs.readFileSync(p,"utf8"))}catch{return null}});
@@ -71,10 +84,22 @@ while true; do
     // of it changing between two runs minutes apart is not, and still reports
     // CHANGED so someone looks.
     const churn = a.length > 0 && edited / a.length > 0.05;
-    const ok=JSON.stringify(kb)===JSON.stringify(ka)&&!dup&&same+edited===a.length&&!churn;
-    console.log(`${ok?"STABLE":"CHANGED"} ${b.length}->${a.length} identical=${same}/${a.length}${edited?` upstream-edited=${edited}`:""}${churn?" EXCESSIVE-CHURN":""}${dup?" DUPLICATE-KEYS":""}`);
+    // A key in the second run that was not in the first is the site having
+    // published something between two crawls minutes apart; a key in the first
+    // that is gone from the second is the crawler having lost a record. Only
+    // the second is a defect, and collapsing them into "the key sets differ"
+    // made stinna report CHANGED for two new recipes with nothing wrong.
+    // Additions are still bounded: a run that invents a twentieth of the
+    // catalog is keying inconsistently, not reading a busy site.
+    const prevKeys=new Set(kb), nextKeys=new Set(ka);
+    const added=ka.filter(k=>!prevKeys.has(k)).length;
+    const lost=kb.filter(k=>!nextKeys.has(k)).length;
+    const churnAdded = a.length > 0 && added / a.length > 0.05;
+    const ok=lost===0&&!dup&&same+edited+added===a.length&&!churn&&!churnAdded;
+    console.log(`${ok?"STABLE":"CHANGED"} ${b.length}->${a.length} identical=${same}/${a.length}${edited?` upstream-edited=${edited}`:""}${added?` site-added=${added}`:""}${lost?` LOST=${lost}`:""}${churn||churnAdded?" EXCESSIVE-CHURN":""}${dup?" DUPLICATE-KEYS":""}`);
   ' "$before" "$after")
   rm -rf "$STORAGE_ROOT/st-$src"
+  if [ -n "$run_flags" ]; then verdict="CHANGED${run_flags} (${verdict})"; fi
   { flock 8; printf '%s | %s\n' "$src" "$verdict" >> "$RESULTS"; } 8>>"$RESULTS.lock"
   echo "[$WORKER] $src -> $verdict"
 done
