@@ -26674,7 +26674,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-19T19-34-51.297Z-attempt-e10f9b86-eb95-4ea2-96c2-27acf694c944",
     deferOrBlockReason:
-      "Uncapped run persisted 1522 recipes from 1615 posts; 1 failed request keeps it short of a canary",
+      "Completeness is not yet established, and the honest verdict is INCONCLUSIVE rather than a shortfall. The listing declares 1615 posts and the store holds 1479. Of the 138 it does not hold, 82 carry no recipe, 24 are listing links redirecting to a page already stored, 1 answers 410, and 1 was published after the crawl - but 30 answered 429 and were never examined at all. A page that refuses the check explains nothing about itself, so no completeness claim can rest on this walk. Being re-walked at a slower pace; the source itself is not implicated by anything seen so far.",
   },
   rockrecipes: {
     migrationState: "canary_passed",
@@ -26747,7 +26747,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-19T22-30-31.254Z-attempt-88af4181-4d11-41f1-8994-062bb6f55302",
     deferOrBlockReason:
-      "Uncapped run persisted 57 recipes from 100 posts; 1 failed request and discovery that did not complete keeps it short of a canary",
+      "A real discovery gap, not a stale count. The reason above said 57 recipes from 100 posts; the store holds 804 and the listing declares 1069 over 11 pages, so the figures were long out of date. The completeness walk of 2026-08-31 accounts for all but 15 of the 294 it does not hold - 277 posts carry no recipe, 1 listing link redirects to a page already stored, 1 publishes Recipe JSON-LD missing a required field - and those 15 are pages V2 should have. Checked one by hand: /kung-pao-beef/ was published 2024-03-18, extracts cleanly as a single recipe with 23 ingredients, and is absent from a store whose newest record was extracted 2026-08-29. It was not too new to have been seen.\n\nThe run that filled this store reported discovery as not complete, which is the likely cause: each listing page is about 6 MB and a truncated one loses posts silently. 15 is not a whole page, so it is more likely scattered fetch failures than a lost listing page. Needs a fresh uncapped run before anything else is concluded.",
   },
   joythebaker: {
     migrationState: "configured",
