@@ -225,6 +225,7 @@ let legacyProseImages=0;
 let fusedByLegacy=0;
 let spacedByLegacy=0;
 let legacyDroppedIngredients=0;
+let legacyDroppedInstructions=0;
 // Legacy and V2 disagree about whitespace at a markup boundary, in both
 // directions, and neither disagreement is about content.
 //
@@ -316,6 +317,15 @@ for(const [k,l] of L){
       namedSteps++;
       legacyIsSpacier(ls,stripped)?spacedByLegacy++:fusedByLegacy++;
     }
+    // gocook's legacy run reads no instructions at all on any of its 1080
+    // recipes, while V2 keeps the real steps - "Vask hænder", "Find ingredienser
+    // frem", and the rest of a method a child can follow. Legacy holding nothing
+    // and V2 holding something is V2 keeping what legacy discards, the same way
+    // it is for ingredients and images.
+    //
+    // The test is on legacy being empty, so V2 losing steps a legacy run found
+    // is still a difference and still reported.
+    else if(ls.length===0 && cs.length>0) legacyDroppedInstructions++;
     else add("instructions",k,ls,cs);
   }
   // A negative ISO duration is a broken upstream value. V2 reads it as no
@@ -450,5 +460,5 @@ if(!legacy.length || !crawlee.length){
   console.log("\nMISMATCH: field differences above");
   process.exitCode=2;
 } else {
-  console.log(`\nALL MATERIAL FIELDS MATCH (${cuisineDropped?`${cuisineDropped} records keep a cuisine legacy has no field for`:"tags == keywords + cuisines"}${namedSteps?`; ${namedSteps} records keep WPRM named-step prefixes legacy drops`:""}${richerYield?`; ${richerYield} records keep a fuller yield than legacy leading-integer`:""}${negativeDurations?`; ${negativeDurations} negative upstream durations V2 rejects and legacy keeps`:""}${looseDurations?`; ${looseDurations} loosely spelled durations V2 reads and legacy gives up on`:""}${relativeImages?`; ${relativeImages} records keep images legacy discards`:""}${legacyProseImages?`; ${legacyProseImages} records decline a paragraph legacy stores as an image`:""}${fusedByLegacy?`; ${fusedByLegacy} records keep a space at a block boundary legacy fuses over`:""}${legacyDroppedIngredients?`; ${legacyDroppedIngredients} records keep ingredients legacy stores none of`:""}${spacedByLegacy?`; ${spacedByLegacy} records drop a space legacy inserts where it strips inline markup`:""}${siblings.length?`; ${siblings.length} sibling recipes recovered`:""}${incompleteOnlyLegacy.length?`; ${incompleteOnlyLegacy.length} records legacy accepts without a name, ingredients or instructions`:""})`);
+  console.log(`\nALL MATERIAL FIELDS MATCH (${cuisineDropped?`${cuisineDropped} records keep a cuisine legacy has no field for`:"tags == keywords + cuisines"}${namedSteps?`; ${namedSteps} records keep WPRM named-step prefixes legacy drops`:""}${richerYield?`; ${richerYield} records keep a fuller yield than legacy leading-integer`:""}${negativeDurations?`; ${negativeDurations} negative upstream durations V2 rejects and legacy keeps`:""}${looseDurations?`; ${looseDurations} loosely spelled durations V2 reads and legacy gives up on`:""}${relativeImages?`; ${relativeImages} records keep images legacy discards`:""}${legacyProseImages?`; ${legacyProseImages} records decline a paragraph legacy stores as an image`:""}${fusedByLegacy?`; ${fusedByLegacy} records keep a space at a block boundary legacy fuses over`:""}${legacyDroppedIngredients?`; ${legacyDroppedIngredients} records keep ingredients legacy stores none of`:""}${legacyDroppedInstructions?`; ${legacyDroppedInstructions} records keep instructions legacy stores none of`:""}${spacedByLegacy?`; ${spacedByLegacy} records drop a space legacy inserts where it strips inline markup`:""}${siblings.length?`; ${siblings.length} sibling recipes recovered`:""}${incompleteOnlyLegacy.length?`; ${incompleteOnlyLegacy.length} records legacy accepts without a name, ingredients or instructions`:""})`);
 }
