@@ -1090,7 +1090,10 @@ describe("Danish JSON-LD source registry", () => {
         legacyFamily: "HtmlRecipeSitemapSpider",
         recipeExtractor: "discount365-html",
         allowedDomains: ["365discount.coop.dk", "365discount.dk"],
-        migrationState: "canary_passed",
+        // Promoted 2026-08-31: 29 records matching legacy across two uncapped
+        // runs, replacing the bounded probe. The small count is the catalog -
+        // the sitemap carries 22 matching URLs, so V2 holds more, not fewer.
+        migrationState: "shadow_passed",
         latestScrapyOutcome: "partial",
         latestCanary: "2026-08-19T18-03-03.842Z",
       });

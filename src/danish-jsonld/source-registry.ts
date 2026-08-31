@@ -34015,11 +34015,12 @@ const MULTI_RECIPE_HTML_SOURCES: DanishJsonLdSource[] =
     requestSettings: { delaySeconds: 2, rateLimitPerMinute: null, maxConcurrency: 2, maxRetries: 3 },
     requireCompleteJsonLd: true,
     recipeExtractor: "discount365-html",
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    shadowParity: "matched",
     latestScrapyOutcome: "partial",
     latestCanary: "2026-08-19T18-03-03.842Z",
     deferOrBlockReason:
-      "Bounded live shadow matched all 23 overlapping single- and multi-recipe records and every material field, with no Crawlee request, storage, malformed-payload, or domain failures; six legacy-only records came from its larger in-flight window, and the full catalog remains unvalidated",
+      "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 29 records with every material field matching, and two uncapped runs reproduced all 29 keys with identical content. The only difference is the intentional one: tags == keywords + cuisines. The count is small but it is the catalog: the site's sitemap carries 421 URLs of which 22 match the recipe pattern, so V2 holds more than the sitemap declares rather than fewer. Checked because a sibling source in this group, meny, reported a clean uncapped run of exactly 100 records while its own API declared 3049 - a round number is worth testing against what the source says it has. This replaces a bounded 50-request probe. This family has one member, so the state here is 365discount's alone.",
   }));
 
 const DR_GRAPHQL_RECIPE_SOURCES: DanishJsonLdSource[] =
