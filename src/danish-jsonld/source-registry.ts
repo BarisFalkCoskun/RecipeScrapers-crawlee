@@ -26599,10 +26599,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: legacy-unhealthy; the source has moved to therealfooddietitians.com and its listing answers 301 there; the legacy spider follows the redirect off its own allowed_domains, filters everything and reports a clean run holding nothing, leaving no baseline to compare. Discovery completeness rests on the posts listing this source actually publishes: it declares 930 posts, V2 stores 750, and 181 of the difference are posts that carry no recipe at all and 1 is a listing link that redirects to a page already stored, each one fetched and put through the crawler's own extractor. Two uncapped runs reproduced all 750 keys with identical content. Withdrawn on 2026-08-28 and restored on 2026-08-29: the completeness half had been produced by explain-rejections.cjs, which walks wprm_recipe and keys on a WPRM record id - this source publishes neither, so that check was answering a question that did not apply to it.",
   },
   artfuldishes: {
-    migrationState: "configured",
-    latestCanary: "2026-08-19T15-09-49.512Z-attempt-3927fda5-a2bc-4bac-a576-cbc506fad67a",
+    migrationState: "shadow_passed",
+    latestCanary: "2026-08-31T19-10-11.004Z-attempt-a67fb8be-0101-496d-972a-59e03fd0da9f",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Uncapped run persisted 0 recipes from 0 posts; 1 failed request and discovery that did not complete keeps it short of a canary",
+      "Shadow comparison passed: the isolated legacy run emitted 140 records and V2 holds exactly those 140, matching on every material field with no difference in any field on any record. 16 additionally keep a cuisine, which legacy has no field for, and 1 keeps a fuller yield than legacy's leading integer. The run outcome is 'succeeded' with no rejection of any kind - no incomplete or malformed JSON-LD - and no failed or blocked request over 154 requests with discovery complete. The second uncapped run reproduced all 140 keys with identical content. Of 151 recipe candidates discovered, 140 became records and all 140 are distinct by canonical URL and by page URL alike.\n\nThis source spent twelve days recorded as persisting 0 recipes from 0 posts, and both halves of that were ours. The legacy run produced nothing because artfuldishes.com takes about 27 seconds to answer its listing and Scrapy gave up at its 30-second default on all four tries; run with a longer DOWNLOAD_TIMEOUT it returns the full 140. The comparison then still read as two disjoint record sets because the site declares an https @id alongside an http site URL, and the comparator normalized www and the trailing slash but not the scheme.",
   },
   projectmealplan: {
     migrationState: "configured",
