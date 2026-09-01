@@ -31267,16 +31267,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   theflexitarian: {
-    migrationState: "configured",
-    latestCanary: "2026-08-21T12-10-47.425Z-attempt-77b6d3f8-28fd-4935-ba10-62e7bcb01abc",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T13-04-02.561Z-attempt-9305aff7-b86f-4ffa-81e2-68cfee7d307a",
     deferOrBlockReason:
-      "Uncapped run reached no recipe candidates, so the route needs review before a canary",
+      "A clean canary, against a reason that said the opposite. It read \"Uncapped run reached no recipe candidates, so the route needs review\" - the route is fine. The 2026-09-01 run persisted 710 recipes from 710 candidates over 9 requests with outcome \"succeeded\": no failed request, no blocked request, and not one page rejected as incomplete or malformed, discovery complete. The listing serves 4.2 MB of WPRM records when fetched by hand.\n\nThis source and theflexitarian_ir are the same site registered twice: identical domain, identical start URL, identical legacy family, and all 710 canonical URLs shared, so the store holds 1420 records for 710 recipes. The duplication is inherited rather than introduced - legacy ships danish_recipes/spiders/theflexitarian.py and theflexitarian_ir.py with the same allowed_domains, source_site and country - so V2 is mirroring it faithfully. Worth knowing that the 1012-source count includes at least one pair like this, and that both halves must reach cutover for the readiness gate to pass.\n\nAwaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   theflexitarian_ir: {
-    migrationState: "configured",
-    latestCanary: "2026-08-21T12-10-20.205Z-attempt-87f5fe63-dfd9-405a-af14-4a4909e92949",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T13-04-31.194Z-attempt-09a981cc-0ce5-4130-b16d-5ad4371a1e5f",
     deferOrBlockReason:
-      "Uncapped run reached no recipe candidates, so the route needs review before a canary",
+      "A clean canary, against a reason that said the opposite. It read \"Uncapped run reached no recipe candidates, so the route needs review\" - the route is fine. The 2026-09-01 run persisted 710 recipes from 710 candidates over 9 requests with outcome \"succeeded\": no failed request, no blocked request, and not one page rejected as incomplete or malformed, discovery complete. The listing serves 4.2 MB of WPRM records when fetched by hand.\n\nThis source and theflexitarian are the same site registered twice: identical domain, identical start URL, identical legacy family, and all 710 canonical URLs shared, so the store holds 1420 records for 710 recipes. The duplication is inherited rather than introduced - legacy ships danish_recipes/spiders/theflexitarian.py and theflexitarian_ir.py with the same allowed_domains, source_site and country - so V2 is mirroring it faithfully. Worth knowing that the 1012-source count includes at least one pair like this, and that both halves must reach cutover for the readiness gate to pass.\n\nAwaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   thefoodblog: {
     migrationState: "shadow_passed",
