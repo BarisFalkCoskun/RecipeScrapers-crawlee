@@ -26469,9 +26469,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   },
   bertolli: {
     migrationState: "configured",
-    latestCanary: "2026-08-29T23-04-23.500Z-attempt-0fb3404c-059a-4150-b9b5-e3613eee8c2e",
+    latestCanary: "2026-09-01T10-10-40.496Z-attempt-9c6243be-556f-4d73-952c-0d3a7479c612",
     deferOrBlockReason:
-      "Three things stand between this source and a canary, and the reason previously named two of them wrongly. The most recent uncapped run persisted 566 recipes over 357 requests with 4 blocked requests, at least one a 403, and reported discoveryComplete false - not the 7 blocked and complete discovery recorded before. Incomplete discovery is the more serious of the two: the run stopped short and the store cannot show how much it missed.\n\nThe third is 22 pages rejected as malformed JSON-LD, and those are likely to clear on their own now. Two other sources named the same fault - unescaped attribute quotes in raw HTML embedded in a recipe field - and the extractor gained a repair for it, so a fresh uncapped run is the next step rather than any change here.",
+      "Better on the re-crawl but not clean. Discovery now completes, where the previous run reported it incomplete, and the quote repair took the malformed rejections from 22 to 12 - 18 of the stored records carry the json-ld-embedded-quote-repaired signal. 570 recipes over 357 requests with no failed request.\n\nTwo things still stand against it. Six requests were blocked, at least two answering 403, so pages went unread; and 12 scripts still do not parse even with the quote and control-character repairs, which is a different fault from the one that was fixed and has not been read yet. The store also holds 581 records against the 570 this run wrote, so 11 survive from the earlier run and would be counted by any comparison - the same accumulating-store problem odensemarcipan has.",
   },
   bettycrocker: {
     migrationState: "configured",
