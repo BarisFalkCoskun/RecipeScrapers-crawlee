@@ -33,7 +33,25 @@ legacy accepts and V2 rejects on this rule, 150 records in total** - 25 on
 buildyourbite, 14 on bobsredmill, 13 on mariavestergaard, 28 on chelsea_nz, and
 so on down to single records. Those were each read and accepted individually as
 an intentional difference, which is defensible one record at a time and adds up
-to a real number.
+to a real number. gastrofun adds a further 17, verified as a class by the WPRM
+completeness walk rather than named one by one.
+
+### The total, counted rather than estimated
+
+| bucket | records |
+| --- | --- |
+| tillamook (deferred, whole source) | 592 |
+| edmonds_nz (deferred, whole source) | 559 |
+| 37 named allowances across promoted and configured sources | 150 |
+| gastrofun (explainer-verified class) | 17 |
+| **subtotal** | **1318** |
+| netto (deferred, whole source) | not counted - its reason gives no ratio |
+
+Earlier revisions of this document and two commit messages put the figure at
+"roughly 1150" and "roughly 1170". Both were low: the first predated gastrofun
+and the second was adjusted from the first by memory rather than recounted. The
+table above is generated from the reasons themselves and should be regenerated
+rather than adjusted whenever it is quoted again.
 
 ## Why this is not mine to decide
 
