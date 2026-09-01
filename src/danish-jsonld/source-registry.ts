@@ -32465,10 +32465,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
    * stay rejected.
    */
   santamariaworld: {
-    migrationState: "configured",
-    latestCanary: "2026-08-17T01-08-09.402Z-attempt-662cae2c-d747-4791-bdad-a25aa246d76c",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T06-36-31.773Z-attempt-1bb03551-7d4e-4728-8ceb-1ec176f3f4a6",
     deferOrBlockReason:
-      "Uncapped run persisted 422 recipes with no blocked or failed request, but 94 scripts carry an unescaped quote inside an ingredient string and stay malformed",
+      "The unescaped quotes this reason named are repaired, and the run measures it. Before: 422 recipes with 47 scripts rejected as malformed. After the extractor learned to escape a quote that cannot be closing a JSON string: 467 recipes with 1 malformed rejection, over 498 requests with no failed and no blocked request and discovery complete. 45 of the stored records carry the json-ld-embedded-quote-repaired signal, which is the recovery counted directly rather than inferred from the totals, and another 279 carry the older control-character repair - this source publishes raw HTML inside its recipe fields and escapes almost none of it.\n\nEvery record in the store is from this run, so there is nothing stale left behind from the earlier one. What remains against it is 6 pages whose Recipe JSON-LD is missing a required field and 1 that still does not parse - 7 rejections against 490 candidates, where there were 52. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   revivafit: {
     migrationState: "shadow_passed",
