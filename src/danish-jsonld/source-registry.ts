@@ -27022,10 +27022,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 939 recipes from 939 posts with complete discovery and no blocked, failed or rejected record",
   },
   "40aprons": {
-    migrationState: "configured",
-    latestCanary: "2026-08-21T10-20-43.684Z-attempt-5d3cb7aa-7db9-4118-a6b0-ed5de5d602e6",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T21-31-55.126Z-attempt-2e857d0d-6a9c-4974-b736-767f4e622640",
     deferOrBlockReason:
-      "Uncapped run persisted 1545 recipes from 1550 API records; 5 records the source publishes incomplete or malformed keeps it short of a canary; the shortfall cannot be checked against the listing because the listing did not answer when the shortfall was checked",
+      "The uncapped run is clean and every rejection is accounted for. It persisted 1547 recipes from 1552 candidates over 17 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 1552, stored 1548, missing 5 - 2 no title, 3 no canonical link. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   acedarspoon: {
     migrationState: "shadow_passed",
@@ -27369,10 +27369,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 306 recipes from 306 API records with complete discovery and no blocked, failed or rejected record",
   },
   bakingamoment: {
-    migrationState: "configured",
-    latestCanary: "2026-08-21T10-31-34.963Z-attempt-cb0dc935-75b1-4fff-8aa1-b7355f9e90ea",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T21-32-41.552Z-attempt-d797cce2-2628-4c25-a645-42498b241591",
     deferOrBlockReason:
-      "The run this reason describes was superseded hours after it happened. It is the 2026-08-29T23-34-16 run: one request, one candidate, that candidate rejected as malformed WPRM, discovery incomplete. A later run on 2026-08-30T02-12-02 stored 1009 records, and those are what the store holds now - so the source is neither empty nor broken, and the sentence above described a transient failure as if it were the state.\n\nThat later run's summary is not on disk, so its failed, blocked and discovery-complete counters cannot be read and no canary claim can rest on it. Queued for a fresh uncapped run.\n\nOne thing worth keeping: /wp-json/wp/v2/wprm_recipe answers HTTP 200 with an empty body at per_page=100 and serves 50 records at per_page=50, which is why startUrls already asks for 50. That part of the setup is correct and should not be undone.",
+      "The uncapped run is clean and every rejection is accounted for. It persisted 1010 recipes from 1011 candidates over 22 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 1011, stored 1010, missing 1 - 1 no ingredients. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   bakingbeauty: {
     migrationState: "shadow_passed",
@@ -27410,10 +27410,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 592 keys with identical content. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no instructions), so there is no unexplained rejection",
   },
   beamingbaker: {
-    migrationState: "configured",
-    latestCanary: "2026-08-21T10-32-09.360Z-attempt-d2a73ea5-ec97-4054-9823-0770d1e6755c",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T21-33-35.117Z-attempt-b5b0e4c2-4d6e-4806-9a7d-f65be4432054",
     deferOrBlockReason:
-      "Uncapped run persisted 853 recipes from 856 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "The uncapped run is clean and every rejection is accounted for. It persisted 855 recipes from 858 candidates over 10 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 858, stored 855, missing 3 - 2 no ingredients, 1 no instructions. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   bellyfull: {
     migrationState: "shadow_passed",
@@ -27662,10 +27662,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: legacy-unhealthy; page 2 of the API answered 403, so the legacy spider stopped after 100 recipes yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 815 records the live listing declares, on all 100 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 808 keys with identical content, and on a reviewed sample of 25 stored records. An earlier pair of runs differed on 14 records; this verdict rests on a clean pair rather than on that one. The 7 records V2 does not store are upstream defects the completeness contract rejects (1 no instructions, 6 no canonical link).",
   },
   caribbeanpot: {
-    migrationState: "configured",
-    latestCanary: "2026-08-21T10-37-49.226Z-attempt-e2173e8f-3765-491f-a85f-3e6269140422",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T21-34-07.864Z-attempt-73204293-4bc7-4e5b-99ef-566fa6fa24d6",
     deferOrBlockReason:
-      "Uncapped run persisted 255 recipes from 261 API records; 6 records the source publishes incomplete or malformed keeps it short of a canary",
+      "The uncapped run is clean and every rejection is accounted for. It persisted 255 recipes from 264 candidates over 4 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 264, stored 263, missing 8 - 6 no ingredients, 2 no canonical link. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   carlsbadcravings: {
     migrationState: "shadow_passed",
@@ -27790,10 +27790,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed on a fresh crawl: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 537 keys with identical content. Its earlier shortfall was stale stored data rather than a defect - the records it appeared to be missing were recipes the source published after the last crawl",
   },
   completelydelicious: {
-    migrationState: "configured",
-    latestCanary: "2026-08-21T10-40-27.821Z-attempt-78056d8c-1de3-4d1d-8b50-4bea9b73dd59",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T21-35-20.026Z-attempt-bf469522-a160-472c-aab5-2b91372e9824",
     deferOrBlockReason:
-      "Uncapped run persisted 829 recipes from 830 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "The uncapped run is clean and every rejection is accounted for. It persisted 829 recipes from 830 candidates over 10 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 830, stored 829, missing 1 - 1 no ingredients. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   connoisseurusveg: {
     migrationState: "shadow_passed",
@@ -27819,10 +27819,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 137-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 137 recipes with every material field matching",
   },
   cookiemadness: {
-    migrationState: "configured",
-    latestCanary: "2026-08-21T10-41-53.279Z-attempt-42269a30-bd4a-4130-88bd-caba872367c6",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T21-35-46.430Z-attempt-3a07a199-e6e1-40f2-8b12-237d00cf64bf",
     deferOrBlockReason:
-      "Uncapped run persisted 2879 recipes from 2880 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "The uncapped run is clean and every rejection is accounted for. It persisted 2883 recipes from 2885 candidates over 30 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 2885, stored 2883, missing 2 - 1 no ingredients, 1 no canonical link. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   cookincanuck: {
     migrationState: "shadow_passed",
@@ -28587,10 +28587,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 616 records with every material field matching, and two uncapped runs reproduced all 616 keys with identical content. An earlier comparison read this source as having field differences; it was reading a stored crawl against a legacy run from days later, so the site's own edits showed up as implementation differences.",
   },
   foodfaithfitness: {
-    migrationState: "configured",
-    latestCanary: "2026-08-21T10-53-37.736Z-attempt-cca07d99-7fd1-4012-99a3-3cdc91ddc935",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T21-37-15.485Z-attempt-0d5870d6-b7c7-4eaa-853f-e976e6b6fd21",
     deferOrBlockReason:
-      "Uncapped run persisted 4848 recipes from 4854 API records; 6 records the source publishes incomplete or malformed keeps it short of a canary",
+      "The uncapped run is clean and every rejection is accounted for. It persisted 4848 recipes from 4854 candidates over 50 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 4854, stored 4848, missing 6 - 6 no ingredients. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   foodieandwine: {
     migrationState: "shadow_passed",
@@ -29022,10 +29022,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 1180-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 1180 recipes with every material field matching",
   },
   holycowvegan: {
-    migrationState: "configured",
-    latestCanary: "2026-08-21T11-16-51.065Z-attempt-decb247a-e458-4cf2-9864-b3f0b346cbce",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T21-43-55.242Z-attempt-42bbe253-5372-4960-b104-8cdcf785f62e",
     deferOrBlockReason:
-      "Uncapped run persisted 1134 recipes from 1137 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "The uncapped run is clean and every rejection is accounted for. It persisted 1134 recipes from 1137 candidates over 13 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 1137, stored 1135, missing 3 - 3 no title. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   homecookingadventure: {
     migrationState: "shadow_passed",
@@ -29100,10 +29100,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 801 keys with identical content. Every one of the 145 shortfall records is an upstream defect the completeness contract rejects (1 no ingredients, 144 no instructions), so there is no unexplained rejection",
   },
   iambaker: {
-    migrationState: "configured",
-    latestCanary: "2026-08-21T11-17-36.500Z-attempt-039cea5e-3e42-4c74-b432-c531b9b22e6f",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T21-44-30.417Z-attempt-e94110e8-c5a3-40f6-952f-721fa0144b61",
     deferOrBlockReason:
-      "Uncapped run persisted 2213 recipes from 2216 API records; 3 records the source publishes incomplete or malformed keeps it short of a canary",
+      "The uncapped run is clean and every rejection is accounted for. It persisted 2221 recipes from 2224 candidates over 24 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 2224, stored 2221, missing 3 - 3 no title. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   ifoodreal: {
     migrationState: "shadow_passed",
@@ -29484,10 +29484,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: legacy-unhealthy; page two of the API answered 403, so the legacy spider stopped after 100 recipes yet still reported finish_reason 'finished'. A truncated run is not a baseline, so acceptance rests on discovery reaching all 555 records the live listing declares, on all 100 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 556 keys with identical content, and on a reviewed sample of 25 stored records.",
   },
   lemontreedwelling: {
-    migrationState: "configured",
-    latestCanary: "2026-08-21T11-24-53.869Z-attempt-c7a0b5be-02df-45a3-a838-9d848b8ce899",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T21-45-29.550Z-attempt-06e51064-2cec-4b73-9147-4703ebe2a458",
     deferOrBlockReason:
-      "Uncapped run persisted 1770 recipes from 1941 API records; 171 records the source publishes incomplete or malformed keeps it short of a canary",
+      "The uncapped run is clean and every rejection is accounted for. It persisted 1770 recipes from 1941 candidates over 21 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 1941, stored 1770, missing 171 - 3 no title, 160 no ingredients, 8 no instructions. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   lexiscleankitchen: {
     migrationState: "shadow_passed",
@@ -29657,10 +29657,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 538 keys with identical content; tags == keywords + cuisines; 5 records legacy accepts without a name, ingredients or instructions. Every one of the 5 shortfall records is an upstream defect the completeness contract rejects (4 no ingredients, 1 no instructions), so there is no unexplained rejection",
   },
   maebells: {
-    migrationState: "configured",
-    latestCanary: "2026-08-21T11-32-33.171Z-attempt-6bc6cb42-729a-41d7-9c46-b8f68141635c",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T21-46-20.049Z-attempt-c710ef8d-0d95-44a6-a956-b5e3a52a9dc0",
     deferOrBlockReason:
-      "Uncapped run persisted 565 recipes from 574 API records; 9 records the source publishes incomplete or malformed keeps it short of a canary",
+      "The uncapped run is clean and every rejection is accounted for. It persisted 567 recipes from 576 candidates over 7 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 576, stored 567, missing 9 - 9 no ingredients. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   makeandtakes: {
     migrationState: "shadow_passed",
@@ -29742,10 +29742,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed on a fresh crawl: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 493 keys with identical content. Its earlier shortfall was stale stored data rather than a defect - the records it appeared to be missing were recipes the source published after the last crawl",
   },
   meganvskitchen: {
-    migrationState: "configured",
-    latestCanary: "2026-08-21T11-34-21.800Z-attempt-11875b93-6757-49af-87c8-60ca59c0ae14",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T21-46-41.481Z-attempt-69b81896-3cf1-4a96-b98c-73579f0539dd",
     deferOrBlockReason:
-      "Uncapped run persisted 263 recipes from 264 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "The uncapped run is clean and every rejection is accounted for. It persisted 264 recipes from 265 candidates over 4 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 265, stored 265, missing 1 - 1 no canonical link. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   melissassouthernstylekitchen: {
     migrationState: "blocked",
@@ -29754,10 +29754,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   melskitchencafe: {
-    migrationState: "configured",
-    latestCanary: "2026-08-21T11-32-58.078Z-attempt-1cd5bf2a-a539-415c-83c7-160d24834868",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T21-46-54.749Z-attempt-76c7a5c9-0dad-4325-8303-f97f0a34daad",
     deferOrBlockReason:
-      "Uncapped run persisted 1787 recipes from 1813 API records; 26 records the source publishes incomplete or malformed keeps it short of a canary",
+      "The uncapped run is clean and every rejection is accounted for. It persisted 1789 recipes from 1815 candidates over 20 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 1815, stored 1789, missing 26 - 26 no ingredients. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   merryboosters: {
     migrationState: "shadow_passed",
@@ -30444,10 +30444,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 613 keys with identical content. Every one of the 23 shortfall records is an upstream defect the completeness contract rejects (23 no instructions), so there is no unexplained rejection",
   },
   recipegirl: {
-    migrationState: "configured",
-    latestCanary: "2026-08-21T11-46-33.603Z-attempt-df7c1651-67dc-4e6d-8365-c6b3e61d7ddb",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T21-47-52.810Z-attempt-19b70675-562a-4134-bacd-75c19d5ba57b",
     deferOrBlockReason:
-      "Uncapped run persisted 2929 recipes from 2930 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "The uncapped run is clean and every rejection is accounted for. It persisted 2930 recipes from 2931 candidates over 31 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 2931, stored 2931, missing 1 - 1 no title. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   reciperunner: {
     migrationState: "shadow_passed",
@@ -30493,10 +30493,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 295 recipes from 295 API records with complete discovery and no blocked, failed or rejected record",
   },
   reluctantentertainer: {
-    migrationState: "configured",
-    latestCanary: "2026-08-21T11-45-45.853Z-attempt-acd18c98-6ef6-4b68-9126-d59a305ab57f",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T21-49-04.869Z-attempt-283c05ad-2361-4a10-8157-8aa000ece01a",
     deferOrBlockReason:
-      "Uncapped run persisted 2475 recipes from 2489 API records; 14 records the source publishes incomplete or malformed keeps it short of a canary",
+      "The uncapped run is clean and every rejection is accounted for. It persisted 2480 recipes from 2494 candidates over 26 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 2494, stored 2480, missing 14 - 4 no title, 2 no ingredients, 8 no instructions. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   reluctantgourmet: {
     migrationState: "shadow_passed",
@@ -31006,9 +31006,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   },
   sweetphi: {
     migrationState: "configured",
-    latestCanary: "2026-08-21T12-04-39.808Z-attempt-46841d0f-584d-4791-8ae7-17308aee30c6",
+    latestCanary: "2026-09-01T21-51-18.641Z-attempt-b7de33a3-071a-4193-b2b0-d6fa60e0276a",
     deferOrBlockReason:
-      "Uncapped run persisted 979 recipes from 1011 API records; 32 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Two runs and only the older one is usable, so this waits. The 2026-08-29T15-34-11 run persisted 980 recipes with no failed and no blocked request and discovery complete, and the WPRM completeness walk accounts for all 32 it did not keep - 2 no title, 28 no ingredients, 2 no instructions, every one a field the source omits. On that run alone this would be a canary.\n\nThe 2026-09-01T21-51-18 run is not usable: 398 recipes, one blocked request and discovery incomplete. A canary claim has to rest on the most recent run rather than the most convenient one, so this needs a fresh uncapped run rather than a promotion on the older evidence.",
   },
   sweetpotatosoul: {
     migrationState: "shadow_passed",
@@ -31046,10 +31046,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 1600 recipes from 1601 API records; 1 record the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary; the shortfall cannot be checked against the listing because the listing serves only 1600 of the 1746 records it announces before it stops answering",
   },
   tastesbetterfromscratch: {
-    migrationState: "configured",
-    latestCanary: "2026-08-21T12-06-00.078Z-attempt-ebd999ac-ea6a-4010-82da-a11ea212ba39",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T21-52-35.646Z-attempt-7ecd408f-13cd-4759-8c6e-6807171def68",
     deferOrBlockReason:
-      "Uncapped run persisted 1099 recipes from 1108 API records; 9 records the source publishes incomplete or malformed keeps it short of a canary",
+      "The uncapped run is clean and every rejection is accounted for. It persisted 1101 recipes from 1110 candidates over 13 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 1110, stored 1102, missing 9 - 2 no ingredients, 1 no instructions, 6 no canonical link. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   tasteslovely: {
     migrationState: "shadow_passed",
@@ -31157,10 +31157,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 597 recipes from 597 API records with complete discovery and no blocked, failed or rejected record",
   },
   thecookierookie: {
-    migrationState: "configured",
-    latestCanary: "2026-08-21T12-08-29.586Z-attempt-628645c1-b5c8-479e-977c-67d4c8cba523",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T21-53-23.117Z-attempt-326c97b1-1892-4d47-bdc3-9b775f1c5500",
     deferOrBlockReason:
-      "Uncapped run persisted 2180 recipes from 2182 API records; 2 records the source publishes incomplete or malformed keeps it short of a canary",
+      "The uncapped run is clean and every rejection is accounted for. It persisted 2181 recipes from 2183 candidates over 23 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 2183, stored 2182, missing 2 - 2 no canonical link. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   thecookingfoodie: {
     migrationState: "shadow_passed",
@@ -31302,10 +31302,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 421 recipes from 421 API records with complete discovery and no blocked, failed or rejected record",
   },
   theforkedspoon: {
-    migrationState: "configured",
-    latestCanary: "2026-08-21T12-07-35.707Z-attempt-5e81e315-2a70-459d-b8c1-4269b4b026fa",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T21-54-18.070Z-attempt-6f9bd61e-238c-4e7a-9970-5397e5cdef29",
     deferOrBlockReason:
-      "Uncapped run persisted 1150 recipes from 1151 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "The uncapped run is clean and every rejection is accounted for. It persisted 1152 recipes from 1153 candidates over 13 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 1153, stored 1153, missing 1 - 1 no ingredients. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   thegardengrazer: {
     migrationState: "shadow_passed",
@@ -31577,10 +31577,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window match on every material field, and two uncapped runs reproduced all 3382 keys with identical content. The only differences are the intentional ones: tags == keywords + cuisines; 2012 records keep WPRM named-step prefixes legacy drops; 2 keep a space at a block boundary legacy fuses over; and 445 of legacy's 3827 records are ones it accepts with no link at all - every one of that shortfall - which the completeness contract rejects. This source read as a whole-catalog field mismatch until the comparison was fixed to strip tags on both sides of the entity decode: one ingredient's anchor href carries an entity-encoded HTML comment, and decoding first broke the tag strip so the href leaked into legacy's normalised text.",
   },
   thereciperebel: {
-    migrationState: "configured",
-    latestCanary: "2026-08-21T12-13-52.288Z-attempt-cea813a2-29a2-467f-8183-cebfae4cc7f0",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T21-54-55.148Z-attempt-feb21668-1fc8-470d-a1d7-a9f2aff2e861",
     deferOrBlockReason:
-      "Uncapped run persisted 1198 recipes from 1204 API records; 6 records the source publishes incomplete or malformed keeps it short of a canary",
+      "The uncapped run is clean and every rejection is accounted for. It persisted 1200 recipes from 1206 candidates over 14 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 1206, stored 1200, missing 6 - 6 no ingredients. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   therecipewell: {
     migrationState: "shadow_passed",
@@ -31591,10 +31591,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 141 recipes from 141 API records with complete discovery and no blocked, failed or rejected record",
   },
   theroastedroot: {
-    migrationState: "configured",
-    latestCanary: "2026-08-21T12-17-50.485Z-attempt-f82c7e1a-f9ee-4905-9f3a-95397c35f37f",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T21-55-30.065Z-attempt-ed0abe7c-471d-400e-967f-e36a161fad39",
     deferOrBlockReason:
-      "Uncapped run persisted 2098 recipes from 2099 API records; 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "The uncapped run is clean and every rejection is accounted for. It persisted 2101 recipes from 2102 candidates over 23 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 2102, stored 2102, missing 1 - 1 no canonical link. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   therusticfoodie: {
     migrationState: "shadow_passed",
@@ -31620,10 +31620,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "The site is down, not the route: on 2026-08-31 every path tried - /, /recipes/, /wp-json/ and /sitemap.xml - answered HTTP 503 with the same 73,849-byte \"Site Currently Unavailable\" page. There is nothing to crawl and nothing to compare against until thesavory.com serves again",
   },
   theseasonedmom: {
-    migrationState: "configured",
-    latestCanary: "2026-08-21T12-14-44.465Z-attempt-e877c589-455b-4988-aef3-5d8386f518e2",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T21-56-33.522Z-attempt-4b2776ed-4f4c-4f8b-b2d5-b4ea21eb28aa",
     deferOrBlockReason:
-      "Uncapped run persisted 2066 recipes from 2076 API records; 10 records the source publishes incomplete or malformed keeps it short of a canary",
+      "The uncapped run is clean and every rejection is accounted for. It persisted 2067 recipes from 2077 candidates over 22 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 2077, stored 2068, missing 10 - 6 no ingredients, 4 no canonical link. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   thesimpleparent: {
     migrationState: "shadow_passed",
