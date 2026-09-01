@@ -26396,9 +26396,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   },
   maduniverset: {
     migrationState: "configured",
-    latestCanary: "2026-08-16T00-37-52.059Z-attempt-bffad42b-d66c-49fd-8434-e1e95f0d30f2",
+    latestCanary: "2026-09-01T05-19-31.984Z-attempt-e8f7dfbc-798c-4d6b-9bc6-8effd3a7f452",
     deferOrBlockReason:
-      "Uncapped run persisted 9811 recipes with complete discovery; 2 failed requests and 42 incomplete pages keep it short of a canary",
+      "The fresh run reached the whole catalogue and then tripped over the site under its own load. It persisted 9624 recipes over 9868 requests with discovery complete, against a reason that described 9811 recipes and 2 failed requests - but 189 requests failed this time, and the log holds 135 warnings reading \"502 - Internal Server Error\" with 3 requests reaching maximum retries.\n\nThe pages are not broken. The one URL the log names, /opskrift/familien-noergaards-juleleverpostej, answers 200 in under a second on three consecutive attempts by hand. So this is the same shape as wholesomeyum: a source that fails under our crawl and serves a single client perfectly well. maxConcurrency drops from 2 to 1, which halves the concurrent pressure without touching the delay and keeps V2 no faster than the legacy spider, and the source needs a fresh uncapped run at that pace.",
   },
   micadeli: {
     migrationState: "shadow_passed",
@@ -32709,6 +32709,12 @@ const LEGACY_REQUEST_SETTING_OVERRIDES: Record<
   // 238 on blenderopskrifter. They are the same publisher and rate-limit harder
   // than their size suggests, and a blocked request is a page we never read, so
   // the pace goes up rather than the shortfall being written off.
+  // 135 of maduniverset's 9868 requests answered 502 under a crawl at two
+  // parallel workers. The pages are fine - the one URL the log names,
+  // /opskrift/familien-noergaards-juleleverpostej, answers 200 in under a
+  // second on three consecutive tries - so this is the site failing under our
+  // own load. One worker halves the concurrent pressure and keeps the delay.
+  maduniverset: { delaySeconds: 2, maxConcurrency: 1 },
   diabetesopskrifter: { delaySeconds: 20, maxConcurrency: 1 },
   blenderopskrifter: { delaySeconds: 20, maxConcurrency: 1 },
   spicytwist: { maxConcurrency: 1 },

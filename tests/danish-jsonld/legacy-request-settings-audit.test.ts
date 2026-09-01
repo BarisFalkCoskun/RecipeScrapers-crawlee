@@ -1058,7 +1058,15 @@ describe("legacy request-settings audit", () => {
     // run, and blenderopskrifter's own legacy run took 25 responses of 429. What
     // this audit is really protecting is that V2 is never more aggressive than
     // legacy, so slower is allowed and faster is not.
-    const deliberatelySlower = new Set(["diabetesopskrifter", "blenderopskrifter"]);
+    // maduniverset is here for a different reason on a different axis: 135 of
+    // its 9868 requests answered 502 under two parallel workers, while the
+    // pages themselves answer 200 in under a second to a single client. It
+    // keeps legacy's delay and halves the concurrency, so the assertion below
+    // asks for "slower on some axis, faster on none" rather than for a longer
+    // delay specifically.
+    const deliberatelySlower = new Set([
+      "diabetesopskrifter", "blenderopskrifter", "maduniverset",
+    ]);
     const audited = DANISH_JSONLD_SOURCES.filter((source) =>
       source.legacyFamily !== "WprmApiSpider" &&
       !newlyRegisteredWpPostsIds.has(source.id) &&
@@ -1081,8 +1089,14 @@ describe("legacy request-settings audit", () => {
 
     for (const source of audited.filter((entry) => deliberatelySlower.has(entry.id))) {
       const legacy = expectedNonWprmSettings[source.id as keyof typeof expectedNonWprmSettings];
-      expect(source.requestSettings.delaySeconds).toBeGreaterThan(legacy.delaySeconds);
+      // Never more aggressive than legacy on either axis...
+      expect(source.requestSettings.delaySeconds).toBeGreaterThanOrEqual(legacy.delaySeconds);
       expect(source.requestSettings.maxConcurrency).toBeLessThanOrEqual(legacy.maxConcurrency);
+      // ...and actually slower on at least one, or it does not belong in this set.
+      expect(
+        source.requestSettings.delaySeconds > legacy.delaySeconds ||
+          source.requestSettings.maxConcurrency < legacy.maxConcurrency
+      ).toBe(true);
       expect(source.requestSettings.maxRetries).toBe(legacy.maxRetries);
     }
   });
