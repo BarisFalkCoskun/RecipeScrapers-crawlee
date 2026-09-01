@@ -26057,7 +26057,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-16T00-00-01.253Z-attempt-e7e4e259-69cd-453d-b21e-046f5d3f49af",
     deferOrBlockReason:
-      "Uncapped run persisted 726 recipes, but the source's own malformed relative pagination links produced 60 failed requests and left discovery incomplete",
+      "Not the source's fault, or not mostly. The reason here used to blame \"the source's own malformed relative pagination links\" for 60 failed requests, and the failures are real - the 2026-08-30 run left discovery incomplete - but the pages it failed on exist. The 16 distinct URLs it could not fetch are pages 2 and 19 through 33 of the listing, requested as /opskrifter/alle/opskrifter/alle/N. That doubled path answers 404. The same page at /opskrifter/alle/19 answers 200.\n\nThe site does publish one document-relative pagination link, href=\"opskrifter/alle/1\", which resolves against /opskrifter/alle/ to the doubled form exactly as a browser would - so the trigger is upstream. But its other pagination links are root-relative, /opskrifter/alle/10 and so on, and pages 19 to 33 were then requested against the doubled base rather than the site root. Fifteen listing pages of recipes were never reached, and they were reachable.\n\nRecorded rather than fixed: correcting how a relative pagination link is resolved touches every listing source, and it needs its own change with its own tests rather than being folded into a night of source triage.",
   },
   madoghave: {
     migrationState: "shadow_passed",
@@ -26321,7 +26321,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-17T23-05-35.904Z-attempt-cde2a905-dc84-49ed-b08d-ea02a68994ad",
     deferOrBlockReason:
-      "Uncapped run persisted 710 recipes over 2699 pages with complete discovery; one failed request and 58 incomplete pages keep it short of a canary",
+      "The reason here described a run two crawls old. The 2026-08-29 run persisted 738 recipes over 2685 requests with complete discovery, 3 failed requests and 1 incomplete page - not 710 recipes, one failed request and 58 incomplete. And the single URL behind those 3 failures, /opskrifter/dessert/lille-appelsinkage-med-orangemarmelade, answers 200 when fetched by hand, so it was a transient failure rather than a dead page. Queued for a fresh uncapped run, which is likely to come back clean.",
   },
   /**
    * The single failed request is a page the source itself serves as 500 on
