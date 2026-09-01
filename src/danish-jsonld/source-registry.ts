@@ -28546,7 +28546,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-21T10-52-37.863Z-attempt-120f836c-6b16-4e12-9ddd-db2ed0e2f1ac",
     deferOrBlockReason:
-      "Uncapped run reached no recipe candidates (malformed-listing-payload), so the route needs review before a canary",
+      "The site is no longer the one this source was written for. flavcity.com is now a Shopify storefront - 222 references to shopify in its homepage, a sitemap index pointing at shopflavcity.com - and every /wp-json/ path answers HTTP 400 with an 11-byte \"Bad Request\", including /wp-json/ itself. The WPRM endpoint in startUrls cannot return anything, which is what \"malformed-listing-payload\" was really reporting.\n\nIts recipes moved to Shopify blog routes, /blogs/recipes/<slug>, and the blog sitemap lists 698 URLs. Reaching them would need a new discovery route rather than a page-size or header change - but it is not clear that would help: /blogs/recipes/cinnamon-honey-shaken-latte publishes a Recipe node with 4 recipeIngredient entries and recipeInstructions of null, so it fails the completeness contract the same way tillamook and edmonds_nz do. Whether that is a source to rebuild or a source to defer depends on the completeness-contract question recorded in docs/open-question-completeness-contract.md.",
   },
   flavourandsavour: {
     migrationState: "shadow_passed",
