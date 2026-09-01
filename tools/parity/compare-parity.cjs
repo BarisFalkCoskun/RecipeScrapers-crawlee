@@ -422,11 +422,28 @@ for(const [k,l] of L){
     else if(cimg.length===0 && limg.length>0 && limg.every(u=>!usable(u))) legacyProseImages++;
     else add("images",k,l.image_urls,n.imageUrls);
   }
-  if(JSON.stringify((l.categories||[]).map(norm).sort())!==JSON.stringify((n.categories||[]).map(norm).sort())) add("categories",k,l.categories,n.categories);
+  // A label whose markup has been stripped can differ only in the space left
+  // where a tag stood. landolakes files one recipe under "Garlic and Herb Sauté
+  // Express<sup>andreg;</sup> Recipes": V2 removes the <sup> outright, this
+  // comparison replaces it with a space so that a <br> cannot weld two words
+  // together, and the two forms then differ by one space and nothing else.
+  // Labels are names rather than quantities, so collapsing their whitespace
+  // entirely is safe here in a way it would not be for an ingredient - "1 cup"
+  // and "1cup" must stay different, and do, because this only applies to
+  // categories and tags.
+  const label=t=>norm(t).replace(/\s+/gu,"");
+  const sameLabels=(a,b)=>
+    JSON.stringify((a||[]).map(norm).sort())===JSON.stringify((b||[]).map(norm).sort()) ||
+    JSON.stringify((a||[]).map(label).sort())===JSON.stringify((b||[]).map(label).sort());
+  if(!sameLabels(l.categories,n.categories)) add("categories",k,l.categories,n.categories);
   // An empty tag is not a tag. allshecooks carries one on its Irish potato
   // candy - legacy lists "", American, Irish Potato Candy, ... where V2 lists
   // the same set without the blank - and comparing the lists with it in reads
   // as a difference in what the recipe is tagged with.
+  // Deliberately norm rather than label: the whitespace collapse above is
+  // justified by a case seen in categories, and there is no such case in tags.
+  // Loosening a comparison further than the evidence asks is how a real
+  // difference gets normalised away.
   const tags=v=>(v||[]).map(norm).filter(t=>t!=="");
   const lt=tags(l.tags).sort();
   const kw=tags(n.keywords).sort();
