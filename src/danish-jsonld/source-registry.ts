@@ -32644,9 +32644,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     fetchMode: "playwright",
     migrationState: "configured",
     latestCanary:
-      "2026-08-14T13-52-17.878Z-attempt-2ffecbef-29ff-49fe-a03d-1f755641f881",
+      "2026-08-31T22-43-01.168Z-attempt-f1ad2f19-6124-498e-aca7-6bc10e060e4b",
     deferOrBlockReason:
-      "Awaiting a fresh uncapped run: the store holds no records at all for this source. Its canary rested on a run whose data did not survive the database deletion and restore, so the claim cannot be checked and nothing is here to compare or promote. The run it rested on is recorded as: Uncapped run processed all 517 discovered pages with no blocked or failed request.",
+      "The fresh uncapped run is done and most of what looked like a shortfall is a second URL form. The 2026-08-31 run persisted 545 recipes over 519 requests with no failed and no blocked request and discovery complete, replacing the canary whose data did not survive the database restore. The isolated legacy run emitted 550.\n\nThe comparison first read as 76 records legacy holds and V2 does not. The site serves the same recipe at both /<slug> and /recipe/<slug>: legacy keeps the /recipe/ form and V2 the root one, and dropping that prefix accounts for 57 of the 76. Of the 19 that remain, 3 are not recipes at all - Basislager, and two Rema 1000 shopping lists - and only 5 are absent from V2 by title as well. So the real gap is single digits, not 76.\n\nTwo things still to settle before this can be promoted, and neither should be waved through: those 5 records, and the fact that V2's 545 records carry only 492 distinct URL-and-title keys. The site does publish several recipes on one page - budgetvenlig-nytaarsmenu-2018 carries three - so the duplicate keys may be entirely legitimate, but that has to be shown rather than assumed. There is also one ingredient-list difference on spicy-kyllingeburger-med-spidskaalssalat.",
   },
   klinksgaard: {
     migrationState: "blocked",

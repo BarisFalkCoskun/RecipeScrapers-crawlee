@@ -313,18 +313,19 @@ describe("Danish JSON-LD source registry", () => {
     expect(byId.get("kikkoman")?.migrationState).toBe("configured");
     expect(byId.get("kikkoman")?.deferOrBlockReason).toMatch(/did not survive the database deletion/u);
     expect(byId.get("gamleopskrifter")?.migrationState).toBe("shadow_passed");
-    // sundpaabudget is in the same position as kikkoman and the others: the run
-    // its canary rested on left no records behind, so it waits on a fresh
-    // uncapped run. The run itself is still recorded in the reason.
+    // sundpaabudget has had its fresh uncapped run - the one it was waiting on
+    // after the database restore - and is still configured, now for a reason
+    // about its own records rather than about missing ones. Most of what read
+    // as a 76-record shortfall is the site serving each recipe at both /<slug>
+    // and /recipe/<slug>; the reason has to keep the residue that is not.
     expect(byId.get("sundpaabudget")).toMatchObject({
       migrationState: "configured",
       fetchMode: "playwright",
     });
-    expect(byId.get("sundpaabudget")?.deferOrBlockReason).toMatch(
-      /no blocked or failed request/u
-    );
     expect(byId.get("sundpaabudget")?.deferOrBlockReason)
-      .toMatch(/did not survive the database deletion/u);
+      .toMatch(/no failed and no blocked request/u);
+    expect(byId.get("sundpaabudget")?.deferOrBlockReason)
+      .toMatch(/492 distinct URL-and-title keys/u);
     // First source of the WordPress posts family to pass, now shadow-verified.
     expect(byId.get("gunris")).toMatchObject({
       migrationState: "shadow_passed",
