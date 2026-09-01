@@ -1164,4 +1164,61 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
     expect(extraction.signals).not.toContain("json-ld-embedded-quote-repaired");
   });
 
+  it("keeps an image URL whose path has an unencoded space", () => {
+    // landolakes' CDN serves photographs from a path segment literally named
+    // "desktop images". Five of its recipes carry that URL, legacy keeps them,
+    // and V2 dropped them because any whitespace disqualified the value.
+    const html = `<html><body><script type="application/ld+json">{
+      "@context": "https://schema.org",
+      "@type": "Recipe",
+      "name": "Sausage Kale Sourdough Stuffing",
+      "image": "https://example.blob.core.windows.net/media/desktop images/2013/stuffing_600x600g.jpg?ext=.jpg",
+      "recipeIngredient": ["1 loaf sourdough"],
+      "recipeInstructions": ["Bake."]
+    }</script></body></html>`;
+    const extraction = extractCompleteJsonLdRecipes(html);
+    expect(extraction.recipes).toHaveLength(1);
+    const doc = buildRecipeDocumentV2({
+      sourceId: "landolakes",
+      canonicalUrl: "https://example.com/recipe/1",
+      pageUrl: "https://example.com/recipe/1",
+      crawlRunId: "run",
+      crawlAttemptId: "attempt",
+      extractedAt: new Date("2026-09-01T00:00:00Z"),
+      rawRecipe: extraction.recipes[0]!,
+      language: "en",
+      languageConfidence: 1,
+      languageSignals: [],
+      extractionMethod: "json-ld",
+      extractionConfidence: 1,
+      extractionSignals: extraction.signals,
+      rawScripts: extraction.rawScripts,
+    } as never);
+    expect(doc.normalized.imageUrls).toEqual([
+      "https://example.blob.core.windows.net/media/desktop%20images/2013/stuffing_600x600g.jpg?ext=.jpg",
+    ]);
+  });
+
+  it("still refuses prose that merely contains a link", () => {
+    // The space allowance must not turn a caption into an image. Without an
+    // image extension at the end, a value with spaces is still refused.
+    const html = `<html><body><script type="application/ld+json">{
+      "@context": "https://schema.org",
+      "@type": "Recipe",
+      "name": "Kage",
+      "image": "https://example.com/see more at our site",
+      "recipeIngredient": ["1 dl maelk"],
+      "recipeInstructions": ["Roer."]
+    }</script></body></html>`;
+    const extraction = extractCompleteJsonLdRecipes(html);
+    const doc = buildRecipeDocumentV2({
+      sourceId: "x", canonicalUrl: "https://example.com/r", pageUrl: "https://example.com/r",
+      crawlRunId: "run", crawlAttemptId: "attempt", extractedAt: new Date("2026-09-01T00:00:00Z"),
+      rawRecipe: extraction.recipes[0]!, language: "da", languageConfidence: 1, languageSignals: [],
+      extractionMethod: "json-ld", extractionConfidence: 1, extractionSignals: extraction.signals,
+      rawScripts: extraction.rawScripts,
+    } as never);
+    expect(doc.normalized.imageUrls).toEqual([]);
+  });
+
 });

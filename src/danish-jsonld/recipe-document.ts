@@ -680,7 +680,7 @@ function splitInstructionString(value: string): string[] {
 function normalizeImageUrls(value: unknown): string[] {
   if (typeof value === "string") {
     const cleaned = cleanText(value);
-    return looksLikeImageReference(cleaned) ? [cleaned] : [];
+    return looksLikeImageReference(cleaned) ? [encodeImageSpaces(cleaned)] : [];
   }
   if (Array.isArray(value)) return value.flatMap(normalizeImageUrls);
   if (value && typeof value === "object") {
@@ -698,10 +698,31 @@ function normalizeImageUrls(value: unknown): string[] {
  * reference that could address something keeps the real image, which legacy
  * drops along with the rest.
  */
+/** A path ending in a recognised image extension, ignoring any query string. */
+const IMAGE_PATH_EXTENSION = /\.(?:jpe?g|png|gif|webp|avif|bmp|svg|tiff?)(?:$|[?#])/iu;
+
+/** Percent-encodes the spaces a publisher left in a URL path. */
+function encodeImageSpaces(value: string): string {
+  return value.replace(/ /gu, "%20");
+}
+
 function looksLikeImageReference(value: string): boolean {
-  if (!value || /\s/u.test(value)) return false;
+  if (!value) return false;
   if (/[<>"]/u.test(value)) return false;
-  return /^(?:https?:)?\/\//u.test(value) || value.startsWith("/") || /^data:image\//u.test(value);
+  // A newline or tab means this is prose that happens to contain a URL, not a
+  // URL. A plain space can be either, so it is judged separately below.
+  if (/[\n\r\t]/u.test(value)) return false;
+  const shaped =
+    /^(?:https?:)?\/\//u.test(value) || value.startsWith("/") || /^data:image\//u.test(value);
+  if (!shaped) return false;
+  if (!/ /u.test(value)) return true;
+  // landolakes' CDN serves its photographs from a path segment literally named
+  // "desktop images", so five of its recipes carry an image URL with an
+  // unencoded space in it. Legacy keeps those and V2 dropped them, because any
+  // whitespace at all disqualified the value. A space is only accepted when
+  // what remains is unmistakably an image URL - it has to end in an image
+  // extension - so a caption that merely contains a link is still refused.
+  return IMAGE_PATH_EXTENSION.test(encodeImageSpaces(value));
 }
 
 function normalizeKeywords(value: unknown): string[] {
