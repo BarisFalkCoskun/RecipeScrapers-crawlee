@@ -26437,7 +26437,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-14T22-19-05.328Z-attempt-225f761f-f747-46a7-9414-f63d02973200",
     deferOrBlockReason:
-      "Uncapped run persisted 30 recipes but discovery did not complete; 1 failed request as well",
+      "Uncapped run persisted 30 recipes but discovery did not complete; 1 failed request as well. Re-checking it on 2026-09-01 was not possible: spicytwist.dk answers HTTP 454 with the splash.simply.com \"Checking your browser...\" page to every request from this host. It is the third source found behind that same challenge, after planetariskkogebog and sundpaabudget - all three on the same Danish hosting provider - so this is one host turning us away rather than three sites with faults, and the crawler's own runs may be affected the same way.",
   },
   spisekunst: {
     migrationState: "shadow_passed",
@@ -26514,7 +26514,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-16T07-40-09.861Z-attempt-e4b6450c-7ba2-4a75-937a-02a646aed648",
     deferOrBlockReason:
-      "Uncapped run persisted 22 recipes but discovery stopped because the listing canonicals point at a domain the source does not allow",
+      "The domain is named now, and the canonical is real rather than template junk. progresso.com publishes its recipes with a canonical pointing at tablespoon.com: /recipes/air-fryer-crispy-italian-chicken/f8019e95-bd00-470f-b260-adca04c70136 declares <link rel=\"canonical\" href=\"https://www.tablespoon.com/recipes/air-fryer-crispy-italian-chicken/9a780a4b-0bb8-46ce-9cfd-2b8fbae560c7\">, a different General Mills brand with its own id for the same dish. The crawler is right to refuse a record whose canonical belongs to another domain, which is why discovery stopped at 22.\n\nThis is the same shape as coop's six pages canonicalising to thise.dk, and it has the same answer: the recipes are not really this source's to hold, so the domain boundary should not be widened to take them. Left configured rather than blocked because the 22 it did store are its own.",
   },
   spam: {
     migrationState: "shadow_passed",
