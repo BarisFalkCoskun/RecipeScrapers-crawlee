@@ -32314,7 +32314,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   canadianliving: {
     migrationState: "deferred",
     deferOrBlockReason:
-      "Sitemap resolves but yields zero recipe candidates; the inherited recipe URL patterns do not match this site's routes",
+      "Two things are wrong here and only one of them matters. The recipe URL pattern is indeed \"/food/recipe/\" while the site's real routes are /food/<category>/recipe/<slug> - the homepage links 145 of them, /food/baking-and-desserts/recipe/carrot-cake-cheesecake among others - so the pattern never matches and never will. Fixing it would not help.\n\nThe recipe pages carry no Recipe JSON-LD. carrot-cake-cheesecake answers 200 with 180 KB of HTML holding exactly one ld+json block, a BreadcrumbList; the string \"recipeIngredient\" does not appear anywhere in the document. There is nothing for a JSON-LD extractor to find, which is what deferred means, and the reason should say that rather than pointing at a pattern someone would then spend time correcting.\n\nWorth recording separately: every page on this site is behind a cookie gate. Without one, https://www.canadianliving.com/ answers 307 to anonymous.qub.ca/anonymous-id/redirect and loops until curl gives up; carrying the cookie through the redirect returns 200. So a crawl would see nothing here even if the markup existed.",
   },
   ingridhornshoj: {
     migrationState: "shadow_passed",
