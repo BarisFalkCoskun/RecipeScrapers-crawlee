@@ -26421,10 +26421,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 58 records with every material field matching, and two uncapped runs reproduced all 58 keys with identical content. The only differences are the intentional ones: 2 records keep a cuisine legacy has no field for, and 3 keep a fuller yield than legacy's leading integer. This source's records had been lost in the database deletion and restore, so the crawl behind this comparison is a fresh uncapped run rather than the one its earlier canary rested on.",
   },
   skolemaelk: {
-    migrationState: "configured",
-    latestCanary: "2026-08-16T07-57-37.358Z-attempt-b9143eaf-e48b-4102-9e95-d42d3d188d7c",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T10-45-39.814Z-attempt-2c338bde-2a68-4ae6-b946-07ab4e4de95f",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: the configured sitemap URL serves application/rss+xml rather than a sitemap and the site answered with HTTP 455, so discovery never completed",
+      "From nothing to a clean canary on a content type. This source read \"persisted no recipes\" because Crawlee refused its only request: skolemaelk.dk serves an ordinary sitemap - valid XML, 341 <loc> entries - as application/rss+xml, and that type was not in the accepted list. With it accepted, the 2026-09-01 run persisted 134 recipes from 137 candidates over 141 requests with no failed and no blocked request and discovery complete.\n\nThe 3 rejections are named and checked by hand: /madpakker-og-opskrifter/opskrifter/hjemmelavede-energibarer, /riskugler-og-groentguf-i-madpakken and /roede-sandwichbroed each answer 200 and publish Recipe JSON-LD missing a required field, which the current extractor reports as incomplete on all three. All 134 stored records come from this run. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   slagterlampe: {
     migrationState: "shadow_passed",
@@ -26606,10 +26606,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: the isolated legacy run emitted 140 records and V2 holds exactly those 140, matching on every material field with no difference in any field on any record. 16 additionally keep a cuisine, which legacy has no field for, and 1 keeps a fuller yield than legacy's leading integer. The run outcome is 'succeeded' with no rejection of any kind - no incomplete or malformed JSON-LD - and no failed or blocked request over 154 requests with discovery complete. The second uncapped run reproduced all 140 keys with identical content. Of 151 recipe candidates discovered, 140 became records and all 140 are distinct by canonical URL and by page URL alike.\n\nThis source spent twelve days recorded as persisting 0 recipes from 0 posts, and both halves of that were ours. The legacy run produced nothing because artfuldishes.com takes about 27 seconds to answer its listing and Scrapy gave up at its 30-second default on all four tries; run with a longer DOWNLOAD_TIMEOUT it returns the full 140. The comparison then still read as two disjoint record sets because the site declares an https @id alongside an http site URL, and the comparator normalized www and the trailing slash but not the scheme.",
   },
   projectmealplan: {
-    migrationState: "configured",
-    latestCanary: "2026-08-20T01-49-27.334Z-attempt-c2fabda1-ad6e-40f2-ae4e-0a4d3942cb8e",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T10-25-01.707Z-attempt-ad284ca0-ed7e-4d11-80d7-7e91f869bc90",
     deferOrBlockReason:
-      "The route was asking for a page the server cannot build. projectmealplan.com is alive - its homepage answers 200 with 651 KB - but /wp-json/wp/v2/posts answers HTTP 500 at per_page=100 and at 50, and 200 at 25. Its posts are unusually large, 4.7 MB for 25 of them, which is why the bigger pages fail. The listing announces 436 posts over 18 pages at that size. startUrls now asks for 25 and the source needs a fresh uncapped run; the 0 recipes in its reason were never the site having none.",
+      "From nothing to a clean canary on a page-size change. This source read \"persisted 0 recipes from 0 posts\" because /wp-json/wp/v2/posts answers HTTP 500 at per_page=100 and at 50, and 200 at 25 - its posts are unusually large, 4.7 MB for twenty-five of them. With startUrls asking for 25, the 2026-09-01 run persisted 341 recipes from 436 candidates over 455 requests with outcome \"succeeded\": no failed request, no blocked request, and not one page rejected as incomplete or malformed. Discovery complete, and all 341 records in the store come from this run. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   closetcooking: {
     migrationState: "deferred",
