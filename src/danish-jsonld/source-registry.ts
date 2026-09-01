@@ -31563,10 +31563,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 609-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 609 recipes with every material field matching",
   },
   therealfoodgeek: {
-    migrationState: "configured",
+    migrationState: "blocked",
     latestCanary: "2026-08-21T12-16-19.867Z-attempt-2baa7c21-9e24-44f4-89bc-f233d0694c1f",
     deferOrBlockReason:
-      "Uncapped run reached no recipe candidates (loaded-url-domain-not-allowed), so the route needs review before a canary",
+      "The domain is gone and the crawler was right to refuse what replaced it. Both therealfoodgeek.com and www.therealfoodgeek.com answer 301 to https://centerfjp.org/, which is an Indonesian gambling site - lang=\"id-ID\", and its title reads \"SLOTLIONS88: Situs Link Gacor Slot Anti Kalah\". The domain has been sold or repurposed and serves nothing of this source any more.\n\nThe run recorded discoveryFailureReasons of \"loaded-url-domain-not-allowed\", which is the domain guard doing its job rather than a route needing review: it declined to store an unrelated site's content under this source's id. Blocked rather than configured, because there is no route to review.",
   },
   therecipecritic: {
     migrationState: "shadow_passed",
