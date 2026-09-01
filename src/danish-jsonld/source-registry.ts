@@ -32535,10 +32535,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Awaiting a fresh uncapped run: the store holds no records at all for this source. Its canary rested on a run whose data did not survive the database deletion and restore, so the claim cannot be checked and nothing is here to compare or promote. The run it rested on is recorded as: Uncapped run persisted all 2275 discovered recipes with complete discovery and no blocked, failed or rejected record.",
   },
   udeoghjemme: {
-    migrationState: "configured",
-    latestCanary: "2026-08-17T21-16-47.814Z-attempt-b7bc62dc-97fa-4033-a9e0-da7242d58faf",
+    migrationState: "shadow_passed",
+    latestCanary: "2026-09-01T03-00-48.441Z-attempt-8f337dd6-df90-4989-aaff-9dc2c3272a5d",
+    shadowParity: "matched",
     deferOrBlockReason:
-      "Awaiting a fresh uncapped run: the store holds no records at all for this source. Its canary rested on a run whose data did not survive the database deletion and restore, so the claim cannot be checked and nothing is here to compare or promote. The run it rested on is recorded as: Uncapped run persisted all 503 discovered recipes with complete discovery and no blocked, failed or rejected record.",
+      "Shadow comparison passed on an exact match: the isolated legacy run emitted 515 records and V2 holds those same 515, with nothing on either side the other lacks and no difference in any field on any record. 381 additionally keep a fuller yield than legacy's leading integer, all 515 keep images legacy discards, and V2 keeps cuisines in their own field where legacy folds them into tags.\n\nBoth uncapped runs are identical and clean - 949 requests, no failed or blocked request, discovery complete, and not one page rejected as incomplete or malformed - and the second reproduced all 515 keys with identical content. All 515 records are distinct by canonical URL and by page URL alike; the 734 discovered candidates reduce to 515 by deduplication, not by rejection. This replaces the canary whose data did not survive the database restore.",
   },
   /**
    * Emits its recipe type in lowercase. Before type matching folded case the
@@ -32577,16 +32578,18 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 175-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 175 recipes with every material field matching; 175 records keep a cuisine legacy has no field for; 29 records keep a fuller yield than legacy leading-integer",
   },
   castello: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    shadowParity: "matched",
     latestCanary: "2026-08-31T22-09-54.156Z-attempt-d839fc14-5308-41e5-b02d-372c8aa71dd2",
     deferOrBlockReason:
-      "The dead sitemap URL that held this source at configured is gone, and the fresh run has nothing against it at all: 311 recipes over 344 requests with no failed request, no blocked request, no page rejected as incomplete or malformed, and discovery complete. Not one 404 anywhere in the run. The 32 candidates that did not become records are duplicate URLs resolving onto pages already stored - all 311 records are distinct by canonical URL and by page URL alike. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
+      "The dead sitemap URL that held this source at configured is gone, and the fresh run has nothing against it at all: 311 recipes over 344 requests with no failed request, no blocked request, no page rejected as incomplete or malformed, and discovery complete. Not one 404 anywhere in the run. The 32 candidates that did not become records are duplicate URLs resolving onto pages already stored - all 311 records are distinct by canonical URL and by page URL alike.\n\nShadow comparison passed on an exact match: the isolated legacy run emitted 311 records and V2 holds those same 311, with nothing on either side the other lacks and no difference in any field on any record. 70 additionally keep a cuisine, which legacy has no field for, and 281 a fuller yield than legacy's leading integer. The second uncapped run reproduced all 311 keys with identical content on the same 344 requests, with the same clean counters.",
   },
   fevertree: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
+    shadowParity: "matched",
     latestCanary: "2026-08-31T22-23-17.593Z-attempt-b0fbd828-52c7-4283-9dd5-b401f31b989c",
     deferOrBlockReason:
-      "Discovery is complete and the single shortfall is a named upstream defect. The 2026-08-31 run discovered 57 recipe candidates and persisted 56 over 58 requests, with nothing blocked and nothing rejected as incomplete or malformed. The one failed request is /da-dk/cocktails/espresso-martini, which the source's own sitemap lists and the source answers 404 - checked by hand, and its redirect target /da-dk/cocktails/espresso-martini-da-dk answers 404 too. A URL the source publishes and then does not serve is the source's defect, not the crawler's. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
+      "Discovery is complete and the single shortfall is a named upstream defect. The 2026-08-31 run discovered 57 recipe candidates and persisted 56 over 58 requests, with nothing blocked and nothing rejected as incomplete or malformed. The one failed request is /da-dk/cocktails/espresso-martini, which the source's own sitemap lists and the source answers 404 - checked by hand, and its redirect target /da-dk/cocktails/espresso-martini-da-dk answers 404 too. A URL the source publishes and then does not serve is the source's defect, not the crawler's.\n\nShadow comparison passed on an exact match: the isolated legacy run emitted 56 records and V2 holds those same 56, with nothing on either side the other lacks and no difference in any field on any record; 56 keep a fuller yield than legacy's leading integer. The second uncapped run reproduced all 56 keys with identical content.\n\nThe idempotency gate reports that second run as CHANGED FAILED=1 rather than STABLE, and it is right to: the run did fail a request. It is the same espresso-martini URL, failing identically in both runs, and legacy does not hold that recipe either - it emitted 56 records, not 57. Promoted with the failure named rather than with the gate's verdict quietly reinterpreted.",
   },
   oatly: {
     migrationState: "configured",
