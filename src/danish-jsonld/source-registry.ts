@@ -27372,7 +27372,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-21T10-31-34.963Z-attempt-cb0dc935-75b1-4fff-8aa1-b7355f9e90ea",
     deferOrBlockReason:
-      "Uncapped run persisted 0 recipes from 1 API records; 1 record the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary",
+      "The run this reason describes was superseded hours after it happened. It is the 2026-08-29T23-34-16 run: one request, one candidate, that candidate rejected as malformed WPRM, discovery incomplete. A later run on 2026-08-30T02-12-02 stored 1009 records, and those are what the store holds now - so the source is neither empty nor broken, and the sentence above described a transient failure as if it were the state.\n\nThat later run's summary is not on disk, so its failed, blocked and discovery-complete counters cannot be read and no canary claim can rest on it. Queued for a fresh uncapped run.\n\nOne thing worth keeping: /wp-json/wp/v2/wprm_recipe answers HTTP 200 with an empty body at per_page=100 and serves 50 records at per_page=50, which is why startUrls already asks for 50. That part of the setup is correct and should not be undone.",
   },
   bakingbeauty: {
     migrationState: "shadow_passed",
