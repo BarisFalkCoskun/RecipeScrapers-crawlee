@@ -32508,9 +32508,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   },
   landolakes: {
     migrationState: "configured",
-    latestCanary: "2026-08-17T16-07-23.692Z-attempt-a446a2ab-6d30-4094-a071-de1e767ee1c1",
+    latestCanary: "2026-09-01T03-52-16.826Z-attempt-dd5e56ac-e4e9-4a04-840e-3a921619b6e6",
     deferOrBlockReason:
-      "Awaiting a fresh uncapped run: the store holds no records at all for this source. Its canary rested on a run whose data did not survive the database deletion and restore, so the claim cannot be checked and nothing is here to compare or promote. The run it rested on is recorded as: Uncapped run persisted all 2782 discovered recipes with complete discovery and no blocked, failed or rejected record.",
+      "The fresh uncapped run is done and the comparison is one fix away. The 2026-09-01 run persisted 2780 recipes over 2793 requests with outcome \"succeeded\" - no failed request, no blocked request, nothing rejected as incomplete or malformed, discovery complete - which replaces the canary whose data did not survive the database restore.\n\nThe isolated legacy run emitted 2779 records and V2 holds those same 2779, with nothing on either side the other lacks. The only differences are 5 records where legacy has an image and V2 has none, and 1 category. The images are the source's CDN serving photographs from a path segment literally named \"desktop images\", so the URL carries an unencoded space and the extractor refused the value as prose; that is fixed, and the source needs re-crawling on the current extractor before the comparison can be repeated. The remaining category difference has not been read yet.",
   },
   mariavestergaard: {
     migrationState: "shadow_passed",
