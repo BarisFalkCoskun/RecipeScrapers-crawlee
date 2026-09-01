@@ -32529,10 +32529,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: the isolated legacy run emitted 1106 records and V2 matches on every material field. The 19 records legacy holds and V2 does not are accounted for: 15 of those URLs declare a canonical pointing at a page V2 already stores - /hveder-kanel/ says /hveder/, /rocky-road-chokoladebrownies/ says /brownie/ - so V2 keeps one record per canonical where legacy keeps one per URL it crawled, and each recipe is present under the name the source itself gives it. The other 4 are meal-plan pages carrying ingredients and no instructions, which the completeness contract rejects. V2 additionally holds 10 sibling recipes recovered from pages carrying more than one. A second uncapped run reproduced all 1100 keys with identical content, and a reviewed sample of 25 stored records is clean",
   },
   pillsbury: {
-    migrationState: "configured",
-    latestCanary: "2026-08-17T19-04-36.093Z-attempt-020f6baf-8cd7-4e37-b54b-2e01f6ed2357",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-01T10-51-18.997Z-attempt-af92ab8d-d0d4-47b5-98d8-64e85686421c",
     deferOrBlockReason:
-      "Awaiting a fresh uncapped run: the store holds no records at all for this source. Its canary rested on a run whose data did not survive the database deletion and restore, so the claim cannot be checked and nothing is here to compare or promote. The run it rested on is recorded as: Uncapped run persisted all 2275 discovered recipes with complete discovery and no blocked, failed or rejected record.",
+      "A clean canary on the fresh run this source was waiting for. It persisted 2263 recipes from 2377 candidates over 2381 requests with outcome \"succeeded\": no failed request, no blocked request, and not one page rejected as incomplete or malformed. Discovery complete, and every record in the store comes from this run, so nothing survives from the canary whose data did not survive the database restore. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   udeoghjemme: {
     migrationState: "shadow_passed",
