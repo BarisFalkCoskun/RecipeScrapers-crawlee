@@ -26699,7 +26699,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-19T13-38-24.768Z-attempt-255791ab-755e-4bad-b9ec-6d52d4b6a113",
     deferOrBlockReason:
-      "Uncapped run persisted 3197 recipes from 4022 posts; 53 failed requests keeps it short of a canary",
+      "Completeness is not established and the walk that would establish it cannot get through. The listing declares 4027 posts and the store holds 3252, which is already more than the 3197 from 4022 this reason used to quote. Of the 775 it does not hold, 499 carry no recipe, 1 redirects to a page already stored and 1 was published after the crawl - but 274 answered HTTP 429 and were never examined, even walking at 1.2 seconds a page.\n\nSo the verdict is INCONCLUSIVE rather than a shortfall: over a third of the pages in question refused to answer, and a page that refuses explains nothing about itself. Nothing seen so far implicates the source. It needs a slower walk - four seconds a page would take about fifty minutes for this listing - before any completeness claim can rest on it.",
   },
   nyssaskitchen: {
     migrationState: "shadow_passed",
