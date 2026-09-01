@@ -27777,10 +27777,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: legacy-unhealthy; page 2 of the API answered 403, so the legacy spider stopped after 100 recipes yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 783 records the live listing declares - a claim re-checked against stored records that do carry the ids explain-rejections.cjs matches on, after that tool was found passing vacuously where they do not - on all 100 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 783 keys with identical content, and on a reviewed sample of 25 stored records. The legacy spider cannot produce a comparison for this source: it walks the WPRM API a page at a time and stops for good when one page is challenged, without reporting a failure. It fetched 1 of the 8 pages its own header advertises, stored 100 recipes, and finished with finish_reason finished.",
   },
   cleanfoodcrush: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestCanary: "2026-08-21T10-39-26.296Z-attempt-4af53e19-43ea-4465-afdc-4e2b19e09ef2",
     deferOrBlockReason:
-      "Uncapped run persisted 2167 recipes from 2177 API records; 10 records the source publishes incomplete or malformed keeps it short of a canary",
+      "Discovery is complete and the ten rejections are accounted for as a class. The 2026-08-29T12-35-33 run persisted 2170 recipes from 2180 candidates over 23 requests with no failed request, no blocked request, and discovery complete; every record in the store comes from that run.\n\nThe ten it did not keep were put through the WPRM completeness walk, which reports ALL SHORTFALL EXPLAINED: declared 2180, stored 2170, missing 10, and all ten are records the source publishes with no instructions. That is the completeness contract rather than a crawler shortfall, and legacy would keep all ten - they belong on the tally in docs/open-question-completeness-contract.md. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   coleycooks: {
     migrationState: "shadow_passed",

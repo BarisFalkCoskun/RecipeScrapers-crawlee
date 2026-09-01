@@ -33,6 +33,12 @@ of the same scan disagreed about whether gimmesomeoven's repeat was STABLE or
 CHANGED, and about how many sources were implicated at all. A table built that
 way would look like evidence and would not be any.
 
+It was also scanning the wrong set of directories. There is a third,
+`/tmp/fresh-storage`, holding 480 files - cleanfoodcrush's run summary was found
+there on 2026-09-01 after being assumed lost. Any audit of this question has to
+read all three, and has to key on run id rather than on filename, or it will
+report a source as unevidenced when its evidence is simply somewhere else.
+
 Twelve sources were wrongly withdrawn on 2026-08-28 by acting on a signal like
 this before checking it individually. That is the failure mode to avoid here.
 
