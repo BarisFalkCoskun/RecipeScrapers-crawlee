@@ -32747,11 +32747,11 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
   >>
 > = {
   gastrofun: {
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestScrapyOutcome: "partial",
-    latestCanary: "2026-08-19T15-51-22.062Z",
+    latestCanary: "2026-09-01T18-32-55.818Z-attempt-2798253e-8143-42ed-bd25-c87f53b81540",
     deferOrBlockReason:
-      "Bounded page-1 shadow probe matched Scrapy on all 100 recipes and material normalized fields; two Crawlee probes produced identical keys and records, but the 38-page catalog still requires an uncapped run",
+      "The 38-page catalogue the bounded probe could not reach has now been read in full, and every rejection is accounted for. The 2026-09-01 run persisted 3768 recipes from 3785 candidates over 39 requests with no failed request, no blocked request and discovery complete; every record in the store comes from that run.\n\nThe 17 it did not keep were put back through the WPRM completeness walk, which reports ALL SHORTFALL EXPLAINED: declared 3785, stored 3768, missing 17, and all 17 are records the source publishes with no instructions. That is not a crawler shortfall but the completeness contract doing what it is defined to do, and legacy would keep those 17 - its WprmApiSpider sets no require_instructions override, so they belong on the tally in docs/open-question-completeness-contract.md. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   ketoliv: {
     migrationState: "shadow_passed",

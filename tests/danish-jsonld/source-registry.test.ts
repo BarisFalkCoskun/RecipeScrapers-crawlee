@@ -529,13 +529,18 @@ describe("Danish JSON-LD source registry", () => {
         maxConcurrency: 1,
         maxRetries: 3,
       } });
+    // gastrofun has had that uncapped run: 3768 recipes from 3785 candidates
+    // with nothing failed or blocked, and the WPRM completeness walk accounts
+    // for all 17 it did not keep as records the source publishes with no
+    // instructions. The pin moves with it rather than being loosened.
     expect(sources.find((source) => source.id === "gastrofun")).toMatchObject({
-      migrationState: "configured",
+      migrationState: "canary_passed",
       latestScrapyOutcome: "partial",
-      latestCanary: "2026-08-19T15-51-22.062Z",
+      latestCanary:
+        "2026-09-01T18-32-55.818Z-attempt-2798253e-8143-42ed-bd25-c87f53b81540",
     });
     expect(sources.find((source) => source.id === "gastrofun")?.deferOrBlockReason)
-      .toMatch(/38-page catalog still requires an uncapped run/u);
+      .toMatch(/all 17 are records the source publishes with no instructions/u);
     expect(sources.find((source) => source.id === "ketoliv")).toMatchObject({
       migrationState: "shadow_passed",
       latestScrapyOutcome: "succeeded",
