@@ -32583,16 +32583,16 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Crawl is clean but the source's sitemap lists dead URLs: one sitemap URL 404s, so the run cannot reach zero failed requests",
   },
   fevertree: {
-    migrationState: "configured",
-    latestCanary: "2026-08-18T00-35-08.655Z-attempt-04d3507e-e389-4808-9993-f1df0505d9d4",
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-31T22-23-17.593Z-attempt-b0fbd828-52c7-4283-9dd5-b401f31b989c",
     deferOrBlockReason:
-      "Crawl is clean but the source's sitemap lists dead URLs: sitemap lists /da-dk/cocktails/espresso-martini, which 404s, so the run cannot reach zero failed requests",
+      "Discovery is complete and the single shortfall is a named upstream defect. The 2026-08-31 run discovered 57 recipe candidates and persisted 56 over 58 requests, with nothing blocked and nothing rejected as incomplete or malformed. The one failed request is /da-dk/cocktails/espresso-martini, which the source's own sitemap lists and the source answers 404 - checked by hand, and its redirect target /da-dk/cocktails/espresso-martini-da-dk answers 404 too. A URL the source publishes and then does not serve is the source's defect, not the crawler's. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   oatly: {
     migrationState: "configured",
-    latestCanary: "2026-08-18T00-44-53.871Z-attempt-f587a99b-3e70-40a4-b850-295f6884a1ef",
+    latestCanary: "2026-08-31T22-26-15.071Z-attempt-e456b856-f072-4ffe-930c-c46153f273a2",
     deferOrBlockReason:
-      "Crawl is clean but the source's sitemap lists dead URLs: four sitemap URLs 404, including /da-dk/recipes/pink-dragon-mocha, so the run cannot reach zero failed requests",
+      "Not four dead sitemap URLs but thirty-six, and they are not simply dead. The 2026-08-31 run made 74 requests: 38 answered 200 and 36 answered 404, so half the crawl failed, against a reason that named four. All 36 are under /da-dk/recipes/ and many under one sub-path, /da-dk/recipes/look-book-autumn-winter-2025/.\n\nThey cannot be written off as a stale sitemap. /da-dk/recipes/look-book-autumn-winter-2025/apple-pie-chai answered 404 during the crawl and answers 200 now, while /da-dk/recipes/dirty-berry-matcha is still 404 and still listed in the sitemap 289 times over. So some of these URLs are intermittent rather than gone, and a source whose pages come and go cannot be judged from one run. Needs a fresh uncapped run before its shortfall means anything.",
   },
   /**
    * Its pages pair each recipe with a bare @type/@id reference stub. Those were
