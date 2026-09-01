@@ -1065,7 +1065,7 @@ describe("legacy request-settings audit", () => {
     // asks for "slower on some axis, faster on none" rather than for a longer
     // delay specifically.
     const deliberatelySlower = new Set([
-      "diabetesopskrifter", "blenderopskrifter", "maduniverset",
+      "diabetesopskrifter", "blenderopskrifter", "maduniverset", "spisbedre",
     ]);
     const audited = DANISH_JSONLD_SOURCES.filter((source) =>
       source.legacyFamily !== "WprmApiSpider" &&

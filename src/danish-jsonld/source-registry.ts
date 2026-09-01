@@ -32716,6 +32716,12 @@ const LEGACY_REQUEST_SETTING_OVERRIDES: Record<
   // /opskrift/familien-noergaards-juleleverpostej, answers 200 in under a
   // second on three consecutive tries - so this is the site failing under our
   // own load. One worker halves the concurrent pressure and keeps the delay.
+  // spisbedre fails the same way maduniverset does and for the same reason:
+  // 38 reclaimed requests across one run, 9 answering 502 and 11 answering
+  // 504, with 1 then 3 surviving as failures across two runs. The count is
+  // small and different each time, which is a server faltering under load
+  // rather than a page that can be named. One worker instead of two.
+  spisbedre: { delaySeconds: 2, maxConcurrency: 1 },
   maduniverset: { delaySeconds: 2, maxConcurrency: 1 },
   diabetesopskrifter: { delaySeconds: 20, maxConcurrency: 1 },
   blenderopskrifter: { delaySeconds: 20, maxConcurrency: 1 },
@@ -33715,7 +33721,7 @@ const EMBEDDED_DANISH_RECIPE_SOURCES: DanishJsonLdSource[] =
     latestScrapyOutcome: "partial",
     latestCanary: "2026-08-19T16-11-30.677Z",
     deferOrBlockReason:
-      "The uncapped validation this reason asked for is done and it very nearly passed. The 2026-09-01 run persisted 1999 recipes from 2000 candidates over 2000 requests with discovery complete and nothing rejected as incomplete or malformed - the whole 2000-URL sitemap read in one pass.\n\nOne request failed, and it is the site rather than the pages: the log holds 38 \"Reclaiming failed request\" warnings, 9 answering 502 and 11 answering 504, so the server faltered repeatedly under the crawl and all but one of those retries eventually succeeded. That is the same shape as maduniverset, which failed 189 requests the same way while serving a single client in under a second. A fresh uncapped run is the next step rather than any change here; if it comes back with the same one failure, the URL behind it needs naming before this can be a canary.",
+      "Two uncapped runs now, and the site fails a little differently each time. The 2026-09-01 runs persisted 1999 then 1997 recipes from 2000 candidates over 2000 and 1998 requests, both with discovery complete and nothing rejected as incomplete or malformed - the whole 2000-URL sitemap read in one pass each time.\n\nThe failures are the site, not the pages: 1 request failed in the first run and 3 in the second, against 38 \"Reclaiming failed request\" warnings in the first - 9 answering 502 and 11 answering 504. The server falters under the crawl and most retries succeed, so the count that survives is small and not the same twice. That is the same shape as maduniverset, which lost 189 requests to 502s while serving a single client in under a second.\n\nA source whose failures vary between runs cannot have them named the way a dead URL can, so this needs its pacing reduced - the remedy that worked for maduniverset - rather than another identical run.",
   }));
 
 const HTML_DANISH_RECIPE_SOURCES: DanishJsonLdSource[] =
