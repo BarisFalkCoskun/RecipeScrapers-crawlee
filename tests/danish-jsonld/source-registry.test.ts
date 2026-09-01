@@ -915,8 +915,12 @@ describe("Danish JSON-LD source registry", () => {
       latestCanary: "2026-08-19T16-20-34.637Z",
       fetchMode: "cheerio",
     });
+    // The bounded probe this pin described has been overtaken by an uncapped run
+    // that read nothing: one request, zero candidates, and discoveryComplete
+    // true on a listing announcing 3480 posts over 140 pages. The reason has to
+    // keep saying that a crawl stopping at page one is not a complete crawl.
     expect(byId.get("mummum")?.deferOrBlockReason).toMatch(
-      /35-page catalog remains unvalidated/u
+      /declared discovery complete after a single request/u
     );
 
     expect(byId.get("aggieskitchen")?.startUrls[0]).toContain("per_page=20&");

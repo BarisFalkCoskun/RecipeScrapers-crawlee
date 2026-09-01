@@ -33500,7 +33500,7 @@ const DANISH_WP_POSTS_EVIDENCE_OVERRIDES: Record<
     latestScrapyOutcome: "partial",
     latestCanary: "2026-08-19T16-20-34.637Z",
     deferOrBlockReason:
-      "Bounded three-request live canary persisted both sampled recipes without request, extraction, storage, or domain failures; both overlapping Scrapy records matched all material recipe fields, while Crawlee intentionally preserves the full yield text that legacy reduced to an integer, and the 35-page catalog remains unvalidated",
+      "The uncapped run declared discovery complete after a single request and found nothing, on a listing that has 140 pages. mummum.dk/wp-json/wp/v2/posts announces x-wp-total 3480 over x-wp-totalpages 140 and answers 200, so the source is neither gone nor blocked - but the 2026-09-01 run recorded completedRequests 1, discoveredRecipeCandidates 0, discoveryFailureReasons empty and discoveryComplete true. A crawl that stops after page one and calls that complete is reporting success for a source it never read.\n\nThe likely cause is the size of the payload: at per_page=100 the first page is 12.5 MB, and the walk stops as soon as a page yields no usable entries, which is what a truncated or unparsed body looks like from inside the loop. At per_page=25 the same endpoint returns 3.1 MB and 25 records cleanly. That is the fix that recovered projectmealplan from the same symptom, but this source builds its start URL from the shared WordPress-posts list rather than carrying its own, so the page size cannot be halved the same way without deciding where that override belongs. Recorded rather than guessed at.",
   },
   dittejulie: {
     migrationState: "shadow_passed",
