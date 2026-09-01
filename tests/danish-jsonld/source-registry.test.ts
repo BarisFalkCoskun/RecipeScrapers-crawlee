@@ -317,7 +317,9 @@ describe("Danish JSON-LD source registry", () => {
     // after the database restore - and is still configured, now for a reason
     // about its own records rather than about missing ones. Most of what read
     // as a 76-record shortfall is the site serving each recipe at both /<slug>
-    // and /recipe/<slug>; the reason has to keep the residue that is not.
+    // and /recipe/<slug>, and the records sharing a key are sibling Recipe
+    // nodes on one page rather than duplicates. The reason has to keep the
+    // residue that neither of those explains.
     expect(byId.get("sundpaabudget")).toMatchObject({
       migrationState: "configured",
       fetchMode: "playwright",
@@ -325,7 +327,7 @@ describe("Danish JSON-LD source registry", () => {
     expect(byId.get("sundpaabudget")?.deferOrBlockReason)
       .toMatch(/no failed and no blocked request/u);
     expect(byId.get("sundpaabudget")?.deferOrBlockReason)
-      .toMatch(/492 distinct URL-and-title keys/u);
+      .toMatch(/sibling recipes rather than duplicates/u);
     // First source of the WordPress posts family to pass, now shadow-verified.
     expect(byId.get("gunris")).toMatchObject({
       migrationState: "shadow_passed",
