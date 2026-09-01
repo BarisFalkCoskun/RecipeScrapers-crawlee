@@ -32577,10 +32577,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 175-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 175 recipes with every material field matching; 175 records keep a cuisine legacy has no field for; 29 records keep a fuller yield than legacy leading-integer",
   },
   castello: {
-    migrationState: "configured",
-    latestCanary: "2026-08-18T00-21-27.852Z-attempt-af471038-05b2-4e2b-9a3a-12aa1724f8a3",
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-31T22-09-54.156Z-attempt-d839fc14-5308-41e5-b02d-372c8aa71dd2",
     deferOrBlockReason:
-      "Crawl is clean but the source's sitemap lists dead URLs: one sitemap URL 404s, so the run cannot reach zero failed requests",
+      "The dead sitemap URL that held this source at configured is gone, and the fresh run has nothing against it at all: 311 recipes over 344 requests with no failed request, no blocked request, no page rejected as incomplete or malformed, and discovery complete. Not one 404 anywhere in the run. The 32 candidates that did not become records are duplicate URLs resolving onto pages already stored - all 311 records are distinct by canonical URL and by page URL alike. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   fevertree: {
     migrationState: "canary_passed",
