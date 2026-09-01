@@ -26073,7 +26073,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     latestCanary:
       "2026-08-14T13-06-56.114Z-attempt-6720a4f2-98d6-4f61-a5df-76987ce01c9c",
     deferOrBlockReason:
-      "Service route persisted 9999 recipes against 20 before, but its result window stops at 10000, so discovery stays incomplete until the catalogue is partitioned",
+      "The result window is real and now measured. recipe-front.services.tv2.dk/search answers 200 with 50 records at from=9950 and HTTP 500 at from=10000 and from=10050, so the service hard-stops at ten thousand results and returns no total for the catalogue behind it. The 2026-09-01 run discovered exactly 10000 candidates and persisted 9997 over 10197 requests with one failed request, nothing blocked, nothing rejected as incomplete or malformed, and reported discoveryFailureReasons of \"listing-window-exhausted\" - which is the crawler correctly refusing to call a truncated walk complete.\n\nWhether anything is actually being lost is unknown: the endpoint publishes no count, so the catalogue may be under ten thousand or well over it. Answering that and reaching the remainder are the same piece of work - partitioning the query by category or date so each slice stays inside the window - and it is a feature to build rather than a setting to change.",
   },
   surdejsentusiasten: {
     migrationState: "shadow_passed",

@@ -303,7 +303,7 @@ describe("Danish JSON-LD source registry", () => {
     expect(byId.get("arla")?.deferOrBlockReason).toMatch(/3069 records/u);
     expect(byId.get("arla")?.deferOrBlockReason).toMatch(/Restored the same day/u);
     expect(byId.get("tv2mad")?.deferOrBlockReason).toMatch(
-      /result window stops at 10000/u
+      /hard-stops at ten thousand results/u
     );
     expect(byId.get("surdejsentusiasten")?.migrationState).toBe("shadow_passed");
     // kikkoman's canary rested on a run whose data did not survive the database
