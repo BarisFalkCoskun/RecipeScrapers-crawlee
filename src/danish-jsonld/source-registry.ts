@@ -26505,10 +26505,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 144 records with every material field matching, and two uncapped runs reproduced all 144 keys with identical content. The only differences are the intentional ones: 140 records keep a cuisine legacy has no field for. This source's records had been lost in the database deletion and restore, so the crawl behind this comparison is a fresh uncapped run rather than the one its earlier canary rested on.",
   },
   olivemagazine: {
-    migrationState: "configured",
-    latestCanary: "2026-08-17T02-09-19.447Z-attempt-46bbc79c-d951-4d5f-858a-e4dbe30e9559",
+    migrationState: "canary_passed",
+    latestCanary: "2026-08-31T22-45-37.244Z-attempt-b8770686-522b-474d-9d6b-04ff0e14cb97",
     deferOrBlockReason:
-      "Uncapped run persisted 7265 recipes with complete discovery; 12 failed requests and 86 incomplete pages keep it short of a canary",
+      "The comparison this source has been waiting for is done, and it matches. The isolated legacy run emitted 7290 records and V2 holds 7246 of them with nothing V2 has that legacy does not, and no difference in any field on any record; 2140 additionally keep a cuisine, which legacy has no field for, and 5968 a fuller yield than legacy's leading integer.\n\nThe 44 legacy holds that V2 does not are records legacy accepts with no name, ingredients or instructions, and that is exactly the run's rejectedIncompleteJsonLd of 44 - the accounting closes. The 12 failed requests are 4 URLs, each retried three times: /recipes/chef-recipes/malaysian-black-beef-stew, -diy-indomie, -golden-fragrant-chicken and -hot-sour-tamarind-fish-curry, all four fetched by hand and all four answering 404 at the source. Nothing blocked, discovery complete over 7670 requests.\n\nGetting the baseline took three attempts. The parity lane kills a Scrapy run at two hours and this source needs about five, so it was INCONCLUSIVE twice before the comparison pool learned to size its ceiling from the record count. Awaiting a second uncapped run before shadow parity.",
   },
   progresso: {
     migrationState: "configured",
