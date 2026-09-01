@@ -51,3 +51,31 @@ this before checking it individually. That is the failure mode to avoid here.
    URL is not a crawler failure, while a 403 or 429 is a page never read.
 4. Move a source back only where the second run demonstrably read less than the
    source publishes, and name the counter that moved it in the reason.
+
+## What has been checked since
+
+The gate was fixed on 2026-08-31 (commit 8d476f7): additions are no longer
+reported as CHANGED, and a run's own `blockedRequests`, `failedRequests`,
+`discoveryComplete` and `pageCapReached` now force CHANGED and name the counter.
+
+Every source promoted that day was then re-run through the corrected gate,
+against the dumps and run summaries on disk, to check the promotions still hold:
+
+| source | corrected verdict |
+| --- | --- |
+| danishcrown | STABLE 1899->1899 |
+| stinna | STABLE 1438->1440 site-added=2 |
+| artfuldishes | STABLE 140->140 |
+| bobsredmill | STABLE 2870->2870 |
+
+All four pass. The two held back the same day fail as they should, which is the
+more useful half of the check - a gate that only ever agrees with you is not
+telling you anything:
+
+| source | corrected verdict |
+| --- | --- |
+| blenderopskrifter | CHANGED BLOCKED=14 (STABLE 217->223 site-added=6) |
+| diabetesopskrifter | CHANGED BLOCKED=10 (STABLE 176->182 site-added=6) |
+
+This says nothing about the other promoted sources. Their repeat runs predate
+the fix and the audit described above is still outstanding.
