@@ -405,12 +405,15 @@ describe("Danish JSON-LD source registry", () => {
     expect(["canary_passed", "shadow_passed"]).toContain(
       byId.get("nordmad")?.migrationState
     );
-    // odensemarcipan is in the same position as kikkoman above: the run its
-    // canary rested on left no records behind, so it waits on a fresh uncapped
-    // run rather than carrying a claim nothing can check.
+    // odensemarcipan has had that fresh run and it confirmed the "Steps" fix:
+    // the four records that carried a single instruction reading "Steps" are
+    // now rejected as incomplete, which is what legacy holds for those pages
+    // too. It stays configured for a different reason - the store still holds
+    // six records from the previous run, four of them those bad ones, because
+    // an upsert never deletes.
     expect(byId.get("odensemarcipan")?.migrationState).toBe("configured");
     expect(byId.get("odensemarcipan")?.deferOrBlockReason)
-      .toMatch(/did not survive the database deletion/u);
+      .toMatch(/an upsert never deletes/u);
     // oetker has had that fresh run and its field comparison is clean, but
     // discovery does not reproduce: successive uncapped runs each report 806
     // candidates and completeness while returning slightly different sets.

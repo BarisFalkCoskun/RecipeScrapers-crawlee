@@ -32228,9 +32228,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
   },
   odensemarcipan: {
     migrationState: "configured",
-    latestCanary: "2026-08-18T13-45-21.279Z-attempt-f3be8023-e4c2-4645-80e2-08752d997dc1",
+    latestCanary: "2026-09-01T05-38-22.414Z-attempt-89a580fc-33ba-4b9a-bf59-e683f32a078d",
     deferOrBlockReason:
-      "Awaiting a fresh uncapped run: the store holds no records at all for this source. Its canary rested on a run whose data did not survive the database deletion and restore, so the claim cannot be checked and nothing is here to compare or promote. The run it rested on is recorded as: Uncapped run persisted 1026 recipes with complete discovery and no blocked, failed or rejected record.",
+      "The fresh uncapped run is done and it confirms the \"Steps\" fix on a live page. The 2026-09-01 run wrote 1023 records over 1033 requests with complete discovery, 2 failed requests and 4 rejected as incomplete JSON-LD. Those 4 are exactly the records that previously carried the single instruction \"Steps\": the site publishes {\"@type\":\"HowToStep\",\"name\":\"Steps\",\"text\":\" \"} on them, and with the placeholder correctly ignored the recipe has no instructions at all and fails the completeness contract. Fetching /opskrift/kager/eplekake-med-salt-karamell by hand and running the current extractor over it gives 0 recipes and 1 incomplete, which is the right answer and matches what legacy holds for that page - an empty instruction list.\n\nWhat keeps this from a canary is not the source. The store holds 1029 records for it, not 1023: six survive from the 2026-08-30 run because an upsert never deletes, and four of those six are the bad \"Steps\" records the current extractor rejects. Any comparison run against this store would count records the crawler would no longer produce. That is the same accumulating-store problem that let a blocked run pass the idempotency gate, showing up a third way, and it needs the stale records cleared before this source can be judged.",
   },
   nogetiovnen: {
     migrationState: "shadow_passed",
