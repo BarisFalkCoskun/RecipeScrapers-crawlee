@@ -32365,9 +32365,9 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
    */
   planetariskkogebog: {
     migrationState: "configured",
-    latestCanary: "2026-08-16T08-34-08.262Z-attempt-c26cc8bb-3025-4b7b-a15d-692bc5860429",
+    latestCanary: "2026-08-31T22-29-08.007Z-attempt-f74bb446-b4b7-4863-b8ec-d1f7b9e1af94",
     deferOrBlockReason:
-      "Uncapped run kept 72 recipes but rejected 225 incomplete and 12 malformed, and took 23 blocked requests, so JSON-LD coverage needs review before a canary",
+      "The comparison is clean and the rejections are not yet accounted for. The 2026-08-31 run is much healthier than the one this reason used to describe - 82 recipes over 328 requests with no failed and no blocked request and discovery complete, against 23 blocked before - and the isolated legacy run emitted 80 records with nothing legacy holds that V2 does not, and no difference in any field on any record. The 2 extra V2 holds are real: /opskrift/butterfly-filetering-af-makrel and /opskrift/grydestegt-blomkal, stored with instructions and ingredients.\n\nWhat is not established is the other half of the run: 211 recipe candidates were discovered, 82 persisted, and 128 rejected as incomplete JSON-LD with 1 malformed. That ratio has to be explained by naming what those pages are before this source can pass a canary, and it could not be checked today: the site is behind a browser challenge from splash.simply.com, answering HTTP 454 with a \"Checking your browser...\" page to every request from this host, and it stayed that way across a 45-second pause.\n\nThe challenge is not what caused the rejections - 454 is already in the crawler's blocked-status list and the run recorded zero blocked requests, so those 128 pages answered 200 during the crawl itself. Whatever they are, they are not challenge pages, and the question stays open until the site answers this host again.",
   },
   mambeno: {
     migrationState: "canary_passed",
