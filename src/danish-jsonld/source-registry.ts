@@ -33714,7 +33714,7 @@ const EMBEDDED_DANISH_RECIPE_SOURCES: DanishJsonLdSource[] =
     latestScrapyOutcome: "partial",
     latestCanary: "2026-08-19T16-11-30.677Z",
     deferOrBlockReason:
-      "Bounded live probe persisted the selected embedded recipe with material-field parity against a direct Scrapy parse and no request, extraction, or domain failures; the 2000-URL sitemap still requires uncapped validation",
+      "The uncapped validation this reason asked for is done and it very nearly passed. The 2026-09-01 run persisted 1999 recipes from 2000 candidates over 2000 requests with discovery complete and nothing rejected as incomplete or malformed - the whole 2000-URL sitemap read in one pass.\n\nOne request failed, and it is the site rather than the pages: the log holds 38 \"Reclaiming failed request\" warnings, 9 answering 502 and 11 answering 504, so the server faltered repeatedly under the crawl and all but one of those retries eventually succeeded. That is the same shape as maduniverset, which failed 189 requests the same way while serving a single client in under a second. A fresh uncapped run is the next step rather than any change here; if it comes back with the same one failure, the URL behind it needs naming before this can be a canary.",
   }));
 
 const HTML_DANISH_RECIPE_SOURCES: DanishJsonLdSource[] =
