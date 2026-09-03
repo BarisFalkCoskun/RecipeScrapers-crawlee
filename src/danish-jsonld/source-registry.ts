@@ -26399,10 +26399,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Held at configured by rate limiting, not by extraction, exactly as its sibling blenderopskrifter is. The comparison is clean: the isolated legacy run emitted 24 records, V2 holds every one of them and the comparator reports no difference in any field on any record. Legacy finds only 24 because its spider takes the recipe links off /opskrifter and that page carries exactly 24; V2 traverses the link graph to 136, and no stored record for this source is empty or untitled.\n\nWhat blocks it is the runs' own counters: the 2026-08-31T18-15-18 run named above was blocked on 10 of its 195 requests, and the 2026-08-30T18-53-34 run before it on 22 of the same 195, all 429 and all while delaySeconds was already 10 with maxConcurrency 1. The figure first recorded here was 22 against the newer run, which is the older run's number; both runs are blocked, and the count is not stable between them. A blocked request is a page never read, so the pace moves to 20s and the source needs a fresh uncapped run rather than a promotion.",
   },
   heidiogper: {
-    migrationState: "configured",
-    latestCanary: "2026-08-18T00-42-16.200Z-attempt-eccfc2b5-285f-413e-92d6-b3483c74c8b4",
+    migrationState: "shadow_passed",
+    latestCanary:
+      "2026-09-03T10-47-47.166Z-attempt-a8763d74-4fc6-4c87-8316-b3e73f6d5ecc",
+    shadowParity:
+      "34/25 recipes; V2 holds every legacy record with no field differing, plus 9 legacy never fetched",
     deferOrBlockReason:
-      "Uncapped run persisted 25 recipes with complete discovery; 1 failed request keep it short of a canary",
+      "The one failed request is a placeholder the site's own listing carries. /opskrifter/Sitesupport-url answers 404 and did so again on 2026-09-03, fetched by hand; it is a CMS stub, not a recipe. The previous reason counted it and stopped there.\n\nV2 is a strict superset of legacy here. The isolated legacy run emitted 25 records, V2 holds 34, there is no record legacy has that V2 lacks, and no material field differs on any of the 25 they share. The 9 extra are real: luciabroed and aebleskiver were fetched on 2026-09-03 and each publishes one complete Recipe with 9 and 8 ingredients and 6 and 5 instructions. They sit on mad.heidiogper.dk, which legacy's walk never reached. Pairing the two sides at all needed the comparator relaxation for this site's .html spelling - it serves /recipes/tiramisu.html and /recipes/tiramisu with one body, and legacy keyed all 25 records one way and V2 all 34 the other.\n\nThe repeat run reports all 34 keys reproduced with identical content, over 86 candidates with discovery complete. The gate says CHANGED FAILED=1 rather than STABLE, which is right - the run did fail one request - and that request is the 404 named above.",
   },
   heinz: {
     migrationState: "shadow_passed",
@@ -31299,10 +31302,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   theflexitarian: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-09-01T13-04-02.561Z-attempt-9305aff7-b86f-4ffa-81e2-68cfee7d307a",
+    migrationState: "shadow_passed",
+    latestCanary:
+      "2026-09-03T10-51-18.978Z-attempt-64edf76b-6400-4475-bbc1-cbfb9e0d0005",
+    shadowParity:
+      "710/710 recipes; 100% material-field parity, identical record sets",
     deferOrBlockReason:
-      "A clean canary, against a reason that said the opposite. It read \"Uncapped run reached no recipe candidates, so the route needs review\" - the route is fine. The 2026-09-01 run persisted 710 recipes from 710 candidates over 9 requests with outcome \"succeeded\": no failed request, no blocked request, and not one page rejected as incomplete or malformed, discovery complete. The listing serves 4.2 MB of WPRM records when fetched by hand.\n\nThis source and theflexitarian_ir are the same site registered twice: identical domain, identical start URL, identical legacy family, and all 710 canonical URLs shared, so the store holds 1420 records for 710 recipes. The duplication is inherited rather than introduced - legacy ships danish_recipes/spiders/theflexitarian.py and theflexitarian_ir.py with the same allowed_domains, source_site and country - so V2 is mirroring it faithfully. Worth knowing that the 1012-source count includes at least one pair like this, and that both halves must reach cutover for the readiness gate to pass.\n\nAwaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
+      "Both halves clean with nothing to explain. The isolated legacy run emitted 710 records and V2 holds the same 710: neither side holds a record the other lacks, and every material field matches, with 1 record keeping WPRM named-step prefixes legacy drops and 1 keeping a space at a block boundary legacy fuses over.\n\nThe uncapped run persisted 710 recipes from 710 discovered candidates with all 710 processed, discovery complete, no failed request, no blocked request, nothing rejected, and no outcome reason recorded. Every candidate is accounted for. The repeat run reports STABLE at 710 to 710 with all 710 byte-identical.",
   },
   theflexitarian_ir: {
     migrationState: "canary_passed",
