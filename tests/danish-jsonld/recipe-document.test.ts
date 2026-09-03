@@ -29,6 +29,62 @@ const completeRecipe = {
 };
 
 describe("Danish JSON-LD RecipeDocumentV2", () => {
+  // oetker publishes its Recipe @id as the page URL with the visitor's
+  // marketing query string attached, and the fbclid in it differs on every
+  // request. The @id feeds the upsert key, so the key changed every run and
+  // each crawl inserted a duplicate instead of updating: seven of its recipes
+  // held two or three copies, one per run, while every run reported a clean
+  // 806 and the store quietly grew.
+  it("keys a recipe the same way when its @id carries a rotating fbclid", () => {
+    const build = (id: string, runId: string) =>
+      buildRecipeDocumentV2({
+        sourceId: "oetker",
+        canonicalUrl: "https://oetker.dk/opskrifter/r/banankage",
+        pageUrl: "https://www.oetker.dk/opskrifter/r/banankage",
+        crawlRunId: runId,
+        crawlAttemptId: `attempt-${runId}`,
+        extractedAt: new Date("2026-08-30T13:58:49.000Z"),
+        rawRecipe: { ...structuredClone(completeRecipe), "@id": id },
+        language: "da",
+        languageConfidence: 1,
+        languageSignals: ["recipe-inLanguage"],
+        extractorVersion: "2.0.0",
+        extractionSignals: ["strict-json-ld-only"],
+      });
+
+    const base =
+      "https://www.oetker.dk/opskrifter/r/banankage" +
+      "?utm_source=meta&utm_medium=post&utm_campaign=Kagerullen";
+    const first = build(`${base}&fbclid=PAcGRvZgJleHRuA2FlbQEwAGFkaWQ`, "run-1");
+    const second = build(`${base}&fbclid=IwcGRvZgVleHRuA2FlbQEwAGFkaWQ`, "run-2");
+
+    expect(first.sourceRecipeKey).toBe(second.sourceRecipeKey);
+    expect(first.rawRecipe["@id"]).not.toBe(second.rawRecipe["@id"]);
+  });
+
+  // Two different recipes that both declare an @id must still key apart, or
+  // the repair would merge records rather than stop duplicating them.
+  it("still keys two different @id values apart", () => {
+    const build = (id: string) =>
+      buildRecipeDocumentV2({
+        sourceId: "oetker",
+        canonicalUrl: "https://oetker.dk/opskrifter/r/multi",
+        pageUrl: "https://oetker.dk/opskrifter/r/multi",
+        crawlRunId: "run-1",
+        crawlAttemptId: "attempt-1",
+        extractedAt: new Date("2026-08-30T13:58:49.000Z"),
+        rawRecipe: { ...structuredClone(completeRecipe), "@id": id },
+        language: "da",
+        languageConfidence: 1,
+        languageSignals: ["recipe-inLanguage"],
+        extractorVersion: "2.0.0",
+        extractionSignals: ["strict-json-ld-only"],
+      });
+
+    expect(build("https://oetker.dk/opskrifter/r/multi#a").sourceRecipeKey)
+      .not.toBe(build("https://oetker.dk/opskrifter/r/multi#b").sourceRecipeKey);
+  });
+
   it("normalizes complete Recipe JSON-LD without mutating the raw parsed node", () => {
     const rawRecipe = structuredClone(completeRecipe);
 

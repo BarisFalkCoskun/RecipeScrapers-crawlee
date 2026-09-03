@@ -7,6 +7,7 @@ import type {
   RecipeDocumentV2,
 } from "../types.js";
 import { hashRecipe } from "../utils/hash.js";
+import { stripTrackingParams } from "../utils/canonicalize.js";
 
 export interface CompleteJsonLdExtraction {
   rawScripts: string[];
@@ -471,11 +472,19 @@ function createSourceRecipeKey({
   upstreamId: string | undefined;
   pageRecipeDiscriminator: string | undefined;
 }): string {
+  // A URL `@id` can carry the visitor's marketing query string, and oetker's
+  // rotates an fbclid on every request. Left in the hash that made the upsert
+  // key change every run, so seven of its recipes accumulated a fresh document
+  // per crawl while the run itself reported a clean 806. See
+  // stripTrackingParams: an `@id` with nothing to strip is untouched.
+  const stableUpstreamId = upstreamId ? stripTrackingParams(upstreamId) : undefined;
   const keyHash = hashRecipe({
     sourceId,
     canonicalUrl,
-    upstreamId: upstreamId ?? null,
-    pageRecipeDiscriminator: upstreamId ? null : pageRecipeDiscriminator ?? null,
+    upstreamId: stableUpstreamId ?? null,
+    pageRecipeDiscriminator: stableUpstreamId
+      ? null
+      : pageRecipeDiscriminator ?? null,
   });
   return `${sourceId}:${keyHash}`;
 }
