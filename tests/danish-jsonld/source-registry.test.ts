@@ -414,12 +414,15 @@ describe("Danish JSON-LD source registry", () => {
     expect(byId.get("odensemarcipan")?.migrationState).toBe("configured");
     expect(byId.get("odensemarcipan")?.deferOrBlockReason)
       .toMatch(/an upsert never deletes/u);
-    // oetker has had that fresh run and its field comparison is clean, but
-    // discovery does not reproduce: successive uncapped runs each report 806
-    // candidates and completeness while returning slightly different sets.
-    expect(byId.get("oetker")?.migrationState).toBe("configured");
+    // oetker's discovery does reproduce, which is what that fresh run showed:
+    // three uncapped runs each persisted 806 from 806 candidates, and the store
+    // holds 806 distinct recipes whose duplicated documents carry an identical
+    // contentHash. What varied was the upsert key -- its Recipe @id carries a
+    // marketing query string with a fresh fbclid on every request -- so seven
+    // recipes were inserted again rather than updated.
+    expect(byId.get("oetker")?.migrationState).toBe("shadow_passed");
     expect(byId.get("oetker")?.deferOrBlockReason)
-      .toMatch(/discovery does not reproduce between runs/u);
+      .toMatch(/Discovery was never the problem/u);
     // nogetiovnen has since reached shadow parity: its legacy run completed with
     // 3100 recipes and V2 matches every one. Both halves take about three hours
     // because the source is throttled to one request every three seconds.
