@@ -1066,6 +1066,10 @@ describe("legacy request-settings audit", () => {
     // delay specifically.
     const deliberatelySlower = new Set([
       "diabetesopskrifter", "blenderopskrifter", "maduniverset", "spisbedre",
+      // 31 of joythebaker's 1748 posts answered as blocked at the shared
+      // default and its pacing had never been reduced at all, unlike the four
+      // above. Slowed to one request every four seconds.
+      "joythebaker",
     ]);
     const audited = DANISH_JSONLD_SOURCES.filter((source) =>
       source.legacyFamily !== "WprmApiSpider" &&

@@ -32757,6 +32757,11 @@ const LEGACY_REQUEST_SETTING_OVERRIDES: Record<
   // rather than a page that can be named. One worker instead of two.
   spisbedre: { delaySeconds: 2, maxConcurrency: 1 },
   maduniverset: { delaySeconds: 2, maxConcurrency: 1 },
+  // joythebaker had 31 of 1748 posts answer as blocked at the default two
+  // requests every two seconds, and unlike blenderopskrifter - which still
+  // loses six requests at one every twenty - its pacing has never been reduced
+  // at all. Trying the remedy before arguing about it is the cheaper order.
+  joythebaker: { delaySeconds: 4, maxConcurrency: 1 },
   diabetesopskrifter: { delaySeconds: 20, maxConcurrency: 1 },
   blenderopskrifter: { delaySeconds: 20, maxConcurrency: 1 },
   spicytwist: { maxConcurrency: 1 },
