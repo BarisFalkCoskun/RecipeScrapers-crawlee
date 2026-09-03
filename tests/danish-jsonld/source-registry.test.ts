@@ -982,9 +982,10 @@ describe("Danish JSON-LD source registry", () => {
         sitemapUrls: ["https://spisbedre.dk/opskrifter/sitemap.xml"],
         recipeExtractor: "spisbedre-inertia",
         fetchMode: "cheerio",
-        migrationState: "configured",
+        migrationState: "canary_passed",
         latestScrapyOutcome: "partial",
-        latestCanary: "2026-08-19T16-11-30.677Z",
+        latestCanary:
+          "2026-09-01T20-11-46.772Z-attempt-92dc9de4-409e-42b1-8358-7b05c306e7ca",
       });
     expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "webopskrifter"))
       .toMatchObject({

@@ -26149,10 +26149,11 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Three uncapped Crawlee runs and the full Scrapy run followed all eight listing pages, emitted the same 47 recipes, rejected the same two non-recipe articles, and matched every legacy field; Crawlee intentionally preserves full yield labels on eight records that Scrapy truncates",
   },
   rema1000: {
-    migrationState: "configured",
-    latestCanary: "2026-08-14T20-11-01.445Z-attempt-828a9ea6-ce87-48af-a902-ae534a4956fd",
+    migrationState: "canary_passed",
+    latestCanary:
+      "2026-08-29T23-06-22.266Z-attempt-b9464e86-c03b-4231-88fb-12a814a225f5",
     deferOrBlockReason:
-      "Awaiting a fresh uncapped run: the store holds no records at all for this source. Its canary rested on a run whose data did not survive the database deletion and restore, so the claim cannot be checked and nothing is here to compare or promote. The run it rested on is recorded as: Uncapped run persisted 671 recipes with complete discovery and no blocked or failed request.",
+      "The replacement run the earlier reason asked for has been made. An uncapped run followed the listing to its end and persisted 665 recipes from 665 discovered candidates over 699 requests, with discovery complete, no failed or blocked request, and no outcome reason recorded. The store now holds those 665 records and no others for this source, so the count is this run rather than an accumulation across runs. The 671 quoted from the lost pre-restore canary is not evidence and is not carried forward: this run is measured, that one is not. Legacy comparison is still outstanding.",
   },
   beauvais: {
     migrationState: "shadow_passed",
@@ -33717,11 +33718,12 @@ const EMBEDDED_DANISH_RECIPE_SOURCES: DanishJsonLdSource[] =
     },
     requireCompleteJsonLd: true,
     recipeExtractor: definition.extractor,
-    migrationState: "configured",
+    migrationState: "canary_passed",
     latestScrapyOutcome: "partial",
-    latestCanary: "2026-08-19T16-11-30.677Z",
+    latestCanary:
+      "2026-09-01T20-11-46.772Z-attempt-92dc9de4-409e-42b1-8358-7b05c306e7ca",
     deferOrBlockReason:
-      "Two uncapped runs now, and the site fails a little differently each time. The 2026-09-01 runs persisted 1999 then 1997 recipes from 2000 candidates over 2000 and 1998 requests, both with discovery complete and nothing rejected as incomplete or malformed - the whole 2000-URL sitemap read in one pass each time.\n\nThe failures are the site, not the pages: 1 request failed in the first run and 3 in the second, against 38 \"Reclaiming failed request\" warnings in the first - 9 answering 502 and 11 answering 504. The server falters under the crawl and most retries succeed, so the count that survives is small and not the same twice. That is the same shape as maduniverset, which lost 189 requests to 502s while serving a single client in under a second.\n\nA source whose failures vary between runs cannot have them named the way a dead URL can, so this needs its pacing reduced - the remedy that worked for maduniverset - rather than another identical run.",
+      "Reduced pacing was the right diagnosis. The previous reason recorded two runs that each lost a request or three to 502s and 504s served by the site itself, varying between runs, and prescribed the maduniverset remedy rather than another identical run. At delaySeconds 2 and maxConcurrency 1 in LEGACY_REQUEST_SETTING_OVERRIDES the 2026-09-01 run persisted all 2000 recipes from 2000 candidates over 2001 requests, with discovery complete, zero failed requests, zero blocked requests, and no outcome reason recorded. The server does not falter when it is asked more slowly. The definition below still reads maxConcurrency 2 and is inert; the override is what the run used. Legacy comparison is still outstanding.",
   }));
 
 const HTML_DANISH_RECIPE_SOURCES: DanishJsonLdSource[] =
