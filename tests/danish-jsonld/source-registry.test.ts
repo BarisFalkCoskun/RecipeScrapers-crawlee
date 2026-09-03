@@ -821,6 +821,17 @@ describe("Danish JSON-LD source registry", () => {
       bakingamoment: "per_page=50",
       // 200 with one byte at 100; 54891 bytes and fifty records at 50.
       familyfreshmeals: "per_page=50",
+      // These three answer 200 with zero bytes on one page in the middle of
+      // the range and serve the rest normally, so the run stopped there and
+      // reported a complete-looking crawl of the pages before it. Walking each
+      // whole collection at 50 on 2026-09-03 reached every record the server
+      // announces with no failure anywhere in the range.
+      // 992 announced, capped at 300 by page 4.
+      thechunkychef: "per_page=50",
+      // 1280 announced, capped at 300 by page 4.
+      yourhomebasedmom: "per_page=50",
+      // 1747 announced, capped at 1600 by page 17.
+      tasteandtellblog: "per_page=50",
     };
     for (const [id, expected] of Object.entries(reducedPageSize)) {
       expect(byId.get(id)?.startUrls[0]).toContain(expected);

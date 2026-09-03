@@ -20664,7 +20664,7 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
     "discovery": "listing",
     "sitemapUrls": [],
     "startUrls": [
-      "https://www.tasteandtellblog.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+      "https://www.tasteandtellblog.com/wp-json/wp/v2/wprm_recipe?per_page=50&page=1"
     ],
     "recipeUrlPatterns": [
       "^https?://"
@@ -21056,7 +21056,7 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
     "discovery": "listing",
     "sitemapUrls": [],
     "startUrls": [
-      "https://www.thechunkychef.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+      "https://www.thechunkychef.com/wp-json/wp/v2/wprm_recipe?per_page=50&page=1"
     ],
     "recipeUrlPatterns": [
       "^https?://"
@@ -24842,7 +24842,7 @@ const RAW_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] = [
     "discovery": "listing",
     "sitemapUrls": [],
     "startUrls": [
-      "https://www.yourhomebasedmom.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=1"
+      "https://www.yourhomebasedmom.com/wp-json/wp/v2/wprm_recipe?per_page=50&page=1"
     ],
     "recipeUrlPatterns": [
       "^https?://"
@@ -31062,7 +31062,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-21T12-01-55.908Z-attempt-2072cd3f-1ffc-48cc-bfc9-09bfa843094a",
     deferOrBlockReason:
-      "Uncapped run persisted 1600 recipes from 1601 API records; 1 record the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary; the shortfall cannot be checked against the listing because the listing serves only 1600 of the 1746 records it announces before it stops answering",
+      "The listing was never refusing us; its server cannot build one page. 1747 records are announced in x-wp-total, and per_page=100&page=17 answers HTTP 200 with a zero-byte body while the pages either side of it serve 100 records normally. The crawl stopped there, which is why it reported 1600, a round multiple of the page size that reads as a whole catalog rather than a walk that stopped early.\n\nWalked whole at per_page=50 on 2026-09-03: all 1747 records reachable, no failure at any page in the range. The start URL is halved, the same remedy koudahl, bakingamoment and familyfreshmeals needed. 147 records should follow on the next uncapped run.\n\nLeft at configured deliberately: the page size is verified against the live API but no crawl has run under it yet, and a recovery that has only been predicted is not evidence.",
   },
   tastesbetterfromscratch: {
     migrationState: "canary_passed",
@@ -31165,7 +31165,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-21T12-07-33.274Z-attempt-cfd3bf70-201d-43e3-b8c0-52d43109ac87",
     deferOrBlockReason:
-      "Uncapped run persisted 300 recipes from 301 API records; 1 record the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary; the shortfall cannot be checked against the listing because the listing serves only 300 of the 992 records it announces before it stops answering",
+      "The listing was never refusing us; its server cannot build one page. 992 records are announced in x-wp-total, and per_page=100&page=4 answers HTTP 200 with a zero-byte body while the pages either side of it serve 100 records normally. The crawl stopped there, which is why it reported 300, a round multiple of the page size that reads as a whole catalog rather than a walk that stopped early.\n\nWalked whole at per_page=50 on 2026-09-03: all 992 records reachable, no failure at any page in the range. The start URL is halved, the same remedy koudahl, bakingamoment and familyfreshmeals needed. 692 records should follow on the next uncapped run.\n\nLeft at configured deliberately: the page size is verified against the live API but no crawl has run under it yet, and a recovery that has only been predicted is not evidence.\n\nThe isolated legacy run at reduced pacing matched all 300 records V2 holds on every material field, so the two agree exactly on the part of the catalog both could reach.",
   },
   thecleaneatingcouple: {
     migrationState: "shadow_passed",
@@ -32159,7 +32159,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-21T12-26-53.615Z-attempt-214ed272-2122-469a-b325-233fd54793b6",
     deferOrBlockReason:
-      "Uncapped run persisted 300 recipes from 301 API records; 1 record the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary; the shortfall cannot be checked against the listing because the listing serves only 300 of the 1280 records it announces before it stops answering",
+      "The listing was never refusing us; its server cannot build one page. 1280 records are announced in x-wp-total, and per_page=100&page=4 answers HTTP 200 with a zero-byte body while the pages either side of it serve 100 records normally. The crawl stopped there, which is why it reported 300, a round multiple of the page size that reads as a whole catalog rather than a walk that stopped early.\n\nWalked whole at per_page=50 on 2026-09-03: all 1280 records reachable, no failure at any page in the range. The start URL is halved, the same remedy koudahl, bakingamoment and familyfreshmeals needed. 980 records should follow on the next uncapped run.\n\nLeft at configured deliberately: the page size is verified against the live API but no crawl has run under it yet, and a recovery that has only been predicted is not evidence.",
   },
   yummyeats: {
     migrationState: "shadow_passed",
