@@ -105,8 +105,25 @@ async function fetchJson(url) {
   const client = new MongoClient(mongoUri());
   await client.connect();
   const stored = await client.db(dbName).collection("recipes_v2")
-    .find({ sourceId }, { projection: { "rawRecipe.id": 1 } }).toArray();
+    .find({ sourceId }, { projection: { "rawRecipe.id": 1, extractedAt: 1 } }).toArray();
   await client.close();
+  // A record the source published after the crawl cannot be a rejection: the
+  // crawl never saw it. thereciperebel's one "unexplained" record was Air Fryer
+  // Salmon, dated 2026-09-02 against a store written on 2026-08-21, and
+  // lemontreedwelling's was Garlic Yogurt Sauce from the same day. The sibling
+  // walker for WordPress-posts sources has accounted for this since
+  // 2026-09-01; this one had not, and the two verdicts it cost were both wrong.
+  const crawledUpTo = stored.reduce((newest, doc) => {
+    const at = doc.extractedAt ? new Date(doc.extractedAt).getTime() : 0;
+    return Number.isFinite(at) && at > newest ? at : newest;
+  }, 0);
+  const publishedAfterCrawl = (post) => {
+    if (crawledUpTo === 0) return false;
+    const raw = post && (post.date_gmt || post.date || (post.recipe && post.recipe.date));
+    if (!raw) return false;
+    const at = new Date(post.date_gmt ? `${raw}Z` : raw).getTime();
+    return Number.isFinite(at) && at > crawledUpTo;
+  };
   // The walk keys a declared post on recipe.id falling back to post.id, but this
   // comparison used to read recipe.id alone. On a listing whose posts carry no
   // recipe.id every declared post yielded undefined, every stored doc yielded
@@ -129,9 +146,13 @@ async function fetchJson(url) {
 
   const reasons = {
     "no title": [], "no ingredients": [], "no instructions": [],
-    "no canonical link": [], unexplained: [],
+    "no canonical link": [], "published after this crawl": [], unexplained: [],
   };
   for (const post of missing) {
+    if (publishedAfterCrawl(post)) {
+      reasons["published after this crawl"].push(post);
+      continue;
+    }
     // One post at a time, so the extractor's verdict is about exactly this
     // record rather than the page it arrived on.
     const out = extractWprmRecipes([post]);
