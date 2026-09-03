@@ -26497,10 +26497,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 6243 recipes with complete discovery; 52 failed requests and 4 incomplete pages keep it short of a canary Re-crawling this source is a multi-day job at its legacy-matched pacing, not a session-scale one: measured on 2026-08-31 it stores about 71 recipes an hour at delaySeconds 3 and concurrency 1, so its 6243-recipe catalog needs roughly 88 hours of continuous crawling. A four-hour ceiling reached 162 records and a twelve-hour one would not finish either. Raising the pace is not the answer - the legacy-settings audit exists to keep V2 from crawling any source harder than its legacy spider did. Parked deliberately so the lanes can clear sources that do complete; it needs a long uninterrupted window rather than another attempt between other work.",
   },
   delmonte: {
-    migrationState: "configured",
-    latestCanary: "2026-08-18T00-47-53.212Z-attempt-5f26efff-44f5-4df1-bd47-504a4dd1f28b",
+    migrationState: "shadow_passed",
+    latestCanary:
+      "2026-08-30T03-12-07.206Z-attempt-24df1c1c-0f73-434c-9bf7-597c10141c3e",
+    shadowParity:
+      "4/4 recipes; 100% material-field parity, all 17 failures named as dead sitemap facets",
     deferOrBlockReason:
-      "Uncapped run persisted 4 recipes with complete discovery; 17 failed requests keep it short of a canary",
+      "All 17 failures are named, and none of them is a recipe. The site advertises three whole facet dimensions in its sitemap that it no longer serves: every /recipes/cuisine/ URL (7), every /recipes/ease/ URL (4) and every /recipes/prep-method/ URL (6). Fetching all 61 candidates by hand on 2026-09-03 answered 44 with 200 and exactly those 17 with 404 - the same split the run reported, two days later and from a different client. The previous reason held this source at configured for the failure count alone; the count was right and the reading was not.\n\nTwo uncapped runs, 2026-08-29T21-06-30 and 2026-08-30T03-12-07, reported identical counters: 4 recipes persisted from 61 discovered candidates, 44 recipe pages processed, 17 failed, discovery complete, nothing rejected as incomplete or malformed. The store holds exactly 4 records and the second run upserted onto the first rather than adding to it, which is what idempotency looks like where the key is stable.\n\nFour recipes is what the site publishes, not what the crawl managed. The isolated legacy run emitted the same 4 and the comparison matches every material field, with V2 keeping instructions legacy stores none of. Of the 44 pages that answer 200, 40 are facet listings; delmonte's remaining recipe pages publish HowTo nodes whose step list is empty, which both the completeness contract and the legacy parser correctly read as no instructions.",
   },
   foodnetwork_uk: {
     migrationState: "configured",
