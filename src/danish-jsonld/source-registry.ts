@@ -32556,10 +32556,10 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: the isolated legacy run emitted 680 records and V2 matches on every material field. This source publishes pages carrying several recipes each, and 2694 of V2's 3382 records are siblings recovered from them; legacy keeps one record per page. That is also why 68 records show ingredients in V2 and none in legacy - legacy captured a fragment of one list where the page holds five recipes. The 3 records legacy holds and V2 does not are ones legacy accepts without a name, ingredients, instructions or a link. V2 additionally keeps a fuller yield than legacy's leading integer on 539 records. A second uncapped run reproduced all 3382 keys with identical content, and a reviewed sample of 25 stored records is clean",
   },
   greatbritishchefs: {
-    migrationState: "configured",
-    latestCanary: "2026-08-17T19-01-03.684Z-attempt-c5170a42-0672-4712-baf0-736039d73883",
+    migrationState: "canary_passed",
+    latestCanary: "2026-09-02T13-30-47.277Z-attempt-f53d5f7a-1803-43c4-aed3-2caa94679119",
     deferOrBlockReason:
-      "Awaiting a fresh uncapped run: the store holds no records at all for this source. Its canary rested on a run whose data did not survive the database deletion and restore, so the claim cannot be checked and nothing is here to compare or promote. The run it rested on is recorded as: Uncapped run persisted all 7020 discovered recipes with complete discovery and no blocked, failed or rejected record.",
+      "A clean canary on the fresh run this source was waiting for, and the largest one yet to come back with nothing against it. The 2026-09-02 run persisted 7046 recipes from 7046 candidates over 7148 requests with outcome \"succeeded\": no failed request, no blocked request, and not one page rejected as incomplete or malformed. Discovery complete, and every record in the store comes from that run, so nothing survives from the canary whose data did not survive the database restore. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
   },
   bornemenuen: {
     migrationState: "shadow_passed",
