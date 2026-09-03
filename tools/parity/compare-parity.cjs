@@ -519,7 +519,28 @@ if(incompleteOnlyLegacy.length)
   console.log(`\nrecords legacy accepts without a name, ingredients, instructions or a link, which the completeness contract rejects: ${incompleteOnlyLegacy.length}`);
 const countsAgree = !strayL.length && !strayC.length;
 if(siblings.length) console.log(`\nsibling recipes V2 recovered from multi-recipe pages: ${siblings.length}`);
-if(!legacy.length || !crawlee.length){
+// A legacy run that Cloudflare stopped mid-pagination is not a baseline. On
+// 2026-08-29 sixteen sources were compared against one: theseasonedmom's spider
+// took page 1 and 2 of its WPRM API and got 403 on page 3, so its 200 records
+// were reported as a 1868-record V2 surplus. Re-probed on 2026-09-03 that same
+// URL answers 200 to both a browser and the spider's own user agent, so the
+// block was pacing rather than the site refusing us - which makes the verdict
+// wrong rather than the source interesting. The log names it; read it and say
+// so instead of publishing a comparison built on a truncated side.
+// Derived from the legacy dump rather than the source name: shadow-parity.sh
+// and legacy-halt-check.sh both pass the two dump paths and no name, so keying
+// on a name silently found no log and detected nothing.
+const logPath=process.argv[5]||String(process.argv[2]||"").replace(/\.json$/u,".scrapy.log");
+let legacyBlocked=null;
+try{
+  const log=fs.readFileSync(logPath,"utf8");
+  const hit=log.split("\n").find(line=>/block_reason=|Just a moment/u.test(line));
+  if(hit) legacyBlocked=hit.trim().slice(0,240);
+}catch{ /* no log to read is not evidence either way */ }
+if(legacyBlocked){
+  console.log(`\nINCONCLUSIVE: the legacy run was blocked, so its record set is a floor rather than a baseline\n  ${legacyBlocked}`);
+  process.exitCode=2;
+} else if(!legacy.length || !crawlee.length){
   console.log(`\nINCONCLUSIVE: legacy=${legacy.length} crawlee=${crawlee.length} - one side produced no records`);
   process.exitCode=2;
 } else if(!countsAgree){

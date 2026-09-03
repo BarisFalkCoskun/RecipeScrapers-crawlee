@@ -9,16 +9,25 @@ const SCRIPT = join(process.cwd(), "tools/parity/compare-parity.cjs");
 type LegacyRecord = Record<string, unknown>;
 type CrawleeRecord = Record<string, unknown>;
 
-function compare(legacy: LegacyRecord[], crawlee: CrawleeRecord[]): string {
+function compare(
+  legacy: LegacyRecord[],
+  crawlee: CrawleeRecord[],
+  scrapyLog?: string
+): string {
   const dir = mkdtempSync(join(tmpdir(), "compare-parity-"));
   const legacyPath = join(dir, "legacy.json");
   const crawleePath = join(dir, "crawlee.json");
+  const logPath = join(dir, "legacy.scrapy.log");
   writeFileSync(legacyPath, JSON.stringify(legacy));
   writeFileSync(crawleePath, JSON.stringify(crawlee));
+  writeFileSync(logPath, scrapyLog ?? "");
   // The script exits non-zero on a mismatch, which is the verdict some of
   // these cases are asserting, so the output is read rather than the status.
   try {
-    return execFileSync("node", [SCRIPT, legacyPath, crawleePath, "fixture"], {
+    // Deliberately passes only the two dump paths, the way shadow-parity.sh
+    // calls it, so the log has to be found by derivation from legacy.json.
+    void logPath;
+    return execFileSync("node", [SCRIPT, legacyPath, crawleePath], {
       encoding: "utf8",
     });
   } catch (error) {
@@ -129,5 +138,55 @@ describe("compare-parity record keying", () => {
     );
     expect(out).toContain("crawlee: 2 (unique keys 2 )");
     expect(out).toContain("only legacy: 1");
+  });
+});
+
+describe("compare-parity legacy health", () => {
+  // Sixteen sources were compared on 2026-08-29 against a legacy run
+  // Cloudflare had stopped mid-pagination. theseasonedmom took two pages of its
+  // WPRM API and got 403 on the third, and its 200 records were published as a
+  // 1868-record V2 surplus. The same URL answered 200 on 2026-09-03 to both a
+  // browser and the spider's own user agent, so the block was pacing, and the
+  // verdict was simply wrong.
+  const blockedLog =
+    "2026-08-29 19:31:04 [fixture] WARNING: WPRM API request blocked: " +
+    "block_reason=http_403 status=403 " +
+    "url=https://example.com/wp-json/wp/v2/wprm_recipe?per_page=100&page=3\n";
+
+  it("refuses to publish a verdict built on a blocked legacy run", () => {
+    const out = compare(
+      [legacyRecipe("https://www.example.com/recipes/pie/aaa", "Pie")],
+      [
+        crawleeRecipe(
+          "https://example.com/recipes/pie/aaa",
+          "https://www.example.com/recipes/pie/aaa",
+          "Pie"
+        ),
+        crawleeRecipe(
+          "https://example.com/recipes/cake/bbb",
+          "https://www.example.com/recipes/cake/bbb",
+          "Cake"
+        ),
+      ],
+      blockedLog
+    );
+    expect(out).toContain("INCONCLUSIVE: the legacy run was blocked");
+    expect(out).toContain("block_reason=http_403");
+    expect(out).not.toContain("MISMATCH");
+  });
+
+  it("still reports a real verdict when the legacy run was healthy", () => {
+    const out = compare(
+      [legacyRecipe("https://www.example.com/recipes/pie/aaa", "Pie")],
+      [
+        crawleeRecipe(
+          "https://example.com/recipes/pie/aaa",
+          "https://www.example.com/recipes/pie/aaa",
+          "Pie"
+        ),
+      ],
+      "2026-08-29 19:31:04 [fixture] INFO: Closing spider (finished)\n"
+    );
+    expect(out).toContain("ALL MATERIAL FIELDS MATCH");
   });
 });
