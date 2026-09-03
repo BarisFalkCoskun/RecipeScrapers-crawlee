@@ -17,15 +17,28 @@
 #     record, which assumes the default 2s delay and 2 concurrent requests. At
 #     one request every 4s that ceiling cuts a run off before it finishes, and
 #     a cut-off legacy run is the same useless baseline as a blocked one.
+#
+# It also pauses between sources. The first run of the first batch --
+# thechunkychef, after a quiet period -- came back ALL MATERIAL FIELDS MATCH,
+# and the next seven each answered 403 within seconds of starting, one of them
+# on page 1 where two days earlier it had reached page 3. The same endpoints
+# answer 200 to curl minutes later with the same user agent and either
+# Accept-Language, so it is not the headers: something about running spider
+# after spider from this host is what the sites object to. A gap is the cheapest
+# thing that might fix it, and running these back to back is known not to work.
 cd /home/scraper/scripts/RecipeScrapers-crawlee || exit 1
 Q="${SLOW_QUEUE:?set SLOW_QUEUE}"; R="${SLOW_RESULTS:?set SLOW_RESULTS}"
+GAP="${SLOW_GAP_SECONDS:-900}"
 PER_RECORD="${SLOW_SECONDS_PER_RECORD:-9}"
 FLOOR="${SLOW_FLOOR:-10800}"
 CAP="${SLOW_CAP:-43200}"
 EXTRA="${SLOW_SCRAPY_EXTRA:--s CONCURRENT_REQUESTS=1 -s CONCURRENT_REQUESTS_PER_DOMAIN=1 -s DOWNLOAD_DELAY=4 -s RETRY_TIMES=6 -s AUTOTHROTTLE_START_DELAY=5}"
+first=1
 while true; do
   line=$( (flock 9; head -1 "$Q"; sed -i '1d' "$Q") 9>>"$Q.lock" )
   [ -z "$line" ] && break
+  if [ "$first" -eq 0 ]; then sleep "$GAP"; fi
+  first=0
   src=${line%% *}; db=${line##* }
   n=$(mongosh "mongodb://127.0.0.1:27017/$db" --quiet \
         --eval "print(db.recipes_v2.countDocuments({sourceId:'$src'}))" 2>/dev/null)
