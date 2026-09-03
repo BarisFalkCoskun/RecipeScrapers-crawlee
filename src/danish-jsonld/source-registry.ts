@@ -31311,10 +31311,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Both halves clean with nothing to explain. The isolated legacy run emitted 710 records and V2 holds the same 710: neither side holds a record the other lacks, and every material field matches, with 1 record keeping WPRM named-step prefixes legacy drops and 1 keeping a space at a block boundary legacy fuses over.\n\nThe uncapped run persisted 710 recipes from 710 discovered candidates with all 710 processed, discovery complete, no failed request, no blocked request, nothing rejected, and no outcome reason recorded. Every candidate is accounted for. The repeat run reports STABLE at 710 to 710 with all 710 byte-identical.",
   },
   theflexitarian_ir: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-09-01T13-04-31.194Z-attempt-09a981cc-0ce5-4130-b16d-5ad4371a1e5f",
+    migrationState: "shadow_passed",
+    latestCanary:
+      "2026-09-03T10-51-55.363Z-attempt-e9ca4903-1a85-4239-951c-e0a07fbabaa4",
+    shadowParity:
+      "710/710 recipes; 100% material-field parity, identical record sets",
     deferOrBlockReason:
-      "A clean canary, against a reason that said the opposite. It read \"Uncapped run reached no recipe candidates, so the route needs review\" - the route is fine. The 2026-09-01 run persisted 710 recipes from 710 candidates over 9 requests with outcome \"succeeded\": no failed request, no blocked request, and not one page rejected as incomplete or malformed, discovery complete. The listing serves 4.2 MB of WPRM records when fetched by hand.\n\nThis source and theflexitarian are the same site registered twice: identical domain, identical start URL, identical legacy family, and all 710 canonical URLs shared, so the store holds 1420 records for 710 recipes. The duplication is inherited rather than introduced - legacy ships danish_recipes/spiders/theflexitarian.py and theflexitarian_ir.py with the same allowed_domains, source_site and country - so V2 is mirroring it faithfully. Worth knowing that the 1012-source count includes at least one pair like this, and that both halves must reach cutover for the readiness gate to pass.\n\nAwaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
+      "Both halves clean with nothing to explain, exactly as its sibling theflexitarian. The isolated legacy run emitted 710 records and V2 holds the same 710: neither side holds a record the other lacks, and every material field matches, with 1 record keeping WPRM named-step prefixes legacy drops and 1 keeping a space at a block boundary legacy fuses over.\n\nThe uncapped run persisted 710 recipes from 710 discovered candidates with all 710 processed, discovery complete, no failed request, no blocked request, nothing rejected, and no outcome reason recorded. The repeat run reports STABLE at 710 to 710 with all 710 byte-identical.",
   },
   thefoodblog: {
     migrationState: "shadow_passed",
