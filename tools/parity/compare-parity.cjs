@@ -140,7 +140,26 @@ const safeOn=o =>
 const candidate={lower:safeOn({lower:true}),stripExt:safeOn({stripExt:true})};
 const keyOpts=safeOn(candidate)?candidate:{lower:candidate.lower};
 const lk=legacyKeyWith(keyOpts);
-const ck=crawleeKeyWith(keyOpts);
+const ckCanonical=crawleeKeyWith(keyOpts);
+// A record can be addressed two ways: by the URL it was fetched from, and by
+// the canonical the page declares. Usually they agree. pillsbury addresses a
+// recipe as /recipes/<slug>/<uuid> and for 21 of its recipes the uuid in its
+// sitemap is not the uuid in that page's own <link rel=canonical> - the site
+// contradicts itself. Legacy stores the URL it fetched, V2 stores the declared
+// canonical, so those 21 were reported as 21 legacy-only plus 21 crawlee-only
+// records, and the gap read as a discovery difference when the two sides were
+// holding the same recipes. Matching on either address is right, and it can
+// only pair records a URL identity already implies. As with the other
+// relaxations it is applied only when it collapses nothing.
+const ckPage=r=>K(r.pageUrl,r.normalized&&r.normalized.title,keyOpts);
+const legacyKeySet=new Set(keysOf(legacy,lk));
+const ckEither=r=>{
+  const canonical=ckCanonical(r);
+  if(!r.pageUrl||legacyKeySet.has(canonical)) return canonical;
+  const page=ckPage(r);
+  return legacyKeySet.has(page)?page:canonical;
+};
+const ck=noCollapse(crawlee,ckCanonical,ckEither)?ckEither:ckCanonical;
 // A source can publish more than one recipe at a single URL under a single
 // title. happyfoodstube has two "Homemade Sushi" records on
 // /homemade-sushi/ - upstream ids 6839 and 11293, eleven ingredients and

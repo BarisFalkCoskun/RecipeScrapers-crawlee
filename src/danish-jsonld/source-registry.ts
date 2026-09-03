@@ -25978,6 +25978,21 @@ const LEGACY_DISCOVERY_OVERRIDES: Partial<
   plantepusherne: { recipeUrlPatterns: LEGACY_LISTING_DEFAULT_PATTERNS },
   stinna: { recipeUrlPatterns: LEGACY_LISTING_DEFAULT_PATTERNS },
   sydhavnsbloggen: { recipeUrlPatterns: LEGACY_LISTING_DEFAULT_PATTERNS },
+  // pillsbury's sitemap serves recipes as /recipes/<slug>/<uuid> and its
+  // category pages as /recipes/<type>/<name> - structurally the same shape, so
+  // a bare "/recipes/" pattern admits both. 109 of them were being fetched as
+  // recipe candidates, publish no Recipe JSON-LD, and were counted in no
+  // rejection bucket, which is why a run reporting 2377 candidates, 2374
+  // processed and 2263 persisted looked like it had dropped 114 pages with
+  // nothing rejected. The uuid is the only discriminator: all 2239 legacy and
+  // 2261 V2 records were fetched from a uuid URL, none of the category pages
+  // carry one, and the skipUrlFragments list could not keep up with the
+  // category types the site keeps adding.
+  pillsbury: {
+    recipeUrlPatterns: [
+      "/recipes/[^/]+/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/?$",
+    ],
+  },
 };
 
 /**
@@ -32535,7 +32550,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "canary_passed",
     latestCanary: "2026-09-01T10-51-18.997Z-attempt-af92ab8d-d0d4-47b5-98d8-64e85686421c",
     deferOrBlockReason:
-      "A clean canary on the fresh run this source was waiting for. It persisted 2263 recipes from 2377 candidates over 2381 requests with outcome \"succeeded\": no failed request, no blocked request, and not one page rejected as incomplete or malformed. Discovery complete, and every record in the store comes from this run, so nothing survives from the canary whose data did not survive the database restore. The isolated legacy comparison is done and half the gap is the site's own URL scheme. Legacy emitted 2239 records and V2 holds 2261, reported as 37 legacy-only and 59 crawlee-only. pillsbury addresses a recipe as /recipes/<slug>/<uuid> and the uuid it serves changes between crawls, so 21 of those on each side are the same recipe under a different identifier. Dropping the uuid leaves 16 legacy-only and 38 crawlee-only, and none of the 37 legacy-only records were missing instructions, so the completeness contract is not what separates them.\n\nThose 16 and 38 are not yet accounted for and the source is not promotable until they are. Deliberately not normalised away in the comparator: a trailing uuid is this site's convention rather than a general truth about URLs, and folding it in would hide the same shape wherever it is not benign - the same reason sundpaabudget's /recipe/ prefix was left alone.",
+      "The comparison gap this source was held on is measured now, and most of it was the comparator rather than the crawl.\n\npillsbury addresses a recipe as /recipes/<slug>/<uuid>, and for 21 of its recipes the uuid in its sitemap is not the uuid in that page's own <link rel=canonical>: the site contradicts itself. Legacy stores the URL it fetched and V2 the canonical the page declares, so those 21 recipes were counted twice, once on each side. That is the whole of the previously reported 37 legacy-only / 59 crawlee-only. The comparator now matches a V2 record on either address, guarded against collapse like its other relaxations, and the same dumps report 16 and 38 with no field difference on any of the 2223 records the two sides share.\n\nThe earlier reason blamed a rotating uuid. That was wrong and is corrected here: across all 2223 shared slugs the uuid is identical on both sides, and today's sitemap serves those same uuids.\n\nWhat is left is a stale slice on each side rather than a defect on either. All 16 legacy-only URLs answer 200, publish complete Recipe JSON-LD, are canonical to themselves and appear in today's sitemap; so do all 38 crawlee-only. Measured against the live sitemap's 2286 recipes, V2 is missing 27 and legacy 49, and 11 are in neither because the site added them after both runs. V2's coverage is the better of the two. A fresh uncapped run is what clears this, not an argument.\n\nOne accounting defect was real and is fixed. The run reported 2377 candidates, 2374 processed and 2263 persisted with nothing rejected, a 111-page hole. Those were category pages: the sitemap lists 109 URLs like /recipes/meal-course/dinner and /recipes/ingredient/pork, structurally identical to a recipe URL without the uuid, which the bare \"/recipes/\" pattern admitted and which publish no Recipe JSON-LD, checked live on two. The pattern now requires the uuid - it matches all 2286 sitemap recipes and none of the 607 other sitemap URLs - so the next run's candidate count means what it says.",
   },
   udeoghjemme: {
     migrationState: "shadow_passed",

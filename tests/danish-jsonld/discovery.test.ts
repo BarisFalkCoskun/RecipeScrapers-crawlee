@@ -904,4 +904,27 @@ describe("Danish JSON-LD discovery", () => {
     )).toBe(true);
   });
 
+  // pillsbury addresses a recipe as /recipes/<slug>/<uuid> and a category page
+  // as /recipes/<type>/<name> - the same shape without the uuid. A bare
+  // "/recipes/" pattern admitted 109 category pages as recipe candidates; they
+  // publish no Recipe JSON-LD and fall into no rejection bucket, so the run
+  // reported far more candidates than it could ever persist.
+  it("admits a pillsbury recipe by its uuid and leaves its category pages out", () => {
+    const pillsbury = DANISH_JSONLD_SOURCES.find((entry) => entry.id === "pillsbury")!;
+
+    expect(matchesSourceRecipeUrl(
+      pillsbury,
+      "https://www.pillsbury.com/recipes/easter-bread/615ea976-2924-4949-812e-d96f0c268100"
+    )).toBe(true);
+    for (const category of [
+      "https://www.pillsbury.com/recipes/meal-course/dinner",
+      "https://www.pillsbury.com/recipes/ingredient/pork",
+      "https://www.pillsbury.com/recipes/dish-type/cookies",
+      "https://www.pillsbury.com/recipes/slow-cooker-recipes/breakfast",
+      "https://www.pillsbury.com/bake-off-contest/recipes/every-single-grand-prize-winning-bake-off-recipe-ever",
+    ]) {
+      expect(matchesSourceRecipeUrl(pillsbury, category)).toBe(false);
+    }
+  });
+
 });
