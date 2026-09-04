@@ -31039,10 +31039,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 2288 keys with identical content. Every one of the 59 shortfall records is an upstream defect the completeness contract rejects (4 no title, 49 no ingredients, 6 no instructions), so there is no unexplained rejection",
   },
   sweetphi: {
-    migrationState: "configured",
-    latestCanary: "2026-09-01T21-51-18.641Z-attempt-b7de33a3-071a-4193-b2b0-d6fa60e0276a",
+    migrationState: "shadow_passed",
+    latestCanary:
+      "2026-09-03T10-54-25.769Z-attempt-f077c205-ca5f-4636-9a12-b7177e6b23a0",
+    shadowParity:
+      "981/1011 recipes; 100% material-field parity, the 30 legacy holds are records the contract rejects",
     deferOrBlockReason:
-      "Two runs and only the older one is usable, so this waits. The 2026-08-29T15-34-11 run persisted 980 recipes with no failed and no blocked request and discovery complete, and the WPRM completeness walk accounts for all 32 it did not keep - 2 no title, 28 no ingredients, 2 no instructions, every one a field the source omits. On that run alone this would be a canary.\n\nThe 2026-09-01T21-51-18 run is not usable: 398 recipes, one blocked request and discovery incomplete. A canary claim has to rest on the most recent run rather than the most convenient one, so this needs a fresh uncapped run rather than a promotion on the older evidence.",
+      "The usable run the previous reason was waiting for has been made, and this time the legacy side answered too. The 2026-09-03 uncapped run persisted 981 recipes from 1013 discovered candidates with all 1013 processed, discovery complete, no failed request and no blocked request, rejecting 32 as incomplete WPRM. 981 and 32 is 1013, so every candidate the listing declares is accounted for.\n\nThe isolated legacy run emitted 1011 records over eleven fetches that all answered 200, with no block recorded and finish_reason 'finished' - worth stating because this source refused the legacy spider repeatedly on 2026-09-03, at 00:49, 03:36 and again at 05:00, and the refusals turned out to be intermittent rather than a property of the site. Of the 30 records legacy holds and V2 does not, all 30 are rejected by the completeness contract: they are the ones the source publishes with no title, no ingredients or no instructions. Nothing legacy produced is missing from V2 for any other reason, and no material field differs on any shared record.\n\nThe repeat run reports STABLE at 981 to 981 with every record byte-identical.",
   },
   sweetpotatosoul: {
     migrationState: "shadow_passed",
