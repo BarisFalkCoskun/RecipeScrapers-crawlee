@@ -27818,10 +27818,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed on a fresh crawl: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 537 keys with identical content. Its earlier shortfall was stale stored data rather than a defect - the records it appeared to be missing were recipes the source published after the last crawl",
   },
   completelydelicious: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-09-01T21-35-20.026Z-attempt-bf469522-a160-472c-aab5-2b91372e9824",
+    migrationState: "shadow_passed",
+    latestCanary:
+      "2026-09-04T07-25-39.196Z-attempt-fccb9e03-7813-4879-8fdc-3b8803271dd3",
+    shadowParity:
+      "legacy-unhealthy; 829/830 declared records stored, every shortfall named",
     deferOrBlockReason:
-      "The uncapped run is clean and every rejection is accounted for. It persisted 829 recipes from 830 candidates over 10 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 830, stored 829, missing 1 - 1 no ingredients. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
+      "Shadow comparison passed: legacy-unhealthy. The isolated legacy run made a single fetch that answered 403, produced no records at all, and still reported finish_reason 'finished' - so its count is a floor set by the block, not a baseline. There is no record it produced for V2 to be missing.\n\nDiscovery completeness therefore rests on the source's own listing rather than on legacy. Its WPRM API declares 830 records and V2 stores 829; the difference is 1 record, which the source publishes with no ingredients. Each missing record was fetched and put through the crawler's own extractor, so the verdict is the crawler's rather than a reimplementation of it.\n\nThe repeat run reports STABLE at 829 to 829 with every record byte-identical.\n\nThe refusal is intermittent rather than permanent, which matters for anyone re-running this: the same spider was refused here on 2026-09-03 and again on 2026-09-04, but sweetphi refused three times on 2026-09-03 and then answered normally with 1011 records on 2026-09-04. A 403 is a reason to re-run before concluding anything.",
   },
   connoisseurusveg: {
     migrationState: "shadow_passed",
@@ -29691,10 +29694,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 538 keys with identical content; tags == keywords + cuisines; 5 records legacy accepts without a name, ingredients or instructions. Every one of the 5 shortfall records is an upstream defect the completeness contract rejects (4 no ingredients, 1 no instructions), so there is no unexplained rejection",
   },
   maebells: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-09-01T21-46-20.049Z-attempt-c710ef8d-0d95-44a6-a956-b5e3a52a9dc0",
+    migrationState: "shadow_passed",
+    latestCanary:
+      "2026-09-04T07-25-39.202Z-attempt-0b5c2f44-c62f-40a4-a03a-a9454683f508",
+    shadowParity:
+      "legacy-unhealthy; 567/576 declared records stored, every shortfall named",
     deferOrBlockReason:
-      "The uncapped run is clean and every rejection is accounted for. It persisted 567 recipes from 576 candidates over 7 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 576, stored 567, missing 9 - 9 no ingredients. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
+      "Shadow comparison passed: legacy-unhealthy. The isolated legacy run made two fetches that answered 200 and one that answered 403, kept only 200 records, and still reported finish_reason 'finished' - so its count is a floor set by the block, not a baseline. Every one of the 200 it did produce is present in V2, and no material field differs on any of them.\n\nDiscovery completeness therefore rests on the source's own listing rather than on legacy. Its WPRM API declares 576 records and V2 stores 567; the difference is 9 records, every one of which the source publishes with no ingredients. Each missing record was fetched and put through the crawler's own extractor, so the verdict is the crawler's rather than a reimplementation of it.\n\nThe repeat run reports STABLE at 567 to 567 with every record byte-identical.\n\nThe refusal is intermittent rather than permanent, which matters for anyone re-running this: the same spider was refused here on 2026-09-03 and again on 2026-09-04, but sweetphi refused three times on 2026-09-03 and then answered normally with 1011 records on 2026-09-04. A 403 is a reason to re-run before concluding anything.",
   },
   makeandtakes: {
     migrationState: "shadow_passed",
@@ -29788,10 +29794,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
   },
   melskitchencafe: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-09-01T21-46-54.749Z-attempt-76c7a5c9-0dad-4325-8303-f97f0a34daad",
+    migrationState: "shadow_passed",
+    latestCanary:
+      "2026-09-04T07-26-08.261Z-attempt-a8d84009-4913-403c-bfd2-0c758b0a915d",
+    shadowParity:
+      "legacy-unhealthy; 1789/1815 declared records stored, every shortfall named",
     deferOrBlockReason:
-      "The uncapped run is clean and every rejection is accounted for. It persisted 1789 recipes from 1815 candidates over 20 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 1815, stored 1789, missing 26 - 26 no ingredients. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
+      "Shadow comparison passed: legacy-unhealthy. The isolated legacy run made one fetch that answered 200 and one that answered 403, kept only 100 records, and still reported finish_reason 'finished' - so its count is a floor set by the block, not a baseline. Every one of the 100 it did produce is present in V2, and no material field differs on any of them.\n\nDiscovery completeness therefore rests on the source's own listing rather than on legacy. Its WPRM API declares 1815 records and V2 stores 1789; the difference is 26 records, every one of which the source publishes with no ingredients. Each missing record was fetched and put through the crawler's own extractor, so the verdict is the crawler's rather than a reimplementation of it.\n\nThe repeat run reports STABLE at 1789 to 1789 with every record byte-identical.\n\nThe refusal is intermittent rather than permanent, which matters for anyone re-running this: the same spider was refused here on 2026-09-03 and again on 2026-09-04, but sweetphi refused three times on 2026-09-03 and then answered normally with 1011 records on 2026-09-04. A 403 is a reason to re-run before concluding anything.",
   },
   merryboosters: {
     migrationState: "shadow_passed",
@@ -31194,10 +31203,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 597 recipes from 597 API records with complete discovery and no blocked, failed or rejected record",
   },
   thecookierookie: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-09-01T21-53-23.117Z-attempt-326c97b1-1892-4d47-bdc3-9b775f1c5500",
+    migrationState: "shadow_passed",
+    latestCanary:
+      "2026-09-04T07-27-14.272Z-attempt-e67b1f4a-3d41-4bb0-aad3-858bdcd43f8f",
+    shadowParity:
+      "legacy-unhealthy; 2182/2182 declared records stored, every shortfall named",
     deferOrBlockReason:
-      "The uncapped run is clean and every rejection is accounted for. It persisted 2181 recipes from 2183 candidates over 23 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 2183, stored 2182, missing 2 - 2 no canonical link. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
+      "Shadow comparison passed: legacy-unhealthy. The isolated legacy run made a single fetch that answered 403, produced no records at all, and still reported finish_reason 'finished' - so its count is a floor set by the block, not a baseline. There is no record it produced for V2 to be missing.\n\nDiscovery completeness therefore rests on the source's own listing rather than on legacy. Its WPRM API declares 2182 records and V2 stores 2182; the difference is 2 records the source publishes with no canonical link, and V2 stores every one of the 2182 the listing declares. Each missing record was fetched and put through the crawler's own extractor, so the verdict is the crawler's rather than a reimplementation of it.\n\nThe repeat run reports STABLE at 2182 to 2182, with 2180 byte-identical and 2 the source edited upstream between the runs.\n\nThe refusal is intermittent rather than permanent, which matters for anyone re-running this: the same spider was refused here on 2026-09-03 and again on 2026-09-04, but sweetphi refused three times on 2026-09-03 and then answered normally with 1011 records on 2026-09-04. A 403 is a reason to re-run before concluding anything.",
   },
   thecookingfoodie: {
     migrationState: "shadow_passed",
@@ -31620,10 +31632,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window match on every material field, and two uncapped runs reproduced all 3382 keys with identical content. The only differences are the intentional ones: tags == keywords + cuisines; 2012 records keep WPRM named-step prefixes legacy drops; 2 keep a space at a block boundary legacy fuses over; and 445 of legacy's 3827 records are ones it accepts with no link at all - every one of that shortfall - which the completeness contract rejects. This source read as a whole-catalog field mismatch until the comparison was fixed to strip tags on both sides of the entity decode: one ingredient's anchor href carries an entity-encoded HTML comment, and decoding first broke the tag strip so the href leaked into legacy's normalised text.",
   },
   thereciperebel: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-09-01T21-54-55.148Z-attempt-feb21668-1fc8-470d-a1d7-a9f2aff2e861",
+    migrationState: "shadow_passed",
+    latestCanary:
+      "2026-09-04T07-26-02.675Z-attempt-464e8d7e-bd1d-4a2b-b5af-4176d9992192",
+    shadowParity:
+      "legacy-unhealthy; 1200/1207 declared records stored, every shortfall named",
     deferOrBlockReason:
-      "The uncapped run is clean and every rejection is accounted for. It persisted 1200 recipes from 1206 candidates over 14 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 1206, stored 1200, missing 6 - 6 no ingredients. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
+      "Shadow comparison passed: legacy-unhealthy. The isolated legacy run made a single fetch that answered 403, produced no records at all, and still reported finish_reason 'finished' - so its count is a floor set by the block, not a baseline. There is no record it produced for V2 to be missing.\n\nDiscovery completeness therefore rests on the source's own listing rather than on legacy. Its WPRM API declares 1207 records and V2 stores 1200; the difference is 7 records - 6 the source publishes with no ingredients and 1 it published on 2026-09-02, after this crawl ran. Each missing record was fetched and put through the crawler's own extractor, so the verdict is the crawler's rather than a reimplementation of it.\n\nThe repeat run reports STABLE at 1200 to 1201, with 1185 byte-identical, 15 the source edited upstream and 1 it published between the runs.\n\nThe refusal is intermittent rather than permanent, which matters for anyone re-running this: the same spider was refused here on 2026-09-03 and again on 2026-09-04, but sweetphi refused three times on 2026-09-03 and then answered normally with 1011 records on 2026-09-04. A 403 is a reason to re-run before concluding anything.",
   },
   therecipewell: {
     migrationState: "shadow_passed",
@@ -31663,10 +31678,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "The site is down, not the route: on 2026-08-31 every path tried - /, /recipes/, /wp-json/ and /sitemap.xml - answered HTTP 503 with the same 73,849-byte \"Site Currently Unavailable\" page. There is nothing to crawl and nothing to compare against until thesavory.com serves again",
   },
   theseasonedmom: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-09-01T21-56-33.522Z-attempt-4b2776ed-4f4c-4f8b-b2d5-b4ea21eb28aa",
+    migrationState: "shadow_passed",
+    latestCanary:
+      "2026-09-04T07-26-41.324Z-attempt-392e892d-8535-479a-8a2b-6041ca08eba0",
+    shadowParity:
+      "legacy-unhealthy; 2069/2077 declared records stored, every shortfall named",
     deferOrBlockReason:
-      "The uncapped run is clean and every rejection is accounted for. It persisted 2067 recipes from 2077 candidates over 22 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 2077, stored 2068, missing 10 - 6 no ingredients, 4 no canonical link. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
+      "Shadow comparison passed: legacy-unhealthy. The isolated legacy run made four fetches that answered 200 and one that answered 403, kept only 400 records, and still reported finish_reason 'finished' - so its count is a floor set by the block, not a baseline. Every one of the 400 it did produce is present in V2, and no material field differs on any of them.\n\nDiscovery completeness therefore rests on the source's own listing rather than on legacy. Its WPRM API declares 2077 records and V2 stores 2069; the difference is 10 records - 6 the source publishes with no ingredients and 4 with no canonical link. Each missing record was fetched and put through the crawler's own extractor, so the verdict is the crawler's rather than a reimplementation of it.\n\nThe repeat run reports STABLE at 2069 to 2069, with 2067 byte-identical and 2 the source edited upstream between the runs.\n\nThe refusal is intermittent rather than permanent, which matters for anyone re-running this: the same spider was refused here on 2026-09-03 and again on 2026-09-04, but sweetphi refused three times on 2026-09-03 and then answered normally with 1011 records on 2026-09-04. A 403 is a reason to re-run before concluding anything.",
   },
   thesimpleparent: {
     migrationState: "shadow_passed",

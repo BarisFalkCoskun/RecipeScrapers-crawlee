@@ -14,9 +14,18 @@
 # (wrapper, npm exec, sh -c, tsx shim, node) and the lane sat idle for ninety
 # minutes on that miscount.
 #
-# CRAWL_QUEUE lines are "<sourceId> [timeoutSeconds]"; the timeout defaults to
-# CRAWL_TIMEOUT. Sized per source rather than shared, because three sources have
-# each cost a round by being cut off at a pool default.
+# CRAWL_QUEUE lines are "<sourceId> <database> [timeoutSeconds]". The database is
+# required and not defaulted. The first version of this lane omitted it, so five
+# re-crawls inherited DB_NAME=crawlee from .env and wrote 9062 documents into the
+# scratch database while every comparison tool went on reading the
+# crawlee_danish_jsonld_* database the source actually lives in. The runs were
+# real and their counts were right; the evidence simply was not where anything
+# would look for it, and pillsbury and landolakes were compared against
+# two-day-old data without anything saying so.
+#
+# The timeout defaults to CRAWL_TIMEOUT. Sized per source rather than shared,
+# because three sources have each cost a round by being cut off at a pool
+# default.
 set -u
 cd /home/scraper/scripts/RecipeScrapers-crawlee || exit 1
 Q="${CRAWL_QUEUE:?set CRAWL_QUEUE}"
@@ -35,9 +44,13 @@ running_crawls() {
 while true; do
   line=$( (flock 9; head -1 "$Q"; sed -i '1d' "$Q") 9>>"$Q.lock" )
   [ -z "$line" ] && break
-  src=${line%% *}
-  secs=${line##* }
+  set -- $line
+  src=$1; db=${2:-}; secs=${3:-$DEFAULT_TIMEOUT}
   case "$secs" in ''|*[!0-9]*) secs=$DEFAULT_TIMEOUT ;; esac
+  if [ -z "$db" ]; then
+    (flock 8; printf '%s | SKIPPED: no database in the queue line, and inheriting one silently is what put 9062 documents in the wrong place\n' "$src" >> "$R") 8>>"$R.lock"
+    continue
+  fi
 
   # Wait for a slot and for enough memory to use it.
   while :; do
@@ -48,6 +61,7 @@ while true; do
   done
 
   started=$(date '+%Y-%m-%dT%H:%M:%S')
+  MONGODB_URI='mongodb://127.0.0.1:27017' DB_NAME="$db" \
   timeout "$secs" npx tsx src/scripts/crawl-danish-jsonld.ts \
     --sources "$src" --force --json-out "$STORAGE/$src.json" \
     > "$STORAGE/$src.log" 2>&1
@@ -75,6 +89,6 @@ while true; do
 
   note=""
   [ "$status" -eq 124 ] && note=" CUT-OFF-BY-TIMEOUT(${secs}s)"
-  (flock 8; printf '%s | exit=%s%s | %s | started %s\n' \
-     "$src" "$status" "$note" "$summary" "$started" >> "$R") 8>>"$R.lock"
+  (flock 8; printf '%s | exit=%s%s | %s | db=%s started %s\n' \
+     "$src" "$status" "$note" "$summary" "$db" "$started" >> "$R") 8>>"$R.lock"
 done
