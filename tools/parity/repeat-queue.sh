@@ -22,7 +22,20 @@ pop() {
 while true; do
   entry=$(exec 9>>"$QUEUE.lock"; pop) || { echo "[$WORKER] queue empty"; break; }
   [ -z "$entry" ] && break
-  src=${entry%% *}; db=${entry##* }
+  # Positional, and a line with anything after the database is refused. Read as
+  # first-field/last-field, a queue line of "landolakes crawlee 18000" -- the
+  # source, its database, and a timeout copied from the crawl lane's format --
+  # made the pool crawl into a database literally named 18000. The run itself
+  # was fine, but the gate dumped "before" from an empty database and reported
+  # CHANGED 0->2776 EXCESSIVE-CHURN, a verdict about nothing.
+  set -- $entry
+  src=$1; db=${2:-}
+  if [ -z "$db" ] || [ $# -gt 2 ]; then
+    echo "[$WORKER] REFUSED '$entry': expected exactly '<sourceId> <database>'"
+    (flock 8; printf '%s | REFUSED: queue line must be exactly "<sourceId> <database>", got %s field(s)\n' \
+       "$src" "$#" >> "$RESULTS") 8>>"$RESULTS.lock"
+    continue
+  fi
   before="$STORAGE_ROOT/$src-before.json"; after="$STORAGE_ROOT/$src-after.json"
   cd "$REPO"
   node tools/parity/dump-crawlee.cjs "$db" "$src" "$before" >/dev/null 2>&1
