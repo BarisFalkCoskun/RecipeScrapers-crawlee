@@ -32,8 +32,21 @@
            action:APPLY?"freed":"would free"}].concat(out);
 })(
 
-  [],     // databases to drop, e.g. ["old-db","another-db"]
-  null,   // scrapedAt cutoff, e.g. "260901" drops daily collections older than that
+  // Databases to drop: none, and that is the answer rather than a blank.
+  // The six redundant recipe-migration databases were already dropped
+  // (rt4, probe_bm, probe_pinoy, easysavory_probe, probe_allergylicious,
+  // godairyfree_probe). The thirteen that remain are each the sole copy of
+  // records behind promoted sources. Everything else on this server belongs
+  // to ProductScrapers, which is live: 538 of its 608 shops last wrote on
+  // 260903 and 31 wrote today.
+  [],
+
+  // scrapedAt daily collections older than this. Safe to drop: DailyDatabase.ts
+  // only ever touches this.currentDateString, so no previous day is ever read
+  // back. Frees 1625 MB, keeps 260901,260902,260903,260905,260906.
+  // Use "260831" to keep a week (1443 MB) or "260903" to be harsher (1899 MB).
+  "260901",
+
   false   // true = actually drop
 
 )
