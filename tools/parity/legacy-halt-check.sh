@@ -87,4 +87,29 @@ if [ "$BLOCK_EVIDENCE" -eq 1 ] && [ "$REASON" = "finished" ] && [ "$ONLYLEG" = "
    && [ "$EXPLAIN_OK" -eq 0 ]; then
   VERDICT="LEGACY-UNHEALTHY-CONFIRMED"
 fi
-echo "$SRC | $VERDICT | legacy=$ITEMS blocked=$BLOCKED reason=$REASON codes=[$CODES] | declared=${TOTAL:-none} stored=$STORED ${SHORTFALL:-} | only_legacy=$ONLYLEG (raw $ONLYLEG_RAW, $EXPLAINED_L rejected by the contract) field_diffs=$FIELDDIFF"
+# How old the stored side is, because that alone can manufacture legacy-only
+# records. The legacy run happens now; the store may be weeks old, and anything
+# the site published in between looks exactly like a record V2 failed to find.
+# theroastedroot was held NOT-ELIGIBLE on two such records, published
+# 2026-09-04 and 2026-09-06 against a store written on 2026-08-21. landolakes
+# and gastrofun had the same shape. When AGE is more than a day or two and
+# only_legacy is small, re-crawl and compare in the same window before reading
+# anything into it.
+STORE_AGE=$(node -e '
+  const {MongoClient}=require("mongodb");
+  (async()=>{
+    const c=new MongoClient("mongodb://127.0.0.1:27017");
+    try{
+      await c.connect();
+      const d=await c.db(process.argv[2]).collection("recipes_v2")
+        .find({sourceId:process.argv[1]},{projection:{extractedAt:1}})
+        .sort({extractedAt:-1}).limit(1).next();
+      if(!d||!d.extractedAt){process.stdout.write("unknown");return;}
+      const days=(Date.now()-new Date(d.extractedAt).getTime())/86400000;
+      process.stdout.write(new Date(d.extractedAt).toISOString().slice(0,10)+
+        " ("+days.toFixed(1)+"d old)");
+    }catch(e){process.stdout.write("unknown");}finally{await c.close();}
+  })();
+' "$SRC" "$DB" 2>/dev/null)
+
+echo "$SRC | $VERDICT | legacy=$ITEMS blocked=$BLOCKED reason=$REASON codes=[$CODES] | declared=${TOTAL:-none} stored=$STORED ${SHORTFALL:-} | only_legacy=$ONLYLEG (raw $ONLYLEG_RAW, $EXPLAINED_L rejected by the contract) field_diffs=$FIELDDIFF | store written ${STORE_AGE:-unknown}"
