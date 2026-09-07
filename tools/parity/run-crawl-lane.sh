@@ -31,7 +31,15 @@ cd /home/scraper/scripts/RecipeScrapers-crawlee || exit 1
 Q="${CRAWL_QUEUE:?set CRAWL_QUEUE}"
 R="${CRAWL_RESULTS:?set CRAWL_RESULTS}"
 STORAGE="${CRAWL_STORAGE:-/tmp/recrawl-storage}"
-MAX="${CRAWL_MAX_CRAWLS:-2}"
+# Was 2, raised to 3 on 2026-09-07 after re-measuring rather than inheriting the
+# old rule. That rule came from a host carrying 647 databases where mongod held
+# 600 MB-1.7 GB resident and a third crawl drove free memory under 200 MB.
+# After dropping 631 of them mongod is 1.1 GB with 4.4 GB available, and disk -
+# which turned out to be the real ceiling at 86% full - is back to 74% after
+# clearing 8.6 GB of spent before/after dumps. Three crawls at ~900 MB leave
+# ~1.7 GB spare. Not four: mongod still has 2.3 GB swapped out from the earlier
+# incidents and will want it back under write pressure.
+MAX="${CRAWL_MAX_CRAWLS:-3}"
 DEFAULT_TIMEOUT="${CRAWL_TIMEOUT:-14400}"
 POLL="${CRAWL_POLL_SECONDS:-120}"
 MIN_FREE_MB="${CRAWL_MIN_FREE_MB:-1100}"
