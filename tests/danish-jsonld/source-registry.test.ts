@@ -1143,9 +1143,13 @@ describe("Danish JSON-LD source registry", () => {
         legacySpider: "HellofreshSpider",
         legacyFamily: "DirectRecipeApiSpider",
         recipeExtractor: "hellofresh-api",
-        migrationState: "canary_passed",
+        // hellofresh has since reached shadow parity. Both sides stop at the
+        // site's 10000-result window -- the API answers offset 10000 with
+        // "Result window is too large" -- and agree on everything before it.
+        migrationState: "shadow_passed",
         latestScrapyOutcome: "partial",
-        latestCanary: "2026-08-19T18-16-15.232Z",
+        latestCanary:
+          "2026-09-08T19-32-09.115Z-attempt-7d692873-b81c-4659-b79e-16bfaaf97528",
       });
     expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "madforfattigroeve"))
       .toMatchObject({

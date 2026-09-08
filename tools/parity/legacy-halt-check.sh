@@ -43,11 +43,27 @@ CODES=$(grep -oE "'downloader/response_status_count/[0-9]+': [0-9]+" "$STATS" | 
 # 2026-08-28 before it was found.
 LISTING=$(npx tsx --eval 'import{DANISH_JSONLD_SOURCES as S}from"./src/danish-jsonld/source-registry.ts";
 const s=S.find(x=>x.id===process.argv[1]);process.stdout.write(String(s&&s.startUrls&&s.startUrls[0]||""));' "$SRC" 2>/dev/null)
-case "$LISTING" in
-  *wprm_recipe*) EXPLAIN=$(node tools/parity/explain-rejections.cjs "$SRC" "$DB" 2>&1) ;;
-  *)             EXPLAIN=$(npx tsx tools/parity/explain-jsonld-rejections.ts "$SRC" "$DB" 2>&1) ;;
-esac
+run_explainer() {
+  case "$LISTING" in
+    *wprm_recipe*) EXPLAIN_DELAY_MS="$1" node tools/parity/explain-rejections.cjs "$SRC" "$DB" 2>&1 ;;
+    *)             EXPLAIN_DELAY_MS="$1" npx tsx tools/parity/explain-jsonld-rejections.ts "$SRC" "$DB" 2>&1 ;;
+  esac
+}
+EXPLAIN=$(run_explainer "${EXPLAIN_DELAY_MS:-0}")
 EXPLAIN_OK=$?
+# A walk that was itself rate-limited has not checked the source, it has been
+# refused by it, and the two look identical in the verdict. thatskinnychickcanbake
+# reported 50 of its missing records as "page answers 429" and was held
+# NOT-ELIGIBLE for a shortfall nobody had actually measured. The explainer takes
+# EXPLAIN_DELAY_MS and this never set it, so the walk ran as fast as the event
+# loop allowed. Retry once, paced, and only when the first attempt was refused
+# rather than for any failure - a genuine unexplained record does not become
+# explained by asking again more slowly.
+if [ "$EXPLAIN_OK" -ne 0 ] && printf '%s' "$EXPLAIN" | grep -qE '429|answered [0-9]+|INCONCLUSIVE'; then
+  echo "$SRC | explainer was refused on the first pass, retrying at 1500ms per request" >&2
+  EXPLAIN=$(run_explainer 1500)
+  EXPLAIN_OK=$?
+fi
 TOTAL=$(printf '%s' "$EXPLAIN" | grep -oE 'declared=[0-9]+' | grep -oE '[0-9]+')
 SHORTFALL=$(printf '%s' "$EXPLAIN" | grep -oE 'missing=[0-9]+[^|]*' | head -1)
 

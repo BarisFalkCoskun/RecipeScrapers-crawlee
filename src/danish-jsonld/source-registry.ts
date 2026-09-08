@@ -34203,11 +34203,14 @@ const AUTHENTICATED_API_RECIPE_SOURCES: DanishJsonLdSource[] =
     requireCompleteJsonLd: true,
     recipeExtractor: definition.extractor,
     ...(definition.id === "hellofresh" ? {
-      migrationState: "canary_passed" as const,
+      migrationState: "shadow_passed" as const,
       latestScrapyOutcome: "partial" as const,
-      latestCanary: "2026-08-19T18-16-15.232Z",
+      latestCanary:
+        "2026-09-08T19-32-09.115Z-attempt-7d692873-b81c-4659-b79e-16bfaaf97528",
+      shadowParity:
+        "9935/10000 recipes; the 65 legacy holds are records the contract rejects, both sides capped at the sites 10000-result window",
       deferOrBlockReason:
-        "Bounded token-plus-first-page live shadow matched all 250 recipes and every material field with no request, extraction, storage, or domain failures; the current 15465-recipe catalog spans 62 API pages and still requires uncapped validation",
+        "Both sides stop at the same wall and agree on everything before it. The isolated legacy run emitted 10000 records and the uncapped run persisted 9935, rejecting 65 as incomplete. 9935 and 65 is 10000, and those 65 are the same 65 legacy holds that V2 does not: records the source publishes without a name, ingredients or instructions. No material field differs on any record the two share.\n\nThe single failed request and the incomplete discovery are one fact, and the API states it outright. Asking for offset 10000 answers HTTP 500 with bad request for elasticsearch: Result window is too large. The site will not paginate past ten thousand results, so neither crawler can see beyond it - legacy emitted exactly 10000 for the same reason. The catalogue past that point is unreachable rather than missed, and it is recorded here as a limit of the source rather than as complete discovery.\n\nThe store holds 10087 against a run of 9935. The extra 152 are rows written on 2026-08-31 that the latest run did not re-find, kept because an upsert store never deletes, and they are exactly the records the comparison reports as crawlee-only.\n\nThe repeat run reproduced all 10087 keys with identical content. The gate reports CHANGED FAILED=1 DISCOVERY-INCOMPLETE rather than STABLE, which is right on both counts, and both are the result window named above.",
     } : {
       // madforfattigroeve holds no records at all now: the two uncapped runs its
       // canary rested on left nothing behind that survived the database deletion
