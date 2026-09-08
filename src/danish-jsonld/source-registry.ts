@@ -32831,6 +32831,13 @@ const LEGACY_REQUEST_SETTING_OVERRIDES: Record<
   // loses six requests at one every twenty - its pacing has never been reduced
   // at all. Trying the remedy before arguing about it is the cheaper order.
   joythebaker: { delaySeconds: 4, maxConcurrency: 1 },
+  // thatskinnychickcanbake rate-limits every tool we point at it: 39 of the
+  // legacy run's 102 responses answered 403, its completeness walk needed
+  // pacing to 1500ms before 50 of its records stopped answering 429, and the
+  // repeat crawl lost 22 of 1633 requests to blocks at the shared default. The
+  // first two were fixed by slowing those tools down; this does the same for
+  // the crawl rather than re-rolling the dice on another repeat.
+  thatskinnychickcanbake: { delaySeconds: 4, maxConcurrency: 1 },
   diabetesopskrifter: { delaySeconds: 20, maxConcurrency: 1 },
   blenderopskrifter: { delaySeconds: 20, maxConcurrency: 1 },
   spicytwist: { maxConcurrency: 1 },

@@ -1070,6 +1070,11 @@ describe("legacy request-settings audit", () => {
       // default and its pacing had never been reduced at all, unlike the four
       // above. Slowed to one request every four seconds.
       "joythebaker",
+      // thatskinnychickcanbake rate-limits every tool pointed at it: 39 of the
+      // legacy run's 102 responses answered 403, its completeness walk needed
+      // 1500ms pacing before 50 records stopped answering 429, and a repeat
+      // crawl lost 22 of 1633 requests to blocks at the shared default.
+      "thatskinnychickcanbake",
     ]);
     const audited = DANISH_JSONLD_SOURCES.filter((source) =>
       source.legacyFamily !== "WprmApiSpider" &&
