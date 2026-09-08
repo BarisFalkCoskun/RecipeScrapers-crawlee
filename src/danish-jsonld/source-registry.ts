@@ -29068,10 +29068,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 1180-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 1180 recipes with every material field matching",
   },
   holycowvegan: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-09-01T21-43-55.242Z-attempt-42bbe253-5372-4960-b104-8cdcf785f62e",
+    migrationState: "shadow_passed",
+    latestCanary:
+      "2026-09-08T09-33-29.375Z-attempt-5df0c0c0-8786-4006-b762-892f0fe9a805",
+    shadowParity:
+      "1134/1134 recipes; 100% material-field parity, identical record sets",
     deferOrBlockReason:
-      "The uncapped run is clean and every rejection is accounted for. It persisted 1134 recipes from 1137 candidates over 13 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 1137, stored 1135, missing 3 - 3 no title. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
+      "The two sides hold the same records. The isolated legacy run emitted 1134 and the uncapped run persisted 1134, with no record legacy has that V2 lacks and no material field differing on any of them.\n\nThe store holds 1135 rather than 1134 and the extra is not a surplus: it is one record written on 2026-08-21 that the latest run did not re-find, kept because an upsert store never deletes. It is the single record the comparison reports as crawlee-only.\n\nThe uncapped run discovered 1137 candidates and processed all 1137, persisting 1134 and rejecting 3 as incomplete WPRM. 1134 and 3 is 1137, so every candidate the listing declares is accounted for. Discovery complete, nothing failed, nothing blocked. The repeat run reports STABLE at 1135 to 1135 with every record byte-identical.",
   },
   homecookingadventure: {
     migrationState: "shadow_passed",
@@ -31107,10 +31110,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "The listing was never refusing us; its server cannot build one page. 1747 records are announced in x-wp-total, and per_page=100&page=17 answers HTTP 200 with a zero-byte body while the pages either side of it serve 100 records normally. The crawl stopped there, which is why it reported 1600, a round multiple of the page size that reads as a whole catalog rather than a walk that stopped early.\n\nWalked whole at per_page=50 on 2026-09-03: all 1747 records reachable, no failure at any page in the range. The start URL is halved, the same remedy koudahl, bakingamoment and familyfreshmeals needed. 147 records should follow on the next uncapped run.\n\nLeft at configured deliberately: the page size is verified against the live API but no crawl has run under it yet, and a recovery that has only been predicted is not evidence.",
   },
   tastesbetterfromscratch: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-09-01T21-52-35.646Z-attempt-7ecd408f-13cd-4759-8c6e-6807171def68",
+    migrationState: "shadow_passed",
+    latestCanary:
+      "2026-09-08T09-32-52.064Z-attempt-566a4814-e063-41b8-9aff-a0bb437af6a0",
+    shadowParity:
+      "1099/1108 recipes; 100% material-field parity, the 9 legacy holds are records the contract rejects",
     deferOrBlockReason:
-      "The uncapped run is clean and every rejection is accounted for. It persisted 1101 recipes from 1110 candidates over 13 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 1110, stored 1102, missing 9 - 2 no ingredients, 1 no instructions, 6 no canonical link. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
+      "Read the same day the two sides close exactly. The isolated legacy run emitted 1108 records and the uncapped run persisted 1099, rejecting 9 - 3 incomplete and 6 malformed WPRM. 1099 and 9 is 1108, and those 9 are the same 9 legacy holds that V2 does not: records the source publishes without a name, ingredients or instructions, which the completeness contract declines by design. No material field differs on anything the two share.\n\nThe store holds 1104 rather than 1099 and that is not V2 finding more. Five records are leftovers the latest run did not re-find - one written on 2026-08-21 and four on 2026-09-01 - which an upsert store keeps because it never deletes. They are the five the comparison reports as crawlee-only, and they are stale rather than a surplus.\n\nThe uncapped run discovered 1108 candidates and processed all 1108, with discovery complete and no failed or blocked request. The repeat run reports STABLE at 1104 to 1104 with every record byte-identical.",
   },
   tasteslovely: {
     migrationState: "shadow_passed",
