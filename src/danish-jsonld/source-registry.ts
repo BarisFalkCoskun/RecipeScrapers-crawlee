@@ -27056,10 +27056,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 939 recipes from 939 posts with complete discovery and no blocked, failed or rejected record",
   },
   "40aprons": {
-    migrationState: "canary_passed",
-    latestCanary: "2026-09-01T21-31-55.126Z-attempt-2e857d0d-6a9c-4974-b736-767f4e622640",
+    migrationState: "shadow_passed",
+    latestCanary:
+      "2026-09-08T10-33-34.004Z-attempt-dabfca28-3f37-478f-96bd-5474837f007a",
+    shadowParity:
+      "1549/1552 recipes; 100% material-field parity, the 3 legacy holds are records the contract rejects",
     deferOrBlockReason:
-      "The uncapped run is clean and every rejection is accounted for. It persisted 1547 recipes from 1552 candidates over 17 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 1552, stored 1548, missing 5 - 2 no title, 3 no canonical link. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
+      "Read the same day, the two sides agree on every record they share. The isolated legacy run emitted 1552 records and V2 holds 1549; the three legacy holds that V2 does not are records it accepts without a name, ingredients or instructions, which the completeness contract declines by design, and V2 holds nothing legacy lacks. Every material field matches, with 162 records keeping WPRM named-step prefixes legacy drops and 18 keeping a space at a block boundary legacy fuses over.\n\nThe uncapped run accounts for every candidate: 1554 discovered, all 1554 processed, 1549 persisted and 5 rejected - 2 incomplete and 3 malformed WPRM. 1549 and 5 is 1554, with discovery complete and no failed or blocked request.\n\nThe store holds 1549 and every one of them comes from this run, so the count is the run rather than an accumulation across runs - worth stating because two sources promoted this morning held stale rows an upsert store had never deleted. The repeat run reports STABLE at 1549 to 1549 with every record byte-identical.",
   },
   acedarspoon: {
     migrationState: "shadow_passed",
