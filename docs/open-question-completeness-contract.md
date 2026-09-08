@@ -78,3 +78,42 @@ The options, as they look from here:
 Option 2 is the one that matches the stated goal - replace Scrapy without losing
 coverage - but it is a decision about what the migration is for, so it is
 recorded here rather than acted on.
+
+## Comparing a stale store against a fresh legacy run (2026-09-08)
+
+Measured across every remaining canary: the stored side is between 3.7 and 9.6
+days old, and the legacy side is minutes old in every comparison. Everything the
+site published, renamed or removed in that window reads as a record V2 failed to
+find.
+
+That is not hypothetical. Four sources were investigated one at a time before the
+pattern was named:
+
+- **landolakes** showed 46 category differences and 3 crawlee-only records. The
+  categories were an editorial collection that had rotated off, and one of the
+  three now redirects to /404/. Re-crawled and compared the same day: 2776/2776,
+  every material field matching.
+- **gastrofun** appeared to drop a Danish comma-decimal ingredient, `0,5 liter
+  Piskefløde`. The live API carries it and our own extractor keeps it; the site
+  had corrected the record after the crawl.
+- **theroastedroot** was held on two legacy-only records published 2026-09-04 and
+  2026-09-06 against a store written 2026-09-01. After a re-crawl, only_legacy
+  went 2 -> 0.
+- **theforkedspoon** was held on one record the site had renamed. A URL-and-title
+  key reads a rename as one record lost and one gained. After a re-crawl,
+  only_legacy went 1 -> 0.
+
+**The order was wrong, not the tooling.** Comparing first and investigating the
+difference costs a round per source and usually ends at "the site changed".
+Re-crawling first costs one crawl and ends at a verdict. All 25 remaining stale
+canaries are queued for a re-crawl ahead of their next comparison.
+
+`legacy-halt-check.sh` now prints the store's age in its verdict line so the
+question is asked before the investigation starts, and `fresh-parity.sh` already
+exists for the re-crawl-then-compare pairing - it was previously avoided as
+wasteful, which is right for a same-window store and wrong for a nine-day-old
+one.
+
+**What would make this unnecessary:** nothing, while sites keep changing. The
+useful discipline is that a comparison is only as good as the age gap between
+its two sides, and that gap should be stated wherever a verdict is recorded.
