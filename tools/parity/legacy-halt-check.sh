@@ -78,9 +78,26 @@ FIELDDIFF=$(echo "$CMP" | grep -cE '^### ')
 # nothing legacy has that V2 lacks, no field differences, and complete discovery.
 FORBIDDEN=$(printf '%s' "$CODES" | grep -oE '403: [0-9]+' | grep -oE '[0-9]+$' | head -1)
 : "${FORBIDDEN:=0}"
+# Third route: a large share of the run's responses were refused. The two
+# routes above miss a whole family. wprm_api_blocked_count is WPRM-specific, so
+# a WordPress-posts source never sets it; and requiring zero items misses a run
+# that got some pages through before being cut off. thatskinnychickcanbake is
+# both at once - 38 of its 102 responses answered 403, it kept 62 records, its
+# spider recorded blocked=0, and the gate called it healthy three times running.
+#
+# A fifth of all responses refused is a block whatever the spider recorded. The
+# floor of ten keeps a handful of incidental 403s on a large clean run from
+# qualifying. This only supplies block evidence: finish_reason, only_legacy,
+# field_diffs and the completeness walk all still have to hold, so widening it
+# cannot on its own promote anything.
+TOTAL_RESPONSES=$(printf '%s' "$CODES" | grep -oE ': [0-9]+' | grep -oE '[0-9]+' \
+  | awk '{n+=$1} END {print n+0}')
+: "${TOTAL_RESPONSES:=0}"
 BLOCK_EVIDENCE=0
 [ "$BLOCKED" -gt 0 ] && BLOCK_EVIDENCE=1
 [ "$ITEMS" -eq 0 ] && [ "$FORBIDDEN" -gt 0 ] && BLOCK_EVIDENCE=1
+[ "$FORBIDDEN" -ge 10 ] && [ "$TOTAL_RESPONSES" -gt 0 ] \
+  && [ $(( FORBIDDEN * 5 )) -ge "$TOTAL_RESPONSES" ] && BLOCK_EVIDENCE=1
 
 VERDICT="NOT-ELIGIBLE"
 if [ "$BLOCK_EVIDENCE" -eq 1 ] && [ "$REASON" = "finished" ] && [ "$ONLYLEG" = "0" ] && [ "$FIELDDIFF" = "0" ] \
@@ -112,4 +129,4 @@ STORE_AGE=$(node -e '
   })();
 ' "$SRC" "$DB" 2>/dev/null)
 
-echo "$SRC | $VERDICT | legacy=$ITEMS blocked=$BLOCKED reason=$REASON codes=[$CODES] | declared=${TOTAL:-none} stored=$STORED ${SHORTFALL:-} | only_legacy=$ONLYLEG (raw $ONLYLEG_RAW, $EXPLAINED_L rejected by the contract) field_diffs=$FIELDDIFF | store written ${STORE_AGE:-unknown}"
+echo "$SRC | $VERDICT | legacy=$ITEMS blocked=$BLOCKED reason=$REASON codes=[$CODES] | declared=${TOTAL:-none} stored=$STORED ${SHORTFALL:-} | only_legacy=$ONLYLEG (raw $ONLYLEG_RAW, $EXPLAINED_L rejected by the contract) field_diffs=$FIELDDIFF | forbidden=$FORBIDDEN/$TOTAL_RESPONSES responses | store written ${STORE_AGE:-unknown}"
