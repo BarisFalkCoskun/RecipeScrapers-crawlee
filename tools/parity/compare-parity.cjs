@@ -88,6 +88,17 @@ const norm=s=>stripMarkup(stripMarkup(String(s??"")))
   // "Avocado Corn Salsa (". Legacy drops the note outright. A bracket opened at
   // the end of the text and never closed holds nothing either way.
   .replace(/\s*\(\s*$/u,"")
+  // The same amount rendered at two precisions is one amount. spisbedre's
+  // legacy records read "2.08333 g gaer" where V2 reads "2.0833333333333 g
+  // gaer" -- a third of a teaspoon divided three ways, rounded by legacy to six
+  // significant digits and carried by V2 at full float precision. 373 of its
+  // records differed on ingredients and not one quantity was different.
+  // Legacy's own rounding is not one convention -- the same record carries
+  // "133.333" at three decimals and "0.3333" at four -- so rather than
+  // reproduce it, both sides are rounded to three decimals wherever they carry
+  // four or more. 1.25, 0.5 and 2.05 are left exactly as they are, so only
+  // repeating decimals move and a genuinely different amount still differs.
+  .replace(/(\d+)\.(\d{4,})/gu, (m) => String(Math.round(Number(m) * 1e3) / 1e3))
   // An amount written as a whole number with a redundant decimal is the same
   // amount. meny's legacy records read "1.0 liter vand" and "100.0 g hindbaer"
   // where V2 reads "1 liter vand" and "100 g hindbaer", which made all 100

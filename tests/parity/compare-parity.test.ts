@@ -168,6 +168,51 @@ describe("compare-parity field normalisation", () => {
     expect(out).not.toContain("### ingredients");
   });
 
+  // spisbedre divides a recipe three ways: legacy renders "2.08333 g gaer" and
+  // "133.333 g oksemoerbrad" while V2 carries 2.0833333333333 and
+  // 133.3333333 at full float precision. 373 of its records were reported as
+  // differing on ingredients and not one quantity was different. Legacy's own
+  // rounding is not one convention either -- three decimals on one value and
+  // four on the next in the same record -- so both sides round to three.
+  it("treats the same amount at two precisions as one amount", () => {
+    const legacy = legacyRecipe("https://example.com/r/3", "Broed");
+    legacy.ingredients = [
+      { original: "2.08333 g gaer" },
+      { original: "133.333 g oksemoerbrad" },
+      { original: "0.3333 spsk. olivenolie" },
+      { original: "1.25 dl vand" },
+    ];
+    const crawlee = crawleeRecipe(
+      "https://example.com/r/3",
+      "https://example.com/r/3",
+      "Broed"
+    );
+    (crawlee.normalized as Record<string, unknown>).ingredients = [
+      { original: "2.0833333333333 g gaer" },
+      { original: "133.3333333 g oksemoerbrad" },
+      { original: "0.333333 spsk. olivenolie" },
+      { original: "1.25 dl vand" },
+    ];
+    const out = compare([legacy], [crawlee]);
+    expect(out).toContain("ALL MATERIAL FIELDS MATCH");
+    expect(out).not.toContain("### ingredients");
+  });
+
+  // Rounding must not reach amounts that were never imprecise.
+  it("leaves a two-decimal amount alone and still reports a real difference", () => {
+    const legacy = legacyRecipe("https://example.com/r/4", "Kage");
+    legacy.ingredients = [{ original: "0.125 tsk salt" }];
+    const crawlee = crawleeRecipe(
+      "https://example.com/r/4",
+      "https://example.com/r/4",
+      "Kage"
+    );
+    (crawlee.normalized as Record<string, unknown>).ingredients = [
+      { original: "0.126 tsk salt" },
+    ];
+    expect(compare([legacy], [crawlee])).toContain("### ingredients");
+  });
+
   // The collapse must not swallow a real difference: only a trailing .0 goes.
   it("still reports a genuinely different amount", () => {
     const legacy = legacyRecipe("https://example.com/r/2", "Kage");
