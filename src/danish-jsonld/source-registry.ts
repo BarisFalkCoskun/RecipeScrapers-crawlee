@@ -29806,10 +29806,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed on a fresh crawl: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 493 keys with identical content. Its earlier shortfall was stale stored data rather than a defect - the records it appeared to be missing were recipes the source published after the last crawl",
   },
   meganvskitchen: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-09-01T21-46-41.481Z-attempt-69b81896-3cf1-4a96-b98c-73579f0539dd",
+    migrationState: "shadow_passed",
+    latestCanary:
+      "2026-09-08T23-32-45.359Z-attempt-cbaa2f3b-431a-49ba-a38b-89de6d744cdf",
+    shadowParity:
+      "264/265 recipes; 100% material-field parity, the 1 legacy holds carries no URL",
     deferOrBlockReason:
-      "The uncapped run is clean and every rejection is accounted for. It persisted 264 recipes from 265 candidates over 4 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 265, stored 265, missing 1 - 1 no canonical link. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
+      "Both differences are accounted for and neither is a lost recipe. The isolated legacy run emitted 265 records and the uncapped run persisted 264, rejecting 1 as malformed WPRM. The single record legacy holds that V2 does not carries no URL at all - it appears in the comparison as an empty link against the title pineapple peach smoothie - which the completeness contract declines by design. No material field differs on any record the two share.\n\nThe single crawlee-only record is not a surplus: it is one row written on 2026-08-21 that the latest run did not re-find, kept because an upsert store never deletes. The store holds 265 against a run of 264 for exactly that reason.\n\nThe uncapped run accounts for every candidate - 265 discovered, all 265 processed, 264 persisted, 1 rejected - with discovery complete and no failed or blocked request. The repeat run reports STABLE at 265 to 265 with every record byte-identical.",
   },
   melissassouthernstylekitchen: {
     migrationState: "blocked",
