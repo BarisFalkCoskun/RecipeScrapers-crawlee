@@ -141,6 +141,50 @@ describe("compare-parity record keying", () => {
   });
 });
 
+describe("compare-parity field normalisation", () => {
+  // meny's legacy records read "1.0 liter vand" and "100.0 g hindbaer" where V2
+  // reads "1 liter vand" and "100 g hindbaer". All 100 records the two sides
+  // shared were reported as differing on ingredients, and not one quantity was
+  // actually different. pillsbury and tastesbetterfromscratch carry it too.
+  it("treats a whole number written with a redundant decimal as the same amount", () => {
+    const legacy = legacyRecipe("https://example.com/r/1", "Iste");
+    legacy.ingredients = [
+      { original: "1.0 liter vand" },
+      { original: "100.0 g hindbaer" },
+      { original: "1.5 dl mynte" },
+    ];
+    const crawlee = crawleeRecipe(
+      "https://example.com/r/1",
+      "https://example.com/r/1",
+      "Iste"
+    );
+    (crawlee.normalized as Record<string, unknown>).ingredients = [
+      { original: "1 liter vand" },
+      { original: "100 g hindbaer" },
+      { original: "1.5 dl mynte" },
+    ];
+    const out = compare([legacy], [crawlee]);
+    expect(out).toContain("ALL MATERIAL FIELDS MATCH");
+    expect(out).not.toContain("### ingredients");
+  });
+
+  // The collapse must not swallow a real difference: only a trailing .0 goes.
+  it("still reports a genuinely different amount", () => {
+    const legacy = legacyRecipe("https://example.com/r/2", "Kage");
+    legacy.ingredients = [{ original: "2.0 dl fløde" }];
+    const crawlee = crawleeRecipe(
+      "https://example.com/r/2",
+      "https://example.com/r/2",
+      "Kage"
+    );
+    (crawlee.normalized as Record<string, unknown>).ingredients = [
+      { original: "3 dl fløde" },
+    ];
+    const out = compare([legacy], [crawlee]);
+    expect(out).toContain("### ingredients");
+  });
+});
+
 describe("compare-parity legacy health", () => {
   // Sixteen sources were compared on 2026-08-29 against a legacy run
   // Cloudflare had stopped mid-pagination. theseasonedmom took two pages of its

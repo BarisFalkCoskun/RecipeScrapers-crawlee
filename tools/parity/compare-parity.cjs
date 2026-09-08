@@ -87,7 +87,16 @@ const norm=s=>stripMarkup(stripMarkup(String(s??"")))
   // end, so "Avocado Corn Salsa (<click for recipe)" renders down to
   // "Avocado Corn Salsa (". Legacy drops the note outright. A bracket opened at
   // the end of the text and never closed holds nothing either way.
-  .replace(/\s*\(\s*$/u,"").trim();
+  .replace(/\s*\(\s*$/u,"")
+  // An amount written as a whole number with a redundant decimal is the same
+  // amount. meny's legacy records read "1.0 liter vand" and "100.0 g hindbaer"
+  // where V2 reads "1 liter vand" and "100 g hindbaer", which made all 100
+  // records the two sides share differ on ingredients while not one quantity
+  // was actually different. pillsbury and tastesbetterfromscratch carry the
+  // same shape. Only a trailing .0 collapses: 1.5 stays 1.5, and 2.05 is
+  // untouched because the 0 is followed by another digit.
+  .replace(/(\d)\.0(?!\d)/gu,"$1")
+  .trim();
 // V2 canonicalizes: it drops the www host prefix, the recipe-id fragment, and
 // sorts query parameters. Comparing the canonical form keeps those formatting
 // choices out of the field comparison.
