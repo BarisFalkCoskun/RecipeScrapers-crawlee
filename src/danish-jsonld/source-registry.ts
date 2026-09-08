@@ -26441,10 +26441,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window both produced 58 records with every material field matching, and two uncapped runs reproduced all 58 keys with identical content. The only differences are the intentional ones: 2 records keep a cuisine legacy has no field for, and 3 keep a fuller yield than legacy's leading integer. This source's records had been lost in the database deletion and restore, so the crawl behind this comparison is a fresh uncapped run rather than the one its earlier canary rested on.",
   },
   skolemaelk: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-09-01T10-45-39.814Z-attempt-2c338bde-2a68-4ae6-b946-07ab4e4de95f",
+    migrationState: "shadow_passed",
+    latestCanary:
+      "2026-09-08T00-33-04.187Z-attempt-0a8da77c-242b-43b7-956d-cd8d1f84dea9",
+    shadowParity:
+      "134/128 recipes; 100% material-field parity, plus 6 records whose JSON-LD legacy cannot parse",
     deferOrBlockReason:
-      "From nothing to a clean canary on a content type. This source read \"persisted no recipes\" because Crawlee refused its only request: skolemaelk.dk serves an ordinary sitemap - valid XML, 341 <loc> entries - as application/rss+xml, and that type was not in the accepted list. With it accepted, the 2026-09-01 run persisted 134 recipes from 137 candidates over 141 requests with no failed and no blocked request and discovery complete.\n\nThe 3 rejections are named and checked by hand: /madpakker-og-opskrifter/opskrifter/hjemmelavede-energibarer, /riskugler-og-groentguf-i-madpakken and /roede-sandwichbroed each answer 200 and publish Recipe JSON-LD missing a required field, which the current extractor reports as incomplete on all three. All 134 stored records come from this run. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
+      "V2 is a strict superset here and the extra records are ones legacy cannot read. The isolated legacy run emitted 128 records and V2 holds 134: there is no record legacy has that V2 lacks, and not one material field differs on any of the 128 they share.\n\nThe 6 V2 holds alone are pages whose Recipe JSON-LD is not valid JSON. Fetched by hand on 2026-09-08, halloweenkage serves a single ld+json block that mentions Recipe and fails strict parsing with an unescaped quote inside a string value; V2 stores it as a complete recipe with 15 ingredients and 2 instructions, carrying the json-ld-embedded-quote-repaired and json-ld-control-character-repaired signals. The other five are the same shape. This is the repair that recovered 23 records for chelsea_nz, doing the same work here.\n\nThe uncapped run accounts for every candidate: 137 discovered, 140 recipe pages processed, 134 persisted and 3 rejected as incomplete JSON-LD, with discovery complete, no failed request and no blocked request. 134 and 3 is 137.\n\nThe repeat run reports STABLE at 134 to 134 with every one of the 134 byte-identical.\n\nWorth recording for anyone re-checking this by hand: the bare host answers a 197-byte Document Moved stub and the real page is on the www host, so a fetch without redirect following finds no JSON-LD at all and looks like the site publishes none.",
   },
   slagterlampe: {
     migrationState: "shadow_passed",
