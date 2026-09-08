@@ -26722,10 +26722,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: legacy-unhealthy; the source answers HTTP 200 with a zero-byte body for any per_page of 50 or more - 25 and below return normally - and the legacy WpPostsJsonLdSpider requests per_page=100 (base.py:1440), so it reads nothing at all and reports finish_reason 'finished' with no block recorded. There is no baseline to compare. V2 asks for per_page=20 and gets served. Discovery completeness rests on the posts listing: it declares 892 posts, V2 stores 215, and all 677 of the difference are accounted for - 675 posts that carry no recipe and 2 whose recipe JSON-LD is missing a name, ingredients or instructions - each one fetched and put through the crawler's own extractor. Two uncapped runs reproduced all 215 keys with identical content.",
   },
   grownupdish: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-20T01-02-34.609Z-attempt-a3ff64e8-034e-4651-a138-41ebde5d90e6",
+    migrationState: "shadow_passed",
+    latestCanary:
+      "2026-09-08T08-35-34.937Z-attempt-49796ac8-8275-42a2-9ec3-fe4fc08d0ac9",
+    shadowParity:
+      "230/232 recipes; 100% material-field parity, the 2 legacy holds are records the contract rejects",
     deferOrBlockReason:
-      "Discovery is complete and every rejection is accounted for. The listing declares 541 posts and V2 stores 229: 310 of the remainder carry no recipe at all, which is ordinary for a blog, and the last 2 are named upstream defects - /thai-chicken-salad-with-honey-peanut-dressing/ and /pork-chops-with-peach-jalapeno-glaze/ both publish Recipe JSON-LD missing a name, ingredients or instructions. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
+      "Read the same day, the two sides agree on everything they both hold. The isolated legacy run emitted 232 records and V2 holds 230; the two legacy holds that V2 does not are records it accepts without a name, ingredients or instructions, which the completeness contract declines by design, and V2 holds nothing legacy lacks. Every material field matches, with 165 records keeping a cuisine legacy has no field for.\n\nComparing a stale store against a fresh legacy run is what held this before: the earlier round read 4 legacy-only and 1 crawlee-only against a store nine days old. A re-crawl and a same-window comparison left two records, both explained.\n\nThe uncapped run reports 542 candidates discovered, 544 recipe pages processed, 230 persisted and 2 rejected as incomplete JSON-LD, with discovery complete and no failed or blocked request. The remaining candidates are posts that carry no recipe, which is the ordinary shape for a WordPress-posts source.\n\nThe repeat run reports STABLE at 230 to 230 with every one of the 230 byte-identical.",
   },
   acouplecooks: {
     migrationState: "configured",
