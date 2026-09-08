@@ -14,6 +14,11 @@ const fs = require("fs");
 const { MongoClient } = require("mongodb");
 const { extractWprmRecipes } = require("../../dist/wprm/recipe-document.js");
 const { DANISH_JSONLD_SOURCES } = require("../../dist/danish-jsonld/source-registry.js");
+// Optional Mullvad SOCKS exit, off unless MULLVAD_SOCKS=1. With it off,
+// mullvad.get is a straight pass-through to fetch and this walk behaves
+// exactly as it did before.
+const mullvad = require("./mullvad-proxy.cjs");
+let proxyAgent = null;
 
 const sourceId = process.argv[2];
 const dbName = process.argv[3];
@@ -39,13 +44,14 @@ const BROWSER_HEADERS = {
 };
 
 async function fetchJson(url) {
-  const res = await fetch(url, { headers: BROWSER_HEADERS, signal: AbortSignal.timeout(90_000) });
+  const res = await mullvad.get(url, BROWSER_HEADERS, proxyAgent, 90_000);
   const total = Number(res.headers.get("x-wp-total"));
   if (!res.ok) return { status: res.status, body: null, total };
   return { status: res.status, body: await res.json().catch(() => null), total };
 }
 
 (async () => {
+  proxyAgent = await mullvad.agent();
   const source = DANISH_JSONLD_SOURCES.find((s) => s.id === sourceId);
   if (!source || !source.startUrls || source.startUrls.length === 0) {
     console.log(`${sourceId} | UNKNOWN: no listing URL in the registry`);
