@@ -144,6 +144,53 @@ describe("Danish JSON-LD source session", () => {
     expect(session.observation.failedRequests).toBe(0);
   });
 
+  // samvirke publishes 1944 recipes, every one declaring a canonical on another
+  // host, and roughly 40% of those targets are a 22,023-byte placeholder with
+  // no Recipe in it. Following the canonical and discarding the page in hand
+  // cost it 858 of its 1944 records.
+  it("stores a 200 page's recipe and still follows its declared canonical", async () => {
+    const store = new MemoryV2Store();
+    const followSource: DanishJsonLdSource = {
+      ...source,
+      allowedDomains: ["example.dk", "recipes.example.dk"],
+      recipeUrlPatterns: ["^https://(?:example|recipes\\.example)\\.dk/opskrifter/"],
+      canonicalFollowStatuses: [200, 404],
+    };
+    const session = new DanishJsonLdSourceSession({
+      source: followSource,
+      store,
+      crawlRunId: "run-follow-200",
+      crawlAttemptId: "attempt-follow-200",
+      maxPages: 5,
+    });
+    const routes = await session.handleResponse({
+      kind: "recipe",
+      fetchMode: "cheerio",
+      url: "https://example.dk/opskrifter/kage",
+      statusCode: 200,
+      headers: { "content-type": "text/html" },
+      body:
+        `<link rel="canonical" href="https://recipes.example.dk/opskrifter/kage-123">` +
+        `<script type="application/ld+json">${JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Recipe",
+          name: "Kage",
+          recipeIngredient: ["200 g mel"],
+          recipeInstructions: [{ "@type": "HowToStep", text: "Bag den." }],
+        })}</script>`,
+    });
+
+    // the recipe on the page we actually fetched is kept
+    expect(store.recipesV2).toHaveLength(1);
+    expect(store.recipesV2[0]?.normalized.title).toBe("Kage");
+    // and the canonical is still followed, so a better record can replace it
+    expect(routes.cheerioRequests).toContainEqual({
+      kind: "recipe",
+      url: "https://recipes.example.dk/opskrifter/kage-123",
+      forefront: true,
+    });
+  });
+
   it("records an off-domain request only after runner queue admission, without requiring page persistence", () => {
     const session = new DanishJsonLdSourceSession({
       source,
