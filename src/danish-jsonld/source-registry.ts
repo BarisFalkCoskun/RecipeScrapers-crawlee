@@ -27865,10 +27865,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 137-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 137 recipes with every material field matching",
   },
   cookiemadness: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-09-01T21-35-46.430Z-attempt-3a07a199-e6e1-40f2-8b12-237d00cf64bf",
+    migrationState: "shadow_passed",
+    latestCanary:
+      "2026-09-08T16-33-31.873Z-attempt-78154dad-ea38-4d68-a401-7babbda895d1",
+    shadowParity:
+      "2889/2890 recipes; the 2 legacy holds are a rename and a record with no URL",
     deferOrBlockReason:
-      "The uncapped run is clean and every rejection is accounted for. It persisted 2883 recipes from 2885 candidates over 30 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 2885, stored 2883, missing 2 - 1 no ingredients, 1 no canonical link. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
+      "Read the same day, the two sides differ on two records and both are accounted for. The isolated legacy run emitted 2890 and the uncapped run persisted 2889, rejecting 1 as malformed WPRM. One of the two legacy holds is a record with no URL at all, which the completeness contract declines; the other is the same page under a different title - legacy reads /?p=156787 as easy no churn honey ice cream where V2 reads honey vanilla ice cream, so the site renamed it and a URL-and-title key reports a rename as one record lost and one gained.\n\nOne material field differs on one record and V2 is the fuller side. On honey-cookies legacy drops two ingredient notes that V2 keeps - vegetable oil (Canola is fine) and all-purpose flour (can use a combo of white and wheat). That is V2 preserving what the source published rather than losing anything, so it is named here rather than normalised away in the comparator.\n\nThe store holds 2893 against a run of 2889 and the difference is not a surplus: five rows written on 2026-08-21, 2026-08-28 and 2026-09-01 that the latest run did not re-find, kept because an upsert store never deletes. They are the records the comparison reports as crawlee-only.\n\nThe uncapped run accounts for every candidate - 2890 discovered, all 2890 processed, 2889 persisted, 1 rejected - with discovery complete and no failed or blocked request. The repeat run reports STABLE at 2893 to 2894, with 2892 byte-identical, one record the source edited upstream and one it published between the runs.",
   },
   cookincanuck: {
     migrationState: "shadow_passed",
