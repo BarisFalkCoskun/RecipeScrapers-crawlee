@@ -30508,10 +30508,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 613 keys with identical content. Every one of the 23 shortfall records is an upstream defect the completeness contract rejects (23 no instructions), so there is no unexplained rejection",
   },
   recipegirl: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-09-01T21-47-52.810Z-attempt-19b70675-562a-4134-bacd-75c19d5ba57b",
+    migrationState: "shadow_passed",
+    latestCanary:
+      "2026-09-08T16-32-14.420Z-attempt-ffafd408-bcaa-4757-936a-07c26454874c",
+    shadowParity:
+      "2931/2931 recipes; 100% material-field parity in a same-window comparison",
     deferOrBlockReason:
-      "The uncapped run is clean and every rejection is accounted for. It persisted 2930 recipes from 2931 candidates over 31 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 2931, stored 2931, missing 1 - 1 no title. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
+      "Read the same day the two sides hold the same records. The isolated legacy run emitted 2931 and the uncapped run persisted 2931, with no record legacy has that V2 lacks and no material field differing on any of them.\n\nA cross-day comparison had this looking like a two-way loss and it was neither. Legacy held dr-pepper-ribs that V2 did not, V2 held cinnamon-vanilla-monster-cookies that legacy did not, and both URLs answered 200, so it read as each side missing a live recipe. Re-crawled, dr-pepper-ribs is in V2 and only-legacy is zero. The remaining crawlee-only record is not a surplus either: it is the 2026-08-21 row for cinnamon-vanilla-monster-cookies, which the latest run did not re-find and an upsert store never deletes.\n\nThe uncapped run accounts for every candidate: 2932 discovered, all 2932 processed, 2931 persisted and 1 rejected as incomplete WPRM, with discovery complete and no failed or blocked request.\n\nThe repeat run reports STABLE at 2932 to 2932 with every record byte-identical.",
   },
   reciperunner: {
     migrationState: "shadow_passed",
