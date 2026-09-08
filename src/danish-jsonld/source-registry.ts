@@ -32837,11 +32837,14 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
   >>
 > = {
   gastrofun: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestScrapyOutcome: "partial",
-    latestCanary: "2026-09-01T18-32-55.818Z-attempt-2798253e-8143-42ed-bd25-c87f53b81540",
+    latestCanary:
+      "2026-09-08T08-32-11.121Z-attempt-a3c8e485-3980-4824-9d70-eafde731b27d",
+    shadowParity:
+      "3768/3768 recipes; 100% material-field parity in a same-window comparison",
     deferOrBlockReason:
-      "The 38-page catalogue the bounded probe could not reach has now been read in full, and every rejection is accounted for. The 2026-09-01 run persisted 3768 recipes from 3785 candidates over 39 requests with no failed request, no blocked request and discovery complete; every record in the store comes from that run.\n\nThe 17 it did not keep were put back through the WPRM completeness walk, which reports ALL SHORTFALL EXPLAINED: declared 3785, stored 3768, missing 17, and all 17 are records the source publishes with no instructions. That is not a crawler shortfall but the completeness contract doing what it is defined to do, and legacy would keep those 17 - its WprmApiSpider sets no require_instructions override, so they belong on the tally in docs/open-question-completeness-contract.md. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
+      "Both sides read the same day and they agree exactly. The isolated legacy run emitted 3768 records and V2 holds the same 3768, with no record either side lacks and every material field matching - 111 records keeping WPRM named-step prefixes legacy drops and 111 keeping a space at a block boundary legacy fuses over.\n\nThe one difference that survived the earlier round was not extraction. Legacy read 0,5 liter Piskefloede on floederand where V2 read ten ingredients without it. The live WPRM API carries that ingredient and the crawler own extractor keeps it, comma decimal and all, so the site had corrected the record after the crawl and the store was stale. Re-crawled, it matches.\n\nThe uncapped run accounts for every candidate: 3785 discovered, 3785 processed, 3768 persisted and 17 rejected as incomplete WPRM, with discovery complete and no failed or blocked request. 3768 and 17 is 3785.\n\nThe repeat run reports STABLE at 3768 to 3768 with every one of the 3768 byte-identical.",
   },
   ketoliv: {
     migrationState: "shadow_passed",

@@ -532,18 +532,18 @@ describe("Danish JSON-LD source registry", () => {
         maxConcurrency: 1,
         maxRetries: 3,
       } });
-    // gastrofun has had that uncapped run: 3768 recipes from 3785 candidates
-    // with nothing failed or blocked, and the WPRM completeness walk accounts
-    // for all 17 it did not keep as records the source publishes with no
-    // instructions. The pin moves with it rather than being loosened.
+    // gastrofun has since reached shadow parity: read the same day, legacy and
+    // V2 both emit 3768 records with nothing on either side the other lacks and
+    // no material field differing, and the repeat run reproduces all 3768
+    // byte-identical. The pin moves with it rather than being loosened.
     expect(sources.find((source) => source.id === "gastrofun")).toMatchObject({
-      migrationState: "canary_passed",
+      migrationState: "shadow_passed",
       latestScrapyOutcome: "partial",
       latestCanary:
-        "2026-09-01T18-32-55.818Z-attempt-2798253e-8143-42ed-bd25-c87f53b81540",
+        "2026-09-08T08-32-11.121Z-attempt-a3c8e485-3980-4824-9d70-eafde731b27d",
     });
     expect(sources.find((source) => source.id === "gastrofun")?.deferOrBlockReason)
-      .toMatch(/all 17 are records the source publishes with no instructions/u);
+      .toMatch(/3785 discovered, 3785 processed, 3768 persisted/u);
     expect(sources.find((source) => source.id === "ketoliv")).toMatchObject({
       migrationState: "shadow_passed",
       latestScrapyOutcome: "succeeded",
