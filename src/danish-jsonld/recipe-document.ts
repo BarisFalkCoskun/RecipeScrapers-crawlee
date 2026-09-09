@@ -89,7 +89,9 @@ export function extractCompleteJsonLdRecipes(
       repairedQuoteScriptCount += 1;
     }
 
-    for (const recipe of findRecipeNodes(parsedScript.parsed)) {
+    const graphNodes = collectNodesById(parsedScript.parsed);
+    for (const found of findRecipeNodes(parsedScript.parsed)) {
+      const recipe = resolveIdReferences(found, graphNodes);
       // A bare @type/@id pair is a JSON-LD reference to a node defined
       // elsewhere, not a recipe claim, so it is neither kept nor rejected.
       if (isNodeReference(recipe)) continue;
@@ -551,6 +553,73 @@ function extractJsonLdScriptBodies(html: string): string[] {
   }
 
   return scripts;
+}
+
+/**
+ * Index every node in the document that declares an @id.
+ *
+ * rema1000 states its recipe image as {"@id": ".../#/schema/image/1"} and puts
+ * the ImageObject carrying the URL elsewhere in the same @graph. That is
+ * ordinary JSON-LD - a node reference rather than an inline object - and the
+ * shape Yoast and RankMath emit. findRecipeNodes returns the Recipe and drops
+ * the graph around it, so by the time the image is normalised the reference
+ * cannot be followed and every one of its 679 records stored no image at all.
+ */
+function collectNodesById(data: unknown): Map<string, Record<string, unknown>> {
+  const byId = new Map<string, Record<string, unknown>>();
+  const walk = (value: unknown): void => {
+    if (!value || typeof value !== "object") return;
+    if (Array.isArray(value)) {
+      value.forEach(walk);
+      return;
+    }
+    const node = value as Record<string, unknown>;
+    const id = node["@id"];
+    // Index only nodes that say something. A bare {"@id": ...} is the
+    // reference, not the target, and it appears first: the Recipe node comes
+    // before the ImageObject it points at, so indexing references made the
+    // lookup return the reference to itself and resolve nothing. Later nodes
+    // win over earlier ones only when the earlier one was a bare reference.
+    if (typeof id === "string" && id !== "" && Object.keys(node).length > 1) {
+      byId.set(id, node);
+    }
+    for (const nested of Object.values(node)) walk(nested);
+  };
+  walk(data);
+  return byId;
+}
+
+/**
+ * Replace a bare {"@id": ...} reference with the node it names, for the fields
+ * a recipe document reads. Only a reference carrying nothing else is replaced:
+ * a node that states an @id alongside its own url is already usable and is left
+ * exactly as it is, so this cannot overwrite stated content with a lookup.
+ */
+function resolveIdReferences(
+  recipe: Record<string, unknown>,
+  byId: Map<string, Record<string, unknown>>
+): Record<string, unknown> {
+  if (byId.size === 0) return recipe;
+  const resolveValue = (value: unknown): unknown => {
+    if (Array.isArray(value)) return value.map(resolveValue);
+    if (!value || typeof value !== "object") return value;
+    const node = value as Record<string, unknown>;
+    const keys = Object.keys(node);
+    if (keys.length !== 1 || keys[0] !== "@id") return value;
+    const target = byId.get(String(node["@id"]));
+    return target && target !== recipe ? target : value;
+  };
+  let changed = false;
+  const out: Record<string, unknown> = { ...recipe };
+  for (const key of ["image", "author", "video"]) {
+    if (!(key in out)) continue;
+    const resolved = resolveValue(out[key]);
+    if (resolved !== out[key]) {
+      out[key] = resolved;
+      changed = true;
+    }
+  }
+  return changed ? out : recipe;
 }
 
 function findRecipeNodes(data: unknown): Record<string, unknown>[] {

@@ -4,6 +4,7 @@ import {
   buildRecipeDocumentV2,
   extractCompleteJsonLdRecipes,
   gzipJsonLdScripts,
+  normalizeRecipeV2,
 } from "../../src/danish-jsonld/recipe-document.js";
 
 const completeRecipe = {
@@ -27,6 +28,76 @@ const completeRecipe = {
   keywords: "sommer, kage",
   nutrition: { calories: "300 kcal" },
 };
+
+describe("Danish JSON-LD @id references", () => {
+  // rema1000 states its recipe image as {"@id": ".../#/schema/image/1"} and
+  // puts the ImageObject carrying the URL elsewhere in the same @graph. That is
+  // ordinary JSON-LD and the shape Yoast and RankMath emit. The graph was
+  // dropped before the image was normalised, so all 679 of its records stored
+  // no image at all while legacy had one.
+  const graphPage = (imageNode: Record<string, unknown>) =>
+    `<script type="application/ld+json">${JSON.stringify({
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Recipe",
+          "@id": "https://example.dk/r#recipe",
+          name: "Kage",
+          recipeIngredient: ["200 g mel"],
+          recipeInstructions: [{ "@type": "HowToStep", text: "Bag den." }],
+          image: { "@id": "https://example.dk/#/schema/image/1" },
+        },
+        imageNode,
+      ],
+    })}</script>`;
+
+  it("resolves an image stated as a reference to another node in the graph", () => {
+    const html = graphPage({
+      "@type": "ImageObject",
+      "@id": "https://example.dk/#/schema/image/1",
+      url: "https://cdn.example.dk/kage.jpg",
+    });
+    const recipe = extractCompleteJsonLdRecipes(html).recipes[0]!;
+    expect(normalizeRecipeV2(structuredClone(recipe)).imageUrls)
+      .toEqual(["https://cdn.example.dk/kage.jpg"]);
+  });
+
+  it("leaves a node that states its own url alongside an @id alone", () => {
+    const html = `<script type="application/ld+json">${JSON.stringify({
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Recipe",
+          name: "Kage",
+          recipeIngredient: ["200 g mel"],
+          recipeInstructions: [{ "@type": "HowToStep", text: "Bag den." }],
+          image: {
+            "@id": "https://example.dk/#/schema/image/1",
+            url: "https://cdn.example.dk/stated.jpg",
+          },
+        },
+        {
+          "@type": "ImageObject",
+          "@id": "https://example.dk/#/schema/image/1",
+          url: "https://cdn.example.dk/other.jpg",
+        },
+      ],
+    })}</script>`;
+    const recipe = extractCompleteJsonLdRecipes(html).recipes[0]!;
+    expect(normalizeRecipeV2(structuredClone(recipe)).imageUrls)
+      .toEqual(["https://cdn.example.dk/stated.jpg"]);
+  });
+
+  it("leaves an unresolvable reference as it found it", () => {
+    const html = graphPage({
+      "@type": "ImageObject",
+      "@id": "https://example.dk/#/schema/image/2",
+      url: "https://cdn.example.dk/other.jpg",
+    });
+    const recipe = extractCompleteJsonLdRecipes(html).recipes[0]!;
+    expect(normalizeRecipeV2(structuredClone(recipe)).imageUrls).toEqual([]);
+  });
+});
 
 describe("Danish JSON-LD RecipeDocumentV2", () => {
   // oetker publishes its Recipe @id as the page URL with the visitor's
