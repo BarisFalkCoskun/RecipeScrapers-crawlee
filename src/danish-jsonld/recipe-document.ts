@@ -755,9 +755,39 @@ function splitInstructionString(value: string): string[] {
     .filter(Boolean);
 }
 
+/**
+ * A publisher may put a srcset in schema.org's `image`: one string holding
+ * several addresses, each followed by a width or density descriptor. It is not
+ * a URL, so it failed every check here and the record stored no image at all -
+ * 6591 of tv2mad's 9997 recipes, two thirds of the source. Legacy keeps the
+ * whole blob as though it were a single address, which no consumer can use
+ * either. Taking the largest candidate stores the one thing that was actually
+ * being published.
+ *
+ * Entries are split on a comma followed by whitespace rather than on any
+ * comma, because transformation CDNs put commas inside a path segment
+ * (`w_100,h_100`) where the spec's separator never appears without space.
+ */
+function parseImageSrcSet(value: string): string[] {
+  // Require a real descriptor somewhere, so an ordinary URL is never split.
+  if (!/\s\d+(?:\.\d+)?[wx]\s*(?:,|$)/u.test(value)) return [];
+  let best: { url: string; size: number } | undefined;
+  for (const entry of value.split(/,\s+/u)) {
+    const matched = /^(\S+)(?:\s+(\d+(?:\.\d+)?)[wx])?$/u.exec(entry.trim());
+    if (!matched) continue;
+    const url = matched[1] ?? "";
+    if (!looksLikeImageReference(url)) continue;
+    const size = matched[2] === undefined ? 0 : Number(matched[2]);
+    if (!best || size > best.size) best = { url, size };
+  }
+  return best ? [encodeImageSpaces(best.url)] : [];
+}
+
 function normalizeImageUrls(value: unknown): string[] {
   if (typeof value === "string") {
     const cleaned = cleanText(value);
+    const fromSrcSet = parseImageSrcSet(cleaned);
+    if (fromSrcSet.length > 0) return fromSrcSet;
     return looksLikeImageReference(cleaned) ? [encodeImageSpaces(cleaned)] : [];
   }
   if (Array.isArray(value)) return value.flatMap(normalizeImageUrls);

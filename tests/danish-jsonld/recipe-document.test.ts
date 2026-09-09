@@ -1348,4 +1348,32 @@ describe("Danish JSON-LD RecipeDocumentV2", () => {
     expect(doc.normalized.imageUrls).toEqual([]);
   });
 
+  const completeWithImage = (image: string) => ({
+    "@type": "Recipe",
+    "name": "Kage",
+    "recipeIngredient": ["1 æg"],
+    "recipeInstructions": ["Bag."],
+    image,
+  }) as never;
+
+  it("takes the widest candidate when image holds a srcset", () => {
+    // tv2mad publishes a srcset in schema.org's image on 6591 of its 9997
+    // recipes. It is not a URL, so every check here refused it and two thirds
+    // of the source stored no image at all; legacy keeps the whole blob.
+    const srcset = [
+      "https://cdn.example.dk/a.jpg?w=144&s=aa 144w",
+      "https://cdn.example.dk/a.jpg?w=1904&s=cc 1904w",
+      "https://cdn.example.dk/a.jpg?w=304&s=bb 304w",
+    ].join(", ");
+    expect(normalizeRecipeV2(completeWithImage(srcset)).imageUrls)
+      .toEqual(["https://cdn.example.dk/a.jpg?w=1904&s=cc"]);
+  });
+
+  it("does not split an ordinary url that contains commas", () => {
+    // Transformation CDNs put commas inside a path segment, and no descriptor
+    // follows them, so such a value must survive whole.
+    const url = "https://res.cloudinary.com/demo/image/upload/w_100,h_100,c_fill/kage.jpg";
+    expect(normalizeRecipeV2(completeWithImage(url)).imageUrls).toEqual([url]);
+  });
+
 });
