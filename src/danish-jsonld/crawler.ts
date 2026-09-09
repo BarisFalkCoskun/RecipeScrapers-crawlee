@@ -256,20 +256,6 @@ export class DanishJsonLdSourceSession {
       return this.handleListing(response);
     }
 
-    // A page that names a canonical elsewhere is followed, but the page in hand
-    // is still read first when it answered 200. samvirke publishes 1944 recipes
-    // on samvirke.dk, every one declaring a canonical on opskrifter.coop.dk,
-    // and roughly 40% of those targets are a placeholder: sampling eight,
-    // five served a full page with Recipe JSON-LD and three served an identical
-    // 22,023-byte body with no "Recipe" in it. Returning here discarded a
-    // recipe already in hand in favour of a page that did not have one, which
-    // cost this source 858 of its 1944 records.
-    //
-    // Both records key on the declared canonical, so the follow-up upserts onto
-    // whatever this page stored: where the canonical target is the better
-    // record it still wins, and where it is a dead end the recipe survives. A
-    // non-200 response has nothing to read, so that path returns as before.
-    let canonicalFollowUp: DanishJsonLdRoutingResult | undefined;
     if (
       response.kind === "recipe" &&
       this.source.canonicalFollowStatuses?.includes(response.statusCode)
@@ -284,11 +270,9 @@ export class DanishJsonLdSourceSession {
           canonicalUrl,
         });
         const request = { kind: "recipe" as const, url: canonicalUrl, forefront: true };
-        canonicalFollowUp = this.source.fetchMode === "playwright"
+        return this.source.fetchMode === "playwright"
           ? { cheerioRequests: [], playwrightRequests: [request] }
           : { cheerioRequests: [request], playwrightRequests: [] };
-        const readable = response.statusCode >= 200 && response.statusCode < 300;
-        if (!readable) return canonicalFollowUp;
       }
     }
 
@@ -322,15 +306,7 @@ export class DanishJsonLdSourceSession {
     if (response.kind === "listing") {
       return this.handleListing(response);
     }
-    const recipeRoutes = await this.handleRecipe(response);
-    if (!canonicalFollowUp) return recipeRoutes;
-    return {
-      cheerioRequests: [...recipeRoutes.cheerioRequests, ...canonicalFollowUp.cheerioRequests],
-      playwrightRequests: [
-        ...recipeRoutes.playwrightRequests,
-        ...canonicalFollowUp.playwrightRequests,
-      ],
-    };
+    return this.handleRecipe(response);
   }
 
   async recordFailedRequest(input: {

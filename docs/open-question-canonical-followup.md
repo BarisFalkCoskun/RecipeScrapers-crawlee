@@ -1,4 +1,4 @@
-# Open question: following a canonical to a page that has no recipe
+# Closed: following a canonical to a page that has no recipe
 
 samvirke publishes 1944 recipe URLs on `samvirke.dk` and stores 1086 in V2.
 Legacy stores 1944. The 858-record gap is not discovery and not extraction —
@@ -63,3 +63,40 @@ docs/open-question-candidates-never-fetched.md.
 
 **Until it is decided, samvirke cannot be compared meaningfully** — the two sides
 hold records on different hosts, so the comparator pairs almost nothing.
+
+
+## Resolved 2026-09-09, and the diagnosis above was wrong
+
+The premise this rests on — "every `samvirke.dk` recipe page answers 200 with a
+complete recipe" — is false. Fetched on 2026-09-09, `forloren-hare-med-bacon`
+and `pain-au-chocolat` each return ~290 KB carrying **zero** Recipe JSON-LD
+blocks. The pages declare a canonical and nothing else; the recipe exists only
+on the `opskrifter.coop.dk` target. So the crawler was never "discarding a
+recipe already in hand" — there was no recipe in hand to discard.
+
+The fix was written anyway and measured on the live source. Reading the page
+before following its canonical took `processedRecipePages` from 1087 to 3049 and
+`completedRequests` to 3910, roughly three times the work, and left the store at
+**1086 records — exactly where it was before**. It was reverted rather than kept
+as harmless: it was justified by a premise that did not hold, it is the only
+consumer of `canonicalFollowStatuses` in the registry, and code kept because it
+might help a source that does not exist is how cruft accumulates.
+
+**What is actually true about samvirke.** Its sitemap lists 1944 recipe URLs
+matching the source pattern, exactly legacy's record count. Each declares a
+distinct canonical on `opskrifter.coop.dk` — fourteen sampled, fourteen
+distinct, no aliasing. Roughly 40% of those targets serve an identical
+22,023-byte body with no `"Recipe"` in it. The recipe for those URLs exists
+nowhere the crawler can reach: not on the samvirke page, which has no JSON-LD,
+and not on the coop target, which is a placeholder. Legacy stores 1944 because
+it parses something other than JSON-LD from the samvirke page; V2 requires
+JSON-LD and correctly finds none.
+
+That makes this an extractor-scope question rather than a crawler one, and it is
+not obviously worth answering: it would mean teaching the JSON-LD crawler to
+read this one site's HTML.
+
+**The lesson worth keeping:** the sampling that produced the original diagnosis
+checked what the canonical *targets* served and never checked what the *source*
+pages served. Both halves of a redirect-shaped problem have to be measured
+before either is blamed.
