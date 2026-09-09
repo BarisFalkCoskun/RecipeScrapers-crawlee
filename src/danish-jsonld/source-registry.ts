@@ -32676,10 +32676,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: the isolated legacy run emitted 680 records and V2 matches on every material field. This source publishes pages carrying several recipes each, and 2694 of V2's 3382 records are siblings recovered from them; legacy keeps one record per page. That is also why 68 records show ingredients in V2 and none in legacy - legacy captured a fragment of one list where the page holds five recipes. The 3 records legacy holds and V2 does not are ones legacy accepts without a name, ingredients, instructions or a link. V2 additionally keeps a fuller yield than legacy's leading integer on 539 records. A second uncapped run reproduced all 3382 keys with identical content, and a reviewed sample of 25 stored records is clean",
   },
   greatbritishchefs: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-09-02T13-30-47.277Z-attempt-f53d5f7a-1803-43c4-aed3-2caa94679119",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
+    latestCanary: "2026-09-09T12-31-41.246Z",
+    shadowParity:
+      "7060/7060 recipes and every material field match exactly",
     deferOrBlockReason:
-      "A clean canary on the fresh run this source was waiting for, and the largest one yet to come back with nothing against it. The 2026-09-02 run persisted 7046 recipes from 7046 candidates over 7148 requests with outcome \"succeeded\": no failed request, no blocked request, and not one page rejected as incomplete or malformed. Discovery complete, and every record in the store comes from that run, so nothing survives from the canary whose data did not survive the database restore. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
+      "Both things this source was waiting for arrived on 2026-09-09, and each came back exact. The isolated legacy run finished on its own terms - finish_reason \"finished\", 7162 requests, every one of them answering HTTP 200, no error logged and no block signal anywhere in its log - and emitted 7060 records over 4.8 hours. The uncapped Crawlee run made the same 7162 requests for the same 7060 records. Keyed against each other there are no legacy-only records and no crawlee-only records, and every material field matches; tags equal keywords plus cuisines, 2 records keep WPRM named-step prefixes legacy drops, and 2 records drop a space legacy inserts where it strips inline markup.\n\nThe second uncapped run is idempotent: the store went 7060 to 7060 with all 7060 identical, and its run summary reports discovery complete, no page cap, no failed or blocked request, and nothing rejected as incomplete or malformed. The count moved from the 7046 of 2026-09-02 because the site published 14 more recipes in the week between; both sides were crawled inside the same window and agree on all 7060.",
   },
   bornemenuen: {
     migrationState: "shadow_passed",
