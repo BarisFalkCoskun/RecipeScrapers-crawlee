@@ -26164,11 +26164,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Three uncapped Crawlee runs and the full Scrapy run followed all eight listing pages, emitted the same 47 recipes, rejected the same two non-recipe articles, and matched every legacy field; Crawlee intentionally preserves full yield labels on eight records that Scrapy truncates",
   },
   rema1000: {
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestCanary:
-      "2026-08-29T23-06-22.266Z-attempt-b9464e86-c03b-4231-88fb-12a814a225f5",
+      "2026-09-09T10-32-05.254Z-attempt-ec813ae9-852f-4b0c-84c5-11af9a60378a",
+    shadowParity:
+      "678/674 recipes; 100% material-field parity once JSON-LD @id image references were resolved",
     deferOrBlockReason:
-      "The replacement run the earlier reason asked for has been made. An uncapped run followed the listing to its end and persisted 665 recipes from 665 discovered candidates over 699 requests, with discovery complete, no failed or blocked request, and no outcome reason recorded. The store now holds those 665 records and no others for this source, so the count is this run rather than an accumulation across runs. The 671 quoted from the lost pre-restore canary is not evidence and is not carried forward: this run is measured, that one is not. Legacy comparison is still outstanding.",
+      "Read the same day, V2 holds everything legacy holds and no material field differs. The isolated legacy run emitted 674 records and the uncapped run persisted 678 from 678 candidates, all 678 processed, discovery complete and nothing failed, blocked or rejected. There is no record legacy has that V2 lacks.\n\nGetting here needed a real extraction fix, and the source is the reason it was found. rema1000 states its recipe image as a JSON-LD node reference - image is {@id: .../#/schema/image/1} - and puts the ImageObject carrying the URL elsewhere in the same @graph. The graph was discarded before the image was normalised, so every one of its records stored an empty imageUrls while legacy had the URL: 672 of the 674 records the comparison put side by side differed on images and nothing else. With @id references resolved against the graph, 678 of 678 records in the new run carry an image and the comparison reports no field difference at all.\n\nEleven crawlee-only records and none of them a surplus. Seven are rows written on 2026-08-29 that the latest run did not re-find, kept because an upsert store never deletes; the other four are recipes the site published between legacy morning run and this crawl. The store holds 685 against a run of 678 for exactly that reason.\n\nThe repeat run reports STABLE at 685 to 685 with every record byte-identical.",
   },
   beauvais: {
     migrationState: "shadow_passed",
