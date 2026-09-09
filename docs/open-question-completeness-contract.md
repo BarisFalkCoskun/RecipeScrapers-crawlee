@@ -117,3 +117,30 @@ one.
 **What would make this unnecessary:** nothing, while sites keep changing. The
 useful discipline is that a comparison is only as good as the age gap between
 its two sides, and that gap should be stated wherever a verdict is recorded.
+
+## Legacy's own pagination caps three sources (2026-09-09)
+
+`WprmApiSpider` in the legacy project hardcodes `per_page=100`
+(danish_recipes/spiders/base.py:981). That is the page size these three sites
+answer with HTTP 200 and an empty body on one page in the middle of the range:
+
+    thechunkychef     empty at page 4   legacy reaches  300 of  992
+    yourhomebasedmom  empty at page 4   legacy reaches  300 of 1280
+    tasteandtellblog  empty at page 17  legacy reaches 1600 of 1747
+
+V2 was capped identically until its start URLs were halved to `per_page=50`, at
+which point all three walked their whole catalogue. Legacy cannot: the page size
+is not configurable per spider, so its counts are a floor set by its own
+pagination rather than by the source.
+
+**This is not the legacy-unhealthy route.** There is no block, no 403 and no
+challenge — legacy reports `finished` with a truncated set and no error, so
+`legacy-halt-check.sh` will correctly find no block evidence and return
+NOT-ELIGIBLE. The right evidence for these three is an ordinary comparison read
+with the cap stated: every record legacy produced must be present in V2 with no
+material field differing, and the surplus is V2 reaching pages legacy's page
+size cannot request.
+
+Worth stating plainly because it cuts the other way from most findings here:
+1,817 records that legacy structurally cannot reach are exactly the kind of gap
+the migration exists to close.
