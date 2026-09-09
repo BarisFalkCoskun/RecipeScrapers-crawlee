@@ -996,10 +996,13 @@ describe("Danish JSON-LD source registry", () => {
         sitemapUrls: ["https://spisbedre.dk/opskrifter/sitemap.xml"],
         recipeExtractor: "spisbedre-inertia",
         fetchMode: "cheerio",
-        migrationState: "canary_passed",
+        // spisbedre has since reached shadow parity: read the same day it
+        // holds everything legacy holds and three recipes more, and the
+        // reduced pacing has produced three clean runs in a row.
+        migrationState: "shadow_passed",
         latestScrapyOutcome: "partial",
         latestCanary:
-          "2026-09-01T20-11-46.772Z-attempt-92dc9de4-409e-42b1-8358-7b05c306e7ca",
+          "2026-09-09T06-34-42.629Z-attempt-b6279ced-2435-48b6-94d1-7a6333df6c7f",
       });
     expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "webopskrifter"))
       .toMatchObject({

@@ -33850,12 +33850,14 @@ const EMBEDDED_DANISH_RECIPE_SOURCES: DanishJsonLdSource[] =
     },
     requireCompleteJsonLd: true,
     recipeExtractor: definition.extractor,
-    migrationState: "canary_passed",
+    migrationState: "shadow_passed",
     latestScrapyOutcome: "partial",
     latestCanary:
-      "2026-09-01T20-11-46.772Z-attempt-92dc9de4-409e-42b1-8358-7b05c306e7ca",
+      "2026-09-09T06-34-42.629Z-attempt-b6279ced-2435-48b6-94d1-7a6333df6c7f",
+    shadowParity:
+      "2000/1997 recipes; 100% material-field parity, V2 a strict superset by three recipes",
     deferOrBlockReason:
-      "Reduced pacing was the right diagnosis. The previous reason recorded two runs that each lost a request or three to 502s and 504s served by the site itself, varying between runs, and prescribed the maduniverset remedy rather than another identical run. At delaySeconds 2 and maxConcurrency 1 in LEGACY_REQUEST_SETTING_OVERRIDES the 2026-09-01 run persisted all 2000 recipes from 2000 candidates over 2001 requests, with discovery complete, zero failed requests, zero blocked requests, and no outcome reason recorded. The server does not falter when it is asked more slowly. The definition below still reads maxConcurrency 2 and is inert; the override is what the run used. Legacy comparison is still outstanding.",
+      "Read the same day, V2 holds everything legacy holds and three recipes more. The isolated legacy run emitted 1997 records and the uncapped run persisted 2000; there is no record legacy has that V2 lacks, and not one material field differs on any record the two share.\n\nThe three V2 holds alone are real. kalkungryde is a distinct recipe from kalkungryde-med-blomkal-og-kikaerter, which both sides hold; it answers 200 and legacy run simply did not produce it. Two further crawlee-only records are not extras at all but rows written on 2026-09-01 that the latest run did not re-find, kept because an upsert store never deletes - which is also why the store holds 2002 against a run of 2000.\n\nThe reduced pacing that this source was waiting on has held across three runs. At delaySeconds 2 and maxConcurrency 1 the uncapped run reports 2000 candidates discovered, all 2000 processed, 2000 persisted, discovery complete, and zero failed, blocked or rejected - where the runs before that remedy each lost one to three requests to the site own 502s and 504s. The repeat run reports STABLE at 2002 to 2002 with every record byte-identical.\n\nWorth knowing for anyone re-checking this by hand: the pages carry no Recipe JSON-LD in their markup. This source states its recipes in an Inertia payload and is read by the spisbedre-inertia extractor, so grepping a fetched page for Recipe finds nothing and looks like the site publishes none.",
   }));
 
 const HTML_DANISH_RECIPE_SOURCES: DanishJsonLdSource[] =
