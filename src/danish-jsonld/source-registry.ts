@@ -27456,10 +27456,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 592 keys with identical content. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (2 no instructions), so there is no unexplained rejection",
   },
   beamingbaker: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-09-01T21-33-35.117Z-attempt-b5b0e4c2-4d6e-4806-9a7d-f65be4432054",
+    migrationState: "shadow_passed",
+    latestCanary:
+      "2026-09-09T06-33-20.298Z-attempt-8cf4bd65-9b7e-4c55-99af-a7550f798807",
+    shadowParity:
+      "857/859 recipes; the 3 legacy holds are records the contract rejects, and V2 is the correct side on 4 bracket renderings",
     deferOrBlockReason:
-      "The uncapped run is clean and every rejection is accounted for. It persisted 855 recipes from 858 candidates over 10 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 858, stored 855, missing 3 - 2 no ingredients, 1 no instructions. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
+      "Read the same day, every difference is accounted for and V2 holds nothing legacy lacks. The isolated legacy run emitted 859 records and the uncapped run persisted 857, rejecting 3 as incomplete WPRM; those 3 are the same 3 legacy holds that V2 does not, records the source publishes without a name, ingredients or instructions. 857 and 3 is 860, the full candidate set.\n\nFour records differ on ingredients and V2 is the correct side on all four. Legacy renders the note without its opening bracket, leaving a dangling one - 1 cup unsalted, creamy natural peanut butter) - where V2 renders the balanced 1 cup (unsalted, creamy natural peanut butter). The source publishes the bracketed form; legacy mangles it. That is named here rather than normalised away in the comparator, because collapsing an unbalanced bracket would hide real content differences elsewhere to tidy four records.\n\nThe uncapped run discovered 860 candidates and processed all 860, with discovery complete and no failed or blocked request. The repeat run reports STABLE at 856 to 857 with 855 byte-identical, one record the source edited upstream and one it published between the runs.",
   },
   bellyfull: {
     migrationState: "shadow_passed",
