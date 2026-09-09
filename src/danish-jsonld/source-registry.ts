@@ -26697,10 +26697,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "1374 records on each side and one record apart, which is the same page twice. Both sides hold /5-ingredient-blueberry-magic-cookies; legacy's copy has no title at all and V2's carries the recipe's name, so legacy accepts a record the completeness contract rejects and V2 stores the properly named sibling from that page instead. Every material field matches across the rest, with 129 records keeping a cuisine legacy has no field for and 51 negative upstream durations V2 rejects where legacy keeps them.\n\nThe repeat run reports STABLE, 1372 to 1374, with 1372 byte-identical and two recipes the site published between the runs. Discovery completed over 1575 candidates with no failed request, no blocked request and nothing rejected.",
   },
   orwhateveryoudo: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-08-19T20-39-24.554Z-attempt-876ed245-a332-48e1-be6b-6d8836b289cf",
+    migrationState: "shadow_passed",
+    latestCanary:
+      "2026-09-08T23-33-01.009Z-attempt-f617f4a5-b275-43b2-9987-c247915693b8",
+    shadowParity:
+      "1384/1385 recipes; 100% material-field parity, the 1 legacy holds is a record the contract rejects",
     deferOrBlockReason:
-      "Discovery is complete and every rejection is accounted for. The listing declares 1514 posts and V2 stores 1382: 131 of the remainder carry no recipe, and the last one is a named upstream defect - /2017/07/spicy-yaki-udon.html publishes Recipe JSON-LD missing a name, ingredients or instructions. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
+      "Read the same day, the two sides agree on every record they share. The isolated legacy run emitted 1385 and the uncapped run persisted 1384; the single record legacy holds that V2 does not is one it accepts without a name, ingredients or instructions, which the completeness contract declines by design, and V2 holds nothing legacy lacks. Every material field matches, with 1375 records keeping a cuisine legacy has no field for.\n\nThe uncapped run discovered 1517 candidates and processed 1518 pages, persisting 1384 and rejecting 1 as incomplete JSON-LD, with discovery complete and no failed or blocked request. The remaining candidates are posts that carry no recipe, which is the ordinary shape for a WordPress-posts source.\n\nIts store holds 1384 and every one of them comes from this run, so the count is the run rather than an accumulation across runs. The repeat run reports STABLE at 1384 to 1384 with every record byte-identical.",
   },
   thatskinnychickcanbake: {
     migrationState: "canary_passed",
@@ -27702,10 +27705,13 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: legacy-unhealthy; page 2 of the API answered 403, so the legacy spider stopped after 100 recipes yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 815 records the live listing declares, on all 100 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 808 keys with identical content, and on a reviewed sample of 25 stored records. An earlier pair of runs differed on 14 records; this verdict rests on a clean pair rather than on that one. The 7 records V2 does not store are upstream defects the completeness contract rejects (1 no instructions, 6 no canonical link).",
   },
   caribbeanpot: {
-    migrationState: "canary_passed",
-    latestCanary: "2026-09-01T21-34-07.864Z-attempt-73204293-4bc7-4e5b-99ef-566fa6fa24d6",
+    migrationState: "shadow_passed",
+    latestCanary:
+      "2026-09-09T00-34-47.558Z-attempt-d592f7a8-0683-409b-ab20-4ac5ae70385f",
+    shadowParity:
+      "258/266 recipes; the 6 legacy holds are records the contract rejects",
     deferOrBlockReason:
-      "The uncapped run is clean and every rejection is accounted for. It persisted 255 recipes from 264 candidates over 4 requests with no failed request, no blocked request and discovery complete.\n\nThe WPRM completeness walk reports ALL SHORTFALL EXPLAINED: declared 264, stored 263, missing 8 - 6 no ingredients, 2 no canonical link. Those are records the source itself publishes without a field the completeness contract requires, so legacy would keep them and V2 does not; they belong on the tally in docs/open-question-completeness-contract.md.\n\nThe first walk of this source reported an unexplained record and was wrong: the crawl lane was re-crawling it at the time and the walk read a store mid-update. Re-walked once the crawl had finished. Awaiting an isolated legacy comparison and a second uncapped run before shadow parity.",
+      "Every difference is accounted for. The isolated legacy run emitted 266 records and the uncapped run persisted 258, rejecting 9 - 6 incomplete and 3 malformed WPRM. 258 and 9 is 267, the full candidate set, and the 6 legacy holds that V2 does not are the incomplete ones: records the source publishes without a name, ingredients or instructions. No material field differs on any record the two share.\n\nThe three crawlee-only records are not a surplus. The store holds 268 against a run of 258 because ten rows written on 2026-08-21 and 2026-09-01 were not re-found by the latest run and an upsert store never deletes; the three the comparison names are among them. This source also serves several recipes at one URL, which is why 267 stored rows key to 263 distinct URL-and-title pairs.\n\nThe uncapped run discovered 267 candidates and processed all 267, with discovery complete and no failed or blocked request. The repeat run reports STABLE at 267 to 268, the single addition being a recipe the site published between the runs.",
   },
   carlsbadcravings: {
     migrationState: "shadow_passed",
