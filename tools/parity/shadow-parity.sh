@@ -69,6 +69,9 @@ elif [ -n "${forbidden:-}" ] && [ "${forbidden:-0}" -gt 0 ]; then
   echo "legacy answered HTTP 403 on $forbidden of ${links:-?} requests, recording ${no_script:-?} pages as having no recipe"
 fi
 cd "$REPO"
-node tools/parity/dump-crawlee.cjs "$DB" "$SRC" "$OUT/$SRC-crawlee.json" >/dev/null
+# PARITY_RUN_ID=latest compares only the records the newest run produced. The
+# store accumulates, so without it a comparison can count records the crawler
+# would no longer write - see dump-crawlee.cjs.
+node tools/parity/dump-crawlee.cjs "$DB" "$SRC" "$OUT/$SRC-crawlee.json" ${PARITY_RUN_ID:+"$PARITY_RUN_ID"}
 echo "--- $SRC ---"
 node tools/parity/compare-parity.cjs "$OUT/$SRC.json" "$OUT/$SRC-crawlee.json"
