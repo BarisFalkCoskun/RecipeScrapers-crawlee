@@ -157,4 +157,31 @@ describe("extractJsonLdRecipes", () => {
     expect(result.recipes[0]["recipeYield"]).toBe("4 portioner");
     expect(result.signals).toContain("json-ld-normalized-fields");
   });
+
+  it("keeps an ingredient the recipe states twice", () => {
+    // A recipe states salt once for the dough and again for the filling. 201 of
+    // gocook's 1081 records do this and every one lost an entry to a Set.
+    const html = `<html><head>
+      <script type="application/ld+json">
+        {"@type": "Recipe", "name": "Bolle",
+         "recipeIngredient": ["\u00bd tsk. salt", "3 dl. ris", "\u00bd tsk. salt"],
+         "recipeInstructions": ["Bag."]}
+      </script>
+    </head><body></body></html>`;
+    const result = extractJsonLdRecipes(html);
+    expect(result.recipes[0]["recipeIngredient"])
+      .toEqual(["\u00bd tsk. salt", "3 dl. ris", "\u00bd tsk. salt"]);
+  });
+
+  it("still drops blank ingredient entries", () => {
+    const html = `<html><head>
+      <script type="application/ld+json">
+        {"@type": "Recipe", "name": "Bolle",
+         "recipeIngredient": ["1 \u00e6g", "   ", "2 dl m\u00e6lk"],
+         "recipeInstructions": ["Bag."]}
+      </script>
+    </head><body></body></html>`;
+    const result = extractJsonLdRecipes(html);
+    expect(result.recipes[0]["recipeIngredient"]).toEqual(["1 \u00e6g", "2 dl m\u00e6lk"]);
+  });
 });

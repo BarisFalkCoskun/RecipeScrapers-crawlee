@@ -188,9 +188,21 @@ function normalizeRecipe(
   return normalized;
 }
 
+/**
+ * An ingredient list is not a set. A recipe states salt once for the dough and
+ * again for the filling, and collapsing the two silently changes the recipe:
+ * 201 of gocook's 1081 records repeat an ingredient and every one of them lost
+ * an entry here, which is what its legacy comparison came back holding against
+ * us. The duplicate is the publisher's own statement in recipeIngredient, so it
+ * is kept.
+ *
+ * Instructions still collapse duplicates. Nothing yet shows a repeated step is
+ * ever real - no legacy record on this source repeats one - so that stays as it
+ * is rather than changing on the strength of the argument alone.
+ */
 function normalizeIngredients(value: unknown): string[] {
   if (Array.isArray(value)) {
-    return unique(
+    return cleaned(
       value.flatMap((entry) =>
         typeof entry === "string" ? splitDelimitedText(entry) : []
       )
@@ -198,7 +210,7 @@ function normalizeIngredients(value: unknown): string[] {
   }
 
   if (typeof value === "string") {
-    return unique(splitDelimitedText(value));
+    return cleaned(splitDelimitedText(value));
   }
 
   return [];
@@ -300,5 +312,10 @@ function cleanText(value: string): string {
 }
 
 function unique(values: string[]): string[] {
-  return Array.from(new Set(values.map((value) => cleanText(value)).filter(Boolean)));
+  return Array.from(new Set(cleaned(values)));
+}
+
+/** unique() without the collapse: cleaned and emptied, order and repeats kept. */
+function cleaned(values: string[]): string[] {
+  return values.map((value) => cleanText(value)).filter(Boolean);
 }
