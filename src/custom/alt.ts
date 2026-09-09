@@ -1,9 +1,30 @@
 import * as cheerio from "cheerio";
 import type { NormalizedRecipeV2 } from "../types.js";
 import type { EmbeddedRecipeExtraction } from "./spisbedre.js";
+import { extractJsonLdRecipes } from "../extractors/json-ld.js";
 
 const clean = (value: unknown): string =>
   typeof value === "string" ? value.replace(/\s+/gu, " ").trim() : "";
+
+/**
+ * alt states its times in Recipe JSON-LD even though it states no ingredients
+ * there, which is why this extractor reads the page itself for everything else.
+ * Reading the times from the DOM alone left prep, cook and total empty on every
+ * record; legacy takes them from the same JSON-LD and had them on 123 of the
+ * 133 recipes it emitted.
+ */
+function minutes(value: unknown): number | undefined {
+  const text = clean(value).toLocaleLowerCase("da").replace(/,/gu, ".");
+  const iso = text.match(/^p(?:\d+y)?(?:\d+m)?(?:\d+d)?t(?:(\d+(?:\.\d+)?)h)?(?:(\d+(?:\.\d+)?)m)?/iu);
+  if (iso) {
+    const total = Number(iso[1] ?? 0) * 60 + Number(iso[2] ?? 0);
+    return total > 0 ? Math.round(total) : undefined;
+  }
+  const hours = text.match(/(\d+(?:\.\d+)?)\s*timer?/iu);
+  const mins = text.match(/(\d+(?:\.\d+)?)\s*min(?:ut(?:ter)?)?/iu);
+  const total = Number(hours?.[1] ?? 0) * 60 + Number(mins?.[1] ?? 0);
+  return total > 0 ? Math.round(total) : undefined;
+}
 
 export function extractAltRecipe(
   html: string,
@@ -62,12 +83,21 @@ export function extractAltRecipe(
     .map((element) => clean($(element).text()))
     .filter((value) => value && !["mad", "hjem", "forside", "alt.dk"].includes(value.toLocaleLowerCase("da")));
   const image = clean($("meta[property='og:image']").attr("content"));
+  const jsonLd = extractJsonLdRecipes(html).recipes[0];
+  const prepMinutes = minutes(jsonLd?.["prepTime"]);
+  const cookMinutes = minutes(jsonLd?.["cookTime"]);
+  // Legacy falls back to the rendered total when the JSON-LD omits one.
+  const totalMinutes = minutes(jsonLd?.["totalTime"]) ??
+    minutes($(".recipe-total-time").first().text());
   const normalized: NormalizedRecipeV2 = {
     title,
     ...(description ? { description } : {}),
     ingredients,
     instructions: instructions.map((text, index) => ({ position: index + 1, text })),
     ...(yieldText ? { yieldText } : {}),
+    ...(prepMinutes === undefined ? {} : { prepMinutes }),
+    ...(cookMinutes === undefined ? {} : { cookMinutes }),
+    ...(totalMinutes === undefined ? {} : { totalMinutes }),
     imageUrls: image ? [new URL(image, canonicalUrl).toString()] : [],
     categories,
     cuisines: [],
