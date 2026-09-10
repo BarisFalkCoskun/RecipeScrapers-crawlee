@@ -573,6 +573,20 @@ describe("Danish JSON-LD discovery", () => {
     expect(looksLikeHttp200BlockShell(challenge)).toBe(true);
   });
 
+  it("recognises the same challenge from a different vendor", () => {
+    // alt.dk serves a 2101-byte document titled "Are we human?" whose only
+    // content is /_labrador/pow/slow.js. It answers 200, so a crawl reads it as
+    // a page that merely has no recipe: one run counted 13554 of them as
+    // incomplete extractions and still reported discovery complete with nothing
+    // blocked.
+    const challenge = `<!DOCTYPE html><html><head>`
+      + `<title>Are we human?</title>`
+      + `<script defer type="text/javascript" src="/_labrador/pow/slow.js"></script>`
+      + `</head><body></body></html>`;
+
+    expect(looksLikeHttp200BlockShell(challenge)).toBe(true);
+  });
+
   it("does not call an ordinary page a challenge for mentioning a script", () => {
     const page = `<html><head><title>Opskrifter</title></head><body><main>`
       + `<h1>Opskrifter</h1><p>altcha.js is a proof-of-work library.</p>`

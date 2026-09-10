@@ -521,14 +521,20 @@ export function looksLikeHttp200BlockShell(body: string): boolean {
   // our parsing fault rather than the source turning the crawler away. The
   // script reference is the identifying mark, and it is only trusted on a
   // document small enough to be an interstitial.
-  const challengeScript = /<script\b[^>]*\baltcha(?:\.min)?\.js\b|<altcha-widget\b/iu;
+  // alt.dk serves the same kind of interstitial from a different vendor: a
+  // 2101-byte document titled "Are we human?" whose only content is
+  // /_labrador/pow/slow.js. It answers 200, so a crawl reads it as a page that
+  // simply has no recipe - one alt run counted 13554 of them as incomplete
+  // extractions and still reported discoveryComplete with nothing blocked.
+  const challengeScript =
+    /<script\b[^>]*\baltcha(?:\.min)?\.js\b|<altcha-widget\b|<script\b[^>]*\/_labrador\/pow\//iu;
   if (body.length < 16_000 && challengeScript.test(body)) return true;
   $("script, style, noscript, template").remove();
   const title = $("title").first().text().trim();
   const visibleBody = $("body").text().replace(/\s+/gu, " ").trim();
   const shellText = `${title} ${visibleBody}`.trim();
   if (shellText.length > 4_000 || $("a[href]").length > 20) return false;
-  return /\bcaptcha\b|access denied|checking your browser|cloudflare challenge|temporarily blocked|unusual traffic/iu
+  return /\bcaptcha\b|access denied|checking your browser|cloudflare challenge|temporarily blocked|unusual traffic|are we human/iu
     .test(shellText);
 }
 
