@@ -416,7 +416,11 @@ describe("Danish JSON-LD source registry", () => {
     // clearing: dumping with PARITY_RUN_ID=latest excludes them. The reason
     // must still explain the accumulating store, because the comparison ahead
     // depends on knowing about it.
-    expect(byId.get("odensemarcipan")?.migrationState).toBe("canary_passed");
+    // Both gates are in now: legacy finished with 1020 requests all answering
+    // 200 and emitted 1019, of which those same four are refused, leaving the
+    // 1015 the run persisted with no crawlee-only records; and the second
+    // uncapped run left the store 1030 to 1030 with all 1030 identical.
+    expect(byId.get("odensemarcipan")?.migrationState).toBe("shadow_passed");
     expect(byId.get("odensemarcipan")?.deferOrBlockReason)
       .toMatch(/an upsert never deletes/u);
     expect(byId.get("odensemarcipan")?.deferOrBlockReason)
