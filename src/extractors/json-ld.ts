@@ -204,13 +204,13 @@ function normalizeIngredients(value: unknown): string[] {
   if (Array.isArray(value)) {
     return cleaned(
       value.flatMap((entry) =>
-        typeof entry === "string" ? splitDelimitedText(entry) : []
+        typeof entry === "string" ? splitIngredientText(entry) : []
       )
     );
   }
 
   if (typeof value === "string") {
-    return cleaned(splitDelimitedText(value));
+    return cleaned(splitIngredientText(value));
   }
 
   return [];
@@ -303,6 +303,31 @@ function firstString(...values: unknown[]): string | null {
 function splitDelimitedText(value: string): string[] {
   return value
     .split(/\n+|•|(?<=\.)\s+(?=[A-ZÆØÅ])/u)
+    .map((entry) => cleanText(entry))
+    .filter(Boolean);
+}
+
+/**
+ * Danish measure abbreviations end in a full stop, so an ingredient whose name
+ * happens to be capitalised looks exactly like the end of a sentence: gocook
+ * states "4 tsk. BBQ-sovs" and it came back as "4 tsk." and "BBQ-sovs", two
+ * entries where the recipe has one. The tell is an ingredient that is only a
+ * quantity, and 28 records across three sources carry one.
+ *
+ * The guard belongs to ingredients alone. Instructions are prose and a step
+ * really can end a sentence on a measure - "Tilsaet 2 dl. Bland godt." - so
+ * splitDelimitedText keeps its behaviour for them.
+ */
+const MEASURE_ABBREVIATION = "tsk|spsk|dl|cl|ml|kg|g|l|stk|ca|ds|pk|knsp";
+
+function splitIngredientText(value: string): string[] {
+  return value
+    .split(
+      new RegExp(
+        `\\n+|•|(?<=\\.)(?<!\\b(?:${MEASURE_ABBREVIATION})\\.)\\s+(?=[A-ZÆØÅ])`,
+        "u"
+      )
+    )
     .map((entry) => cleanText(entry))
     .filter(Boolean);
 }

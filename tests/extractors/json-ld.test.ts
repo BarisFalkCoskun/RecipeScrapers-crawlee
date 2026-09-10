@@ -173,6 +173,44 @@ describe("extractJsonLdRecipes", () => {
       .toEqual(["\u00bd tsk. salt", "3 dl. ris", "\u00bd tsk. salt"]);
   });
 
+  it("does not split an ingredient at a danish measure abbreviation", () => {
+    // gocook states "4 tsk. BBQ-sovs"; the full stop belongs to the measure,
+    // not to a sentence, and the capitalised name made it look like one.
+    const html = `<html><head>
+      <script type="application/ld+json">
+        {"@type": "Recipe", "name": "Bolle",
+         "recipeIngredient": ["4 tsk. BBQ-sovs", "2 dl. Fl\u00f8de", "500 g. Mel"],
+         "recipeInstructions": ["Bag."]}
+      </script>
+    </head><body></body></html>`;
+    const result = extractJsonLdRecipes(html);
+    expect(result.recipes[0]["recipeIngredient"])
+      .toEqual(["4 tsk. BBQ-sovs", "2 dl. Fl\u00f8de", "500 g. Mel"]);
+  });
+
+  it("still splits instructions after a measure, where prose really ends", () => {
+    const html = `<html><head>
+      <script type="application/ld+json">
+        {"@type": "Recipe", "name": "Bolle", "recipeIngredient": ["1 \u00e6g"],
+         "recipeInstructions": ["Tils\u00e6t 2 dl. Bland godt."]}
+      </script>
+    </head><body></body></html>`;
+    const result = extractJsonLdRecipes(html);
+    expect(result.recipes[0]["recipeInstructions"]).toEqual(["Tils\u00e6t 2 dl.", "Bland godt."]);
+  });
+
+  it("still splits an ingredient string at a real sentence boundary", () => {
+    const html = `<html><head>
+      <script type="application/ld+json">
+        {"@type": "Recipe", "name": "Bolle",
+         "recipeIngredient": ["Sk\u00e6r gr\u00f8nt. Bland alt"],
+         "recipeInstructions": ["Bag."]}
+      </script>
+    </head><body></body></html>`;
+    const result = extractJsonLdRecipes(html);
+    expect(result.recipes[0]["recipeIngredient"]).toEqual(["Sk\u00e6r gr\u00f8nt.", "Bland alt"]);
+  });
+
   it("still drops blank ingredient entries", () => {
     const html = `<html><head>
       <script type="application/ld+json">
