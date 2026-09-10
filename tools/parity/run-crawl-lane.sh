@@ -79,6 +79,19 @@ while true; do
     const fs=require("fs");
     try{
       const j=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));
+      // A run killed by its timeout writes no summary, and the file from the
+      // previous run is still sitting there. Reporting its numbers next to a
+      // CUT-OFF marker is how a line ends up quoting one run while naming
+      // another - the same confusion that put wrong counters in four source
+      // reasons. crawlRunId starts with an ISO stamp whose time part uses
+      // dashes, so it is normalised before comparing with the start time.
+      const ranAt=String(j.crawlRunId||"").slice(0,19)
+        .replace(/T(\d\d)-(\d\d)-(\d\d)/u,"T$1:$2:$3");
+      if(ranAt && process.argv[2] && ranAt < process.argv[2]){
+        process.stdout.write(
+          `no run summary written; the file is from an earlier run (${ranAt})`);
+        return;
+      }
       const o=(j.observations||[])[0]||{};
       const bad=[];
       if(o.failedRequests>0) bad.push(`failed=${o.failedRequests}`);
@@ -93,7 +106,7 @@ while true; do
         (bad.length?` ${bad.join(" ")}`:" clean")+
         (rej.length?` ${rej.join(" ")}`:""));
     }catch(e){ process.stdout.write("no run summary written: "+e.message); }
-  ' "$STORAGE/$src.json" 2>/dev/null)
+  ' "$STORAGE/$src.json" "$started" 2>/dev/null)
 
   note=""
   [ "$status" -eq 124 ] && note=" CUT-OFF-BY-TIMEOUT(${secs}s)"
