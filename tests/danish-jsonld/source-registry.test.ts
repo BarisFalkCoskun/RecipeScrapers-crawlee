@@ -405,15 +405,22 @@ describe("Danish JSON-LD source registry", () => {
     expect(["canary_passed", "shadow_passed"]).toContain(
       byId.get("nordmad")?.migrationState
     );
-    // odensemarcipan has had that fresh run and it confirmed the "Steps" fix:
-    // the four records that carried a single instruction reading "Steps" are
-    // now rejected as incomplete, which is what legacy holds for those pages
-    // too. It stays configured for a different reason - the store still holds
-    // six records from the previous run, four of them those bad ones, because
-    // an upsert never deletes.
-    expect(byId.get("odensemarcipan")?.migrationState).toBe("configured");
+    // odensemarcipan held at configured because the store carried records from
+    // an earlier run that the extractor would no longer produce, and a
+    // comparison against it would have measured a crawler that no longer
+    // exists. Both halves of that are settled now. The 2026-09-10 re-crawl
+    // persisted 1015 from 1019 candidates with discovery complete and no
+    // failed or blocked request - the two transient failures did not recur -
+    // and its only rejections are the same four "Steps" records, which is what
+    // legacy holds for those pages too. The stale documents no longer need
+    // clearing: dumping with PARITY_RUN_ID=latest excludes them. The reason
+    // must still explain the accumulating store, because the comparison ahead
+    // depends on knowing about it.
+    expect(byId.get("odensemarcipan")?.migrationState).toBe("canary_passed");
     expect(byId.get("odensemarcipan")?.deferOrBlockReason)
       .toMatch(/an upsert never deletes/u);
+    expect(byId.get("odensemarcipan")?.deferOrBlockReason)
+      .toMatch(/PARITY_RUN_ID=latest/u);
     // oetker's discovery does reproduce, which is what that fresh run showed:
     // three uncapped runs each persisted 806 from 806 candidates, and the store
     // holds 806 distinct recipes whose duplicated documents carry an identical
