@@ -188,6 +188,22 @@ describe("extractJsonLdRecipes", () => {
       .toEqual(["4 tsk. BBQ-sovs", "2 dl. Fl\u00f8de", "500 g. Mel"]);
   });
 
+  it("does not split at an everyday danish abbreviation either", () => {
+    // gocook writes "Evt. Krymmel" and "f.eks. Smarties". Neither full stop
+    // ends a sentence, and the first is capitalised, which the pattern has to
+    // allow for without making its sentence-start lookahead case-insensitive.
+    const html = `<html><head>
+      <script type="application/ld+json">
+        {"@type": "Recipe", "name": "Kage",
+         "recipeIngredient": ["Evt. Krymmel", "1 dl chokoladeknapper, f.eks. Smarties"],
+         "recipeInstructions": ["Bag."]}
+      </script>
+    </head><body></body></html>`;
+    const result = extractJsonLdRecipes(html);
+    expect(result.recipes[0]["recipeIngredient"])
+      .toEqual(["Evt. Krymmel", "1 dl chokoladeknapper, f.eks. Smarties"]);
+  });
+
   it("still splits instructions after a measure, where prose really ends", () => {
     const html = `<html><head>
       <script type="application/ld+json">

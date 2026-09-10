@@ -318,13 +318,30 @@ function splitDelimitedText(value: string): string[] {
  * really can end a sentence on a measure - "Tilsaet 2 dl. Bland godt." - so
  * splitDelimitedText keeps its behaviour for them.
  */
-const MEASURE_ABBREVIATION = "tsk|spsk|dl|cl|ml|kg|g|l|stk|ca|ds|pk|knsp";
+/**
+ * Measures, and the everyday Danish abbreviations that end an ingredient line
+ * the same way. gocook writes "Evt. Krymmel" and "1 dl chokoladeknapper,
+ * f.eks. Smarties"; both were cut in two. "eks" covers "f.eks." because the
+ * word boundary falls after the first full stop.
+ */
+const NO_SPLIT_ABBREVIATIONS = [
+  "tsk", "spsk", "dl", "cl", "ml", "kg", "g", "l", "stk", "ca", "ds", "pk",
+  "knsp", "evt", "eks", "fx", "dvs", "ell",
+] as const;
+
+// The pattern cannot carry the i flag - the lookahead that finds a sentence
+// start is [A-ZÆØÅ] and case-insensitivity would make it match anything. So
+// each abbreviation is listed in both the lower and the capitalised form,
+// because a line may open with one: gocook writes "Evt. Krymmel".
+const NO_SPLIT_ABBREVIATION = NO_SPLIT_ABBREVIATIONS
+  .flatMap((word) => [word, word.charAt(0).toUpperCase() + word.slice(1)])
+  .join("|");
 
 function splitIngredientText(value: string): string[] {
   return value
     .split(
       new RegExp(
-        `\\n+|•|(?<=\\.)(?<!\\b(?:${MEASURE_ABBREVIATION})\\.)\\s+(?=[A-ZÆØÅ])`,
+        `\\n+|•|(?<=\\.)(?<!\\b(?:${NO_SPLIT_ABBREVIATION})\\.)\\s+(?=[A-ZÆØÅ])`,
         "u"
       )
     )
