@@ -1103,8 +1103,13 @@ describe("Danish JSON-LD source registry", () => {
         sitemapUrls: ["https://gocook.dk/sitemap.xml"],
         recipeExtractor: "gocook-jsonld-html",
         fetchMode: "cheerio",
-        migrationState: "canary_passed",
-        latestScrapyOutcome: "partial",
+        // Promoted once five comparisons took its ingredient differences from
+        // 226 records to 1 and the repeat came back STABLE at 1080 to 1080 with
+        // all 1080 identical. The remaining time differences are legacy filling
+        // a value from a neighbouring recipe card, which it does no more stably
+        // than V2 did before that was fixed here.
+        migrationState: "shadow_passed",
+        latestScrapyOutcome: "succeeded",
         latestCanary: "2026-08-19T17-34-06.299Z",
       });
     expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "samvirke"))
