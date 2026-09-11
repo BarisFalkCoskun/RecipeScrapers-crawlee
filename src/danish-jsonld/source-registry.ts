@@ -32736,7 +32736,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-31T22-26-15.071Z-attempt-e456b856-f072-4ffe-930c-c46153f273a2",
     deferOrBlockReason:
-      "Not four dead sitemap URLs but thirty-six, and they are not simply dead. The 2026-08-31 run made 74 requests: 38 answered 200 and 36 answered 404, so half the crawl failed, against a reason that named four. All 36 are under /da-dk/recipes/ and many under one sub-path, /da-dk/recipes/look-book-autumn-winter-2025/.\n\nThey cannot be written off as a stale sitemap. /da-dk/recipes/look-book-autumn-winter-2025/apple-pie-chai answered 404 during the crawl and answers 200 now, while /da-dk/recipes/dirty-berry-matcha is still 404 and still listed in the sitemap 289 times over. So some of these URLs are intermittent rather than gone, and a source whose pages come and go cannot be judged from one run. Needs a fresh uncapped run before its shortfall means anything.",
+      "Not four dead sitemap URLs but thirty-six, and they are not simply dead. The 2026-08-31 run made 74 requests: 38 answered 200 and 36 answered 404, so half the crawl failed, against a reason that named four. All 36 are under /da-dk/recipes/ and many under one sub-path, /da-dk/recipes/look-book-autumn-winter-2025/.\n\nThey cannot be written off as a stale sitemap. /da-dk/recipes/look-book-autumn-winter-2025/apple-pie-chai answered 404 during the crawl and answers 200 now, while /da-dk/recipes/dirty-berry-matcha is still 404 and still listed in the sitemap 289 times over. So some of these URLs are intermittent rather than gone, and a source whose pages come and go cannot be judged from one run. That fresh run happened on 2026-09-11 and the picture is steadier than the last one suggested. It persisted 63 recipes from 71 candidates with discovery complete and nothing blocked, and its 4 failures are all 404s on recipe URLs. Fetched by hand the same day, two of them - pink-dragon-mocha and mangoat-coconut-latte - answer 301 from oatly.com to www.oatly.com and then 404 with no Recipe node at either address, so these are sitemap entries for pages that no longer exist rather than pages that come and go.\n\nWhat is still unaccounted for is smaller and different: 69 pages were processed and 63 produced a recipe, and the remaining 6 were neither stored nor recorded as rejected. A comparison against legacy is the next thing this source needs.",
   },
   /**
    * Its pages pair each recipe with a bare @type/@id reference stub. Those were
@@ -32874,7 +32874,13 @@ const LEGACY_REQUEST_SETTING_OVERRIDES: Record<
   // first two were fixed by slowing those tools down; this does the same for
   // the crawl rather than re-rolling the dice on another repeat.
   thatskinnychickcanbake: { delaySeconds: 4, maxConcurrency: 1 },
-  diabetesopskrifter: { delaySeconds: 20, maxConcurrency: 1 },
+  // 20s was not enough either: the 2026-09-11 run still answered 6 of 197
+  // requests with HTTP 429 and the body Rate limit exceeded, and stored 183 of
+  // the 189 recipes it discovered - exactly the six it was refused. Halving the
+  // rate took the refusals from 22 to 6, so the rate is the lever; 40s is the
+  // next halving. blenderopskrifter is the same publisher and is being left at
+  // 20s until its own run reports, so the two give separate readings.
+  diabetesopskrifter: { delaySeconds: 40, maxConcurrency: 1 },
   blenderopskrifter: { delaySeconds: 20, maxConcurrency: 1 },
   spicytwist: { maxConcurrency: 1 },
   spisekunst: { maxConcurrency: 1 },
