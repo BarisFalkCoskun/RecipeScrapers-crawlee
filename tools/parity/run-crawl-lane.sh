@@ -87,12 +87,12 @@ while true; do
       // dashes, so it is normalised before comparing with the start time.
       const ranAt=String(j.crawlRunId||"").slice(0,19)
         .replace(/T(\d\d)-(\d\d)-(\d\d)/u,"T$1:$2:$3");
-      if(ranAt && process.argv[2] && ranAt < process.argv[2]){
+      const stale = Boolean(ranAt && process.argv[2] && ranAt < process.argv[2]);
+      const o = stale ? null : ((j.observations||[])[0]||{});
+      if(o === null){
         process.stdout.write(
           `no run summary written; the file is from an earlier run (${ranAt})`);
-        return;
-      }
-      const o=(j.observations||[])[0]||{};
+      } else {
       const bad=[];
       if(o.failedRequests>0) bad.push(`failed=${o.failedRequests}`);
       if(o.blockedRequests>0) bad.push(`blocked=${o.blockedRequests}`);
@@ -105,8 +105,14 @@ while true; do
         `processed=${o.processedRecipePages} run=${String(j.crawlRunId).slice(0,19)}`+
         (bad.length?` ${bad.join(" ")}`:" clean")+
         (rej.length?` ${rej.join(" ")}`:""));
+      }
     }catch(e){ process.stdout.write("no run summary written: "+e.message); }
   ' "$STORAGE/$src.json" "$started" 2>/dev/null)
+
+  # An empty summary means the reporting block itself failed - stderr is
+  # discarded, so a syntax error in it is otherwise invisible and every line
+  # silently loses its counters. Say so rather than writing a blank field.
+  [ -z "$summary" ] && summary="SUMMARY-REPORTING-FAILED: see $STORAGE/$src.json"
 
   note=""
   [ "$status" -eq 124 ] && note=" CUT-OFF-BY-TIMEOUT(${secs}s)"
