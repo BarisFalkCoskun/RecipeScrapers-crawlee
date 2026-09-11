@@ -32878,10 +32878,12 @@ const LEGACY_REQUEST_SETTING_OVERRIDES: Record<
   // requests with HTTP 429 and the body Rate limit exceeded, and stored 183 of
   // the 189 recipes it discovered - exactly the six it was refused. Halving the
   // rate took the refusals from 22 to 6, so the rate is the lever; 40s is the
-  // next halving. blenderopskrifter is the same publisher and is being left at
-  // 20s until its own run reports, so the two give separate readings.
+  // next halving. blenderopskrifter was left at 20s for its own run and it
+  // reported the same thing: 6 refused with 429 and 224 of 230 stored, against
+  // 183 of 189 here. Two sources, one publisher, one pacing, the same refusal
+  // count and a shortfall equal to it on both - the rate is the whole gap.
   diabetesopskrifter: { delaySeconds: 40, maxConcurrency: 1 },
-  blenderopskrifter: { delaySeconds: 20, maxConcurrency: 1 },
+  blenderopskrifter: { delaySeconds: 40, maxConcurrency: 1 },
   spicytwist: { maxConcurrency: 1 },
   spisekunst: { maxConcurrency: 1 },
   surdejsentusiasten: { maxConcurrency: 1 },
