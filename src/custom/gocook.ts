@@ -97,6 +97,16 @@ function currentInstructions(
   return output;
 }
 
+/** The duration stated for one label, never the next field's or a neighbour's. */
+function minutesAfterLabel(text: string, label: string): number | undefined {
+  const lower = text.toLocaleLowerCase("da");
+  const at = lower.indexOf(label);
+  if (at < 0) return undefined;
+  const rest = text.slice(at + label.length);
+  const stop = rest.toLocaleLowerCase("da").search(/arbejdstid|samlet tid|sværhedsgrad/u);
+  return minutes(stop >= 0 ? rest.slice(0, stop) : rest);
+}
+
 function textCandidates($: cheerio.CheerioAPI): string[] {
   return $("p, li, div, span, strong").toArray().slice(0, 120)
     .map((element) => clean($(element).text())).filter(Boolean);
@@ -123,10 +133,27 @@ export function extractGocookRecipe(
   const candidates = textCandidates($);
   let prepMinutes = minutes(raw.prepTime);
   let totalMinutes = minutes(raw.totalTime);
+  // The recipe's own times render empty - the page says "Samlet tid: Arbejdstid:
+  // Sværhedsgrad: Nem" and fills the numbers in later - while related-recipe
+  // cards further down the document carry theirs as text. Scanning every
+  // candidate for the first parseable duration therefore read a neighbour's
+  // time, and which neighbour depended on where the carousel happened to be, so
+  // two runs of the same page disagreed: four records moved on a repeat, one of
+  // them 145 minutes to 25. Only the first occurrence of a label counts, and
+  // only the text between it and the next labelled field, so an empty label
+  // stays empty instead of reaching into another recipe.
+  let sawTotal = false;
+  let sawPrep = false;
   for (const candidate of candidates) {
     const lower = candidate.toLocaleLowerCase("da");
-    if (totalMinutes === undefined && lower.includes("samlet tid")) totalMinutes = minutes(candidate);
-    if (prepMinutes === undefined && lower.includes("arbejdstid")) prepMinutes = minutes(candidate);
+    if (!sawTotal && lower.includes("samlet tid")) {
+      sawTotal = true;
+      if (totalMinutes === undefined) totalMinutes = minutesAfterLabel(candidate, "samlet tid");
+    }
+    if (!sawPrep && lower.includes("arbejdstid")) {
+      sawPrep = true;
+      if (prepMinutes === undefined) prepMinutes = minutesAfterLabel(candidate, "arbejdstid");
+    }
   }
   const cookMinutes = minutes(raw.cookTime);
   const categories = $(".breadcrumb a, .recipe-category").toArray()

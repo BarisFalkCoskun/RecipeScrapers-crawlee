@@ -58,4 +58,39 @@ describe("GoCook composite adapter", () => {
         { position: 2, text: "Kog pastaen." },
       ] } } });
   });
+
+  it("does not take a neighbouring recipe's time when the labels are empty", () => {
+    // gocook renders its own times client-side, so the document says
+    // "Samlet tid: Arbejdstid: Sværhedsgrad: Nem" while related-recipe cards
+    // further down carry theirs as text. Scanning for the first parseable
+    // duration read a neighbour's, and which neighbour depended on where the
+    // carousel sat: four records moved on a repeat run, one from 145 to 25.
+    const html = `<html><body><script type="application/ld+json">${JSON.stringify({
+      "@type": "Recipe", name: "Kage", recipeIngredient: ["200 g mel"],
+    })}</script>
+      <p>Samlet tid: Arbejdstid: Sværhedsgrad: Nem</p>
+      <div>Kyllingefrikassé Sværhedsgrad: Medium Samlet tid: 90 min. Arbejdstid: 63 min.</div>
+      <div><p class="mb-0"><span>1.</span></p><div class="inner">
+      <div class="person persons-4">Bag den.</div></div></div>`;
+    const normalized = extractGocookRecipe(html, "https://gocook.dk/opskrift/kage")
+      .recipe?.normalized;
+    // Assert the page extracted at all, or the two checks below pass on nothing.
+    expect(normalized?.title).toBe("Kage");
+    expect(normalized?.totalMinutes).toBeUndefined();
+    expect(normalized?.prepMinutes).toBeUndefined();
+  });
+
+  it("still reads the times the page does state", () => {
+    const html = `<html><body><script type="application/ld+json">${JSON.stringify({
+      "@type": "Recipe", name: "Kage", recipeIngredient: ["200 g mel"],
+    })}</script>
+      <p>Samlet tid: 30 min. Arbejdstid: 20 min. Sværhedsgrad: Nem</p>
+      <div><p class="mb-0"><span>1.</span></p><div class="inner">
+      <div class="person persons-4">Bag den.</div></div></div>`;
+    const normalized = extractGocookRecipe(html, "https://gocook.dk/opskrift/kage")
+      .recipe?.normalized;
+    expect(normalized?.title).toBe("Kage");
+    expect(normalized?.totalMinutes).toBe(30);
+    expect(normalized?.prepMinutes).toBe(20);
+  });
 });
