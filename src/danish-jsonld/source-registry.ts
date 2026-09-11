@@ -34221,12 +34221,12 @@ const DR_GRAPHQL_RECIPE_SOURCES: DanishJsonLdSource[] =
     requestSettings: { delaySeconds: 1, rateLimitPerMinute: null, maxConcurrency: 2, maxRetries: 3 },
     requireCompleteJsonLd: true,
     recipeExtractor: "dr-graphql",
-    migrationState: "canary_passed",
+    migrationState: "blocked",
     latestScrapyOutcome: "no_data",
     latestCanary: "2026-08-19T18-10-28.791Z",
     ...("aliasFor" in definition ? { aliasFor: definition.aliasFor } : {}),
     deferOrBlockReason:
-      "Bounded live canary completed five POST requests without operational failures and persisted the complete recipe among four sampled articles using DR's current nested EmphasizedList shape; the legacy query returned zero recipes across its larger 12-response in-flight window because it requests only the retired ListComponent shape, while the full 500-plus catalog remains unvalidated",
+      "Bounded live canary completed five POST requests without operational failures and persisted the complete recipe among four sampled articles using DR's current nested EmphasizedList shape; the legacy query returned zero recipes across its larger 12-response in-flight window because it requests only the retired ListComponent shape, while the full 500-plus catalog remains unvalidated\n\nDR closed this endpoint to us between then and 2026-09-11. Two independent uncapped runs that day, 09:55 and 10:33, each made exactly one request to dr.dk/tjenester/steffi/graphql and each got HTTP 403 carrying the body: errors, message, POST requests require a valid API key, extensions, code, FORBIDDEN. The runs stored nothing, recorded the request as blocked and refused to call discovery complete, which is right. A hand probe cannot confirm it from here - the same POST answers 504 from this host - so the evidence is the crawler capturing the response itself, twice.\n\nNeither source holds a single record in any database, so there is nothing to compare and nothing to lose. Moved to blocked: the endpoint now requires a credential we do not have, which is the source being closed to us rather than a crawl defect. If DR restores anonymous access, or a key is obtained, this goes back to needing an uncapped run.",
   }));
 
 const AUTHENTICATED_API_RECIPE_SOURCES: DanishJsonLdSource[] =

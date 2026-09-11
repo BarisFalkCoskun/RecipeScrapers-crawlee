@@ -1151,7 +1151,11 @@ describe("Danish JSON-LD source registry", () => {
         legacySpider: "DrDkSpider",
         legacyFamily: "DirectRecipeApiSpider",
         recipeExtractor: "dr-graphql",
-        migrationState: "canary_passed",
+        // DR closed the endpoint: two independent runs on 2026-09-11 each made
+        // one request and each got HTTP 403 saying POST requests require a
+        // valid API key. Neither drdk nor its dr alias holds a record in any
+        // database, so there is nothing to compare and nothing lost.
+        migrationState: "blocked",
         latestScrapyOutcome: "no_data",
         latestCanary: "2026-08-19T18-10-28.791Z",
       });
