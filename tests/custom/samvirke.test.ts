@@ -12,14 +12,17 @@ describe("Samvirke article-body adapter", () => {
       <table>${rows}</table></div>
     <ol class="how-to--steps">${steps}</ol></body></html>`;
 
-  it("reads the markup legacy reads, joining amount, name and note", () => {
-    // samvirke.dk publishes no JSON-LD, so this is the only place the recipe
-    // exists. Legacy joins the three cells with a single space; differing here
-    // would put every ingredient carrying a note on the mismatch list.
+  it("reads the markup legacy reads, without repeating the nested note", () => {
+    // The note element sits inside the name cell, so the name's text already
+    // carries it. Taking the note as a third part repeated it - on 1737 of
+    // samvirke's 1945 records - and legacy joins only amount and name. An
+    // ingredient with no quantity states its amount as a single dash, which
+    // legacy drops rather than storing "- salt".
     const html = page(
       `<tr><td class="ingredients--amount">200 g</td><td class="ingredients--name">smør</td></tr>
-       <tr><td class="ingredients--amount">3 stk.</td><td class="ingredients--name">æg</td>
-           <td class="ingredients--note">gerne økologiske</td></tr>`,
+       <tr><td class="ingredients--amount">2 spsk.</td>
+           <td class="ingredients--name">æbleeddike <span class="ingredients--note">eller hvidvinseddike</span></td></tr>
+       <tr><td class="ingredients--amount">-</td><td class="ingredients--name">salt</td></tr>`,
       `<li>1 Rør smør og sukker blødt.</li><li>2 Bag muffins i 20 minutter.</li>`
     );
 
@@ -29,7 +32,7 @@ describe("Samvirke article-body adapter", () => {
         description: "Små muffins med marcipan.",
         yieldText: "6",
         categories: ["BAGVÆRK"],
-        ingredients: ["200 g smør", "3 stk. æg gerne økologiske"],
+        ingredients: ["200 g smør", "2 spsk. æbleeddike eller hvidvinseddike", "salt"],
         instructions: [
           { position: 1, text: "Rør smør og sukker blødt." },
           { position: 2, text: "Bag muffins i 20 minutter." },

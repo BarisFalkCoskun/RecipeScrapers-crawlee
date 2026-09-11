@@ -28,13 +28,19 @@ export function extractSamvirkeRecipe(
   const ingredients: string[] = [];
   const ingredientRoot = $("div.ingredients.recipe-full--ingredients").first();
   ingredientRoot.find("tr").each((_index, row) => {
-    // A row states amount, name and note in separate cells; legacy joins them
-    // with a single space and so does this, or the two sides would differ on
-    // every ingredient that carries a note.
+    // The note element sits inside the name cell, so the name's text already
+    // carries it: for 2 spsk. aebleeddike eller hvidvinseddike the name reads
+    // the whole phrase and the note reads eller hvidvinseddike on its own.
+    // Appending the note as a third part repeated it, on 1737 of 1945 records.
+    // Legacy joins the amount and the name and never the note.
+    //
+    // An ingredient with no quantity states its amount as a single dash, which
+    // is punctuation for the reader rather than part of the ingredient - legacy
+    // drops it, and keeping it stored - salt instead of salt.
+    const amount = clean($(row).find(".ingredients--amount").text());
     const parts = [
-      clean($(row).find(".ingredients--amount").text()),
+      amount === "-" ? "" : amount,
       clean($(row).find(".ingredients--name").text()),
-      clean($(row).find(".ingredients--note").text()),
     ].filter(Boolean);
     const line = parts.join(" ");
     if (line) ingredients.push(line);
