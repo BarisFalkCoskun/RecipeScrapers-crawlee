@@ -32,6 +32,7 @@ import {
 import { extractFeminaRecipe } from "../custom/femina.js";
 import { extractGocookRecipe } from "../custom/gocook.js";
 import { extractAltRecipe } from "../custom/alt.js";
+import { extractSamvirkeRecipe } from "../custom/samvirke.js";
 import { extractDiscount365Recipes } from "../custom/discount365.js";
 import {
   extractGigtforeningenPosts,
@@ -1160,6 +1161,16 @@ export class DanishJsonLdSourceSession {
         extractNipuniJulieRecipe(response.body, canonicalUrl),
         "html-parsing",
         ["nipunijulie-article-body", "complete-html-recipe-only"],
+        "legacy-article-body"
+      );
+    }
+    if (this.source.recipeExtractor === "samvirke-html") {
+      return this.handleCustomRecipe(
+        response,
+        canonicalUrl,
+        extractSamvirkeRecipe(response.body, canonicalUrl),
+        "html-parsing",
+        ["samvirke-article-body", "complete-html-recipe-only"],
         "legacy-article-body"
       );
     }

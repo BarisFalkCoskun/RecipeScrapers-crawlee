@@ -1116,13 +1116,20 @@ describe("Danish JSON-LD source registry", () => {
       .toMatchObject({
         legacySpider: "SamvirkeSpider",
         legacyFamily: "CustomSitemapSpider",
-        recipeExtractor: "strict-json-ld",
+        // samvirke.dk publishes no JSON-LD at all and points its canonical at
+        // opskrifter.coop.dk. Following that reached 1086 of the 1944 recipes
+        // its sitemap lists - for the rest the coop target answers 404 - and it
+        // left V2 addressing every record by the page it ended on while legacy
+        // used the page it fetched, so the two shared no record. The recipe is
+        // in samvirke.dk's own markup, which is what legacy reads.
+        recipeExtractor: "samvirke-html",
         allowedDomains: ["samvirke.dk", "opskrifter.coop.dk"],
-        canonicalFollowStatuses: [200, 404],
         migrationState: "canary_passed",
         latestScrapyOutcome: "no_data",
         latestCanary: "2026-08-19T17-45-20.157Z",
       });
+    expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "samvirke")
+      ?.canonicalFollowStatuses).toBeUndefined();
     expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "alt"))
       .toMatchObject({
         legacySpider: "AltSpider",
