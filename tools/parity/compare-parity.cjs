@@ -88,6 +88,11 @@ const norm=s=>stripMarkup(stripMarkup(String(s??"")))
   // "Avocado Corn Salsa (". Legacy drops the note outright. A bracket opened at
   // the end of the text and never closed holds nothing either way.
   .replace(/\s*\(\s*$/u,"")
+  // A record's key already treats http://www.host and http://host as one host,
+  // and a URL inside a field is the same host either way. webopskrifter serves
+  // its images from www while its canonical drops it, so every one of its 3699
+  // image fields read as a difference that was only the prefix.
+  .replace(/:\/\/www\./gu,"://")
   // The same amount rendered at two precisions is one amount. spisbedre's
   // legacy records read "2.08333 g gaer" where V2 reads "2.0833333333333 g
   // gaer" -- a third of a teaspoon divided three ways, rounded by legacy to six

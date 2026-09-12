@@ -65,6 +65,33 @@ const crawleeRecipe = (
   },
 });
 
+describe("compare-parity field normalisation", () => {
+  // webopskrifter serves its images from www while its canonical drops the
+  // prefix, so every one of its 3699 image fields read as a difference that was
+  // only that prefix. A record's key already treats the two hosts as one.
+  it("treats a www host inside a field as the same host", () => {
+    const legacy = legacyRecipe("https://example.com/r/1", "Pie");
+    legacy["image_urls"] = ["https://www.example.com/a.jpg"];
+    const out = compare([legacy], [crawleeRecipe(
+      "https://example.com/r/1",
+      "https://example.com/r/1",
+      "Pie"
+    )]);
+    expect(out).not.toContain("### images");
+  });
+
+  it("still reports a genuinely different image", () => {
+    const legacy = legacyRecipe("https://example.com/r/1", "Pie");
+    legacy["image_urls"] = ["https://www.example.com/different.jpg"];
+    const out = compare([legacy], [crawleeRecipe(
+      "https://example.com/r/1",
+      "https://example.com/r/1",
+      "Pie"
+    )]);
+    expect(out).toContain("### images");
+  });
+});
+
 describe("compare-parity record keying", () => {
   // pillsbury addresses a recipe as /recipes/<slug>/<uuid> and for 21 of its
   // recipes the uuid in its sitemap is not the uuid in that page's own
