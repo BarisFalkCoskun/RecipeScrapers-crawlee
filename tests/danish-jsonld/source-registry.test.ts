@@ -1124,8 +1124,12 @@ describe("Danish JSON-LD source registry", () => {
         // in samvirke.dk's own markup, which is what legacy reads.
         recipeExtractor: "samvirke-html",
         allowedDomains: ["samvirke.dk", "opskrifter.coop.dk"],
-        migrationState: "canary_passed",
-        latestScrapyOutcome: "no_data",
+        // Promoted once reading the site's own markup recovered the 859
+        // recipes the canonical route could not reach: legacy 1945 against V2
+        // 1945, nothing on either only-list, every material field matching, and
+        // a repeat leaving the store 3031 to 3031 with all 3031 identical.
+        migrationState: "shadow_passed",
+        latestScrapyOutcome: "succeeded",
         latestCanary: "2026-08-19T17-45-20.157Z",
       });
     expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "samvirke")
