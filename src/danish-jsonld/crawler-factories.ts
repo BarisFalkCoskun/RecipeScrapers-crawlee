@@ -5,6 +5,8 @@ import {
   type CheerioCrawlingContext,
   type PlaywrightCrawlingContext,
 } from "crawlee";
+import { HeaderGenerator } from "header-generator";
+import { CookieJar } from "tough-cookie";
 import type { DanishJsonLdSource } from "./source-registry.js";
 
 type CheerioHandler = (context: CheerioCrawlingContext) => Promise<void>;
@@ -61,6 +63,45 @@ Object.defineProperty(navigator, 'webdriver', {
 });
 `;
 
+
+/**
+ * One browser, for the whole crawl.
+ *
+ * Left to got-scraping, every request drew a fresh header set: 12 different
+ * browsers across 60 requests from one address, which no person produces. It
+ * also draws the HTTP/1 and HTTP/2 sets independently, so a single session could
+ * still present two browsers. And it chooses the TLS handshake from whatever
+ * user agent the request carries, falling back to Firefox when there is none -
+ * so the few requests the generator left without a user agent also negotiated
+ * TLS as Firefox beneath Chrome headers.
+ *
+ * So the identity is chosen once, here, from desktop Chrome only (the TLS
+ * profile got-scraping reproduces best), and sent unchanged on every request.
+ * A draw is refused if it carries no user agent or any crawler marker, and the
+ * few retries that takes are cheap.
+ */
+const CRAWLER_MARKER = /bot|crawl|spider|compatible;|pageburst|headless|preview|scan/i;
+
+export const DANISH_JSONLD_ACCEPT_LANGUAGE = "da-DK,da;q=0.9,en-US;q=0.8,en;q=0.7";
+
+export function createDanishJsonLdBrowserIdentity(): Record<string, string> {
+  const generator = new HeaderGenerator({
+    browsers: [{ name: "chrome", minVersion: 130 }],
+    operatingSystems: ["macos", "windows"],
+    devices: ["desktop"],
+    locales: ["da-DK", "da", "en-US", "en"],
+  });
+  for (let attempt = 0; attempt < 50; attempt += 1) {
+    const headers = generator.getHeaders({ httpVersion: "2" }) as Record<string, string>;
+    const userAgent = headers["user-agent"] ?? "";
+    if (!/Chrome\/\d+/u.test(userAgent) || CRAWLER_MARKER.test(userAgent)) continue;
+    // Most of this corpus is Danish; a browser in Denmark asks for Danish first.
+    headers["accept-language"] = DANISH_JSONLD_ACCEPT_LANGUAGE;
+    return headers;
+  }
+  throw new Error("Could not generate a clean desktop Chrome identity in 50 draws");
+}
+
 export function resolveDanishJsonLdCrawlerSettings(
   source: DanishJsonLdSource
 ): DanishJsonLdCrawlerSettings {
@@ -80,17 +121,52 @@ export function createDanishJsonLdCheerioCrawler(options: {
   proxyConfiguration?: ProxyConfiguration;
   crawlerOptions?: Omit<CheerioOptions, "requestHandler">;
 }) {
+  const identity = createDanishJsonLdBrowserIdentity();
+  // Kept here rather than handed to got: a jar passed as gotOptions.cookieJar
+  // reaches got on every request and is still never used, because Crawlee's
+  // streaming request path does not go through got's cookie handling - a
+  // measured run sent 0 of 19 cookies back that way. So cookies are read from
+  // each response and written onto the next request explicitly.
+  const cookieJar = new CookieJar();
   const preNavigationHooks = [
     ...(options.crawlerOptions?.preNavigationHooks ?? []),
     ...(options.source.disableHeaderGenerator
       ? [async (_context: CheerioCrawlingContext, gotOptions: { useHeaderGenerator?: boolean }) => {
           gotOptions.useHeaderGenerator = false;
         }]
-      : []),
+      : [async (
+          _context: CheerioCrawlingContext,
+          gotOptions: { headers?: Record<string, unknown>; useHeaderGenerator?: boolean }
+        ) => {
+          // Headers the caller set on a request still win; the identity fills
+          // everything else, and the generator is off so it cannot redraw.
+          gotOptions.headers = { ...identity, ...gotOptions.headers };
+          gotOptions.useHeaderGenerator = false;
+        }]),
+    async (
+      { request }: CheerioCrawlingContext,
+      gotOptions: { headers?: Record<string, unknown> }
+    ) => {
+      const cookie = await cookieJar.getCookieString(request.url);
+      // Crawlee merges gotOptions Cookie with any session cookies itself.
+      if (cookie) gotOptions.headers = { ...gotOptions.headers, Cookie: cookie };
+    },
+  ];
+  const postNavigationHooks = [
+    ...(options.crawlerOptions?.postNavigationHooks ?? []),
+    async ({ request, response }: CheerioCrawlingContext) => {
+      const raw = (response as { headers?: Record<string, unknown> } | undefined)?.headers?.["set-cookie"];
+      const values = Array.isArray(raw) ? raw : typeof raw === "string" ? [raw] : [];
+      const url = request.loadedUrl ?? request.url;
+      for (const value of values) {
+        await cookieJar.setCookie(String(value), url, { ignoreError: true });
+      }
+    },
   ];
   return new CheerioCrawler({
     ...options.crawlerOptions,
     preNavigationHooks,
+    postNavigationHooks,
     ...(options.proxyConfiguration
       ? { proxyConfiguration: options.proxyConfiguration }
       : {}),

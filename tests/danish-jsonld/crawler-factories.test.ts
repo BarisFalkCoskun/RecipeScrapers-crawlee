@@ -103,20 +103,62 @@ describe("Danish JSON-LD crawler factories", () => {
     });
   });
 
-  it("disables browser header generation only for Nemlig's JSON transport", async () => {
-    const nemlig = DANISH_JSONLD_SOURCES.find((source) => source.id === "nemlig");
-    const arla = DANISH_JSONLD_SOURCES.find((source) => source.id === "arla");
-    if (!nemlig || !arla) throw new Error("Registry fixtures missing");
-    const hooksFor = (source: typeof nemlig) =>
-      (createDanishJsonLdCheerioCrawler({ source, requestHandler }) as unknown as {
-        preNavigationHooks: Array<(context: unknown, options: { useHeaderGenerator?: boolean }) => Promise<void>>;
-      }).preNavigationHooks;
+  type HookOptions = { headers?: Record<string, unknown>; useHeaderGenerator?: boolean };
+  type Hooked = {
+    preNavigationHooks: Array<(context: unknown, options: HookOptions) => Promise<void>>;
+    postNavigationHooks: Array<(context: unknown) => Promise<void>>;
+  };
+  const navigate = async (crawler: Hooked, url: string, setCookie?: string[]) => {
+    const options: HookOptions = {};
+    const request = { url, loadedUrl: url };
+    for (const hook of crawler.preNavigationHooks) await hook({ request }, options);
+    // Crawlee prepends a hook of its own that needs a real response; ours is last.
+    await crawler.postNavigationHooks.at(-1)?.({
+      request,
+      response: { url, headers: setCookie ? { "set-cookie": setCookie } : {} },
+    });
+    return options;
+  };
+  const crawlerFor = (id: string) => {
+    const source = DANISH_JSONLD_SOURCES.find((entry) => entry.id === id);
+    if (!source) throw new Error(`Registry fixture ${id} missing`);
+    return createDanishJsonLdCheerioCrawler({ source, requestHandler }) as unknown as Hooked;
+  };
 
-    const nemligOptions: { useHeaderGenerator?: boolean } = {};
-    await hooksFor(nemlig).at(-1)?.({}, nemligOptions);
+  it("keeps Nemlig's JSON transport free of generated browser headers", async () => {
+    const options = await navigate(crawlerFor("nemlig"), "https://www.nemlig.com/a");
+    expect(options.useHeaderGenerator).toBe(false);
+    expect(options.headers?.["user-agent"]).toBeUndefined();
+  });
 
-    expect(nemligOptions.useHeaderGenerator).toBe(false);
-    expect(hooksFor(arla)).toHaveLength(0);
+  it("presents one desktop Chrome for a whole crawl", async () => {
+    // Left to got-scraping every request drew a new browser - 12 across 60
+    // requests from one address - and some drew a crawler's own user agent,
+    // compatible; pageburst, or none at all.
+    const crawler = crawlerFor("arla");
+    const first = await navigate(crawler, "https://www.arla.dk/a");
+    const second = await navigate(crawler, "https://www.arla.dk/b");
+    const userAgent = String(first.headers?.["user-agent"]);
+    expect(userAgent).toMatch(/Chrome\/\d+/u);
+    expect(userAgent).not.toMatch(/bot|crawl|spider|compatible;|headless/iu);
+    expect(second.headers?.["user-agent"]).toBe(userAgent);
+    expect(first.useHeaderGenerator).toBe(false);
+    expect(first.headers?.["accept-language"]).toMatch(/^da-DK/u);
+    const version = userAgent.match(/Chrome\/(\d+)/u)?.[1];
+    expect(String(first.headers?.["sec-ch-ua"])).toContain(`v="${version}"`);
+  });
+
+  it("sends back the cookies a site set", async () => {
+    // The runner does not use Crawlee's session pool, and a jar handed to got
+    // is bypassed by Crawlee's streaming request path, so no cookie was ever
+    // returned - 0 of 79 in a measured run.
+    const crawler = crawlerFor("arla");
+    await navigate(crawler, "https://www.arla.dk/a", ["visitor=abc; Path=/", "consent=yes; Path=/"]);
+    const next = await navigate(crawler, "https://www.arla.dk/b");
+    expect(String(next.headers?.Cookie)).toContain("visitor=abc");
+    expect(String(next.headers?.Cookie)).toContain("consent=yes");
+    const elsewhere = await navigate(crawler, "https://example.com/");
+    expect(elsewhere.headers?.Cookie).toBeUndefined();
   });
 
   it("accepts the same dynamic proxy configuration for Cheerio and Playwright", () => {

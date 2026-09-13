@@ -33,11 +33,13 @@
     "crawlee": "^3.16.0",
     "dotenv": "^17.3.1",
     "entities": "^4.5.0",
+    "header-generator": "^2.1.82",
     "mongodb": "^7.1.1",
     "node-object-hash": "^3.1.1",
     "playwright": "^1.58.2",
     "proxy-chain": "^2.7.1",
-    "socks-proxy-agent": "^8.0.5"
+    "socks-proxy-agent": "^8.0.5",
+    "tough-cookie": "^6.0.1"
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
