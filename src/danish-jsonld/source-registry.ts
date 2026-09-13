@@ -33289,10 +33289,12 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
       "Uncapped run completed discovery with no blocked or failed request and the wprm_recipe collection is empty, while the site still publishes 72 posts carrying WPRM markup, so the legacy API route no longer exposes this source's recipes",
   },
   koudahl: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
+    shadowParity:
+      "No Scrapy baseline - legacy page size answers HTTP 500; 329 recipes from a clean run, a STABLE repeat, and 3 of 3 live spot-checks matching every ingredient and step",
     latestCanary: "2026-08-20T06-45-51.924Z-attempt-98e4251f-e2ba-4bee-b5b7-02835da6a5da",
     deferOrBlockReason:
-      "Uncapped run persisted 329 recipes from 331 candidates; 2 records the source publishes incomplete or malformed keeps it short of a canary; the shortfall cannot be checked against the listing because the listing serves only 100 of the 331 records it announces before it stops answering",
+      "Uncapped run persisted 329 recipes from 331 candidates; 2 records the source publishes incomplete or malformed keeps it short of a canary; the shortfall cannot be checked against the listing because the listing serves only 100 of the 331 records it announces before it stops answering.\n\nSuperseded on 2026-09-13, and promoted without a Scrapy baseline under the route approved that day for sites legacy cannot crawl. The listing is fully reachable now: the run of 2026-09-13 walked all 331 candidates with discovery complete, nothing failed or blocked, stored 329 and refused 2 as incomplete WPRM records. Legacy cannot take a baseline here - its spider hardcodes per_page=100, and its isolated run the same day made 4 requests that all answered HTTP 500 and emitted nothing.\n\nThe V2 evidence: the repeat of 2026-09-13 was STABLE at 329 to 329 with all 329 identical. Three stored records were sampled at random and fetched live the same day - is-med-chokolade-og-roedvin, cremet-risotto-med-gorgonzola-og-valnoedder and ovnbagt-spaghetti-med-tomater - and each page carries the stored title, every stored ingredient (9, 8 and 10) and every stored step (6, 5 and 4). The same check pointed at the wrong recipe page fails on title and on 6 of 7 steps. Re-crawled that night with the impit transport into a scratch database, all 329 content hashes matched the store.",
   },
   letmad: {
     migrationState: "blocked",

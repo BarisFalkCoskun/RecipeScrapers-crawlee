@@ -639,11 +639,12 @@ describe("Danish JSON-LD source registry", () => {
     expect(byId.get("airfryerkogebogen")?.migrationState).toBe("shadow_passed");
     expect(byId.get("airfryerkogebogen")?.deferOrBlockReason)
       .toMatch(/legacy run completed and emitted 5047 records/u);
-    // koudahl discovered nothing until its page size came down, and its
-    // shortfall still cannot be checked: the listing stops answering after 100
-    // of the 331 records it announces, so there is no set to check against.
-    expect(byId.get("koudahl")?.migrationState).toBe("configured");
+    // koudahl discovered nothing until its page size came down to 50. It now
+    // walks all 331 records it announces, and was promoted without a Scrapy
+    // baseline because legacy's hardcoded per_page=100 answers HTTP 500.
+    expect(byId.get("koudahl")?.migrationState).toBe("shadow_passed");
     expect(byId.get("koudahl")?.deferOrBlockReason).toMatch(/329 recipes/u);
+    expect(byId.get("koudahl")?.shadowParity).toMatch(/^No Scrapy baseline/u);
     // Sources whose legacy API route no longer carries their recipes.
     for (const id of ["grilltips", "karinabaagoe"]) {
       expect(byId.get(id)?.migrationState).toBe("deferred");
