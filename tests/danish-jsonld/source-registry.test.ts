@@ -1190,11 +1190,14 @@ describe("Danish JSON-LD source registry", () => {
         legacySpider: "MadForFattigroeveSpider",
         legacyFamily: "DirectRecipeApiSpider",
         recipeExtractor: "madforfattigroeve-nextjs",
-        // Its canary rested on runs whose data did not survive the database
-        // deletion and restore; the store holds nothing for it now, so it waits
-        // on a fresh uncapped run like kikkoman and the others.
-        migrationState: "configured",
+        // Promoted on 2026-09-13 without a Scrapy baseline, under the route the
+        // user approved for sites legacy cannot crawl: the site answers 404 to
+        // sitemap.xml, sitemap_index.xml and robots.txt, so legacy never starts.
+        // It rests on a clean 589-record run, a STABLE repeat and live spot-checks.
+        migrationState: "shadow_passed",
       });
+    expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "madforfattigroeve")?.shadowParity)
+      .toMatch(/^No Scrapy baseline/u);
     expect(DANISH_JSONLD_SOURCES.find((entry) => entry.id === "meny"))
       .toMatchObject({
         legacySpider: "MenySpider",
