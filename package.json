@@ -30,6 +30,7 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
+    "@crawlee/impit-client": "^3.18.1",
     "crawlee": "^3.16.0",
     "dotenv": "^17.3.1",
     "entities": "^4.5.0",

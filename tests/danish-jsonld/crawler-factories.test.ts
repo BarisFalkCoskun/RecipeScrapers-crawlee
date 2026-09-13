@@ -6,6 +6,7 @@ import {
   createDanishJsonLdCheerioCrawler,
   createDanishJsonLdPlaywrightCrawler,
   resolveDanishJsonLdCrawlerSettings,
+  danishJsonLdJitterMillis,
 } from "../../src/danish-jsonld/crawler-factories.js";
 import { DANISH_JSONLD_SOURCES } from "../../src/danish-jsonld/source-registry.js";
 
@@ -96,11 +97,26 @@ describe("Danish JSON-LD crawler factories", () => {
     expect(playwright.autoscaledPoolOptions.maxConcurrency).toBe(
       arla.requestSettings.maxConcurrency
     );
+    // The enforced delay is the registry delay plus the largest jitter pause, so
+    // a random pause can only lengthen a gap: 2s plus 20% of 2s.
     expect(resolveDanishJsonLdCrawlerSettings(arla)).toEqual({
       maxConcurrency: 2,
       maxRequestRetries: 3,
-      sameDomainDelaySecs: 2,
+      sameDomainDelaySecs: 2.4,
     });
+  });
+
+  it("never lets a jitter pause shorten a gap below the registry delay", () => {
+    // Crawlee stamps last access before the pause runs, so a long pause then a
+    // short one once put two requests 1592 ms apart on a 2 second delay.
+    for (const delaySeconds of [1, 2, 3, 20, 40, 120]) {
+      const source = { requestSettings: { delaySeconds, maxConcurrency: 1, maxRetries: 3, rateLimitPerMinute: null } } as never;
+      const enforcedMs = resolveDanishJsonLdCrawlerSettings(source).sameDomainDelaySecs * 1000;
+      const longest = danishJsonLdJitterMillis(delaySeconds, () => 1);
+      const shortest = danishJsonLdJitterMillis(delaySeconds, () => 0);
+      expect(enforcedMs + shortest - longest).toBeGreaterThanOrEqual(delaySeconds * 1000);
+      expect(longest).toBeLessThanOrEqual(10_000);
+    }
   });
 
   type HookOptions = { headers?: Record<string, unknown>; useHeaderGenerator?: boolean };

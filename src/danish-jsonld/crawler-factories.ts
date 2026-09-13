@@ -5,6 +5,7 @@ import {
   type CheerioCrawlingContext,
   type PlaywrightCrawlingContext,
 } from "crawlee";
+import { ImpitHttpClient } from "@crawlee/impit-client";
 import { HeaderGenerator } from "header-generator";
 import { CookieJar } from "tough-cookie";
 import type { DanishJsonLdSource } from "./source-registry.js";
@@ -102,6 +103,41 @@ export function createDanishJsonLdBrowserIdentity(): Record<string, string> {
   throw new Error("Could not generate a clean desktop Chrome identity in 50 draws");
 }
 
+/**
+ * Crawlee's same-domain delay has no randomness: the next request leaves the
+ * moment the delay since the last one expires, so a source paced at 40 seconds
+ * sees a request every 40.0 seconds - a rhythm no reader keeps. Each request now
+ * waits an extra random pause before it is sent.
+ *
+ * The pause cannot simply sit on top of the delay. Crawlee stamps a domain's
+ * last access when a request is taken from the queue, before this pause runs,
+ * so a long pause followed by a short one put two requests closer together than
+ * the delay - measured at 1592 ms against a 2 second delay. That matters on the
+ * sources paced because they rate-limit: 40 seconds is clean there and 20 seconds
+ * was refused. So the delay Crawlee enforces is raised by the largest possible
+ * pause, which guarantees every gap is at least the source's configured delay
+ * and at most that plus twice the pause ceiling. The pause ceiling is 20% of the
+ * delay, capped at 10 seconds; the average cost is that 20%.
+ */
+export const DANISH_JSONLD_JITTER_FRACTION = 0.2;
+export const DANISH_JSONLD_JITTER_CAP_MS = 10_000;
+
+export function danishJsonLdJitterCeilingMillis(delaySeconds: number): number {
+  return Math.min(delaySeconds * 1000 * DANISH_JSONLD_JITTER_FRACTION, DANISH_JSONLD_JITTER_CAP_MS);
+}
+
+export function danishJsonLdJitterMillis(delaySeconds: number, random = Math.random): number {
+  const ceiling = danishJsonLdJitterCeilingMillis(delaySeconds);
+  return ceiling > 0 ? Math.round(random() * ceiling) : 0;
+}
+
+function jitterHook(source: DanishJsonLdSource) {
+  return async () => {
+    const pause = danishJsonLdJitterMillis(source.requestSettings.delaySeconds);
+    if (pause > 0) await new Promise((resolve) => setTimeout(resolve, pause));
+  };
+}
+
 export function resolveDanishJsonLdCrawlerSettings(
   source: DanishJsonLdSource
 ): DanishJsonLdCrawlerSettings {
@@ -111,7 +147,9 @@ export function resolveDanishJsonLdCrawlerSettings(
     ...(source.requestSettings.rateLimitPerMinute === null
       ? {}
       : { maxRequestsPerMinute: source.requestSettings.rateLimitPerMinute }),
-    sameDomainDelaySecs: source.requestSettings.delaySeconds,
+    sameDomainDelaySecs:
+      source.requestSettings.delaySeconds +
+      danishJsonLdJitterCeilingMillis(source.requestSettings.delaySeconds) / 1000,
   };
 }
 
@@ -130,6 +168,7 @@ export function createDanishJsonLdCheerioCrawler(options: {
   const cookieJar = new CookieJar();
   const preNavigationHooks = [
     ...(options.crawlerOptions?.preNavigationHooks ?? []),
+    jitterHook(options.source),
     ...(options.source.disableHeaderGenerator
       ? [async (_context: CheerioCrawlingContext, gotOptions: { useHeaderGenerator?: boolean }) => {
           gotOptions.useHeaderGenerator = false;
@@ -164,6 +203,19 @@ export function createDanishJsonLdCheerioCrawler(options: {
     },
   ];
   return new CheerioCrawler({
+    // Headers alone cannot make a Node client look like Chrome. got-scraping
+    // negotiates TLS and HTTP/2 the way Node does - JA4 t13d1513h2..ff9cead5a15b
+    // with 13 extensions, HTTP/2 settings 2:0;4:33554432 and pseudo-headers in
+    // the order method, path, authority, scheme - while real Chrome sends JA4
+    // t13d1516h2_8daaf6152771_02713d6af862 and method, authority, scheme, path.
+    // Bot management compares the two and sees a client claiming Chrome that
+    // connects like Node. impit reproduces Chrome's handshake exactly, measured
+    // against tls.peet.ws. nemlig keeps got-scraping with its generated headers
+    // turned off, because its JSON transport is the one place a browser profile
+    // was deliberately removed.
+    ...(options.source.disableHeaderGenerator
+      ? {}
+      : { httpClient: new ImpitHttpClient({ browser: "chrome" }) }),
     ...options.crawlerOptions,
     preNavigationHooks,
     postNavigationHooks,
@@ -206,6 +258,7 @@ export function createDanishJsonLdPlaywrightCrawler(options: {
   };
   const preNavigationHooks = [
     ...(options.crawlerOptions?.preNavigationHooks ?? []),
+    jitterHook(options.source),
     async ({ page }: PlaywrightCrawlingContext) => {
       await page.addInitScript(DANISH_JSONLD_WEBDRIVER_INIT_SCRIPT);
     },
