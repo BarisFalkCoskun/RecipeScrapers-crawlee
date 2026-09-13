@@ -7,6 +7,8 @@ import {
   createDanishJsonLdPlaywrightCrawler,
   resolveDanishJsonLdCrawlerSettings,
   danishJsonLdJitterMillis,
+  DANISH_JSONLD_WEBGL_INIT_SCRIPT,
+  DANISH_JSONLD_BROWSER_USER_AGENT,
 } from "../../src/danish-jsonld/crawler-factories.js";
 import { DANISH_JSONLD_SOURCES } from "../../src/danish-jsonld/source-registry.js";
 
@@ -58,6 +60,56 @@ describe("Danish JSON-LD crawler factories", () => {
     expect(ignoreDefaultArgs).toContain("--enable-automation");
     // Caller-supplied launch options must survive the hardening merge.
     expect(headless).toBe(true);
+  });
+
+  it("runs full Chrome in the new headless mode, as a Danish reader", () => {
+    // The headless shell Playwright uses for headless: true had no plugins, no
+    // window.chrome, an 800x600 screen inside a larger window, en-US and UTC.
+    const source = DANISH_JSONLD_SOURCES.find((entry) => entry.fetchMode === "playwright");
+    if (!source) throw new Error("No browser-fetched registry fixture");
+    const crawler = createDanishJsonLdPlaywrightCrawler({
+      source,
+      requestHandler,
+      crawlerOptions: { launchContext: { launchOptions: { headless: true } } },
+    }) as unknown as {
+      launchContext: { launchOptions: Record<string, unknown> & { args?: string[] } };
+      preNavigationHooks: Array<(context: unknown) => Promise<void>>;
+    };
+    const options = crawler.launchContext.launchOptions;
+    expect(options.channel).toBe("chromium");
+    expect(options.locale).toBe("da-DK");
+    expect(options.timezoneId).toBe("Europe/Copenhagen");
+    expect(options.args).toContain("--lang=da-DK");
+    expect(options.headless).toBe(true);
+  });
+
+  it("gives the browser one truthful identity instead of random fingerprints", () => {
+    // Injection drew a new fingerprint per launched browser (Chrome 142, then
+    // 135, then a Brave brand list on a Chrome binary), and with it off Crawlee
+    // substitutes macOS Chrome 107 - contradicting a Linux Chromium 147.
+    const source = DANISH_JSONLD_SOURCES.find((entry) => entry.fetchMode === "playwright");
+    if (!source) throw new Error("No browser-fetched registry fixture");
+    const crawler = createDanishJsonLdPlaywrightCrawler({ source, requestHandler }) as unknown as {
+      launchContext: { launchOptions: { args?: string[]; screen?: { width: number; height: number } } };
+      browserPool: { useFingerprints?: boolean };
+    };
+    const args = crawler.launchContext.launchOptions.args ?? [];
+    const userAgentArg = args.find((arg) => arg.startsWith("--user-agent="));
+    expect(userAgentArg).toBe(`--user-agent=${DANISH_JSONLD_BROWSER_USER_AGENT}`);
+    expect(DANISH_JSONLD_BROWSER_USER_AGENT).toMatch(/^Mozilla\/5\.0 \(X11; Linux x86_64\) .* Chrome\/\d+\.0\.0\.0 Safari\/537\.36$/u);
+    expect(DANISH_JSONLD_BROWSER_USER_AGENT).not.toMatch(/Headless|Chrome\/107/u);
+    expect(crawler.browserPool.useFingerprints).toBe(false);
+    // The window frame makes the outer window larger than a same-sized screen.
+    const screen = crawler.launchContext.launchOptions.screen;
+    const windowArg = args.find((arg) => arg.startsWith("--window-size="))?.split("=")[1].split(",").map(Number) ?? [];
+    expect(screen && windowArg[0] + 16 <= screen.width && windowArg[1] + 40 <= screen.height).toBe(true);
+  });
+
+  it("reports a GPU instead of a software rasterizer", () => {
+    // A server has no GPU, so WebGL named llvmpipe or SwiftShader.
+    expect(DANISH_JSONLD_WEBGL_INIT_SCRIPT).toContain("0x9246");
+    expect(DANISH_JSONLD_WEBGL_INIT_SCRIPT).not.toMatch(/llvmpipe|SwiftShader/u);
+    expect(DANISH_JSONLD_WEBGL_INIT_SCRIPT).toContain("WebGL2RenderingContext");
   });
 
   it("keeps caller launch args alongside the automation hardening", () => {

@@ -5,6 +5,9 @@ import {
   type CheerioCrawlingContext,
   type PlaywrightCrawlingContext,
 } from "crawlee";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { createRequire } from "node:module";
 import { ImpitHttpClient } from "@crawlee/impit-client";
 import { HeaderGenerator } from "header-generator";
 import { CookieJar } from "tough-cookie";
@@ -63,6 +66,79 @@ Object.defineProperty(navigator, 'webdriver', {
   get: () => undefined,
 });
 `;
+
+/**
+ * A server has no GPU, so WebGL reports a software rasterizer - llvmpipe under
+ * the old headless shell, SwiftShader under the new headless mode - and the
+ * renderer string is one of the most-read signals that a browser is not a
+ * person's. It is reported as an ordinary Intel laptop GPU under Mesa, which is
+ * what a real Linux desktop running this Chrome would show. Only the two
+ * debug-info strings change; rendering itself is untouched.
+ */
+export const DANISH_JSONLD_WEBGL_INIT_SCRIPT = `
+(() => {
+  const VENDOR = 0x9245, RENDERER = 0x9246;
+  const patch = (proto) => {
+    if (!proto) return;
+    const original = proto.getParameter;
+    proto.getParameter = function (parameter) {
+      if (parameter === VENDOR) return 'Google Inc. (Intel)';
+      if (parameter === RENDERER) return 'ANGLE (Intel, Mesa Intel(R) UHD Graphics 620 (KBL GT2), OpenGL 4.6)';
+      return original.call(this, parameter);
+    };
+  };
+  patch(window.WebGLRenderingContext && WebGLRenderingContext.prototype);
+  patch(window.WebGL2RenderingContext && WebGL2RenderingContext.prototype);
+})();
+`;
+
+/** A Danish reader: language, and the timezone this corpus's audience lives in. */
+export const DANISH_JSONLD_BROWSER_LOCALE = "da-DK";
+export const DANISH_JSONLD_BROWSER_TIMEZONE = "Europe/Copenhagen";
+
+/**
+ * The browser path tells the truth about its binary rather than pretending to be
+ * another browser: it is Chromium on Linux, so that is what it says.
+ *
+ * Crawlee's fingerprint injection was the alternative, and it drew a different
+ * random fingerprint for every browser it launched, because fingerprints are
+ * cached per session and the runner keeps the session pool off to preserve block
+ * diagnostics - Chrome 142 on one page and Chrome 135 on the next, and a Brave
+ * brand list on a Chrome binary. With injection off, Crawlee falls back to a
+ * hardcoded user agent for macOS Chrome 107, which contradicts a Linux platform
+ * and a Chromium 147 brand list; and with no user agent at all, headless mode
+ * reports itself as HeadlessChrome. So the user agent is written out here from
+ * the Chromium version Playwright actually ships, in Chrome's reduced form. The
+ * platform, brand list, TLS handshake and HTTP/2 behaviour are then all genuine
+ * and all agree with it.
+ */
+function bundledChromiumMajorVersion(): string {
+  try {
+    const require = createRequire(import.meta.url);
+    // The package's export map hides browsers.json, so read it beside the entry.
+    const manifestPath = join(dirname(require.resolve("playwright-core")), "browsers.json");
+    const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as {
+      browsers: Array<{ name: string; browserVersion?: string }>;
+    };
+    const version = manifest.browsers.find((browser) => browser.name === "chromium")?.browserVersion;
+    const major = version?.split(".")[0];
+    if (major && /^\d+$/u.test(major)) return major;
+  } catch {
+    // Fall through to the error below with the reason it matters.
+  }
+  throw new Error("Cannot read the bundled Chromium version; the browser user agent would not match its binary");
+}
+
+export const DANISH_JSONLD_BROWSER_USER_AGENT = `Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${bundledChromiumMajorVersion()}.0.0.0 Safari/537.36`;
+
+/**
+ * A common desktop screen with a window that fits inside it. The window frame adds
+ * a few pixels, so a 1920x1080 window on a 1920x1080 screen measured 1928x1100 -
+ * larger than the screen it sits on, which no real window is.
+ */
+export const DANISH_JSONLD_BROWSER_SCREEN = { width: 2560, height: 1440 } as const;
+export const DANISH_JSONLD_BROWSER_WINDOW = { width: 1920, height: 1080 } as const;
+export const DANISH_JSONLD_BROWSER_VIEWPORT = { width: 1920, height: 969 } as const;
 
 
 /**
@@ -243,10 +319,22 @@ export function createDanishJsonLdPlaywrightCrawler(options: {
   const hardenedLaunchContext = {
     ...launchContext,
     launchOptions: {
+      // Playwright's headless: true runs the stripped headless shell, which has
+      // no plugins, no window.chrome and an 800x600 screen inside a larger
+      // window. The chromium channel runs full Chrome in the new headless mode
+      // instead: 5 plugins, window.chrome, and a consistent 1920x1080 screen.
+      channel: "chromium",
+      locale: DANISH_JSONLD_BROWSER_LOCALE,
+      timezoneId: DANISH_JSONLD_BROWSER_TIMEZONE,
+      screen: DANISH_JSONLD_BROWSER_SCREEN,
+      viewport: DANISH_JSONLD_BROWSER_VIEWPORT,
       ...launchContext?.launchOptions,
       args: [
         ...(launchContext?.launchOptions?.args ?? []),
         ...DANISH_JSONLD_AUTOMATION_LAUNCH_ARGS,
+        `--lang=${DANISH_JSONLD_BROWSER_LOCALE}`,
+        `--user-agent=${DANISH_JSONLD_BROWSER_USER_AGENT}`,
+        `--window-size=${DANISH_JSONLD_BROWSER_WINDOW.width},${DANISH_JSONLD_BROWSER_WINDOW.height}`,
       ],
       ignoreDefaultArgs: [
         ...(Array.isArray(launchContext?.launchOptions?.ignoreDefaultArgs)
@@ -261,6 +349,7 @@ export function createDanishJsonLdPlaywrightCrawler(options: {
     jitterHook(options.source),
     async ({ page }: PlaywrightCrawlingContext) => {
       await page.addInitScript(DANISH_JSONLD_WEBDRIVER_INIT_SCRIPT);
+      await page.addInitScript(DANISH_JSONLD_WEBGL_INIT_SCRIPT);
     },
   ];
   return new PlaywrightCrawler({
@@ -278,6 +367,9 @@ export function createDanishJsonLdPlaywrightCrawler(options: {
       : {}),
     ...resolveDanishJsonLdCrawlerSettings(options.source),
     browserPoolOptions: {
+      // See DANISH_JSONLD_BROWSER_USER_AGENT: one truthful identity instead of a
+      // random fingerprint per launched browser.
+      useFingerprints: false,
       ...browserPoolOptions,
       // A VPN rotation produces a new local bridge URL and therefore a new
       // proxy-specific Chromium. Retire old proxy browsers promptly instead
