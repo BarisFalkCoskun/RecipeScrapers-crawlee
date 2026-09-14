@@ -98,6 +98,13 @@ while true; do
       if(o.blockedRequests>0) bad.push(`blocked=${o.blockedRequests}`);
       if(o.discoveryComplete===false) bad.push("discovery-incomplete");
       if(o.pageCapReached) bad.push("page-cap-reached");
+      // The counters alone called newyorkerbyheart clean on 2026-09-14 when its
+      // API answered 200 with [] and 0 of its 496 recipes were found: nothing
+      // failed, nothing was blocked, and discovery was complete. The crawler
+      // had already classified that run no_data. partial is left to the
+      // counters, which name what made it partial.
+      const outcome=((j.summary||{}).sourceOutcomes||[])[0]?.outcome;
+      if(outcome && outcome!=="succeeded" && outcome!=="partial") bad.push(`outcome=${outcome}`);
       const rej=Object.entries(o).filter(([k,v])=>/^rejected/.test(k)&&v>0)
         .map(([k,v])=>`${k}=${v}`);
       process.stdout.write(
