@@ -30826,10 +30826,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: the isolated legacy run matches on every material field, and a second uncapped run reproduced all 201 keys with identical content; tags == keywords + cuisines; 1 records legacy accepts without a name, ingredients or instructions. Every one of the 2 shortfall records is an upstream defect the completeness contract rejects (1 no title, 1 no ingredients), so there is no unexplained rejection",
   },
   sixsistersstuff: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T11-57-02.744Z-attempt-0b95fb50-107c-460f-aeb4-b2341cf45a1f",
+    shadowParity:
+      "3385/3385 recipes V2 stores match legacy on every material field; legacy holds 2 more that lack a name, ingredients or instructions",
     deferOrBlockReason:
-      "Uncapped run discovered all 3391 records the live listing contract declares and persisted 3386; four of the five shortfall records are upstream defects the completeness contract rejects, but one is not explained by it and the source stays short until that record is accounted for",
+      "Uncapped run discovered all 3391 records the live listing contract declares and persisted 3386; four of the five shortfall records are upstream defects the completeness contract rejects, but one is not explained by it and the source stays short until that record is accounted for\n\nShadow comparison passed on 2026-09-14, and the unexplained record above no longer exists. Run 2026-09-14T05-35-22, on the extractor that renders WPRM inline ingredients, [adjustable] and notes as the page does, walked 3389 candidates, which is the X-WP-Total the recipe API declares, with discovery complete, 0 failed and 0 blocked. It stored 3385 and refused 4 as incomplete WPRM records. The repeat, 2026-09-14T05-37-01, was STABLE with all 3390 stored records identical. Five of those predate the run: they were stored on 2026-08-29 and the API no longer lists them. The isolated legacy run the same hour emitted 3387. Every one of the 3385 is among them and every material field matched. The 2 legacy-only records are among the 4 V2 refused, which legacy accepts without a name, ingredients or instructions. The comparator also named two intentional differences: 5 records keep WPRM named-step prefixes that legacy drops, and 5 keep a space at a block boundary that legacy fuses over. Eleven stored records were checked through impit against the recipe card on the live page: title, every ingredient and every step found, 11 of 11. This template separates ingredient notes with a comma, as in salsa, use your favorite, where the extractor wraps the note in parentheses, and that was allowed for. The negative control failed, finding no title and 0 ingredients or steps both ways round.",
   },
   skinnykitchen: {
     migrationState: "blocked",
