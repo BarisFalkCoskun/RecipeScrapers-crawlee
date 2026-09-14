@@ -19,6 +19,7 @@ import {
   type EmbeddedRecipeExtraction,
 } from "../custom/spisbedre.js";
 import { extractWebopskrifterRecipe } from "../custom/webopskrifter.js";
+import { extractJetpackRecipe } from "../custom/jetpack-recipe.js";
 import { extractDkKogebogenRecipe } from "../custom/dkkogebogen.js";
 import {
   extractNipuniJulieRecipe,
@@ -1143,6 +1144,21 @@ export class DanishJsonLdSourceSession {
         ["webopskrifter-recipe-microdata", "complete-html-recipe-only"],
         "recipe-microdata"
       );
+    }
+    if (this.source.recipeExtractor === "jetpack-recipe-html") {
+      // A post without a Jetpack recipe block is simply not a recipe; it falls
+      // through to the JSON-LD path, which finds nothing and records no rejection.
+      const extraction = extractJetpackRecipe(response.body, canonicalUrl);
+      if (extraction.found) {
+        return this.handleCustomRecipe(
+          response,
+          canonicalUrl,
+          extraction,
+          "html-parsing",
+          ["jetpack-recipe-microdata", "complete-html-recipe-only"],
+          "recipe-microdata"
+        );
+      }
     }
     if (this.source.recipeExtractor === "dkkogebogen-microdata") {
       return this.handleCustomRecipe(

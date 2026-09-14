@@ -140,7 +140,8 @@ export interface DanishJsonLdSource {
     | "nipunijulie-body-html"
     | "thefoodclub-body-html"
     | "webopskrifter-microdata"
-    | "gigtforeningen-wp-html";
+    | "gigtforeningen-wp-html"
+    | "jetpack-recipe-html";
   migrationState: MigrationState;
   latestScrapyOutcome:
     | "not_audited"
@@ -26605,6 +26606,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
   },
   smittenkitchen: {
+    recipeExtractor: "jetpack-recipe-html",
     migrationState: "blocked",
     latestCanary: "2026-08-19T21-18-51.440Z-attempt-14b8f394-6bdf-40aa-b4d9-2015d9af785e",
     deferOrBlockReason:
