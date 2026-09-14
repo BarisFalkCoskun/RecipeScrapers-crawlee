@@ -363,4 +363,22 @@ describe("WPRM API recipe extraction", () => {
       "Keep ordinary [square brackets] as they are.",
     ]);
   });
+
+  it("decodes HTML entities in the title, tags, servings unit and image URL", () => {
+    // Short fields were only trimmed, so WPRM entities reached the store as
+    // "10 Easy &amp; Popular Japanese Sauces". The comparator decodes entities
+    // on both sides, which is why parity never showed it.
+    const entry = structuredClone(fixture[0]) as Record<string, any>;
+    entry.recipe.name = "10 Easy &amp; Popular Japanese Sauces &#8211; Mom&#8217;s Way";
+    entry.recipe.servings_unit = "portioner &amp; mere";
+    entry.recipe.image_url = "https://example.com/img.jpg?w=300&amp;h=200";
+    entry.recipe.tags = { course: [{ name: "Salat &amp; Tilbeh\u00f8r" }], cuisine: [], keyword: [] };
+
+    const [recipe] = extractWprmRecipes([entry]).recipes;
+
+    expect(recipe.normalized.title).toBe("10 Easy & Popular Japanese Sauces \u2013 Mom\u2019s Way");
+    expect(recipe.normalized.yieldText).toMatch(/portioner & mere$/u);
+    expect(recipe.normalized.imageUrls).toEqual(["https://example.com/img.jpg?w=300&h=200"]);
+    expect(recipe.normalized.categories).toEqual(["Salat & Tilbeh\u00f8r"]);
+  });
 });

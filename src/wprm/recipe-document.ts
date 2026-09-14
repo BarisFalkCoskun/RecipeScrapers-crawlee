@@ -4,6 +4,7 @@ import type {
   NormalizedRecipeInstruction,
   RecipeDocumentV2,
 } from "../types.js";
+import { decodeHTML } from "entities";
 import { hashRecipe } from "../utils/hash.js";
 
 /**
@@ -214,9 +215,15 @@ function flattenInstructions(groups: unknown): NormalizedRecipeInstruction[] {
 
 function normalize(recipe: Record<string, unknown>): NormalizedRecipeV2 {
   const servings = text(recipe.servings) || (typeof recipe.servings === "number" ? String(recipe.servings) : "");
-  const servingsUnit = text(recipe.servings_unit);
+  // Short fields went through a bare trim while every longer field went through
+  // plainText, so WPRM's HTML entities survived into titles, tags and units -
+  // "10 Easy &amp; Popular Japanese Sauces". The comparator decodes entities on
+  // both sides before comparing, which is why parity never showed it.
+  const servingsUnit = plainText(recipe.servings_unit);
   const yieldText = [servings, servingsUnit].filter((part) => part !== "").join(" ");
-  const image = text(recipe.image_url);
+  // A URL is not text to reflow, but an entity in it is still an entity: &amp;
+  // in a query string is a broken link until it is decoded.
+  const image = decodeHTML(text(recipe.image_url));
   const tags = isRecord(recipe.tags) ? recipe.tags : {};
   const customFields = isRecord(recipe.custom_fields) ? recipe.custom_fields : {};
   // Only where the standard fields came back empty: a source that fills both
@@ -230,7 +237,7 @@ function normalize(recipe: Record<string, unknown>): NormalizedRecipeV2 {
       .map((step, index) => ({ position: index + 1, text: step }));
   }
   return {
-    title: text(recipe.name),
+    title: plainText(recipe.name),
     ...(plainText(recipe.summary) === "" ? {} : { description: plainText(recipe.summary) }),
     ingredients,
     instructions,
@@ -256,7 +263,7 @@ function normalize(recipe: Record<string, unknown>): NormalizedRecipeV2 {
 function tagNames(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
   return value
-    .map((entry) => isRecord(entry) ? text(entry.name) : "")
+    .map((entry) => isRecord(entry) ? plainText(entry.name) : "")
     .filter((entry) => entry !== "")
     .sort((left, right) => left.localeCompare(right, "da"));
 }
