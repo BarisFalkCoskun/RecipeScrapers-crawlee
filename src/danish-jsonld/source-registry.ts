@@ -30439,7 +30439,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T11-41-33.739Z-attempt-c09ffd56-60d3-4170-93d4-9858c5034e83",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix\n\nOn 2026-09-14 the Cloudflare challenge had lifted for the Chrome TLS transport. Run 2026-09-14T09-49-23 walked 924 candidates with discovery complete, 0 failed and 0 blocked, stored 821 and refused 103 as incomplete WPRM records, and its repeat was STABLE with 821 of 821 identical. It is not promoted, for two reasons. The 103 refusals are not yet named: 103 of 924 is far more than the few upstream defects other sources show, so they need walking record by record before they can be called upstream. And the site is refusing this host again. The isolated legacy run shortly after was answered HTTP 403 on its first API page, and from 10:14 onward the API answers a plain 403 Forbidden page, not a Cloudflare challenge, to the Chrome TLS transport as well. This looks like an IP-level block after a crawl, a repeat and a legacy run in quick succession. It needs a quiet period and then a slower walk.",
   },
   practicalselfreliance: {
     migrationState: "shadow_passed",
@@ -32072,7 +32072,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T12-20-56.874Z-attempt-56e208ed-23a2-4af9-b7ff-99b4cf72d107",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix\n\nOn 2026-09-14 the Cloudflare challenge is gone and the problem is now a different one. veggiesdontbite.com, API and homepage alike, redirects to pickyeaterblog.com, a different blog. Run 2026-09-14T09-50-32 followed the listing there, and the crawler refused it at the domain boundary as loaded-url-domain-not-allowed, storing nothing. The recipe API at pickyeaterblog.com declares 935 recipes, every link on its last page points at pickyeaterblog.com, and its oldest posts date from 2009, so the veggiesdontbite archive appears to have been folded into that site. Whether pickyeaterblog.com belongs to this source is a policy question, like smartlittlecookie and greedygourmet, so it stays blocked until that is decided. Legacy allows only veggiesdontbite.com and would meet the same redirect.",
   },
   vegkitchen: {
     migrationState: "shadow_passed",
