@@ -32136,10 +32136,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 751 recipes from 751 API records with complete discovery and no blocked, failed or rejected record",
   },
   whatjessicabakednext: {
-    migrationState: "blocked",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-24-08.768Z-attempt-9df579ba-6adb-4eba-bd7d-cab43d176ec0",
+    shadowParity:
+      "109/109 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix\n\nShadow comparison passed on 2026-09-14, with a caveat about reachability. The Cloudflare challenge is gone, but the site now sits behind an intermittent nginx Checking your browser page. Of four uncapped runs that day, two were refused at the first API request (09:40 and 13:19:11), HTTP 403 with that page, and stored nothing. The other two, the repeat run started at 09:40 and run 2026-09-14T13-19-16, each walked all 109 candidates, the X-WP-Total the recipe API declares, with discovery complete, 0 failed, 0 blocked and nothing refused. The second was STABLE against the first, with 109 of 109 identical. The isolated legacy run that afternoon emitted the same 109 records, with nothing only one side holds, and every material field matched. The comparator also noted 7 records keep WPRM named-step prefixes legacy drops and 7 keep a space at a block boundary legacy fuses over. Six stored records were checked through impit against the recipe card on the live page, 6 of 6 with title, every ingredient and every step found, and the negative control failed. For the operational cutover: about half of this source runs are refused outright, so a scheduled crawl should retry a run that is blocked at its first request rather than record the source as failed.",
   },
   whatmollymade: {
     migrationState: "shadow_passed",
