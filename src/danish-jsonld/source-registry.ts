@@ -31858,10 +31858,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: legacy-unhealthy; page three of the API answered 403, so the legacy spider stopped after 200 recipes yet still reported finish_reason 'finished'. Acceptance therefore rests on discovery matching the source's own inventory - the live listing contract reports x-wp-total 2208 and the uncapped run persisted 2208 - on all 200 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 2208 keys with identical content, and on a reviewed sample of 25 stored records",
   },
   thevintagemixer: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-20-34.673Z-attempt-fd0d9339-1c5c-457a-b687-3a9eec8a5b7d",
+    shadowParity:
+      "390/390 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted 0 recipes from 1 API records; 1 record the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary",
+      "Uncapped run persisted 0 recipes from 1 API records; 1 record the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary\n\nShadow comparison passed on 2026-09-14, and the figures above are out of date. The recipe API no longer serves a single malformed record: it declares 390. Run 2026-09-14T05-34-49 walked all 390 with discovery complete, 0 failed and 0 blocked, and stored all 390. The repeat, 2026-09-14T05-35-05, was STABLE with 390 of 390 identical. The isolated legacy run the same hour emitted the same 390 records, with nothing only one side holds, and every material field matched. Eleven stored records were also checked through impit against the recipe card on the live page, because legacy shares some WPRM rendering defects and agreeing with it is not proof on its own: title, every ingredient and every step found, 11 of 11. The negative control failed, finding no title and 0 ingredients or steps both ways round.",
   },
   thewanderlustkitchen: {
     migrationState: "shadow_passed",
