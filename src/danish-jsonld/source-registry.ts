@@ -27329,10 +27329,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: legacy-unhealthy; page 3 of the API answered 403, so the legacy spider stopped after 200 recipes yet still reported finish_reason 'finished'. Acceptance rests on discovery reaching all 1242 records the live listing declares, on all 200 records legacy did produce matching V2 field for field, on two uncapped runs reproducing all 1233 keys with identical content, and on a reviewed sample of 25 stored records. The 9 records V2 does not store are upstream defects the completeness contract rejects (5 no title, 4 no canonical link).",
   },
   aspicyperspective: {
-    migrationState: "blocked",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-28-28.655Z-attempt-543c5741-a12c-4306-a7a1-8137991fee71",
+    shadowParity:
+      "All 1316 V2 recipes match legacy on every material field; legacy holds 1 more, a recipe the site published after the V2 run",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix\n\nThe block has lifted, and the reason above is superseded. Shadow comparison passed on 2026-09-14. A probe that morning through the Chrome TLS transport found the recipe API answering 200 with JSON, X-WP-Total 1316 at the time of the run (1317 an hour later). Run 2026-09-14T09-55-12 walked all 1316 candidates with discovery complete, 0 failed and 0 blocked. It stored all 1316. The repeat, 2026-09-14T09-55-56, was STABLE with 1316 of 1316 identical. The isolated legacy run later that morning emitted 1317. Every one of the 1316 V2 records is among them with no field difference. The one only legacy holds is potatoes-obrien, which the recipe API dates 2026-09-14T10:00:00 GMT, after the V2 run started at 09:55 UTC, so the site published it between the two runs. Stored records were checked through impit against the recipe card on the live page, 9/9 with title, every ingredient and every step found, allowing for how the template presents notes. The negative control failed.",
   },
   athomewithshay: {
     migrationState: "shadow_passed",
@@ -28293,10 +28295,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 687-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 687 recipes with every material field matching; tags == keywords + cuisines; 85 records keep WPRM named-step prefixes legacy drops",
   },
   dontsweattherecipe: {
-    migrationState: "blocked",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-50-16.262Z-attempt-da5ddbad-2625-4760-adc5-d425b71ea6d2",
+    shadowParity:
+      "755/755 recipes and every material field match exactly",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix\n\nThe block has lifted, and the reason above is superseded. Shadow comparison passed on 2026-09-14. A probe that morning through the Chrome TLS transport found the recipe API answering 200 with JSON, X-WP-Total 755. Run 2026-09-14T09-46-17 walked all 755 candidates with discovery complete, 0 failed and 0 blocked. It stored all 755. The repeat, 2026-09-14T09-46-47, was STABLE with 755 of 755 identical. The isolated legacy run the same morning emitted the same 755, and every material field matched once a comparator defect was fixed. At first one ingredient read as different: legacy stores Lemon wedges and/or malt vinegar ((for drizzling on the fish)) ((for drizzling on the fish)), where the name itself carries a doubled pair, and the rule that reads legacy doubled note as V2 single one matched from the first pair in the name. It now takes only the balanced group that closes the line. The comparator also noted 628 records keep WPRM named-step prefixes legacy drops and 20 keep a space at a block boundary legacy fuses over. Stored records were checked through impit against the recipe card on the live page, 9/9 with title, every ingredient and every step found, allowing for how the template presents notes. The negative control failed.",
   },
   downredbuddrive: {
     migrationState: "shadow_passed",
@@ -32104,10 +32108,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 178 recipes from 178 API records with complete discovery and no blocked, failed or rejected record",
   },
   wellplated: {
-    migrationState: "blocked",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T12-22-02.946Z-attempt-5c7d3b9a-9757-47d2-abea-8e1965a2efde",
+    shadowParity:
+      "All 1455 V2 recipes match legacy on every material field; legacy holds 4 more, 3 with no link and 1 published after the V2 run",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix\n\nThe block has lifted, and the reason above is superseded. Shadow comparison passed on 2026-09-14. A probe that morning through the Chrome TLS transport found the recipe API answering 200 with JSON, X-WP-Total 1458 at the time of the run (1459 an hour later). Run 2026-09-14T09-56-40 walked all 1458 candidates with discovery complete, 0 failed and 0 blocked. It stored 1455 and refused 3. Walking the API again named all 3 as records that carry no canonical link, which the completeness contract rejects. The repeat, 2026-09-14T09-57-34, was STABLE with 1455 of 1455 identical. The isolated legacy run later that morning emitted 1459. Every one of the 1455 V2 records is among them with no field difference. Of the 4 only legacy holds, three carry no link, crockpot sloppy joes, quinoa cookies and no fail sugar cookies, and are the 3 V2 refuses. The fourth is gyro-recipe, which the recipe API dates 2026-09-14T10:05:00 GMT, after the V2 run started at 09:56 UTC. Stored records were checked through impit against the recipe card on the live page, 9/9 with title, every ingredient and every step found, allowing for how the template presents notes. The negative control failed.",
   },
   whatgreatgrandmaate: {
     migrationState: "shadow_passed",

@@ -86,7 +86,9 @@ const renderWprm=v=>!/\[\/?(?:wprm-|adjustable\b|timer\b)/u.test(v)?v:v
 // them. A doubled pair closing the line is the same text on either side.
 // Legacy can also space the pair out, "( (or cooking spray) )", once markup inside
 // the note is stripped (fortheloveofcooking /perfect-egg).
-const undoubleNotes=s=>s.replace(/\(\s*\((.*)\)\s*\)$/u,"($1)");
+// The pair must enclose one balanced group closing the line: a greedy match ran from
+// an earlier "((" in the ingredient name (dontsweattherecipe /beer-battered-fish).
+const undoubleNotes=s=>s.replace(/\(\s*\(([^()]*(?:\([^()]*\)[^()]*)*)\)\s*\)$/u,"($1)");
 const norm=s=>undoubleNotes(stripMarkup(stripMarkup(renderWprm(String(s??"")))))
   .replace(/[\u200B-\u200D\uFEFF]/gu,"").replace(/\s+/gu," ")
   // Legacy joins a WPRM step name to its body as "Name : body" where V2 uses

@@ -116,6 +116,14 @@ describe("compare-parity WPRM rendering", () => {
     expect(compare([legacy], [crawlee])).not.toContain("### ingredients");
   });
 
+  it("undoubles only the note that closes the line when the name has its own pair", () => {
+    const legacy = legacyRecipe("https://example.com/r/1", "Pie");
+    legacy["ingredients"] = [{ original: "Lemon wedges ((for the fish)) ((for the fish))" }];
+    const crawlee = crawleeRecipe("https://example.com/r/1", "https://example.com/r/1", "Pie");
+    (crawlee["normalized"] as Record<string, unknown>)["ingredients"] = ["Lemon wedges ((for the fish)) (for the fish)"];
+    expect(compare([legacy], [crawlee])).not.toContain("### ingredients");
+  });
+
   it("still reports a note that differs inside the parentheses", () => {
     const legacy = legacyRecipe("https://example.com/r/1", "Pie");
     legacy["ingredients"] = [{ original: "7 oz azuki beans ((dried))" }];
