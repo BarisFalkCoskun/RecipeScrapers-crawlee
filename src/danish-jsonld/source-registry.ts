@@ -26600,17 +26600,21 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 415 recipes from 2975 posts with no blocked request and no rejected JSON-LD; 53 requests timed out at the source and one syndicated post carries an off-domain canonical, which keeps it short of a canary",
   },
   cookingwithruthie: {
-    migrationState: "blocked",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-19T15-14-32.823Z-attempt-60781b43-861d-40e1-8466-79000944db29",
+    shadowParity:
+      "1324/1324 V2 recipes match legacy on every material field; legacy holds 2 more that lack a name, ingredients or instructions",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: 1 requests were blocked, so discovery could not complete\n\nThe block has lifted, and the reason above is superseded. Shadow comparison passed on 2026-09-14. This source fetches every WordPress post page, and the first uncapped attempt was cut off at its one-hour limit. The next, run with a two-hour limit, completed and stored 1324. The run after that, 2026-09-14T15-37-24, walked all 2037 posts the listing declares with discovery complete, 0 failed and 0 blocked, and was STABLE against it with 1324 of 1324 identical. explain-jsonld-rejections, paced at 3 seconds a page after an unpaced pass drew HTTP 429, put all 713 posts V2 does not hold through the crawler own extractor and reported ALL SHORTFALL EXPLAINED: 711 carry no recipe, and 2 publish Recipe JSON-LD missing a name, ingredients or instructions, among them moms-chicken-noodle-soup. The isolated legacy run that afternoon emitted 1326. Every one of the 1324 V2 records is among them and every material field matched; the 2 only legacy holds are the incomplete records. The comparator noted that 767 records keep a cuisine legacy has no field for. Six stored records were checked through impit against the recipe microdata on the live page, 6 of 6 with title, every ingredient and every step found, and the negative control failed.",
   },
   smittenkitchen: {
     recipeExtractor: "jetpack-recipe-html",
-    migrationState: "blocked",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-19T21-18-51.440Z-attempt-14b8f394-6bdf-40aa-b4d9-2015d9af785e",
+    shadowParity:
+      "495/495 V2 recipes match legacy on every material field but one explained total time and one step list; legacy holds 16 more that lack a name, ingredients or instructions",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: 42 requests were blocked, so discovery could not complete",
+      "Uncapped run persisted no recipes: 42 requests were blocked, so discovery could not complete\n\nThe block has lifted, the reason above is superseded, and the real problem was an extractor this project did not have. Shadow comparison passed on 2026-09-14. A complete run that morning walked all 1465 posts with 0 failed and 0 blocked and stored nothing, because smittenkitchen publishes its recipes as Jetpack recipe-block microdata rather than JSON-LD. The source now routes through the jetpack-recipe-html extractor. It reads title, ingredients, yield and time from that microdata as the legacy microdata fallback does, and takes steps from itemprop recipeInstructions or, on newer blocks that omit it, from the block directions. The first legacy comparison found the extractor reading free-text times differently from legacy on 29 records, which was a defect, and it now follows the legacy normalizer. Run 2026-09-14T18-11-57, on the corrected extractor, walked all 1465 posts with discovery complete, 0 failed and 0 blocked, and stored 495. It refused 26 blocks as incomplete, and the remaining posts carry no recipe block. The repeat, 2026-09-14T19-20-27, was STABLE with 495 of 495 identical. The isolated legacy run emitted 511. Every one of the 495 V2 records is among them; the 16 only legacy holds are records without a name, ingredients or instructions that legacy accepts and V2 refuses, so legacy found no complete recipe V2 lacks. Every material field matched except two, both explained. On lasagna-bolognese the block gives total time as P-1DT-1H0M0S, a negative ISO duration: legacy matched the 1H inside it and stored 60, and V2 stores no time. On oatmeal-pancakes legacy fuses a nested list into one step, as in The changes:The original recipe, and then repeats those items as steps of their own; V2 keeps the note once and each item once. Six stored records were checked through impit against the Jetpack card on the live page, 6 of 6 with title, every ingredient and every step found, and the negative control failed.",
   },
   allergylicious: {
     migrationState: "shadow_passed",
