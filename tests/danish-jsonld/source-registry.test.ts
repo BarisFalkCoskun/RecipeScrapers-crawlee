@@ -878,11 +878,13 @@ describe("Danish JSON-LD source registry", () => {
     const byId = new Map(DANISH_JSONLD_SOURCES.map((source) => [source.id, source]));
 
     // A Cloudflare managed challenge is not a crawler defect, and no amount of
-    // retrying or browser hardening from this host clears it.
-    expect(byId.get("natashaskitchen")?.deferOrBlockReason).toMatch(
+    // retrying or browser hardening from this host clears it. natashaskitchen
+    // was the example until 2026-09-14, when the Chrome TLS transport got through
+    // its challenge; cookjunkie still answers one.
+    expect(byId.get("cookjunkie")?.deferOrBlockReason).toMatch(
       /Cloudflare managed challenge/u
     );
-    expect(byId.get("natashaskitchen")?.migrationState).toBe("blocked");
+    expect(byId.get("cookjunkie")?.migrationState).toBe("blocked");
     // A gated endpoint is a different problem from a challenged one.
     expect(byId.get("drizzleanddip")?.deferOrBlockReason).toMatch(
       /HTTP 401 and a Security Verification interstitial/u
