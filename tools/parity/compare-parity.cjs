@@ -84,7 +84,9 @@ const renderWprm=v=>!/\[\/?(?:wprm-|adjustable\b|timer\b)/u.test(v)?v:v
 // Legacy wraps every ingredient note in parentheses, including notes the author
 // already parenthesised, and stores "azuki beans ((dried))"; V2 stops doubling
 // them. A doubled pair closing the line is the same text on either side.
-const undoubleNotes=s=>s.replace(/\(\((.*)\)\)$/u,"($1)");
+// Legacy can also space the pair out, "( (or cooking spray) )", once markup inside
+// the note is stripped (fortheloveofcooking /perfect-egg).
+const undoubleNotes=s=>s.replace(/\(\s*\((.*)\)\s*\)$/u,"($1)");
 const norm=s=>undoubleNotes(stripMarkup(stripMarkup(renderWprm(String(s??"")))))
   .replace(/[\u200B-\u200D\uFEFF]/gu,"").replace(/\s+/gu," ")
   // Legacy joins a WPRM step name to its body as "Name : body" where V2 uses

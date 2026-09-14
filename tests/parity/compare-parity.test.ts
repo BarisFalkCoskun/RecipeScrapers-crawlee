@@ -108,6 +108,14 @@ describe("compare-parity WPRM rendering", () => {
     expect(out).not.toContain("### instructions");
   });
 
+  it("reads a doubled pair spaced out by stripped markup as the same note", () => {
+    const legacy = legacyRecipe("https://example.com/r/1", "Pie");
+    legacy["ingredients"] = [{ original: "2 tsp butter ( <em>(or cooking spray)</em> )" }];
+    const crawlee = crawleeRecipe("https://example.com/r/1", "https://example.com/r/1", "Pie");
+    (crawlee["normalized"] as Record<string, unknown>)["ingredients"] = ["2 tsp butter (or cooking spray)"];
+    expect(compare([legacy], [crawlee])).not.toContain("### ingredients");
+  });
+
   it("still reports a note that differs inside the parentheses", () => {
     const legacy = legacyRecipe("https://example.com/r/1", "Pie");
     legacy["ingredients"] = [{ original: "7 oz azuki beans ((dried))" }];
