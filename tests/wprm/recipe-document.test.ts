@@ -341,4 +341,26 @@ describe("WPRM API recipe extraction", () => {
 
     expect(recipe.normalized.ingredients).toEqual(["2 cups flour"]);
   });
+
+  it("renders WPRM inline shortcodes the way the page does", () => {
+    // WPRM keeps its shortcodes unrendered in API text. 22302 stored records
+    // across 102 sources read "Thinly slice [wprm-ingredient text=...] ..."
+    // where the page shows the ingredient; legacy stored the same raw text.
+    const entry = structuredClone(fixture[0]) as Record<string, any>;
+    entry.recipe.instructions = [{ name: "", instructions: [
+      { text: 'Thinly slice [wprm-ingredient text="\u00bc sweet onion" uid="12"] lengthwise.' },
+      { text: "Heat to [wprm-temperature value=\"70\" unit=\"C\"] for [wprm-ingredient text=&quot;3 minutes&quot; uid=&quot;4&quot;]." },
+      { text: '[wprm-tip accent="#a92329"]Let it rest overnight.[/wprm-tip] [wprm-recipe-video]' },
+      { text: "Keep ordinary [square brackets] as they are." },
+    ] }];
+
+    const [recipe] = extractWprmRecipes([entry]).recipes;
+
+    expect(recipe.normalized.instructions.map((step) => step.text)).toEqual([
+      "Thinly slice \u00bc sweet onion lengthwise.",
+      "Heat to 70 \u00b0C for 3 minutes.",
+      "Let it rest overnight.",
+      "Keep ordinary [square brackets] as they are.",
+    ]);
+  });
 });

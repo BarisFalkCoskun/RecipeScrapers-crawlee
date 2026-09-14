@@ -66,7 +66,17 @@ const dropTags=t=>String(t).replace(/<[^>]+>/gu," ").replace(/<[a-zA-Z][^>]*$/u,
 // entity-encoded markup standing, which is how dansktang writes its notes. Strip,
 // decode, strip.
 const stripMarkup=t=>dropTags(decodeHTML(dropTags(t)));
-const norm=s=>stripMarkup(stripMarkup(String(s??"")))
+// WPRM keeps inline shortcodes unrendered in API text, and legacy stores them that
+// way: "Thinly slice [wprm-ingredient text="1/4 sweet onion" uid="12"]". V2 renders
+// them as the page does since 2026-09-14, so without this every such record would
+// read as a V2 difference when it is V2 holding the text the reader sees. The
+// rules mirror renderWprmShortcodes in src/wprm/recipe-document.ts.
+const wprmAttr=(attrs,name)=>{const m=new RegExp(`\\b${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|&quot;(.*?)&quot;)`,"u").exec(attrs);return (m?.[1]??m?.[2]??m?.[3]??"").trim();};
+const renderWprm=v=>!/\[\/?wprm-/u.test(v)?v:v
+  .replace(/\[wprm-ingredient\b([^\]]*)\]/gu,(_,a)=>wprmAttr(a,"text"))
+  .replace(/\[wprm-temperature\b([^\]]*)\]/gu,(_,a)=>{const x=wprmAttr(a,"value"),u=wprmAttr(a,"unit");return x===""?"":`${x}${u===""?"":` \u00b0${u}`}`;})
+  .replace(/\[\/?wprm-[a-z-]+\b[^\]]*\]/gu,"");
+const norm=s=>stripMarkup(stripMarkup(renderWprm(String(s??""))))
   .replace(/[\u200B-\u200D\uFEFF]/gu,"").replace(/\s+/gu," ")
   // Legacy joins a WPRM step name to its body as "Name : body" where V2 uses
   // "Name: body", and leaves the same stray space before other punctuation.

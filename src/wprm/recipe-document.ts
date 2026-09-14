@@ -48,6 +48,40 @@ const text = (value: unknown): string =>
   typeof value === "string" ? value.trim() : "";
 
 /**
+ * WPRM stores its inline shortcodes unrendered in the API text, and the site
+ * renders them only when it builds the page. Left as they are, 22302 stored
+ * records across 102 sources read like
+ * "Thinly slice [wprm-ingredient text="¼ sweet onion" uid="12"] lengthwise."
+ * where the page shows "Thinly slice ¼ sweet onion lengthwise." Legacy stored the
+ * same raw text, so a parity comparison had nothing to catch.
+ *
+ * Rendered the way the page renders them, checked against live markup:
+ * - wprm-ingredient shows its text attribute (113081 occurrences);
+ * - wprm-temperature shows its value and unit, which danishthings renders as
+ *   "70 °C" - the page then appends a computed conversion, which is not authored
+ *   text and is left out;
+ * - any other wprm tag (recipe-video, and tip's opening and closing tags) carries
+ *   no text of its own and is removed, keeping whatever it wraps.
+ * Attributes are read once entities are decoded, so &quot; and " both work.
+ */
+const wprmAttribute = (attributes: string, name: string): string => {
+  const match = new RegExp(`\\b${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|\u201c([^\u201d]*)\u201d)`, "u").exec(attributes);
+  return (match?.[1] ?? match?.[2] ?? match?.[3] ?? "").trim();
+};
+
+export function renderWprmShortcodes(value: string): string {
+  if (!value.includes("[wprm-") && !value.includes("[/wprm-")) return value;
+  return value
+    .replace(/\[wprm-ingredient\b([^\]]*)\]/gu, (_whole, attributes: string) => wprmAttribute(attributes, "text"))
+    .replace(/\[wprm-temperature\b([^\]]*)\]/gu, (_whole, attributes: string) => {
+      const amount = wprmAttribute(attributes, "value");
+      const unit = wprmAttribute(attributes, "unit");
+      return amount === "" ? "" : `${amount}${unit === "" ? "" : ` \u00b0${unit}`}`;
+    })
+    .replace(/\[\/?wprm-[a-z-]+\b[^\]]*\]/gu, "");
+}
+
+/**
  * Zero-width characters are invisible and sources embed them mid-word: krumpli
  * writes "A\uFEFFdd a lid" inside an instruction. They match \s, so collapsing
  * whitespace turns that into "A dd" — a visibly broken word. They are removed
@@ -79,7 +113,7 @@ const plainText = (value: unknown): string => {
     .replace(orphanedAttributeTail, "")
     .replace(/<br\s*\/?>/giu, " ")
     .replace(/<\/(?:p|div|li|ol|ul|h[1-6]|section|article|table|tr|td|th)\s*>/giu, " ");
-  return cheerio.load(separated).text()
+  return renderWprmShortcodes(cheerio.load(separated).text())
     .replace(/[\u200B-\u200D\uFEFF]/gu, "")
     .replace(/\s+/gu, " ")
     .trim();
