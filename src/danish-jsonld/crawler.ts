@@ -1765,6 +1765,7 @@ function isSourceOutcomeReason(value: string): value is SourceOutcomeReason {
     "malformed-listing-payload",
     "unexpected-listing-shape",
     "http-200-block-shell",
+    "sitemap-not-xml",
     "script-gated-continuation",
     "listing-window-exhausted",
     "vpn-relay-pool-exhausted",

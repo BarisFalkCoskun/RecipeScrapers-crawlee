@@ -26442,7 +26442,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-17T12-28-13.168Z-attempt-66a5c41c-f425-45ea-a194-3f83d52bafd7",
     deferOrBlockReason:
-      "Uncapped run persisted 4048 recipes with complete discovery; 76 failed requests and 8 incomplete pages keep it short of a canary",
+      "Uncapped run persisted 4048 recipes with complete discovery; 76 failed requests and 8 incomplete pages keep it short of a canary\n\nOn 2026-09-14 the site is behind a bot interstitial, and the crawl reported that as success. opskrifter.dk answers every URL, sitemap.xml, the homepage and robots.txt alike, with a 12 KB One moment, please... page that reloads itself after five seconds. It comes under HTTP 200 from server openresty, to the Chrome TLS transport and to curl alike. Run 2026-09-14T17-22-30 fetched that page as its sitemap, found no loc element in it, and recorded 0 candidates from 1 request with discovery complete, outcome no_data. That was a crawler defect, and it is now fixed: a sitemap URL that answers without a urlset or sitemapindex element is recorded as sitemap-not-xml with discovery incomplete, and the block-shell detector recognises this wording. The source stays at configured until the interstitial lifts or a browser fetch clears it.",
   },
   plantepusherne: {
     migrationState: "shadow_passed",

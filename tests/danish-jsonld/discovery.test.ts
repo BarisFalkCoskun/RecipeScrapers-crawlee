@@ -597,6 +597,34 @@ describe("Danish JSON-LD discovery", () => {
     expect(looksLikeHttp200BlockShell(page)).toBe(false);
   });
 
+  it("recognises the reloading, Cloudflare and Anubis interstitials by their wording", () => {
+    // opskrifter.dk answered every URL, sitemap.xml included, with this shell
+    // under HTTP 200 on 2026-09-14; madbanditten pages carried Anubis's.
+    const shells = [
+      `<!DOCTYPE html><html lang="en"><head><meta charset="utf8"><title>One moment, please...</title>`
+        + `<script>setTimeout(function(){ window.location.reload(); }, 5000);</script></head>`
+        + `<body><div class="spinner"></div><p>Please wait while your request is being verified...</p></body></html>`,
+      `<!DOCTYPE html><html><head><title>Just a moment...</title></head><body><noscript>Enable JavaScript and cookies to continue</noscript></body></html>`,
+      `<!doctype html><html lang="en"><head><title>Making sure you&#39;re not a bot!</title></head><body><h1>Making sure you&#39;re not a bot!</h1></body></html>`,
+    ];
+    for (const shell of shells) expect(looksLikeHttp200BlockShell(shell)).toBe(true);
+    const article = `<html><head><title>Kage</title></head><body><main><p>Just a moment... before you bake, read this.</p>`
+      + Array.from({ length: 25 }, (_v, i) => `<a href="/opskrift/${i}">Opskrift ${i}</a>`).join("")
+      + `</main></body></html>`;
+    expect(looksLikeHttp200BlockShell(article)).toBe(false);
+  });
+
+  it("does not read a non-sitemap answer to a sitemap URL as an empty sitemap", () => {
+    const result = discoverSitemapDocument({
+      source,
+      sitemapUrl: "https://example.com/sitemap.xml",
+      xml: "<!DOCTYPE html><html><head><title>Welcome</title></head><body><p>Hello</p></body></html>",
+    });
+    expect(result.complete).toBe(false);
+    expect(result.incompleteReasons).toEqual(["sitemap-not-xml"]);
+    expect(result.recipeUrls).toEqual([]);
+  });
+
   it("calls a large half-arrived listing truncated rather than malformed", () => {
     // allergylicious stored nothing under two concurrent crawls on a host low on
     // memory and stored 324 records with complete discovery on its own. Either

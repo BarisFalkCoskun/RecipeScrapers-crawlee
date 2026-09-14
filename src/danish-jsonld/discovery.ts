@@ -18,6 +18,7 @@ export type DiscoveryIncompleteReason =
   | "truncated-listing-payload"
   | "unexpected-listing-shape"
   | "http-200-block-shell"
+  | "sitemap-not-xml"
   | "script-gated-continuation"
   | "listing-window-exhausted";
 
@@ -34,8 +35,18 @@ export function discoverSitemapDocument(input: {
   sitemapUrl: string;
   xml: string;
 }): DiscoveryResult {
-  const $ = cheerio.load(input.xml, { xml: true });
   const result = emptyResult();
+  // A sitemap URL that answers 200 with something other than a sitemap is not an
+  // empty sitemap. opskrifter.dk served its "One moment, please..." interstitial
+  // for sitemap.xml on 2026-09-14; parsed as XML it held no <loc>, so the run
+  // found 0 candidates from 1 request and reported discovery complete.
+  if (!/<(?:urlset|sitemapindex)\b/iu.test(input.xml)) {
+    increment(result.rejectedByReason, "sitemap-not-xml");
+    result.complete = false;
+    result.incompleteReasons.push("sitemap-not-xml");
+    return result;
+  }
+  const $ = cheerio.load(input.xml, { xml: true });
   const seen = new Set<string>();
 
   $("loc").each((_index, element) => {
@@ -534,7 +545,10 @@ export function looksLikeHttp200BlockShell(body: string): boolean {
   const visibleBody = $("body").text().replace(/\s+/gu, " ").trim();
   const shellText = `${title} ${visibleBody}`.trim();
   if (shellText.length > 4_000 || $("a[href]").length > 20) return false;
-  return /\bcaptcha\b|access denied|checking your browser|cloudflare challenge|temporarily blocked|unusual traffic|are we human/iu
+  // "One moment, please..." is opskrifter.dk's reloading interstitial, "Just a
+  // moment..." Cloudflare's, and "Making sure you're not a bot!" Anubis's
+  // (madbanditten pages on 2026-09-14).
+  return /\bcaptcha\b|access denied|checking your browser|cloudflare challenge|temporarily blocked|unusual traffic|are we human|one moment, please|just a moment\.\.\.|making sure you(?:'|’)re not a bot/iu
     .test(shellText);
 }
 
