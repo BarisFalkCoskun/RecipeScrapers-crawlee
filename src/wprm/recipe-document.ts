@@ -57,28 +57,80 @@ const text = (value: unknown): string =>
  * same raw text, so a parity comparison had nothing to catch.
  *
  * Rendered the way the page renders them, checked against live markup:
- * - wprm-ingredient shows its text attribute (113081 occurrences);
+ * - wprm-ingredient shows the ingredient its uid names, or else its text
+ *   attribute (see renderInlineIngredient);
  * - wprm-temperature shows its value and unit, which danishthings renders as
  *   "70 °C" - the page then appends a computed conversion, which is not authored
  *   text and is left out;
  * - any other wprm tag (recipe-video, and tip's opening and closing tags) carries
  *   no text of its own and is removed, keeping whatever it wraps.
+ * - adjustable and timer keep what they wrap.
  * Attributes are read once entities are decoded, so &quot; and " both work.
  */
 const wprmAttribute = (attributes: string, name: string): string => {
-  const match = new RegExp(`\\b${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|\u201c([^\u201d]*)\u201d)`, "u").exec(attributes);
-  return (match?.[1] ?? match?.[2] ?? match?.[3] ?? "").trim();
+  const match = new RegExp(`\\b${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|\u201c([^\u201d]*)\u201d|([^\\s\\]"'\u201c\u201d]+))`, "u").exec(attributes);
+  return (match?.[1] ?? match?.[2] ?? match?.[3] ?? match?.[4] ?? "").trim();
 };
 
-export function renderWprmShortcodes(value: string): string {
-  if (!value.includes("[wprm-") && !value.includes("[/wprm-")) return value;
+/** An ingredient as WPRM renders it inline: every part already plain text. */
+export interface WprmInlineIngredient {
+  amount: string;
+  unit: string;
+  name: string;
+  notes: string;
+}
+
+/**
+ * The text attribute of [wprm-ingredient] is only WPRM's fallback. With a uid
+ * that names an ingredient of the same recipe, the plugin renders that
+ * ingredient as it is now - amount, unit and name, with the notes only when the
+ * shortcode sets notes_separator (WPRM_Shortcode_Other::ingredient_shortcode).
+ * The attribute is a snapshot from when the author inserted the mention, so an
+ * ingredient edited later leaves it stale: justonecookbook stores
+ * text="3 slices bacon" where the page reads "3 slices applewood smoked bacon",
+ * and madensverden text="150 gram hvedemel" where the page reads
+ * "150 g hvedemel". 27257 mentions across 54 sources differ that way. A split
+ * uid ("4:1") is a computed share of the parent amount and falls back to the
+ * attribute, as does a uid the recipe no longer has.
+ */
+const renderInlineIngredient = (
+  attributes: string,
+  ingredients: ReadonlyMap<string, WprmInlineIngredient> | undefined,
+): string => {
+  const fallback = wprmAttribute(attributes, "text");
+  const found = ingredients?.get(wprmAttribute(attributes, "uid"));
+  if (found === undefined) return fallback;
+  const amountUnit = [found.amount, found.unit].filter((part) => part !== "").join(" ");
+  let nameWithNotes = found.name;
+  const separator = wprmAttribute(attributes, "notes_separator");
+  if (separator !== "" && found.notes !== "") {
+    nameWithNotes += separator === "comma" ? `, ${found.notes}`
+      : separator === "dash" ? ` - ${found.notes}`
+      : separator === "parentheses" ? ` (${found.notes})`
+      : ` ${found.notes}`;
+  }
+  const rendered = [amountUnit, nameWithNotes].filter((part) => part !== "").join(" ");
+  return rendered === "" ? fallback : rendered;
+};
+
+export function renderWprmShortcodes(
+  value: string,
+  ingredients?: ReadonlyMap<string, WprmInlineIngredient>,
+): string {
+  if (!/\[\/?(?:wprm-|adjustable\b|timer\b)/u.test(value)) return value;
   return value
-    .replace(/\[wprm-ingredient\b([^\]]*)\]/gu, (_whole, attributes: string) => wprmAttribute(attributes, "text"))
+    .replace(/\[wprm-ingredient\b([^\]]*)\]/gu, (_whole, attributes: string) => renderInlineIngredient(attributes, ingredients))
     .replace(/\[wprm-temperature\b([^\]]*)\]/gu, (_whole, attributes: string) => {
       const amount = wprmAttribute(attributes, "value");
       const unit = wprmAttribute(attributes, "unit");
       return amount === "" ? "" : `${amount}${unit === "" ? "" : ` \u00b0${unit}`}`;
     })
+    // [adjustable] and [timer] wrap text the reader sees - a quantity that
+    // scales with servings, a duration that starts a countdown - and add none
+    // of their own. 7570 records across 62 sources stored them raw, so an
+    // ingredient read "7 oz azuki beans (dried; a bit less than
+    // [adjustable]1[/adjustable] cup)".
+    .replace(/\[\/?(?:adjustable|timer)\b[^\]]*\]/gu, "")
     .replace(/\[\/?wprm-[a-z-]+\b[^\]]*\]/gu, "");
 }
 
@@ -88,7 +140,10 @@ export function renderWprmShortcodes(value: string): string {
  * whitespace turns that into "A dd" — a visibly broken word. They are removed
  * before the collapse rather than becoming spaces.
  */
-const plainText = (value: unknown): string => {
+const plainText = (
+  value: unknown,
+  ingredients?: ReadonlyMap<string, WprmInlineIngredient>,
+): string => {
   const source = text(value);
   if (source === "") return "";
   // A block boundary is a word boundary. Taking the text content directly
@@ -114,7 +169,7 @@ const plainText = (value: unknown): string => {
     .replace(orphanedAttributeTail, "")
     .replace(/<br\s*\/?>/giu, " ")
     .replace(/<\/(?:p|div|li|ol|ul|h[1-6]|section|article|table|tr|td|th)\s*>/giu, " ");
-  return renderWprmShortcodes(cheerio.load(separated).text())
+  return renderWprmShortcodes(cheerio.load(separated).text(), ingredients)
     .replace(/[\u200B-\u200D\uFEFF]/gu, "")
     .replace(/\s+/gu, " ")
     .trim();
@@ -124,6 +179,49 @@ const minutes = (value: unknown): number | undefined => {
   const parsed = typeof value === "number" ? value : Number(value);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
 };
+
+/**
+ * True when one pair of parentheses encloses the whole text. WPRM renders notes
+ * as the author typed them unless the template adds parentheses, and authors
+ * often type them: justonecookbook writes notes="(dried; a bit less than 1
+ * cup)". Wrapping those again stored "((dried; ...))", which no page shows, on
+ * 92714 records across 674 sources. "(optional) or (fresh)" opens and closes
+ * with a parenthesis but is two pairs, so it is still wrapped.
+ */
+function enclosedInParentheses(value: string): boolean {
+  if (!value.startsWith("(") || !value.endsWith(")")) return false;
+  let depth = 0;
+  for (let index = 0; index < value.length; index += 1) {
+    if (value[index] === "(") depth += 1;
+    else if (value[index] === ")") {
+      depth -= 1;
+      if (depth === 0 && index < value.length - 1) return false;
+      if (depth < 0) return false;
+    }
+  }
+  return depth === 0;
+}
+
+/** Every ingredient of the recipe by uid, for [wprm-ingredient] mentions. */
+function inlineIngredients(groups: unknown): Map<string, WprmInlineIngredient> {
+  const byUid = new Map<string, WprmInlineIngredient>();
+  if (!Array.isArray(groups)) return byUid;
+  for (const group of groups) {
+    if (!isRecord(group) || !Array.isArray(group.ingredients)) continue;
+    for (const entry of group.ingredients) {
+      if (!isRecord(entry)) continue;
+      const uid = typeof entry.uid === "number" ? String(entry.uid) : text(entry.uid);
+      if (uid === "" || byUid.has(uid)) continue;
+      byUid.set(uid, {
+        amount: plainText(entry.amount),
+        unit: plainText(entry.unit),
+        name: plainText(entry.name),
+        notes: plainText(entry.notes),
+      });
+    }
+  }
+  return byUid;
+}
 
 /**
  * Ingredients arrive grouped, and each entry keeps amount, unit, name and
@@ -149,7 +247,7 @@ function flattenIngredients(groups: unknown): string[] {
         .join(" ");
       if (head === "") continue;
       const notes = plainText(entry.notes);
-      lines.push(notes === "" ? head : `${head} (${notes})`);
+      lines.push(notes === "" ? head : `${head} ${enclosedInParentheses(notes) ? notes : `(${notes})`}`);
     }
   }
   return lines;
@@ -176,14 +274,17 @@ function legacyHtmlTexts(value: unknown): string[] {
   return out;
 }
 
-function flattenInstructions(groups: unknown): NormalizedRecipeInstruction[] {
+function flattenInstructions(
+  groups: unknown,
+  ingredients: ReadonlyMap<string, WprmInlineIngredient>,
+): NormalizedRecipeInstruction[] {
   if (!Array.isArray(groups)) return [];
   const steps: NormalizedRecipeInstruction[] = [];
   for (const group of groups) {
     if (!isRecord(group) || !Array.isArray(group.instructions)) continue;
     for (const entry of group.instructions) {
       if (!isRecord(entry)) continue;
-      const body = plainText(entry.text);
+      const body = plainText(entry.text, ingredients);
       if (body === "") continue;
       // A named step is a section heading in the rendered recipe; keeping it
       // in the step text is the only way to carry it in this shape. Headings
@@ -201,7 +302,7 @@ function flattenInstructions(groups: unknown): NormalizedRecipeInstruction[] {
       // would drop any heading whose words happen to recur in its own step,
       // which measured across the promoted WPRM sources would have rewritten
       // 358 of 494 rather than the handful this is meant to catch.
-      const heading = plainText(entry.name).replace(/[:\s]+$/u, "");
+      const heading = plainText(entry.name, ingredients).replace(/[:\s]+$/u, "");
       const repeated = heading !== "" && body.includes(heading) &&
         heading.length >= body.length / 2;
       steps.push({
@@ -231,7 +332,7 @@ function normalize(recipe: Record<string, unknown>): NormalizedRecipeV2 {
   // record are stale copies rather than the recipe.
   let ingredients = flattenIngredients(recipe.ingredients);
   if (ingredients.length === 0) ingredients = legacyHtmlTexts(customFields.old_ingredients);
-  let instructions = flattenInstructions(recipe.instructions);
+  let instructions = flattenInstructions(recipe.instructions, inlineIngredients(recipe.ingredients));
   if (instructions.length === 0) {
     instructions = legacyHtmlTexts(customFields.old_instructions)
       .map((step, index) => ({ position: index + 1, text: step }));

@@ -92,6 +92,31 @@ describe("compare-parity field normalisation", () => {
   });
 });
 
+describe("compare-parity WPRM rendering", () => {
+  // Legacy stores [adjustable] raw and wraps notes the author already
+  // parenthesised again; V2 renders what the page shows. Both are the same text.
+  it("reads raw [adjustable] and doubled note parentheses as V2's rendered text", () => {
+    const legacy = legacyRecipe("https://example.com/r/1", "Pie");
+    legacy["ingredients"] = [{ original: "7 oz azuki beans ((dried; a bit less than [adjustable]1[/adjustable] cup))" }];
+    legacy["instructions"] = [{ step: 1, text: "Simmer [timer minutes=5]5 minutes[/timer]." }];
+    const crawlee = crawleeRecipe("https://example.com/r/1", "https://example.com/r/1", "Pie");
+    const normalized = crawlee["normalized"] as Record<string, unknown>;
+    normalized["ingredients"] = ["7 oz azuki beans (dried; a bit less than 1 cup)"];
+    normalized["instructions"] = [{ position: 1, text: "Simmer 5 minutes." }];
+    const out = compare([legacy], [crawlee]);
+    expect(out).not.toContain("### ingredients");
+    expect(out).not.toContain("### instructions");
+  });
+
+  it("still reports a note that differs inside the parentheses", () => {
+    const legacy = legacyRecipe("https://example.com/r/1", "Pie");
+    legacy["ingredients"] = [{ original: "7 oz azuki beans ((dried))" }];
+    const crawlee = crawleeRecipe("https://example.com/r/1", "https://example.com/r/1", "Pie");
+    (crawlee["normalized"] as Record<string, unknown>)["ingredients"] = ["7 oz azuki beans (soaked)"];
+    expect(compare([legacy], [crawlee])).toContain("### ingredients");
+  });
+});
+
 describe("compare-parity record keying", () => {
   // pillsbury addresses a recipe as /recipes/<slug>/<uuid> and for 21 of its
   // recipes the uuid in its sitemap is not the uuid in that page's own

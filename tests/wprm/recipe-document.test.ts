@@ -348,8 +348,9 @@ describe("WPRM API recipe extraction", () => {
     // where the page shows the ingredient; legacy stored the same raw text.
     const entry = structuredClone(fixture[0]) as Record<string, any>;
     entry.recipe.instructions = [{ name: "", instructions: [
-      { text: 'Thinly slice [wprm-ingredient text="\u00bc sweet onion" uid="12"] lengthwise.' },
-      { text: "Heat to [wprm-temperature value=\"70\" unit=\"C\"] for [wprm-ingredient text=&quot;3 minutes&quot; uid=&quot;4&quot;]." },
+      // uids this recipe does not have, so the text attribute is the fallback.
+      { text: 'Thinly slice [wprm-ingredient text="\u00bc sweet onion" uid="912"] lengthwise.' },
+      { text: "Heat to [wprm-temperature value=\"70\" unit=\"C\"] for [wprm-ingredient text=&quot;3 minutes&quot; uid=&quot;904&quot;]." },
       { text: '[wprm-tip accent="#a92329"]Let it rest overnight.[/wprm-tip] [wprm-recipe-video]' },
       { text: "Keep ordinary [square brackets] as they are." },
     ] }];
@@ -361,6 +362,58 @@ describe("WPRM API recipe extraction", () => {
       "Heat to 70 \u00b0C for 3 minutes.",
       "Let it rest overnight.",
       "Keep ordinary [square brackets] as they are.",
+    ]);
+  });
+
+  it("renders an inline ingredient as the recipe's current ingredient, not its stale text", () => {
+    // WPRM_Shortcode_Other::ingredient_shortcode uses text only as a fallback.
+    // justonecookbook stores text="3 slices bacon" where the page reads
+    // "3 slices applewood smoked bacon"; notes appear only with notes_separator.
+    const entry = structuredClone(fixture[0]) as Record<string, any>;
+    entry.recipe.ingredients = [{ name: "", ingredients: [
+      { uid: 2, amount: "3", unit: "slices", name: "applewood smoked bacon", notes: "" },
+      { uid: 5, amount: "1", unit: "", name: "large egg", notes: "(beaten)" },
+      { uid: 7, amount: "", unit: "", name: '<a href="https://example.com/salt">kosher salt</a>', notes: "to taste" },
+    ] }];
+    entry.recipe.instructions = [{ name: "", instructions: [
+      { text: '<p>Cut [wprm-ingredient text="3 slices bacon" uid="2"] into small bits.</p>' },
+      { text: 'Beat [wprm-ingredient text="1 egg" uid="5" notes_separator="default"] and [wprm-ingredient text="1 egg" uid="5"].' },
+      { text: 'Season with [wprm-ingredient text="salt" uid=7 notes_separator="comma"].' },
+      { text: 'Split [wprm-ingredient text="half the bacon" uid="2:1"], keep [wprm-ingredient text="old pepper" uid="99"].' },
+    ] }];
+
+    const [recipe] = extractWprmRecipes([entry]).recipes;
+
+    expect(recipe.normalized.instructions.map((step) => step.text)).toEqual([
+      "Cut 3 slices applewood smoked bacon into small bits.",
+      "Beat 1 large egg (beaten) and 1 large egg.",
+      "Season with kosher salt, to taste.",
+      "Split half the bacon, keep old pepper.",
+    ]);
+  });
+
+  it("keeps [adjustable] and [timer] content and does not double authored parentheses", () => {
+    // 7570 records across 62 sources stored [adjustable] raw, and 92714 across
+    // 674 wrapped notes the author had already parenthesised: "((dried; ...))".
+    const entry = structuredClone(fixture[0]) as Record<string, any>;
+    entry.recipe.ingredients = [{ name: "", ingredients: [
+      { uid: 0, amount: "7", unit: "oz", name: "azuki beans", notes: "(dried; a bit less than [adjustable]1[/adjustable] cup)" },
+      { uid: 1, amount: "2", unit: "tsp", name: "miso", notes: "white" },
+      { uid: 2, amount: "1", unit: "", name: "onion", notes: "(optional) or (a shallot)" },
+    ] }];
+    entry.recipe.instructions = [{ name: "", instructions: [
+      { text: "Add [adjustable]1\u20132[/adjustable] Tbsp liquid and simmer [timer minutes=5]5 minutes[/timer]." },
+    ] }];
+
+    const [recipe] = extractWprmRecipes([entry]).recipes;
+
+    expect(recipe.normalized.ingredients).toEqual([
+      "7 oz azuki beans (dried; a bit less than 1 cup)",
+      "2 tsp miso (white)",
+      "1 onion ((optional) or (a shallot))",
+    ]);
+    expect(recipe.normalized.instructions.map((step) => step.text)).toEqual([
+      "Add 1\u20132 Tbsp liquid and simmer 5 minutes.",
     ]);
   });
 
