@@ -9,11 +9,12 @@ import type { EmbeddedRecipeExtraction } from "./spisbedre.js";
  *
  * Title, yield, time and ingredients follow the legacy microdata fallback
  * (BaseRecipeSpider.extract_recipe_microdata): the first itemprop="name" in the
- * Recipe scope and every itemprop="recipeIngredient". Instructions are where the
- * two part ways. Legacy reads only itemprop="recipeInstructions", which Jetpack
- * never emits, so it would store these recipes with no steps at all. The steps
- * are in the block's directions element, one paragraph per step, and that is
- * what the page shows.
+ * Recipe scope and every itemprop="recipeIngredient". Steps come from
+ * itemprop="recipeInstructions" when the block carries it, as legacy reads them
+ * and as older smittenkitchen posts do. Newer blocks omit that itemprop
+ * (/2026/08/peach-cobbler-loaf/), and legacy would store those with no steps;
+ * here they are read from the block's directions element, one paragraph per
+ * step, which is what the page shows.
  *
  * `found` is false when a page carries no Recipe scope, so the caller can treat
  * it as a post that is not a recipe rather than a malformed one.
@@ -23,18 +24,43 @@ export interface JetpackRecipeExtraction extends EmbeddedRecipeExtraction {
 }
 
 const compact = (value: string): string =>
-  value.replace(/[​-‍﻿]/gu, "").replace(/\s+/gu, " ").trim();
+  value.replace(/[\u200B-\u200D\uFEFF]/gu, "").replace(/\s+/gu, " ").trim();
 
+/**
+ * Jetpack's time field is free text ("1 1/2 to 2 1/2 hours", "20 minutes to
+ * assemble; 3 hours to chill"). It follows the legacy TimeNormalizer.to_minutes
+ * for English sources so the two agree: fractions become decimals, then the
+ * first "N hours [M minutes]" wins, else the first "N minutes". Summing every
+ * duration, as this first did, disagreed with legacy on 29 of 495 records and
+ * misread "3 1/2 hours" as 120. One deliberate difference: an ISO value is read
+ * as ISO, and a negative one ("P-1DT-1H0M0S") yields nothing where legacy
+ * matched the "1H" inside it.
+ */
 function minutes(value: string): number | undefined {
-  const iso = value.match(/^P(?:\d+D)?T(?:(\d+)H)?(?:(\d+)M)?/iu);
-  if (iso) {
-    const result = Number(iso[1] ?? 0) * 60 + Number(iso[2] ?? 0);
+  const raw = value.trim();
+  if (/^-?P/iu.test(raw)) {
+    const iso = raw.match(/^P(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:\d+S)?)?$/iu);
+    if (!iso) return undefined;
+    const result = Number(iso[1] ?? 0) * 1440 + Number(iso[2] ?? 0) * 60 + Number(iso[3] ?? 0);
     return result > 0 ? result : undefined;
   }
-  const hours = value.match(/(\d+(?:[.,]\d+)?)\s*(?:hours?|hrs?)\b/iu);
-  const mins = value.match(/(\d+)\s*(?:minutes?|mins?)\b/iu);
-  const result = Math.round(Number((hours?.[1] ?? "0").replace(",", ".")) * 60) + Number(mins?.[1] ?? 0);
-  return result > 0 ? result : undefined;
+  const text = raw.toLowerCase().replace(/,/gu, ".")
+    .replace(/½/gu, " 1/2").replace(/¼/gu, " 1/4").replace(/¾/gu, " 3/4").replace(/⅓/gu, " 1/3").replace(/⅔/gu, " 2/3")
+    .replace(/(\d+)\s+(\d+)\/(\d+)/gu, (whole, a: string, n: string, d: string) =>
+      Number(d) === 0 ? whole : String(Number(a) + Number(n) / Number(d)))
+    .replace(/(?<!\d)(\d+)\/(\d+)/gu, (whole, n: string, d: string) =>
+      Number(d) === 0 ? whole : String(Number(n) / Number(d)));
+  const hours = text.match(/(\d+(?:\.\d+)?)\s*(?:hours?|hrs?|h)\s*(?:(\d+(?:\.\d+)?)\s*(?:minutes?|mins?|min|m))?/u);
+  if (hours) {
+    const result = Math.round(Number(hours[1]) * 60 + (hours[2] ? Number(hours[2]) : 0));
+    return result > 0 ? result : undefined;
+  }
+  const mins = text.match(/(\d+(?:\.\d+)?)\s*(?:minutes?|mins?|min|m)/u);
+  if (mins) {
+    const result = Math.round(Number(mins[1]));
+    return result > 0 ? result : undefined;
+  }
+  return undefined;
 }
 
 /** Block-level boundaries become line breaks before the text is read. */

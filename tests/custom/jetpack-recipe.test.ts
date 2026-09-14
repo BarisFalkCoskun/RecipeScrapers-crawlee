@@ -36,6 +36,28 @@ describe("Jetpack recipe block extraction", () => {
     expect(normalized?.totalMinutes).toBe(90);
   });
 
+  it("reads free-text times the way the legacy normalizer does", () => {
+    // Observed on smittenkitchen; legacy takes the first "N hours [M minutes]",
+    // else the first "N minutes", after turning fractions into decimals.
+    const withTime = (time: string) => jetpack.replace(
+      'datetime="1.5 hours, with prep time"',
+      `datetime="${time}"`
+    );
+    const cases: Array<[string, number | undefined]> = [
+      ["1 1/2 to 2 1/2 hours", 150],
+      ["3 1/2 hours, mostly resting time", 210],
+      ["20 minutes to assemble; 3 hours to chill; 30 minutes to bake two trays", 180],
+      ["45 minutes to 1 hour", 60],
+      ["20 miniutes", 20],
+      ["PT1H30M", 90],
+      ["P-1DT-1H0M0S", undefined],
+    ];
+    for (const [time, expected] of cases) {
+      const result = extractJetpackRecipe(page(withTime(time)), "https://example.com/r/");
+      expect(result.recipe?.normalized.totalMinutes, time).toBe(expected);
+    }
+  });
+
   it("prefers itemprop recipeInstructions when a block carries it", () => {
     const withInstructions = jetpack.replace(
       '<div class="jetpack-recipe-directions e-instructions">',
