@@ -651,9 +651,13 @@ describe("Danish JSON-LD source registry", () => {
       expect(byId.get(id)?.deferOrBlockReason).toMatch(/collection is empty/u);
     }
     // Sources the site itself keeps unreachable.
-    for (const id of ["letmad", "madbanditten", "juliekarla"]) {
+    for (const id of ["letmad", "juliekarla"]) {
       expect(byId.get(id)?.migrationState).toBe("blocked");
     }
+    // madbanditten's endpoint timed out until 2026-09-14, when the Chrome TLS
+    // transport reached it; it passed on full legacy parity.
+    expect(byId.get("madbanditten")?.migrationState).toBe("shadow_passed");
+    expect(byId.get("madbanditten")?.shadowParity).toMatch(/^2089\/2089 V2 recipes match legacy/u);
   });
 
   it("carries full shadow parity for the sources compared against Scrapy", () => {

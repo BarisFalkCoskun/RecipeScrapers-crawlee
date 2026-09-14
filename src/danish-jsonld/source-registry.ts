@@ -33386,10 +33386,12 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
       "Two uncapped Crawlee runs emitted identical 912-record keys and normalized content with complete discovery and no failed, blocked, rejected, storage, or domain record, and the full isolated Scrapy run emitted the same 912 recipes with every material field matching; Crawlee intentionally keeps the published cuisine in its own field instead of folding it into legacy's tag list. One ingredient carries zero-width characters mid-string that Crawlee strips and legacy keeps, which is the same visible text",
   },
   madbanditten: {
-    migrationState: "blocked",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-20T07-00-48.718Z-attempt-71f95d80-dac5-44ea-8df9-84c8dc457a7c",
+    shadowParity:
+      "2089/2089 V2 recipes match legacy on every material field; legacy holds 6 more that lack a name, ingredients, instructions or a link",
     deferOrBlockReason:
-      "Two uncapped attempts had the discovery request time out after 30 seconds with no response, and the endpoint does not answer a plain request either, so the source is unreachable rather than misconfigured",
+      "Two uncapped attempts had the discovery request time out after 30 seconds with no response, and the endpoint does not answer a plain request either, so the source is unreachable rather than misconfigured\n\nThe endpoint answers again, and the reason above is superseded. Shadow comparison passed on 2026-09-14. A probe that morning through the Chrome TLS transport found the recipe API answering 200 with JSON and X-WP-Total 2095. Run 2026-09-14T15-02-14 walked all 2095 candidates with discovery complete, 0 failed and 0 blocked. It stored 2089 and refused 6. Walking the API again and putting every record through the extractor named each as an upstream record the completeness contract rejects: 3 with no instructions, 1 with no ingredients, 1 with neither, and 1 with no canonical link. The repeat, 2026-09-14T15-42-38, was STABLE with 2089 of 2089 identical. The isolated legacy run that evening emitted 2095. Every one of the 2089 V2 records is among them and every material field matched; the 6 only legacy holds are the records V2 refuses. The comparator also noted 6 records keep WPRM named-step prefixes legacy drops, 5 keep a space at a block boundary legacy fuses over, and 8 drop a space legacy inserts where it strips inline markup. Live spot-checks could not be run: the recipe pages now answer an Anubis Making sure you are not a bot proof-of-work page, while the API does not. In their place, every stored record was scanned for the WPRM rendering defects legacy shares and parity cannot see: 0 raw shortcodes, 0 undecoded entities in a title, 0 doubled note parentheses, 0 residual markup.",
   },
   madensverden: {
     migrationState: "shadow_passed",
