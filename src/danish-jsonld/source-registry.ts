@@ -28702,10 +28702,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Two uncapped Crawlee runs emitted identical 603-record keys and normalized content with idempotent upserts, and the full isolated Scrapy run emitted the same 603 recipes with every material field matching",
   },
   foodnourish: {
-    migrationState: "blocked",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-21T10-57-29.979Z-attempt-8d557882-3efc-4568-8c77-396080740620",
+    shadowParity:
+      "No Scrapy baseline - legacy cannot connect to foodnourish.net over IPv4 from this host; 56 recipes rest on a clean run equal to the API count, a STABLE repeat, and live spot-checks matching every ingredient and step",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix\n\nThe source is reachable again, and the reason above is superseded. Promoted on 2026-09-14 under the route approved on 2026-09-13 for sites legacy cannot crawl. Run 2026-09-14T09-40-11 walked 56 candidates, the X-WP-Total the recipe API declares, with discovery complete, 0 failed and 0 blocked, and stored all 56. The repeat, 2026-09-14T09-40-20, was STABLE with 56 of 56 identical. Six stored records were checked through impit against the recipe card on the live page, 6 of 6 with title, every ingredient and every step found, and the negative control failed. Legacy produced nothing in two isolated runs that morning, and not because of the site identity. Every request ended in Twisted User timeout caused connection failure after 4 attempts. From this host both IPv4 addresses, 217.65.159.142 and 217.65.156.198, time out at the TCP connect for curl as well, while IPv6 answers 200 in under a second. Scrapy resolves over IPv4 only, whereas curl and the crawler reach the site over IPv6. This is a caveat for the operational cutover rather than for parity: V2 reaches this source because this host has working IPv6, and a host without it would meet the same wall legacy does.",
   },
   foodwithfeeling: {
     migrationState: "shadow_passed",
