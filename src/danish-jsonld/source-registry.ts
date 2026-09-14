@@ -30883,7 +30883,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-21T11-55-48.266Z-attempt-ed089e3c-8cfb-4a7f-b86a-b1c8074adca2",
     deferOrBlockReason:
-      "Uncapped run persisted 207 recipes from 287 API records; 2 records the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary",
+      "Uncapped run persisted 207 recipes from 287 API records; 2 records the source publishes incomplete or malformed and discovery that did not complete keeps it short of a canary\n\nRe-crawled on 2026-09-14 (run 2026-09-14T05-17-10), and the shortfall is a rebrand plus a sister site, not a defect. smartlittlecookie.net now redirects every URL, API included, to mydominicankitchen.com, which the registry already allows. The recipe API declares 287. Walking it again, 207 link to mydominicankitchen.com and are all stored, 78 link to micocinadominicana.com, the Spanish-language sister site, and 2 carry link false. V2 refuses those 80 at the domain boundary, and that refusal is the discovery-incomplete flag. There were 0 failed and 0 blocked requests. Legacy cannot take a baseline: its allowed_domains lists only smartlittlecookie.net, so the offsite filter drops the redirect and it emits nothing. What remains is a policy question like coop and greedygourmet: whether a sister domain publishing translations belongs to this source. It is left at configured until that is decided.",
   },
   snappygourmet: {
     migrationState: "shadow_passed",
