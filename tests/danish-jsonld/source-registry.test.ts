@@ -983,8 +983,9 @@ describe("Danish JSON-LD source registry", () => {
         maxConcurrency: 2,
         maxRetries: 3,
       },
-      migrationState: "configured",
-      latestScrapyOutcome: "partial",
+      // Promoted 2026-09-15 on a full uncapped legacy comparison.
+      migrationState: "shadow_passed",
+      latestScrapyOutcome: "succeeded",
       latestCanary: "2026-08-19T16-01-22.287Z",
     });
     expect(source?.sitemapDiscovery).toMatchObject({

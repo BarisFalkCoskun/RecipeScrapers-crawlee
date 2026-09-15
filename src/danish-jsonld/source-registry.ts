@@ -33885,11 +33885,13 @@ const CUSTOM_DANISH_JSONLD_SOURCES: DanishJsonLdSource[] =
       maxRetries: 3,
     },
     requireCompleteJsonLd: true,
-    migrationState: "configured",
-    latestScrapyOutcome: "partial",
+    migrationState: "shadow_passed",
+    latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-19T16-01-22.287Z",
+    shadowParity:
+      "318/318 legacy recipes match V2 on every material field but categories, which the two read from different places; V2 holds 1 more that legacy drops for a blank Recipe name",
     deferOrBlockReason:
-      "Bounded live crawl discovered 341 candidates and persisted complete Recipe JSON-LD without request, rejection, or domain failures; Scrapy close concurrency selected a different eight-URL window, so an uncapped shadow comparison is still required",
+      "Bounded live crawl discovered 341 candidates and persisted complete Recipe JSON-LD without request, rejection, or domain failures; Scrapy close concurrency selected a different eight-URL window, so an uncapped shadow comparison is still required\n\nShadow comparison passed on 2026-09-15 with an uncapped run, and the bounded evidence above is superseded. Run 2026-09-14T23-09-31 walked the post sitemap, 342 candidates, with discovery complete, 0 failed and 0 blocked, and stored 319 recipes. The other 23 posts publish no Recipe JSON-LD, so nothing was refused, and legacy found no recipe on any of them either. The repeat, 2026-09-14T23-25-36, was STABLE with 319 of 319 identical. The isolated legacy run emitted 318, and every one is among the 319. The one V2 holds and legacy lacks, porretaerte, publishes a Recipe node with 16 ingredients and 9 steps but no name. Legacy spider takes the title from name alone and silently drops the page, confirmed by running scrapy parse on that URL. V2 takes the title from the page h1 and marks the record json-ld-name-taken-from-page, as it does for stegeso. Every material field matched except categories, which differed on 311 records. That is a difference in source, not an extraction defect: the legacy spider reads categories from the blog post taxonomy links in the page HTML (.post-categories and .entry-tags, as in Gulerod and Kartofler), while V2 reads the Recipe JSON-LD recipeCategory (Aftensmad, Dessert). Consumers who relied on the post taxonomy will see course labels instead; this belongs to the consumer data contract gate. Six stored records were checked through impit against the recipe card on the live page, 6 of 6 with title, every ingredient and every step found, and the negative control failed.",
   }));
 
 const CUSTOM_DANISH_LISTING_JSONLD_SOURCES: DanishJsonLdSource[] =
