@@ -23,6 +23,7 @@ export interface CompleteJsonLdExtraction {
     | "json-ld-embedded-quote-repaired"
     | "json-ld-name-taken-from-page"
     | "json-ld-from-streamed-payload"
+    | "json-ld-duplicate-recipe-collapsed"
   >;
 }
 
@@ -56,7 +57,8 @@ export interface BuildRecipeDocumentV2Input {
  * separately for page persistence. Legacy extraction remains intentionally lax.
  */
 export function extractCompleteJsonLdRecipes(
-  html: string
+  html: string,
+  options: { collapseSameTitleRecipes?: boolean } = {}
 ): CompleteJsonLdExtraction {
   const scriptBodies = extractJsonLdScriptBodies(html);
   const streamed = scriptBodies.some((body) => /"@type"\s*:\s*"?Recipe/u.test(body))
@@ -120,9 +122,12 @@ export function extractCompleteJsonLdRecipes(
     }
   }
 
+  const collapsed = options.collapseSameTitleRecipes ? collapseSameTitleRecipes(recipes) : recipes;
+  const collapsedCount = recipes.length - collapsed.length;
+
   return {
     rawScripts,
-    recipes,
+    recipes: collapsed,
     rejectedReasons: Array.from(new Set(rejectedReasons)),
     incompleteJsonLdCount,
     malformedJsonLdCount,
@@ -130,6 +135,7 @@ export function extractCompleteJsonLdRecipes(
     signals: Array.from(new Set([
       ...rejectedReasons,
       ...(nameFromPageCount > 0 ? ["json-ld-name-taken-from-page" as const] : []),
+      ...(collapsedCount > 0 ? ["json-ld-duplicate-recipe-collapsed" as const] : []),
       ...(streamed.length > 0 ? ["json-ld-from-streamed-payload" as const] : []),
       ...(repairedJsonLdCount > 0
         ? ["json-ld-control-character-repaired" as const]
@@ -139,6 +145,44 @@ export function extractCompleteJsonLdRecipes(
         : []),
     ])),
   };
+}
+
+/**
+ * Some sites publish the same recipe twice on a page: bertolli.com emits a full
+ * WP Recipe Maker node and a thinner one from its theme, with times as "15
+ * minutes", recipeYield "0", no category or description, and ingredient group
+ * headings listed as ingredients. Kept as two records, 284 of its 297 recipe
+ * pages stored two copies. Opted in per source because a page can also carry
+ * genuine same-titled variants - sundpaabudget publishes two portion sizes of
+ * one dish - which must stay separate. Nodes sharing a title and a step count
+ * collapse to the one carrying the most fields; order is otherwise preserved.
+ */
+function collapseSameTitleRecipes(recipes: Record<string, unknown>[]): Record<string, unknown>[] {
+  const fields = [
+    "description", "image", "recipeCategory", "recipeCuisine", "keywords",
+    "prepTime", "cookTime", "totalTime", "recipeYield", "@id", "author", "nutrition",
+  ];
+  const score = (recipe: Record<string, unknown>): number =>
+    fields.filter((field) => {
+      const value = recipe[field];
+      return value !== undefined && value !== null && value !== "" && value !== "0" &&
+        !(Array.isArray(value) && value.length === 0);
+    }).length;
+  const kept = new Map<string, Record<string, unknown>>();
+  const order: string[] = [];
+  for (const recipe of recipes) {
+    const title = String(firstString(recipe["name"], recipe["headline"], recipe["title"]) ?? "")
+      .toLowerCase().replace(/\s+/gu, " ").trim();
+    const key = `${title}\u0000${normalizeInstructions(recipe["recipeInstructions"]).length}`;
+    const existing = kept.get(key);
+    if (existing === undefined) {
+      kept.set(key, recipe);
+      order.push(key);
+    } else if (score(recipe) > score(existing)) {
+      kept.set(key, recipe);
+    }
+  }
+  return order.map((key) => kept.get(key)!);
 }
 
 /**

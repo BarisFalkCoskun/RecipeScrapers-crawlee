@@ -114,6 +114,8 @@ export interface DanishJsonLdSource {
   disableHeaderGenerator?: true;
   /** Match legacy spiders that persisted only the first integer from recipeYield. */
   numericYieldOnly?: true;
+  /** Collapse same-titled Recipe nodes on one page that are copies of one recipe. */
+  collapseSameTitleRecipes?: true;
   requestSettings: {
     delaySeconds: number;
     rateLimitPerMinute: number | null;
@@ -26502,6 +26504,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 17004 recipes with complete discovery; 24 failed requests and 20 incomplete pages keep it short of a canary",
   },
   bertolli: {
+    collapseSameTitleRecipes: true,
     migrationState: "configured",
     latestCanary: "2026-09-01T10-10-40.496Z-attempt-9c6243be-556f-4d73-952c-0d3a7479c612",
     deferOrBlockReason:
@@ -32570,6 +32573,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "The comparison is clean and the rejections are not yet accounted for. The 2026-08-31 run is much healthier than the one this reason used to describe - 82 recipes over 328 requests with no failed and no blocked request and discovery complete, against 23 blocked before - and the isolated legacy run emitted 80 records with nothing legacy holds that V2 does not, and no difference in any field on any record. The 2 extra V2 holds are real: /opskrift/butterfly-filetering-af-makrel and /opskrift/grydestegt-blomkal, stored with instructions and ingredients.\n\nWhat is not established is the other half of the run: 211 recipe candidates were discovered, 82 persisted, and 128 rejected as incomplete JSON-LD with 1 malformed. That ratio has to be explained by naming what those pages are before this source can pass a canary, and it could not be checked today: the site is behind a browser challenge from splash.simply.com, answering HTTP 454 with a \"Checking your browser...\" page to every request from this host, and it stayed that way across a 45-second pause.\n\nThe challenge is not what caused the rejections - 454 is already in the crawler's blocked-status list and the run recorded zero blocked requests, so those 128 pages answered 200 during the crawl itself. Whatever they are, they are not challenge pages, and the question stays open until the site answers this host again.",
   },
   mambeno: {
+    collapseSameTitleRecipes: true,
     migrationState: "shadow_passed",
     latestScrapyOutcome: "succeeded",
     shadowParity:

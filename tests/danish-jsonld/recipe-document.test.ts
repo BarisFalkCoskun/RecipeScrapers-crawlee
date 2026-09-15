@@ -30,6 +30,31 @@ const completeRecipe = {
 };
 
 describe("Danish JSON-LD @id references", () => {
+
+  it("collapses a same-titled duplicate Recipe node only when the source opts in", () => {
+    // bertolli.com publishes a full WPRM node and a thinner theme node for one recipe.
+    const full = { "@type": "Recipe", "@id": "https://bertolli.com/r/#recipe", name: "Curry Marinade",
+      description: "Spice up your marinade", recipeCategory: ["Marinades/Dressings"], prepTime: "PT15M",
+      recipeIngredient: ["1 clove garlic (minced)", "1 tsp curry powder"],
+      recipeInstructions: [{ "@type": "HowToStep", text: "Mix above ingredients into bowl." }] };
+    const thin = { "@context": "https://schema.org/", "@type": "Recipe", name: "Curry Marinade",
+      prepTime: "15 minutes", recipeYield: "0", recipeIngredient: ["1 clove garlic", "1 tsp curry powder"],
+      recipeInstructions: [{ "@type": "HowToStep", text: "Mix above ingredients into bowl." }] };
+    const page = `<html><body><script type="application/ld+json">${JSON.stringify(thin)}</script>`
+      + `<script type="application/ld+json">${JSON.stringify(full)}</script></body></html>`;
+
+    expect(extractCompleteJsonLdRecipes(page).recipes).toHaveLength(2);
+    const collapsed = extractCompleteJsonLdRecipes(page, { collapseSameTitleRecipes: true });
+    expect(collapsed.recipes).toHaveLength(1);
+    expect(collapsed.recipes[0]?.["@id"]).toBe("https://bertolli.com/r/#recipe");
+    expect(collapsed.signals).toContain("json-ld-duplicate-recipe-collapsed");
+
+    // Same-titled variants with different steps are separate recipes and stay so.
+    const variant = { ...thin, recipeInstructions: [...thin.recipeInstructions, { "@type": "HowToStep", text: "Rest 1 hour." }] };
+    const variants = `<script type="application/ld+json">${JSON.stringify(full)}</script>`
+      + `<script type="application/ld+json">${JSON.stringify(variant)}</script>`;
+    expect(extractCompleteJsonLdRecipes(variants, { collapseSameTitleRecipes: true }).recipes).toHaveLength(2);
+  });
   // rema1000 states its recipe image as {"@id": ".../#/schema/image/1"} and
   // puts the ImageObject carrying the URL elsewhere in the same @graph. That is
   // ordinary JSON-LD and the shape Yoast and RankMath emit. The graph was

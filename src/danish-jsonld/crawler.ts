@@ -1254,7 +1254,9 @@ export class DanishJsonLdSourceSession {
         "365discount-recipe-html"
       );
     }
-    const extraction = extractCompleteJsonLdRecipes(response.body);
+    const extraction = extractCompleteJsonLdRecipes(response.body, {
+      collapseSameTitleRecipes: this.source.collapseSameTitleRecipes === true,
+    });
     if (extraction.repairedJsonLdCount > 0) {
       this.emit("json-ld-repair", {
         repairedScriptCount: extraction.repairedJsonLdCount,
