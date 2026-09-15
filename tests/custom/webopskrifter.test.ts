@@ -96,6 +96,16 @@ describe("Webopskrifter microdata adapter", () => {
     expect(steps?.map((step) => step.position)).toEqual([1, 2, 3]);
   });
 
+  it("drops the related-recipe cards and their lead-in from the steps", () => {
+    const html = `<div itemscope itemtype="http://schema.org/Recipe"><h1 itemprop="name">Grøntsager i airfryer</h1>`
+      + `<ul><li itemprop="recipeIngredient">1 blomkål</li></ul><div itemprop="recipeInstructions"><p>Skær grøntsagerne ud.<br><br>`
+      + `Servér mens grøntsagerne er varme.<br><br><b>Jeg kan også anbefale de her opskrifter:</b><br>`
+      + `<a class="outro_row" href="/opskrifter/blomkaal-i-airfryer-24492/"><span class="outro_row_link">Blomkål i airfryer</span></a>`
+      + `<a class="outro_row" href="/opskrifter/broccoli-i-airfryer-24439/"><span class="outro_row_link">Broccoli i airfryer</span></a></p></div></div>`;
+    expect(extractWebopskrifterRecipe(html, "https://webopskrifter.dk/opskrifter/x").recipe?.normalized.instructions.map((step) => step.text))
+      .toEqual(["Skær grøntsagerne ud.", "Servér mens grøntsagerne er varme."]);
+  });
+
   it("persists HTML-derived V2 records through the custom session route", async () => {
     const source = DANISH_JSONLD_SOURCES.find((entry) => entry.id === "webopskrifter")!;
     const store = new MemoryStore();

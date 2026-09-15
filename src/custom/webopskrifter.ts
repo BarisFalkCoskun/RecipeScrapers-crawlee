@@ -57,7 +57,13 @@ export function extractWebopskrifterRecipe(
     // stores the same fused text, so parity could not see it. Block boundaries
     // become line breaks first; a heading prefixes the step that follows it, as
     // named WPRM steps do.
-    const separated = (instructionScope.html() ?? "")
+    // The last paragraph often closes with "Jeg kan også anbefale de her
+    // opskrifter:" and a row of linked cards to other recipes (a.outro_row). Their
+    // titles are promotion, not steps; read as text they fused into one line on
+    // 115 records, "Blomkål i airfryerBroccoli i airfryer".
+    const scopeCopy = instructionScope.clone();
+    scopeCopy.find("a.outro_row").remove();
+    const separated = (scopeCopy.html() ?? "")
       .replace(/<br\s*\/?>/giu, "\n")
       .replace(/<(h[1-6])\b[^>]*>([\s\S]*?)<\/\1\s*>/giu, "\n@@heading@@$2\n")
       .replace(/<\/?(?:p|div|li|ol|ul)\b[^>]*>/giu, "\n");
@@ -74,6 +80,10 @@ export function extractWebopskrifterRecipe(
         text: heading === "" ? body : `${heading}: ${body}`,
       });
       heading = "";
+    }
+    // A lead-in whose list was removed is left introducing nothing.
+    while (instructions.length > 0 && /:\s*$/u.test(instructions[instructions.length - 1]!.text)) {
+      instructions.pop();
     }
   }
   const category = compact(scope.find('[itemprop="recipeCategory"]').first().text());
