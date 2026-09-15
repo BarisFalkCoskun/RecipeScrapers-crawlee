@@ -156,10 +156,26 @@ export const DANISH_JSONLD_BROWSER_VIEWPORT = { width: 1920, height: 969 } as co
  * profile got-scraping reproduces best), and sent unchanged on every request.
  * A draw is refused if it carries no user agent or any crawler marker, and the
  * few retries that takes are cheap.
+ *
+ * It is also refused unless its client hints agree with its user agent, as a
+ * real Chrome's always do. Measured over 2000 draws on 2026-09-15, 25 did not:
+ * 15 sent no sec-ch-ua at all, 3 no sec-ch-ua-platform, 5 spelled the platform
+ * "MacOS" where Chrome sends "macOS", and 2 put a different major version in
+ * sec-ch-ua than in the user agent. A crawl keeps one identity for its whole
+ * run, so an inconsistent draw marked every request of that run.
  */
 const CRAWLER_MARKER = /bot|crawl|spider|compatible;|pageburst|headless|preview|scan/i;
 
 export const DANISH_JSONLD_ACCEPT_LANGUAGE = "da-DK,da;q=0.9,en-US;q=0.8,en;q=0.7";
+
+function clientHintsAgree(headers: Record<string, string>, userAgent: string): boolean {
+  const major = userAgent.match(/Chrome\/(\d+)/u)?.[1];
+  const brands = headers["sec-ch-ua"] ?? "";
+  if (major === undefined || !brands.includes(`v="${major}"`)) return false;
+  if (headers["sec-ch-ua-mobile"] !== "?0") return false;
+  const platform = /Windows NT/u.test(userAgent) ? '"Windows"' : /Mac OS X/u.test(userAgent) ? '"macOS"' : undefined;
+  return platform !== undefined && headers["sec-ch-ua-platform"] === platform;
+}
 
 export function createDanishJsonLdBrowserIdentity(): Record<string, string> {
   const generator = new HeaderGenerator({
@@ -172,6 +188,7 @@ export function createDanishJsonLdBrowserIdentity(): Record<string, string> {
     const headers = generator.getHeaders({ httpVersion: "2" }) as Record<string, string>;
     const userAgent = headers["user-agent"] ?? "";
     if (!/Chrome\/\d+/u.test(userAgent) || CRAWLER_MARKER.test(userAgent)) continue;
+    if (!clientHintsAgree(headers, userAgent)) continue;
     // Most of this corpus is Danish; a browser in Denmark asks for Danish first.
     headers["accept-language"] = DANISH_JSONLD_ACCEPT_LANGUAGE;
     return headers;

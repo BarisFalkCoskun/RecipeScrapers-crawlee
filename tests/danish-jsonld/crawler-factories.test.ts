@@ -3,6 +3,7 @@ import { ProxyConfiguration } from "crawlee";
 import {
   DANISH_JSONLD_ADDITIONAL_MIME_TYPES,
   DANISH_JSONLD_PLAYWRIGHT_BROWSER_POOL_OPTIONS,
+  createDanishJsonLdBrowserIdentity,
   createDanishJsonLdCheerioCrawler,
   createDanishJsonLdPlaywrightCrawler,
   resolveDanishJsonLdCrawlerSettings,
@@ -215,6 +216,19 @@ describe("Danish JSON-LD crawler factories", () => {
     const version = userAgent.match(/Chrome\/(\d+)/u)?.[1];
     expect(String(first.headers?.["sec-ch-ua"])).toContain(`v="${version}"`);
   });
+
+  it("never draws an identity whose client hints contradict its user agent", () => {
+    // About 1 draw in 80 did: no sec-ch-ua, a "MacOS" platform Chrome never
+    // sends, or a sec-ch-ua version different from the user agent's.
+    // Each identity builds its own generator, so 100 draws is the affordable sample.
+    for (let draw = 0; draw < 100; draw += 1) {
+      const headers = createDanishJsonLdBrowserIdentity();
+      const major = headers["user-agent"]?.match(/Chrome\/(\d+)/u)?.[1];
+      expect(headers["sec-ch-ua"]).toContain(`v="${major}"`);
+      expect(headers["sec-ch-ua-mobile"]).toBe("?0");
+      expect(headers["sec-ch-ua-platform"]).toBe(/Windows NT/u.test(headers["user-agent"] ?? "") ? '"Windows"' : '"macOS"');
+    }
+  }, 60_000);
 
   it("sends back the cookies a site set", async () => {
     // The runner does not use Crawlee's session pool, and a jar handed to got
