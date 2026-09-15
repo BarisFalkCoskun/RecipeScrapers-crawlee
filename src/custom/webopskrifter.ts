@@ -50,9 +50,30 @@ export function extractWebopskrifterRecipe(
       if (body !== "") instructions.push({ position: instructions.length + 1, text: body });
     });
   } else {
-    for (const line of instructionScope.text().split("\n")) {
+    // Steps are paragraphs separated by <br><br>, sometimes under an <h2> section
+    // heading. Reading the element's text fused them: 2167 stored records held one
+    // step with words glued across the boundary, "kartoffeltærtenForvarm ovnen",
+    // "eddike.Lad chutneyen", where the page shows separate paragraphs. Legacy
+    // stores the same fused text, so parity could not see it. Block boundaries
+    // become line breaks first; a heading prefixes the step that follows it, as
+    // named WPRM steps do.
+    const separated = (instructionScope.html() ?? "")
+      .replace(/<br\s*\/?>/giu, "\n")
+      .replace(/<(h[1-6])\b[^>]*>([\s\S]*?)<\/\1\s*>/giu, "\n@@heading@@$2\n")
+      .replace(/<\/?(?:p|div|li|ol|ul)\b[^>]*>/giu, "\n");
+    let heading = "";
+    for (const line of cheerio.load(separated).text().split("\n")) {
+      if (line.startsWith("@@heading@@")) {
+        heading = compact(line.slice("@@heading@@".length)).replace(/[:\s]+$/u, "");
+        continue;
+      }
       const body = compact(line);
-      if (body.length > 5) instructions.push({ position: instructions.length + 1, text: body });
+      if (body.length <= 5) continue;
+      instructions.push({
+        position: instructions.length + 1,
+        text: heading === "" ? body : `${heading}: ${body}`,
+      });
+      heading = "";
     }
   }
   const category = compact(scope.find('[itemprop="recipeCategory"]').first().text());

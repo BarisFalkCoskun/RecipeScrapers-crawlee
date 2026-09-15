@@ -80,6 +80,22 @@ describe("Webopskrifter microdata adapter", () => {
     });
   });
 
+  it("splits paragraphs separated by <br> into steps instead of fusing them", () => {
+    // 2167 stored records held one fused step, "kartoffeltærtenForvarm ovnen",
+    // where the page shows an <h2> heading and <br><br>-separated paragraphs.
+    const html = `<div itemscope itemtype="http://schema.org/Recipe"><h1 itemprop="name">Kartoffeltærte</h1>`
+      + `<ul><li itemprop="recipeIngredient">1 kg kartofler</li></ul>`
+      + `<div class="instructions-text" itemprop="recipeInstructions">\n\t\t<h2>Sådan laver du kartoffeltærten</h2>`
+      + `<p>Forvarm ovnen til 250 grader.<br><br>Skræl kartoflerne, og skær dem i skiver.<br><br>Sæt kartoflerne i ovnen.</p></div></div>`;
+    const steps = extractWebopskrifterRecipe(html, "https://webopskrifter.dk/opskrifter/x").recipe?.normalized.instructions;
+    expect(steps?.map((step) => step.text)).toEqual([
+      "Sådan laver du kartoffeltærten: Forvarm ovnen til 250 grader.",
+      "Skræl kartoflerne, og skær dem i skiver.",
+      "Sæt kartoflerne i ovnen.",
+    ]);
+    expect(steps?.map((step) => step.position)).toEqual([1, 2, 3]);
+  });
+
   it("persists HTML-derived V2 records through the custom session route", async () => {
     const source = DANISH_JSONLD_SOURCES.find((entry) => entry.id === "webopskrifter")!;
     const store = new MemoryStore();
