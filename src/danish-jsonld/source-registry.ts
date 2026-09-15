@@ -34007,11 +34007,13 @@ const HTML_DANISH_RECIPE_SOURCES: DanishJsonLdSource[] =
     },
     requireCompleteJsonLd: true,
     recipeExtractor: definition.extractor,
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestScrapyOutcome: "succeeded",
     latestCanary: "2026-08-19T16-16-22.434Z",
+    shadowParity:
+      "3822/3822 recipes present on both sides; every field difference is explained - fractions legacy drops, cuisine legacy folds into categories, and steps legacy fuses",
     deferOrBlockReason:
-      "Bounded live probe persisted complete microdata recipes without request, extraction, or domain failures; direct Scrapy comparison matched the selected recipe while Crawlee intentionally preserves visible fractional amounts and normalized step positions, but the full catalog remains unvalidated",
+      "Bounded live probe persisted complete microdata recipes without request, extraction, or domain failures; direct Scrapy comparison matched the selected recipe while Crawlee intentionally preserves visible fractional amounts and normalized step positions, but the full catalog remains unvalidated\n\nShadow comparison passed on 2026-09-15 over the full catalogue, which the bounded probe above never validated. Run 2026-09-15T15-11-34 walked all 3822 sitemap candidates with discovery complete, 0 failed and 0 blocked, and stored all 3822. The repeat, 2026-09-15T18-03-29, was STABLE with 3822 of 3822 identical. The isolated legacy run emitted the same 3822 records, with nothing only one side holds. The comparison did not match field for field, and every difference was classified record by record. Ingredients differ on 2167 records, 3995 lines, and every line is a fraction legacy drops: legacy keeps dl olie where the page and V2 read 1/2 dl olie. Categories differ on 555, all of them legacy folding the cuisine, Det danske koekken, into categories while V2 keeps it as a cuisine. Steps differ on 3415 records. Three extractor defects found here on 2026-09-15 were fixed first, and legacy shares the underlying fusion: paragraphs separated by line breaks were fused into one step with words glued across the boundary on 3272 records; linked related-recipe cards under Jeg kan ogsaa anbefale de her opskrifter were read as step text; and, briefly, short labels such as Dip and Obs were dropped. On this run 3154 of the differing records are the same text once split into steps, 210 lose only a promotional tail of linked recipes, 44 keep a recommendation written as plain text that the page shows, and 7 lose linked recipe titles that sat mid-paragraph. Those 7 are unresolved in two small ways: tomatsuppe-med-nudler keeps Tips where the page reads Tips #1, and stegt-flaesk-i-airfryer keeps an advertising line marked [annonce]. Stored records were checked through impit against the recipe microdata on the live page, including pages that had failed before the fixes, 6 of 6 with title, every ingredient and every step found, and the negative control failed.",
   }));
 
 const DIRECT_DANISH_RECIPE_API_SOURCES: DanishJsonLdSource[] = [{

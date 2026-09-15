@@ -1030,7 +1030,8 @@ describe("Danish JSON-LD source registry", () => {
         sitemapUrls: ["https://www.webopskrifter.dk/sitemap.xml"],
         recipeExtractor: "webopskrifter-microdata",
         fetchMode: "cheerio",
-        migrationState: "configured",
+        // Promoted 2026-09-15 on a full-catalogue legacy comparison.
+        migrationState: "shadow_passed",
         latestScrapyOutcome: "succeeded",
         latestCanary: "2026-08-19T16-16-22.434Z",
       });
