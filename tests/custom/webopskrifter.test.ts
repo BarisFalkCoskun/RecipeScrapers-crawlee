@@ -96,6 +96,18 @@ describe("Webopskrifter microdata adapter", () => {
     expect(steps?.map((step) => step.position)).toEqual([1, 2, 3]);
   });
 
+  it("keeps a short label as a prefix of the step it introduces", () => {
+    const html = `<div itemscope itemtype="http://schema.org/Recipe"><h1 itemprop="name">Rispapirruller</h1>`
+      + `<ul><li itemprop="recipeIngredient">rispapir</li></ul><div itemprop="recipeInstructions"><p>Fortsæt, til alle rullerne er lavet.<br><br>`
+      + `<b>Dip</b><br>Lav dippen ved at blende kokosmælk og peanutbutter.<br><br><b>Obs!</b> Der bliver ca. fire plader.</p></div></div>`;
+    expect(extractWebopskrifterRecipe(html, "https://webopskrifter.dk/opskrifter/x").recipe?.normalized.instructions.map((step) => step.text))
+      .toEqual([
+        "Fortsæt, til alle rullerne er lavet.",
+        "Dip: Lav dippen ved at blende kokosmælk og peanutbutter.",
+        "Obs! Der bliver ca. fire plader.",
+      ]);
+  });
+
   it("drops the related-recipe cards and their lead-in from the steps", () => {
     const html = `<div itemscope itemtype="http://schema.org/Recipe"><h1 itemprop="name">Grøntsager i airfryer</h1>`
       + `<ul><li itemprop="recipeIngredient">1 blomkål</li></ul><div itemprop="recipeInstructions"><p>Skær grøntsagerne ud.<br><br>`

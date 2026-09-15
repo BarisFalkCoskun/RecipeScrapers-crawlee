@@ -74,6 +74,15 @@ export function extractWebopskrifterRecipe(
         continue;
       }
       const body = compact(line);
+      // A short line on its own is a label for what follows - "Dip", "Fyld:",
+      // "Obs!" - not noise. Dropping every line of five characters or fewer lost
+      // 156 of them once steps were split; a label now prefixes the next step, as
+      // a heading does. A line with no letters at all is still skipped.
+      const label = body.replace(/[:!\s]+$/u, "");
+      if ((body.length <= 5 || (body.endsWith(":") && body.length <= 40)) && /\p{L}/u.test(body)) {
+        heading = heading === "" ? label : `${heading}: ${label}`;
+        continue;
+      }
       if (body.length <= 5) continue;
       instructions.push({
         position: instructions.length + 1,
