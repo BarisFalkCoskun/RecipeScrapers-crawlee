@@ -81,7 +81,7 @@ describe("Webopskrifter microdata adapter", () => {
   });
 
   it("splits paragraphs separated by <br> into steps instead of fusing them", () => {
-    // 2167 stored records held one fused step, "kartoffeltærtenForvarm ovnen",
+    // 3272 of 3822 stored records carried fused steps, "kartoffeltærtenForvarm ovnen",
     // where the page shows an <h2> heading and <br><br>-separated paragraphs.
     const html = `<div itemscope itemtype="http://schema.org/Recipe"><h1 itemprop="name">Kartoffeltærte</h1>`
       + `<ul><li itemprop="recipeIngredient">1 kg kartofler</li></ul>`

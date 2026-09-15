@@ -51,8 +51,8 @@ export function extractWebopskrifterRecipe(
     });
   } else {
     // Steps are paragraphs separated by <br><br>, sometimes under an <h2> section
-    // heading. Reading the element's text fused them: 2167 stored records held one
-    // step with words glued across the boundary, "kartoffeltærtenForvarm ovnen",
+    // heading. Reading the element's text fused them: 3272 of 3822 stored records
+    // carried words glued across a boundary, "kartoffeltærtenForvarm ovnen",
     // "eddike.Lad chutneyen", where the page shows separate paragraphs. Legacy
     // stores the same fused text, so parity could not see it. Block boundaries
     // become line breaks first; a heading prefixes the step that follows it, as
