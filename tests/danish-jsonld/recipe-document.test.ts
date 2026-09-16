@@ -31,6 +31,22 @@ const completeRecipe = {
 
 describe("Danish JSON-LD @id references", () => {
 
+  it("keeps only the first Recipe node when the source opts in", () => {
+    // greedygourmet renders a related-recipe card as a second Recipe node: eight
+    // lamb pages each publish Lamb Tacos, stored under the host page's URL.
+    const own = { "@type": "Recipe", name: "Slow Roasted Shoulder of Lamb",
+      recipeIngredient: ["1 lamb shoulder"], recipeInstructions: [{ "@type": "HowToStep", text: "Roast for seven hours." }] };
+    const card = { "@type": "Recipe", name: "Lamb Tacos",
+      recipeIngredient: ["leftover lamb"], recipeInstructions: [{ "@type": "HowToStep", text: "Fill the tortillas." }] };
+    const page = `<html><body><script type="application/ld+json">${JSON.stringify(own)}</script>`
+      + `<script type="application/ld+json">${JSON.stringify(card)}</script></body></html>`;
+
+    expect(extractCompleteJsonLdRecipes(page).recipes).toHaveLength(2);
+    const first = extractCompleteJsonLdRecipes(page, { keepFirstRecipeOnly: true });
+    expect(first.recipes.map((recipe) => recipe["name"])).toEqual(["Slow Roasted Shoulder of Lamb"]);
+    expect(first.signals).toContain("json-ld-trailing-recipe-node-dropped");
+  });
+
   it("collapses a same-titled duplicate Recipe node only when the source opts in", () => {
     // bertolli.com publishes a full WPRM node and a thinner theme node for one recipe.
     const full = { "@type": "Recipe", "@id": "https://bertolli.com/r/#recipe", name: "Curry Marinade",

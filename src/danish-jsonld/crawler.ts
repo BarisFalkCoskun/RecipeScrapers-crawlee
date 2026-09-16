@@ -1256,6 +1256,7 @@ export class DanishJsonLdSourceSession {
     }
     const extraction = extractCompleteJsonLdRecipes(response.body, {
       collapseSameTitleRecipes: this.source.collapseSameTitleRecipes === true,
+      keepFirstRecipeOnly: this.source.keepFirstRecipeOnly === true,
     });
     if (extraction.repairedJsonLdCount > 0) {
       this.emit("json-ld-repair", {

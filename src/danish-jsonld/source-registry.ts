@@ -116,6 +116,8 @@ export interface DanishJsonLdSource {
   numericYieldOnly?: true;
   /** Collapse same-titled Recipe nodes on one page that are copies of one recipe. */
   collapseSameTitleRecipes?: true;
+  /** Keep a page's first Recipe node only, where later nodes are related-recipe cards. */
+  keepFirstRecipeOnly?: true;
   requestSettings: {
     delaySeconds: number;
     rateLimitPerMinute: number | null;
@@ -26810,6 +26812,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Shadow comparison passed: an isolated legacy run and a crawl gathered in the same window produced 497 and 495 records with every material field matching, and two uncapped runs reproduced all 495 keys with identical content. The only differences are the intentional ones: 105 records keep a cuisine legacy has no field for, and 2 records legacy accepts without a name, ingredients or instructions.",
   },
   greedygourmet: {
+    keepFirstRecipeOnly: true,
     migrationState: "configured",
     latestCanary: "2026-08-19T22-30-31.254Z-attempt-88af4181-4d11-41f1-8994-062bb6f55302",
     deferOrBlockReason:

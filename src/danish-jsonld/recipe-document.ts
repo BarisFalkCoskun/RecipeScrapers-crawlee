@@ -24,6 +24,7 @@ export interface CompleteJsonLdExtraction {
     | "json-ld-name-taken-from-page"
     | "json-ld-from-streamed-payload"
     | "json-ld-duplicate-recipe-collapsed"
+    | "json-ld-trailing-recipe-node-dropped"
   >;
 }
 
@@ -58,7 +59,7 @@ export interface BuildRecipeDocumentV2Input {
  */
 export function extractCompleteJsonLdRecipes(
   html: string,
-  options: { collapseSameTitleRecipes?: boolean } = {}
+  options: { collapseSameTitleRecipes?: boolean; keepFirstRecipeOnly?: boolean } = {}
 ): CompleteJsonLdExtraction {
   const scriptBodies = extractJsonLdScriptBodies(html);
   const streamed = scriptBodies.some((body) => /"@type"\s*:\s*"?Recipe/u.test(body))
@@ -122,8 +123,16 @@ export function extractCompleteJsonLdRecipes(
     }
   }
 
-  const collapsed = options.collapseSameTitleRecipes ? collapseSameTitleRecipes(recipes) : recipes;
+  // greedygourmet renders a related-recipe card as a second Recipe node on the
+  // page: /onion-gravy publishes Onion Gravy Recipe and In-N-Out Sauce Recipe,
+  // and eight lamb pages each publish Lamb Tacos. Kept, the card is stored under
+  // the host page URL - 29 records across 20 pages, one recipe filed eight times.
+  // Legacy reads the first Recipe node only. Opt-in, because other sources
+  // publish several genuine recipes on one page.
+  const firstOnly = options.keepFirstRecipeOnly ? recipes.slice(0, 1) : recipes;
+  const collapsed = options.collapseSameTitleRecipes ? collapseSameTitleRecipes(firstOnly) : firstOnly;
   const collapsedCount = recipes.length - collapsed.length;
+  const droppedTrailing = recipes.length - firstOnly.length;
 
   return {
     rawScripts,
@@ -135,7 +144,10 @@ export function extractCompleteJsonLdRecipes(
     signals: Array.from(new Set([
       ...rejectedReasons,
       ...(nameFromPageCount > 0 ? ["json-ld-name-taken-from-page" as const] : []),
-      ...(collapsedCount > 0 ? ["json-ld-duplicate-recipe-collapsed" as const] : []),
+      ...(collapsedCount > 0 && droppedTrailing === 0
+        ? ["json-ld-duplicate-recipe-collapsed" as const]
+        : []),
+      ...(droppedTrailing > 0 ? ["json-ld-trailing-recipe-node-dropped" as const] : []),
       ...(streamed.length > 0 ? ["json-ld-from-streamed-payload" as const] : []),
       ...(repairedJsonLdCount > 0
         ? ["json-ld-control-character-repaired" as const]
