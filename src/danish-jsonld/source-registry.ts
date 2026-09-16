@@ -26536,10 +26536,12 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
       "Uncapped run persisted 12632 recipes with complete discovery; 2 failed requests and 232 incomplete pages keep it short of a canary",
   },
   jamieoliver: {
-    migrationState: "configured",
+    migrationState: "shadow_passed",
     latestCanary: "2026-08-18T00-50-22.465Z-attempt-539679ea-c794-4c58-8e67-d873a0641a6b",
+    shadowParity:
+      "4451/4451 V2 recipes match legacy on every material field; legacy holds 6 more that lack a name, ingredients or instructions",
     deferOrBlockReason:
-      "Uncapped run persisted 4466 recipes with complete discovery; 1 failed request and 12 incomplete pages keep it short of a canary",
+      "Uncapped run persisted 4466 recipes with complete discovery; 1 failed request and 12 incomplete pages keep it short of a canary\n\nShadow comparison passed on 2026-09-16, and both objections above are answered. Run 2026-09-16T04-26-12 walked 4821 sitemap candidates with discovery complete and 0 blocked requests; the repeat, 2026-09-16T08-03-28, was STABLE with 4451 of 4451 identical. Both runs count 4478 persisted, which is upserts: the store holds 4451 distinct records under 4451 distinct URLs, because 27 pages declare a canonical another page had already stored. The single failed request is an upstream defect: /recipes/vegetables/no-oven-pizza/ answers 301 to itself, and curl gives up after ten hops on the same URL. The first re-crawl also reported discovery incomplete, which was a defect in this project rather than the source. sitemap.xml lists https://www.jamieoliver.com/sitemap, a soft 404 that serves the homepage, and the guard added for opskrifterdk failed the whole walk over it. The guard now fails discovery only for a sitemap the source depends on; nothing was missed, since that page links the same 4821 recipes the XML gives. The isolated legacy run emitted 4457. Every one of the 4451 V2 records is among them and every material field matched; the 6 only legacy holds are the 6 pages V2 refused as incomplete. The comparator noted two intentional differences: 1446 records keep a cuisine legacy has no field for, and 625 keep a fuller yield than the leading integer legacy keeps. Six stored records were checked through impit against the live page. Four matched in full. The other two are faithful to the site own JSON-LD: roast-leg-of-lamb-with-anchovies-and-rosemary and retro-layered-salad publish a single instruction that reads Find the recipe!For the full recipe, head to page 113 of The Naked Chef, fused exactly that way in the JSON-LD while the page renders the heading separately. The negative control failed.",
   },
   nordicfoodliving: {
     migrationState: "shadow_passed",
