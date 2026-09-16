@@ -34,16 +34,25 @@ export function discoverSitemapDocument(input: {
   source: DanishJsonLdSource;
   sitemapUrl: string;
   xml: string;
+  /** False for a nested sitemap link, where an HTML answer costs no coverage. */
+  required?: boolean;
 }): DiscoveryResult {
   const result = emptyResult();
   // A sitemap URL that answers 200 with something other than a sitemap is not an
   // empty sitemap. opskrifter.dk served its "One moment, please..." interstitial
   // for sitemap.xml on 2026-09-14; parsed as XML it held no <loc>, so the run
   // found 0 candidates from 1 request and reported discovery complete.
+  // Only a sitemap the source depends on costs coverage when it is not a sitemap.
+  // jamieoliver's sitemap.xml lists https://www.jamieoliver.com/sitemap, which
+  // answers with the homepage - a soft 404 whose 4821 recipe links the run had
+  // already taken from the XML. Failing the whole walk over that would hold a
+  // complete crawl out of its gate.
   if (!/<(?:urlset|sitemapindex)\b/iu.test(input.xml)) {
     increment(result.rejectedByReason, "sitemap-not-xml");
-    result.complete = false;
-    result.incompleteReasons.push("sitemap-not-xml");
+    if (input.required !== false) {
+      result.complete = false;
+      result.incompleteReasons.push("sitemap-not-xml");
+    }
     return result;
   }
   const $ = cheerio.load(input.xml, { xml: true });

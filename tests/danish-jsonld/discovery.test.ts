@@ -614,6 +614,21 @@ describe("Danish JSON-LD discovery", () => {
     expect(looksLikeHttp200BlockShell(article)).toBe(false);
   });
 
+  it("records a nested sitemap link that answers HTML without failing discovery", () => {
+    // jamieoliver's sitemap.xml lists /sitemap, which serves the homepage; the
+    // 4821 recipe links it shows were already taken from the XML.
+    const result = discoverSitemapDocument({
+      source,
+      sitemapUrl: "https://example.com/sitemap",
+      xml: "<!DOCTYPE html><html><head><title>Home</title></head><body><a href=\"/opskrifter/kage\">Kage</a></body></html>",
+      required: false,
+    });
+    expect(result.complete).toBe(true);
+    expect(result.incompleteReasons).toEqual([]);
+    expect(result.rejectedByReason).toMatchObject({ "sitemap-not-xml": 1 });
+    expect(result.recipeUrls).toEqual([]);
+  });
+
   it("does not read a non-sitemap answer to a sitemap URL as an empty sitemap", () => {
     const result = discoverSitemapDocument({
       source,

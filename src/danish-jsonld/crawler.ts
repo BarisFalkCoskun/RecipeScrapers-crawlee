@@ -398,6 +398,9 @@ export class DanishJsonLdSourceSession {
       source: this.source,
       sitemapUrl: response.url,
       xml: response.body,
+      required: (this.source.sitemapUrls ?? []).some(
+        (url) => canonicalizeUrl(url) === canonicalizeUrl(response.url)
+      ),
     });
     this.recordDiscoveryCompletion(response.kind, discovery);
     const recipeRequests = this.admitRecipeUrls(discovery.recipeUrls);
