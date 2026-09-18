@@ -650,8 +650,20 @@ describe("Danish JSON-LD source registry", () => {
       expect(byId.get(id)?.migrationState).toBe("deferred");
       expect(byId.get(id)?.deferOrBlockReason).toMatch(/collection is empty/u);
     }
-    // Sources the site itself keeps unreachable.
-    for (const id of ["letmad", "juliekarla"]) {
+    // Sources the site itself keeps unreachable. letmad's whole WordPress REST
+    // API still answers 404 through its redirect, re-checked 2026-09-18.
+    expect(byId.get("letmad")?.migrationState).toBe("blocked");
+    // juliekarla was pinned here as Cloudflare-challenged, as was glutenkitchen.
+    // Both sites lifted the challenge on 2026-09-18 - nothing in this project
+    // changed - and both then passed a clean uncapped run, a STABLE repeat and a
+    // full legacy comparison, so they sit with the promoted sources now.
+    for (const id of ["juliekarla", "glutenkitchen"]) {
+      expect(byId.get(id)?.migrationState).toBe("shadow_passed");
+    }
+    expect(byId.get("juliekarla")?.shadowParity).toMatch(/^648\/648 recipes/u);
+    expect(byId.get("glutenkitchen")?.shadowParity).toMatch(/^94\/94 recipes/u);
+    // Nine of the twelve sources behind that same challenge are still behind it.
+    for (const id of ["cookjunkie", "midgetmomma", "powerhungry"]) {
       expect(byId.get(id)?.migrationState).toBe("blocked");
     }
     // madbanditten's endpoint timed out until 2026-09-14, when the Chrome TLS
