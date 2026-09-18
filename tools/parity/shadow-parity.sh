@@ -25,6 +25,14 @@ cd "$LEGACY_DIR"
 # timeout gives up before the body arrives, which reads as a dead source rather
 # than a slow one. PARITY_SCRAPY_EXTRA passes extra "-s KEY=VALUE" settings so a
 # run can be made more patient without being made faster than the legacy spider.
+#
+# PARITY_SCRAPY_TIMEOUT has to be sized to the source, not left at its default.
+# The default suits the small sources this started on; a large one will outrun
+# it. sunset captured 164 items in its first 518 seconds on 2026-09-18, which
+# puts its 7235 recipes at about six hours - the 2400s default would have cut it
+# off at roughly a tenth of the catalog. That is caught rather than believed
+# (exit 124 reports INCONCLUSIVE below), but it costs a whole round, so measure
+# the rate against the catalog size before starting a long one.
 read -r -a scrapy_extra <<< "${PARITY_SCRAPY_EXTRA:-}"
 
 RECIPE_FEED_EXPORT_ENABLED=0 \
