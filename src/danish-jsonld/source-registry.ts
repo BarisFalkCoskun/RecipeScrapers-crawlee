@@ -26448,7 +26448,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-17T12-28-13.168Z-attempt-66a5c41c-f425-45ea-a194-3f83d52bafd7",
     deferOrBlockReason:
-      "Uncapped run persisted 4048 recipes with complete discovery; 76 failed requests and 8 incomplete pages keep it short of a canary\n\nOn 2026-09-14 the site is behind a bot interstitial, and the crawl reported that as success. opskrifter.dk answers every URL, sitemap.xml, the homepage and robots.txt alike, with a 12 KB One moment, please... page that reloads itself after five seconds. It comes under HTTP 200 from server openresty, to the Chrome TLS transport and to curl alike. Run 2026-09-14T17-22-30 fetched that page as its sitemap, found no loc element in it, and recorded 0 candidates from 1 request with discovery complete, outcome no_data. That was a crawler defect, and it is now fixed: a sitemap URL that answers without a urlset or sitemapindex element is recorded as sitemap-not-xml with discovery incomplete, and the block-shell detector recognises this wording. The source stays at configured until the interstitial lifts or a browser fetch clears it.",
+      "Uncapped run persisted 4048 recipes with complete discovery; 76 failed requests and 8 incomplete pages keep it short of a canary\n\nOn 2026-09-14 the site is behind a bot interstitial, and the crawl reported that as success. opskrifter.dk answers every URL, sitemap.xml, the homepage and robots.txt alike, with a 12 KB One moment, please... page that reloads itself after five seconds. It comes under HTTP 200 from server openresty, to the Chrome TLS transport and to curl alike. Run 2026-09-14T17-22-30 fetched that page as its sitemap, found no loc element in it, and recorded 0 candidates from 1 request with discovery complete, outcome no_data. That was a crawler defect, and it is now fixed: a sitemap URL that answers without a urlset or sitemapindex element is recorded as sitemap-not-xml with discovery incomplete, and the block-shell detector recognises this wording. The source stays at configured until the interstitial lifts or a browser fetch clears it.\n\nRe-checked on 2026-09-18 and it has not lifted. sitemap.xml, the homepage and robots.txt all still answer HTTP 200 from server openresty with a 12 KB self-reloading page and content-type text/html, four days on. This is a standing condition rather than a window.",
   },
   plantepusherne: {
     migrationState: "shadow_passed",
@@ -26477,7 +26477,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-14T22-19-05.328Z-attempt-225f761f-f747-46a7-9414-f63d02973200",
     deferOrBlockReason:
-      "Uncapped run persisted 30 recipes but discovery did not complete; 1 failed request as well. Re-checking it on 2026-09-01 was not possible: spicytwist.dk answers HTTP 454 with the splash.simply.com \"Checking your browser...\" page to every request from this host. It is the third source found behind that same challenge, after planetariskkogebog and sundpaabudget - all three on the same Danish hosting provider - so this is one host turning us away rather than three sites with faults, and the crawler's own runs may be affected the same way.",
+      "Uncapped run persisted 30 recipes but discovery did not complete; 1 failed request as well. Re-checking it on 2026-09-01 was not possible: spicytwist.dk answers HTTP 454 with the splash.simply.com \"Checking your browser...\" page to every request from this host. It is the third source found behind that same challenge, after planetariskkogebog and sundpaabudget - all three on the same Danish hosting provider - so this is one host turning us away rather than three sites with faults, and the crawler's own runs may be affected the same way.\n\nRe-checked on 2026-09-18, and the census is now six rather than three. spicytwist, planetariskkogebog, sundpaabudget, madrejsen, vegetariskhverdag and hverdagsgourmet all answer HTTP 454 with a 7.3 KB body, and the response header names the system outright: server: Simply.com, with the phrase \"Browser challenge\" in the body. Three of the six were fetched again side by side and gave byte-comparable responses. Seventeen days on, this is a standing condition of the host rather than a window, and six sources are held by one provider's decision. Nothing in this project will move them; they need either a browser path that satisfies the challenge or the provider's own change.",
   },
   spisekunst: {
     migrationState: "shadow_passed",
@@ -26828,7 +26828,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-19T18-25-11.630Z-attempt-452ea23c-85ce-48bf-8bab-1296ffa3bccb",
     deferOrBlockReason:
-      "Uncapped run persisted 609 recipes from 1748 posts; 27 blocked requests and 1 record the source publishes incomplete or malformed keeps it short of a canary",
+      "Uncapped run persisted 609 recipes from 1748 posts; 27 blocked requests and 1 record the source publishes incomplete or malformed keeps it short of a canary\n\nThe 27 blocked requests are not reproducing on 2026-09-18. The posts collection answers HTTP 200 with 4.7 MB of JSON and x-wp-total 1752, which is the same catalog the earlier run walked. One detail is worth keeping for whoever runs it next: the configured host, www.joythebaker.com, answers 301 and the payload comes from the apex joythebaker.com, so a client that does not follow redirects sees only the 301 and reads it as a dead route. What this source needs is a clean uncapped run rather than an explanation.",
   },
   thehealthymaven: {
     migrationState: "shadow_passed",
@@ -27690,7 +27690,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T10-35-42.283Z-attempt-3c3c99bb-6894-4556-ad53-e6db0986cb0d",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix\n\nStill blocked on 2026-09-18, and the reason is now compounded: the site has also changed domain. The configured www.butterandbliss.com answers 301 to butterandbliss.net, and that host answers the same Cloudflare challenge - HTTP 403 with cf-mitigated: challenge. So even if the challenge lifts, the registry's domain and allowedDomains are stale and would have to be moved to the .net host before a run could store anything.",
   },
   butteryourbiscuit: {
     migrationState: "shadow_passed",
@@ -28910,7 +28910,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "blocked",
     latestCanary: "2026-08-21T11-11-29.253Z-attempt-6004eb5a-fcbf-4fce-a509-76b477969f7c",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix\n\nThe challenge is gone as of 2026-09-18, and nothing here was changed to achieve that. /wp-json/wp/v2/wprm_recipe?per_page=100&page=1 answers HTTP 200 with 1.4 MB of JSON and no cf-mitigated header, and x-wp-total reads 94. The first record parses as a real WPRM recipe, Spicy Sesame-Crusted Sweet Potato Meatballs, with 7 instructions.\n\nThis stays blocked until an uncapped run says otherwise, on the same reasoning as juliekarla: a probe is not a crawl.",
   },
   godairyfree: {
     migrationState: "shadow_passed",
@@ -33363,7 +33363,7 @@ const DANISH_WPRM_EVIDENCE_OVERRIDES: Record<
     migrationState: "blocked",
     latestCanary: "2026-08-20T07-08-06.457Z-attempt-0fe28461-f50e-4cd0-9c34-65b662b91ca9",
     deferOrBlockReason:
-      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix",
+      "Uncapped run persisted no recipes: the site answers the recipe API with a Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge). A plain client cannot clear it, and neither can the hardened browser path from this host, so the route needs a request identity this project does not have rather than a crawler fix\n\nThe challenge is gone as of 2026-09-18, and nothing here was changed to achieve that - the site's own mitigation was lifted. /wp-json/wp/v2/wprm_recipe?per_page=100&page=1 answers HTTP 200 through the same Cloudflare edge with 982 KB of JSON and no cf-mitigated header, and the paging headers read x-wp-total 651 over x-wp-totalpages 7. The first record parses as a real WPRM recipe, Cashewnoeddemaelk med vanilje, carrying its ingredients and instructions.\n\nThis stays blocked, because a probe is not a crawl and the state follows the run rather than the reason. It is first in the queue for a free lane.",
   },
   kagefest: {
     migrationState: "shadow_passed",
@@ -33792,7 +33792,7 @@ const DANISH_WP_POSTS_EVIDENCE_OVERRIDES: Record<
     migrationState: "blocked",
     latestCanary: "2026-08-20T06-56-03.722Z-attempt-d2c46716-8807-4a1f-8145-26a8633edd6e",
     deferOrBlockReason:
-      "The source restricts its WordPress REST API: the posts collection the legacy spider reads answers HTTP 401 itsec_rest_api_access_restricted on every attempt, so the legacy discovery route is closed for both implementations while the sitemap route remains unproven behind the host's browser check",
+      "The source restricts its WordPress REST API: the posts collection the legacy spider reads answers HTTP 401 itsec_rest_api_access_restricted on every attempt, so the legacy discovery route is closed for both implementations while the sitemap route remains unproven behind the host's browser check\n\nThe browser check is now identified rather than merely suspected. On 2026-09-18 the REST route answers HTTP 454 with the same 7.3 KB body and the same server: Simply.com header as spicytwist, planetariskkogebog, sundpaabudget, madrejsen and vegetariskhverdag. This is the sixth source behind that one provider's challenge, so the sitemap route is closed for the same reason the API is, and neither is a fault of this site.",
   },
   madhang: {
     migrationState: "shadow_passed",
