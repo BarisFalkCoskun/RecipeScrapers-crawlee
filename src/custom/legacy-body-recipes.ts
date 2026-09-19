@@ -27,6 +27,19 @@ function uppercaseRatio(value: string): number {
 }
 
 const punctuationEnd = (value: string): boolean => /[.!?]$/u.test(value);
+
+/**
+ * A text part carrying no letter or digit - "," or "." on its own - is never an
+ * ingredient. It is the residue of splitting a prose paragraph at its inline
+ * links, and counting it as ingredient-like is what made thefoodclub store the
+ * sentence "Hvis du vil have mere graeskar-inspiration, saa har jeg baade en
+ * [graeskarsuppe], [myslibarer med graeskar], [risotto med graeskar] og
+ * selvfoelgelig [graeskartaerte]." as the ingredient list of lun-graeskarsalat.
+ * The commas between those links became parts of their own, each short and
+ * without a sentence-ending mark, so each passed the ingredient test and pushed
+ * the paragraph over the threshold.
+ */
+const barePunctuation = (value: string): boolean => !/[\p{L}\p{N}]/u.test(value);
 const parseNipuniServings = (value: string): string | undefined =>
   value.toLocaleLowerCase("da-DK")
     .match(/\((?:ca\.?\s*)?(\d+)(?:\s*-\s*\d+)?\s*person/u)?.[1];
@@ -136,6 +149,7 @@ const foodHeadingCandidate = (text: string): boolean =>
   text.split(/\s+/u).length <= 8 && !punctuationEnd(text) && !/\d/u.test(text);
 
 function foodLooksIngredient(line: string): boolean {
+  if (barePunctuation(line)) return false;
   const lower = line.toLocaleLowerCase("da-DK");
   if (/^(?:ca\.?\s*)?(?:\d|evt\b|lidt\b|friske\b|frisk\b|kakao\b|ladyfingers\b)/u.test(lower)) {
     return true;
@@ -179,10 +193,10 @@ export function extractTheFoodClubRecipe(
     if (!started && parts.length >= 3 && ingredientLike >= Math.max(3, candidates.length - 1)) {
       if (foodLooksHeading(parts[0] ?? "") && parts.length >= 4) {
         recipeHeading = parts[0].replace(/:$/u, "");
-        ingredients = parts.slice(1);
+        ingredients = parts.slice(1).filter((part) => !barePunctuation(part));
       } else {
         recipeHeading = pendingHeading;
-        ingredients = parts;
+        ingredients = parts.filter((part) => !barePunctuation(part));
       }
       started = true;
       continue;

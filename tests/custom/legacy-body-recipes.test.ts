@@ -67,4 +67,43 @@ describe("legacy WordPress body recipe adapters", () => {
       categories: ["Kage"],
     } } });
   });
+
+  // Trimmed from thefoodclub.dk/lun-graeskarsalat, which stored this related-
+  // recipes sentence as its ingredient list. Splitting the paragraph at its
+  // inline links leaves the commas as parts of their own; each is short and
+  // ends in no sentence mark, so each passed the ingredient test and carried
+  // the paragraph over the threshold.
+  it("does not read a related-recipes paragraph as an ingredient list", () => {
+    const result = extractTheFoodClubRecipe(`
+      <html><head><meta property="og:image" content="/salat.jpg"></head><body>
+      <h1 class="post-title">Lun græskarsalat</h1>
+      <div class="post-entry"><div class="inner-post-entry">
+        <p>Hvis du vil have mere græskar-inspiration, så har jeg både en <a href="/a">græskarsuppe</a>, <a href="/b">myslibarer med græskar</a>, <a href="/c">risotto med græskar</a> og selvfølgelig <a href="/d">græskartærte</a>.</p>
+        <p>Salat til 4 personer:</p>
+        <p>1 hokkaidogræskar<br>2 spsk olivenolie<br>1 tsk citronskal<br>Salt</p>
+        <p>Rist græskarret i ovnen og vend det med dressingen.</p>
+      </div></div></body></html>
+    `, "https://thefoodclub.dk/lun-graeskarsalat/");
+    const normalized = result.recipe?.normalized;
+    expect(normalized?.ingredients).toEqual([
+      "1 hokkaidogræskar", "2 spsk olivenolie", "1 tsk citronskal", "Salt",
+    ]);
+    expect(normalized?.instructions.map((step) => step.text)).toEqual([
+      "Rist græskarret i ovnen og vend det med dressingen.",
+    ]);
+    // The sentence becomes the description it always was.
+    expect(normalized?.description).toContain("græskar-inspiration");
+  });
+
+  it("drops a bare punctuation fragment from a genuine ingredient paragraph", () => {
+    const result = extractTheFoodClubRecipe(`
+      <html><body><h1 class="post-title">Kage</h1>
+      <div class="post-entry"><div class="inner-post-entry">
+        <p>Opskrift til 8 personer:</p>
+        <p>100 g smør<br>2 <a href="/x">æg</a>,<br>200 g mel<br>1 tsk salt</p>
+        <p>Rør det hele sammen og bag kagen i tyve minutter.</p>
+      </div></div></body></html>
+    `, "https://thefoodclub.dk/kage/");
+    expect(result.recipe?.normalized.ingredients).not.toContain(",");
+  });
 });
