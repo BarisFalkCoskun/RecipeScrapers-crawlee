@@ -312,6 +312,18 @@ describe("Danish JSON-LD source registry", () => {
     // It waits on a fresh uncapped run.
     expect(byId.get("kikkoman")?.migrationState).toBe("configured");
     expect(byId.get("kikkoman")?.deferOrBlockReason).toMatch(/did not survive the database deletion/u);
+    // Both of these were recorded as hosts that turn this project away, and on
+    // 2026-09-20 a live probe found neither claim true any more. kikkoman's
+    // sitemap index answers 200 and its recipes child lists 851 URLs;
+    // starbucksathome, written off as a host that no longer exists, serves a
+    // complete Recipe node again. Neither is a dead host to be skipped, so the
+    // withdrawal of both claims is pinned here rather than left to prose.
+    expect(byId.get("kikkoman")?.deferOrBlockReason).toMatch(/CORRECTION, 2026-09-20/u);
+    expect(byId.get("starbucksathome")?.migrationState).toBe("configured");
+    expect(byId.get("starbucksathome")?.deferOrBlockReason)
+      .toMatch(/CORRECTION, 2026-09-20/u);
+    expect(byId.get("starbucksathome")?.deferOrBlockReason)
+      .toMatch(/pointed back at a service/u);
     expect(byId.get("gamleopskrifter")?.migrationState).toBe("shadow_passed");
     // sundpaabudget has had its fresh uncapped run - the one it was waiting on
     // after the database restore - and is still configured, now for a reason
