@@ -324,6 +324,15 @@ describe("Danish JSON-LD source registry", () => {
       .toMatch(/CORRECTION, 2026-09-20/u);
     expect(byId.get("starbucksathome")?.deferOrBlockReason)
       .toMatch(/pointed back at a service/u);
+    // bbcgoodfood is the largest catalogue compared so far: 17351 records
+    // matching on every material field. The 11 records legacy holds and it
+    // does not are all stepless - ten roundup pages and one recipe the site
+    // publishes without instructions - so the gap is the completeness
+    // contract working, not data loss.
+    expect(byId.get("bbcgoodfood")?.migrationState).toBe("shadow_passed");
+    expect(byId.get("bbcgoodfood")?.shadowParity).toMatch(/^17351\/17351 recipes/u);
+    expect(byId.get("bbcgoodfood")?.deferOrBlockReason)
+      .toMatch(/The source publishes it stepless/u);
     expect(byId.get("gamleopskrifter")?.migrationState).toBe("shadow_passed");
     // sundpaabudget has had its fresh uncapped run - the one it was waiting on
     // after the database restore - and is still configured, now for a reason
