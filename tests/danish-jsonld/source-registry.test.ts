@@ -333,6 +333,15 @@ describe("Danish JSON-LD source registry", () => {
     expect(byId.get("bbcgoodfood")?.shadowParity).toMatch(/^17351\/17351 recipes/u);
     expect(byId.get("bbcgoodfood")?.deferOrBlockReason)
       .toMatch(/The source publishes it stepless/u);
+    // bettycrocker sat blocked for three weeks on a reason claiming its
+    // catalogue needed roughly 88 hours. It cleared every gate in two days
+    // once that number was checked against the pacing floor. Its 2-record
+    // gap to legacy is two empty stubs the site publishes with a name and
+    // no ingredients or steps.
+    expect(byId.get("bettycrocker")?.migrationState).toBe("shadow_passed");
+    expect(byId.get("bettycrocker")?.shadowParity).toMatch(/^6271\/6271 recipes/u);
+    expect(byId.get("bettycrocker")?.deferOrBlockReason)
+      .toMatch(/publishes them as empty stubs/u);
     expect(byId.get("gamleopskrifter")?.migrationState).toBe("shadow_passed");
     // sundpaabudget has had its fresh uncapped run - the one it was waiting on
     // after the database restore - and is still configured, now for a reason
