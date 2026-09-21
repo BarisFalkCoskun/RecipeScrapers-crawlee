@@ -25978,6 +25978,24 @@ const LEGACY_DISCOVERY_OVERRIDES: Partial<
     ],
     recipeUrlPatterns: ["^/dk/da/tips-og-ideer/opskrifter/[^/?#]+/?$"],
   },
+  // starbucksathome publishes its recipes under four different shapes, and
+  // the imported pattern matched only the first: 34 /dk/opskrifter/<slug>, 6
+  // /dk/recipes/<slug>, 1 /dk/recipe/<slug> and 4 flat /dk/opskrift-<slug>.
+  // A run on the single pattern would have taken 34 of 45 and reported
+  // discovery complete over the shortfall - evidence that looks clean and is
+  // not. One of each shape was fetched live on 2026-09-21 and all four carry
+  // a complete Recipe node. The flat pages that are NOT opskrift-prefixed -
+  // /dk/ristretto, /dk/iskaffe, /dk/cookies - were checked too and publish no
+  // Recipe node, so the patterns stay anchored rather than admitting any
+  // single segment under /dk/.
+  starbucksathome: {
+    recipeUrlPatterns: [
+      "^https://www\\.starbucksathome\\.com/dk/opskrifter/[^/?#]+/?$",
+      "^https://www\\.starbucksathome\\.com/dk/recipes/[^/?#]+/?$",
+      "^https://www\\.starbucksathome\\.com/dk/recipe/[^/?#]+/?$",
+      "^https://www\\.starbucksathome\\.com/dk/opskrift-[^/?#]+/?$",
+    ],
+  },
   frokenkraesen_com: { recipeUrlPatterns: LEGACY_LISTING_DEFAULT_PATTERNS },
   madenimitliv: { recipeUrlPatterns: LEGACY_LISTING_DEFAULT_PATTERNS },
   madformadelskere: { recipeUrlPatterns: LEGACY_LISTING_DEFAULT_PATTERNS },
@@ -26293,7 +26311,7 @@ const CURRENT_SOURCE_OVERRIDES: Partial<
     migrationState: "configured",
     latestCanary: "2026-08-15T08-24-54.313Z-attempt-38f62583-6ad2-4d4f-8e4f-9744e05bcbc8",
     deferOrBlockReason:
-      "The host no longer exists and the Danish site behind it is gone. On 2026-08-31 every URL on starbucksathome.com - the /dk/ section, the bare root and the sitemap alike - answered HTTP 500 with a 292-byte body reading \"Fastly error: unknown domain: www.starbucksathome.com. Please check that this domain has been added to a service.\" That is the CDN saying the hostname is not configured at all, not a site with a fault.\n\nThe brand has moved to athome.starbucks.com, which answers 200 and publishes a 507-URL sitemap, but it carries no Danish locale: /dk/ and /da/ both answer 404. There is no Danish source here to migrate, so this is blocked rather than a route needing rework.\n\nThe previous reason - 96 pages carrying Recipe JSON-LD without required fields against 28 persisted - described a site that was still answering. It is superseded rather than resolved.\n\nCORRECTION, 2026-09-20: the headline above is now false and this source is not dead. A live probe through the Chrome transport answered 200 on https://www.starbucksathome.com/dk/sitemap.xml with a 431853-byte urlset, 200 on /dk/ with a da-dk document, and the bare root redirects to /se/ rather than erroring. The Fastly \"unknown domain\" failure recorded on 2026-08-31 was real; the hostname has since been pointed back at a service. The sitemap carries 116 URLs, all under /dk/, and https://www.starbucksathome.com/dk/recipes/iced-cappuccino returns a complete Recipe node with 4 ingredients and 7 instructions. So it returns to configured and needs a fresh uncapped run rather than being skipped as a dead host.\n\nOne thing to fix before that run. The recipe URLs are not all under one path: the sitemap holds 35 under /dk/opskrifter/, 6 under /dk/recipes/, 1 under /dk/recipe/ and 4 as flat /dk/opskrift-<slug> pages, while recipeUrlPatterns matches only ^https://www\\.starbucksathome\\.com/dk/opskrifter/[^/?#]+/?$. As configured the run would see 35 of roughly 46 recipes and report complete discovery over the shortfall, which is the shape of evidence that looks clean and is not.",
+      "The host no longer exists and the Danish site behind it is gone. On 2026-08-31 every URL on starbucksathome.com - the /dk/ section, the bare root and the sitemap alike - answered HTTP 500 with a 292-byte body reading \"Fastly error: unknown domain: www.starbucksathome.com. Please check that this domain has been added to a service.\" That is the CDN saying the hostname is not configured at all, not a site with a fault.\n\nThe brand has moved to athome.starbucks.com, which answers 200 and publishes a 507-URL sitemap, but it carries no Danish locale: /dk/ and /da/ both answer 404. There is no Danish source here to migrate, so this is blocked rather than a route needing rework.\n\nThe previous reason - 96 pages carrying Recipe JSON-LD without required fields against 28 persisted - described a site that was still answering. It is superseded rather than resolved.\n\nCORRECTION, 2026-09-20: the headline above is now false and this source is not dead. A live probe through the Chrome transport answered 200 on https://www.starbucksathome.com/dk/sitemap.xml with a 431853-byte urlset, 200 on /dk/ with a da-dk document, and the bare root redirects to /se/ rather than erroring. The Fastly \"unknown domain\" failure recorded on 2026-08-31 was real; the hostname has since been pointed back at a service. The sitemap carries 116 URLs, all under /dk/, and https://www.starbucksathome.com/dk/recipes/iced-cappuccino returns a complete Recipe node with 4 ingredients and 7 instructions. So it returns to configured and needs a fresh uncapped run rather than being skipped as a dead host.\n\nOne thing to fix before that run. The recipe URLs are not all under one path: the sitemap holds 35 under /dk/opskrifter/, 6 under /dk/recipes/, 1 under /dk/recipe/ and 4 as flat /dk/opskrift-<slug> pages, while recipeUrlPatterns matches only ^https://www\\.starbucksathome\\.com/dk/opskrifter/[^/?#]+/?$. As configured the run would see most of the catalogue and report complete discovery over the shortfall, which is the shape of evidence that looks clean and is not.\n\nFixed on 2026-09-21, and the counts above were off by one in the telling. The sitemap holds 45 recipe URLs, not 46: 34 under /dk/opskrifter/, 6 under /dk/recipes/, 1 under /dk/recipe/ and 4 flat /dk/opskrift-<slug>. recipeUrlPatterns now carries one anchored pattern per shape. One URL of each shape was fetched live before writing them - caffe-americano, iced-cappuccino, iced-mocha and opskrift-iced-flat-white - and all four answer 200 with a complete Recipe node (2/2, 4/7, 5/8 and 3/5 ingredients over steps). The patterns stay anchored rather than admitting any single segment under /dk/, because the three other flat pages that looked like they might be drinks - /dk/ristretto, /dk/iskaffe and /dk/cookies - answer 200 with no Recipe node at all. Needs its uncapped run now; at delaySeconds 2 and maxConcurrency 1 that is minutes, not a window.",
   },
   klank: {
     migrationState: "shadow_passed",
