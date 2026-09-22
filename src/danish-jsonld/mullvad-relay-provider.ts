@@ -178,6 +178,18 @@ export class MullvadRelayProvider {
     });
   }
 
+  /** Begin the next request chain without replacing a healthy site relay. */
+  async completeRequest(sessionId: string): Promise<void> {
+    await this.runSessionOperation(sessionId, async () => {
+      const current = this.activeBySession.get(sessionId);
+      if (current) {
+        this.usedBySession.set(sessionId, new Set([current.relayLabel]));
+      } else {
+        this.usedBySession.delete(sessionId);
+      }
+    });
+  }
+
   async invalidate(
     sessionId: string,
     targetScope?: string,

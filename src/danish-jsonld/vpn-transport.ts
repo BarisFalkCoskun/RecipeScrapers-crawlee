@@ -37,13 +37,16 @@ export interface DanishJsonLdVpnTransport {
   initialize(): Promise<void>;
   handleResponse(input: {
     sessionId: string;
+    requestId?: string;
     statusCode: number;
     body: string;
   }): Promise<VpnRotationDecision>;
   handleFailure(input: {
     sessionId: string;
+    requestId?: string;
     error: unknown;
   }): Promise<VpnRotationDecision>;
+  completeRequest?(sessionId: string, requestId?: string): Promise<void>;
   release(sessionId: string): Promise<void>;
   cleanup(): Promise<void>;
 }
@@ -53,8 +56,10 @@ export class MullvadVpnTransport implements DanishJsonLdVpnTransport {
   readonly requestHandlerTimeoutSecs: number;
   private readonly provider: MullvadRelayProvider;
   private readonly diagnosticSink?: (event: MullvadRelayDiagnostic) => void;
-  private readonly rotations = new Map<string, number>();
-  private readonly consecutiveTransportFailures = new Map<string, number>();
+  private readonly requestStates = new Map<string, Map<string, {
+    rotations: number;
+    transportFailures: number;
+  }>>();
   private readonly sessionOperations = new Map<string, Promise<void>>();
   private readonly targetScopeBySession = new Map<string, string>();
   private readonly leasedSessionIds = new Set<string>();
@@ -116,11 +121,13 @@ export class MullvadVpnTransport implements DanishJsonLdVpnTransport {
 
   async handleResponse(input: {
     sessionId: string;
+    requestId?: string;
     statusCode: number;
     body: string;
   }): Promise<VpnRotationDecision> {
     return this.runSessionOperation(input.sessionId, async () => {
-      this.consecutiveTransportFailures.delete(input.sessionId);
+      const state = this.requestState(input.sessionId, input.requestId);
+      state.transportFailures = 0;
       const explicitBlock =
         input.statusCode !== 404 &&
         EXPLICIT_BLOCK_PATTERN.test(input.body.slice(0, 20_000));
@@ -130,31 +137,42 @@ export class MullvadVpnTransport implements DanishJsonLdVpnTransport {
           ? "explicit-block"
           : undefined;
       return reason
-        ? this.rotateLocked(input.sessionId, reason)
+        ? this.rotateLocked(input.sessionId, reason, state)
         : noRotation();
     });
   }
 
   async handleFailure(input: {
     sessionId: string;
+    requestId?: string;
     error: unknown;
   }): Promise<VpnRotationDecision> {
     if (input.error instanceof VpnRotationRetryError) return noRotation();
     return this.runSessionOperation(input.sessionId, async () => {
       if (isApplicationFailure(input.error)) return noRotation();
+      const state = this.requestState(input.sessionId, input.requestId);
       if (isProxyFailure(input.error)) {
-        this.consecutiveTransportFailures.delete(input.sessionId);
-        return this.rotateLocked(input.sessionId, "proxy-failure");
+        state.transportFailures = 0;
+        return this.rotateLocked(input.sessionId, "proxy-failure", state);
       }
       if (!isTransportFailure(input.error)) return noRotation();
 
-      const failures =
-        (this.consecutiveTransportFailures.get(input.sessionId) ?? 0) + 1;
-      this.consecutiveTransportFailures.set(input.sessionId, failures);
-      if (failures < REPEATED_TRANSPORT_FAILURES) return noRotation();
-      this.consecutiveTransportFailures.delete(input.sessionId);
-      this.targetScopeBySession.delete(input.sessionId);
-      return this.rotateLocked(input.sessionId, "repeated-transport-failure");
+      state.transportFailures += 1;
+      if (state.transportFailures < REPEATED_TRANSPORT_FAILURES) return noRotation();
+      state.transportFailures = 0;
+      return this.rotateLocked(input.sessionId, "repeated-transport-failure", state);
+    });
+  }
+
+  async completeRequest(sessionId: string, requestId?: string): Promise<void> {
+    await this.runSessionOperation(sessionId, async () => {
+      const states = this.requestStates.get(sessionId);
+      states?.delete(requestId ?? sessionId);
+      if (states?.size === 0) this.requestStates.delete(sessionId);
+      await this.provider.completeRequest(sessionId);
+      this.emit("vpn-request-completed", {
+        leaseRetained: this.leasedSessionIds.has(sessionId),
+      });
     });
   }
 
@@ -163,10 +181,9 @@ export class MullvadVpnTransport implements DanishJsonLdVpnTransport {
       const hadLease = this.leasedSessionIds.delete(sessionId);
       this.targetScopeBySession.delete(sessionId);
       await this.provider.release(sessionId);
-      this.rotations.delete(sessionId);
-      this.consecutiveTransportFailures.delete(sessionId);
+      this.requestStates.delete(sessionId);
       if (!hadLease) return;
-      this.emit("vpn-request-lease-released", { reason: "request-terminal" });
+      this.emit("vpn-site-lease-released", { reason: "source-terminal" });
     });
   }
 
@@ -175,8 +192,7 @@ export class MullvadVpnTransport implements DanishJsonLdVpnTransport {
     await Promise.allSettled([...this.sessionOperations.values()]);
     this.initialized = false;
     this.preflightAvailable = false;
-    this.rotations.clear();
-    this.consecutiveTransportFailures.clear();
+    this.requestStates.clear();
     this.targetScopeBySession.clear();
     this.leasedSessionIds.clear();
     await this.provider.cleanup();
@@ -185,9 +201,10 @@ export class MullvadVpnTransport implements DanishJsonLdVpnTransport {
 
   private async rotateLocked(
     sessionId: string,
-    reason: string
+    reason: string,
+    state: { rotations: number }
   ): Promise<VpnRotationDecision> {
-    const count = this.rotations.get(sessionId) ?? 0;
+    const count = state.rotations;
     if (count >= MAX_ROTATIONS_PER_REQUEST) {
       const targetScope = this.targetScopeBySession.get(sessionId);
       const scopedAccessCooldown = ["http-403", "http-429", "http-526", "explicit-block"]
@@ -216,7 +233,7 @@ export class MullvadVpnTransport implements DanishJsonLdVpnTransport {
     }
     this.leasedSessionIds.add(sessionId);
     const rotationCount = count + 1;
-    this.rotations.set(sessionId, rotationCount);
+    state.rotations = rotationCount;
     this.emit("vpn-relay-rotated", {
       relayLabel: lease.relayLabel,
       country: lease.country,
@@ -224,6 +241,23 @@ export class MullvadVpnTransport implements DanishJsonLdVpnTransport {
       rotationCount,
     });
     return { rotated: true, eligible: true, exhausted: false, reason };
+  }
+
+  private requestState(sessionId: string, requestId = sessionId): {
+    rotations: number;
+    transportFailures: number;
+  } {
+    let states = this.requestStates.get(sessionId);
+    if (!states) {
+      states = new Map();
+      this.requestStates.set(sessionId, states);
+    }
+    let state = states.get(requestId);
+    if (!state) {
+      state = { rotations: 0, transportFailures: 0 };
+      states.set(requestId, state);
+    }
+    return state;
   }
 
   private emit(event: string, data: Record<string, unknown>): void {
@@ -292,6 +326,11 @@ export function requestVpnSessionId(
     .digest("hex")
     .slice(0, 24);
   return `vpn-${digest}`;
+}
+
+/** Relay identity spans all URLs and fetch modes within one source attempt. */
+export function siteVpnSessionId(sourceId: string, crawlAttemptId: string): string {
+  return requestVpnSessionId(sourceId, "site-attempt", crawlAttemptId);
 }
 
 function requestTargetScope(request: Request | undefined): string {

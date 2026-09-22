@@ -9,14 +9,16 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { createRequire } from "node:module";
 import { ImpitHttpClient } from "@crawlee/impit-client";
-import { HeaderGenerator } from "header-generator";
 import { CookieJar } from "tough-cookie";
 import type { DanishJsonLdSource } from "./source-registry.js";
+import type { DanishJsonLdSiteSession } from "./site-session.js";
 
 type CheerioHandler = (context: CheerioCrawlingContext) => Promise<void>;
 type PlaywrightHandler = (context: PlaywrightCrawlingContext) => Promise<void>;
 type CheerioOptions = NonNullable<ConstructorParameters<typeof CheerioCrawler>[0]>;
 type PlaywrightOptions = NonNullable<ConstructorParameters<typeof PlaywrightCrawler>[0]>;
+type CheerioNavigationOptions = Parameters<NonNullable<CheerioOptions["preNavigationHooks"]>[number]>[1];
+type PlaywrightErrorContext = Parameters<NonNullable<PlaywrightOptions["errorHandler"]>>[0];
 
 export interface DanishJsonLdCrawlerSettings {
   maxConcurrency: number;
@@ -52,7 +54,7 @@ export const DANISH_JSONLD_PLAYWRIGHT_BROWSER_POOL_OPTIONS = {
 /**
  * Chromium advertises its automation by default. Sources that answer with a
  * browser check read those markers, so the rendered path launches without
- * them. Crawlee's fingerprint injection already supplies a browser user agent.
+ * them. The user agent below matches the bundled browser and runtime platform.
  */
 export const DANISH_JSONLD_AUTOMATION_LAUNCH_ARGS = [
   "--disable-blink-features=AutomationControlled",
@@ -68,12 +70,10 @@ Object.defineProperty(navigator, 'webdriver', {
 `;
 
 /**
- * A server has no GPU, so WebGL reports a software rasterizer - llvmpipe under
- * the old headless shell, SwiftShader under the new headless mode - and the
- * renderer string is one of the most-read signals that a browser is not a
- * person's. It is reported as an ordinary Intel laptop GPU under Mesa, which is
- * what a real Linux desktop running this Chrome would show. Only the two
- * debug-info strings change; rendering itself is untouched.
+ * Legacy override retained for the opt-in local diagnostic only. Do not inject
+ * it in crawler pages: it exposes JS source, changes the function name and
+ * bypasses native receiver checks in both WebGL versions.
+ * @deprecated The crawler preserves the browser's native GPU information.
  */
 export const DANISH_JSONLD_WEBGL_INIT_SCRIPT = `
 (() => {
@@ -97,20 +97,10 @@ export const DANISH_JSONLD_BROWSER_LOCALE = "da-DK";
 export const DANISH_JSONLD_BROWSER_TIMEZONE = "Europe/Copenhagen";
 
 /**
- * The browser path tells the truth about its binary rather than pretending to be
- * another browser: it is Chromium on Linux, so that is what it says.
- *
- * Crawlee's fingerprint injection was the alternative, and it drew a different
- * random fingerprint for every browser it launched, because fingerprints are
- * cached per session and the runner keeps the session pool off to preserve block
- * diagnostics - Chrome 142 on one page and Chrome 135 on the next, and a Brave
- * brand list on a Chrome binary. With injection off, Crawlee falls back to a
- * hardcoded user agent for macOS Chrome 107, which contradicts a Linux platform
- * and a Chromium 147 brand list; and with no user agent at all, headless mode
- * reports itself as HeadlessChrome. So the user agent is written out here from
- * the Chromium version Playwright actually ships, in Chrome's reduced form. The
- * platform, brand list, TLS handshake and HTTP/2 behaviour are then all genuine
- * and all agree with it.
+ * Keep the browser identity tied to Playwright's bundled Chromium and the host
+ * platform. Crawlee otherwise substitutes an old macOS UA when fingerprints
+ * are disabled. HTTP impersonation has its own supported profile; its version
+ * must not be copied onto the real browser binary.
  */
 function bundledChromiumMajorVersion(): string {
   try {
@@ -129,7 +119,10 @@ function bundledChromiumMajorVersion(): string {
   throw new Error("Cannot read the bundled Chromium version; the browser user agent would not match its binary");
 }
 
-export const DANISH_JSONLD_BROWSER_USER_AGENT = `Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${bundledChromiumMajorVersion()}.0.0.0 Safari/537.36`;
+const browserUserAgentPlatform = process.platform === "darwin"
+  ? "Macintosh; Intel Mac OS X 10_15_7"
+  : process.platform === "win32" ? "Windows NT 10.0; Win64; x64" : "X11; Linux x86_64";
+export const DANISH_JSONLD_BROWSER_USER_AGENT = `Mozilla/5.0 (${browserUserAgentPlatform}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${bundledChromiumMajorVersion()}.0.0.0 Safari/537.36`;
 
 /**
  * A common desktop screen with a window that fits inside it. The window frame adds
@@ -142,58 +135,30 @@ export const DANISH_JSONLD_BROWSER_VIEWPORT = { width: 1920, height: 969 } as co
 
 
 /**
- * One browser, for the whole crawl.
- *
- * Left to got-scraping, every request drew a fresh header set: 12 different
- * browsers across 60 requests from one address, which no person produces. It
- * also draws the HTTP/1 and HTTP/2 sets independently, so a single session could
- * still present two browsers. And it chooses the TLS handshake from whatever
- * user agent the request carries, falling back to Firefox when there is none -
- * so the few requests the generator left without a user agent also negotiated
- * TLS as Firefox beneath Chrome headers.
- *
- * So the identity is chosen once, here, from desktop Chrome only (the TLS
- * profile got-scraping reproduces best), and sent unchanged on every request.
- * A draw is refused if it carries no user agent or any crawler marker, and the
- * few retries that takes are cheap.
- *
- * It is also refused unless its client hints agree with its user agent, as a
- * real Chrome's always do. Measured over 2000 draws on 2026-09-15, 25 did not:
- * 15 sent no sec-ch-ua at all, 3 no sec-ch-ua-platform, 5 spelled the platform
- * "MacOS" where Chrome sends "macOS", and 2 put a different major version in
- * sec-ch-ua than in the user agent. A crawl keeps one identity for its whole
- * run, so an inconsistent draw marked every request of that run.
+ * Pin a supported Impit profile and the exact UA/client hints it emits. The
+ * generic "chrome" alias in installed Impit 0.14.5 emits Chrome 124, while the
+ * independent header generator drew Chrome 140-145. Locally measured profile
+ * defaults for "chrome151" are Windows desktop Chrome 151, including this
+ * brand list. Keep this tuple together when upgrading the transport profile.
  */
-const CRAWLER_MARKER = /bot|crawl|spider|compatible;|pageburst|headless|preview|scan/i;
-
+export const DANISH_JSONLD_IMPIT_PROFILE = "chrome151" as const;
 export const DANISH_JSONLD_ACCEPT_LANGUAGE = "da-DK,da;q=0.9,en-US;q=0.8,en;q=0.7";
 
-function clientHintsAgree(headers: Record<string, string>, userAgent: string): boolean {
-  const major = userAgent.match(/Chrome\/(\d+)/u)?.[1];
-  const brands = headers["sec-ch-ua"] ?? "";
-  if (major === undefined || !brands.includes(`v="${major}"`)) return false;
-  if (headers["sec-ch-ua-mobile"] !== "?0") return false;
-  const platform = /Windows NT/u.test(userAgent) ? '"Windows"' : /Mac OS X/u.test(userAgent) ? '"macOS"' : undefined;
-  return platform !== undefined && headers["sec-ch-ua-platform"] === platform;
+export function createDanishJsonLdBrowserIdentity(): Record<string, string> {
+  return {
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+    "sec-ch-ua": '"Not=A?Brand";v="99", "Google Chrome";v="151", "Chromium";v="151"',
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": '"Windows"',
+    "accept-language": DANISH_JSONLD_ACCEPT_LANGUAGE,
+  };
 }
 
-export function createDanishJsonLdBrowserIdentity(): Record<string, string> {
-  const generator = new HeaderGenerator({
-    browsers: [{ name: "chrome", minVersion: 130 }],
-    operatingSystems: ["macos", "windows"],
-    devices: ["desktop"],
-    locales: ["da-DK", "da", "en-US", "en"],
-  });
-  for (let attempt = 0; attempt < 50; attempt += 1) {
-    const headers = generator.getHeaders({ httpVersion: "2" }) as Record<string, string>;
-    const userAgent = headers["user-agent"] ?? "";
-    if (!/Chrome\/\d+/u.test(userAgent) || CRAWLER_MARKER.test(userAgent)) continue;
-    if (!clientHintsAgree(headers, userAgent)) continue;
-    // Most of this corpus is Danish; a browser in Denmark asks for Danish first.
-    headers["accept-language"] = DANISH_JSONLD_ACCEPT_LANGUAGE;
-    return headers;
-  }
-  throw new Error("Could not generate a clean desktop Chrome identity in 50 draws");
+function withoutIdentityOverrides<T>(headers: Record<string, T> = {}): Record<string, T> {
+  return Object.fromEntries(Object.entries(headers).filter(([name]) => {
+    const lower = name.toLowerCase();
+    return lower !== "user-agent" && !lower.startsWith("sec-ch-ua");
+  }));
 }
 
 /**
@@ -250,15 +215,11 @@ export function createDanishJsonLdCheerioCrawler(options: {
   source: DanishJsonLdSource;
   requestHandler: CheerioHandler;
   proxyConfiguration?: ProxyConfiguration;
+  siteSession?: DanishJsonLdSiteSession;
   crawlerOptions?: Omit<CheerioOptions, "requestHandler">;
 }) {
   const identity = createDanishJsonLdBrowserIdentity();
-  // Kept here rather than handed to got: a jar passed as gotOptions.cookieJar
-  // reaches got on every request and is still never used, because Crawlee's
-  // streaming request path does not go through got's cookie handling - a
-  // measured run sent 0 of 19 cookies back that way. So cookies are read from
-  // each response and written onto the next request explicitly.
-  const cookieJar = new CookieJar();
+  const cookieJar = options.siteSession?.cookieJar ?? new CookieJar();
   const preNavigationHooks = [
     ...(options.crawlerOptions?.preNavigationHooks ?? []),
     jitterHook(options.source),
@@ -267,21 +228,30 @@ export function createDanishJsonLdCheerioCrawler(options: {
           gotOptions.useHeaderGenerator = false;
         }]
       : [async (
-          _context: CheerioCrawlingContext,
+          { request }: CheerioCrawlingContext,
           gotOptions: { headers?: Record<string, unknown>; useHeaderGenerator?: boolean }
         ) => {
-          // Headers the caller set on a request still win; the identity fills
-          // everything else, and the generator is off so it cannot redraw.
-          gotOptions.headers = { ...identity, ...gotOptions.headers };
+          // Crawlee merges request headers after hooks, then Impit folds casing.
+          // Remove identity overrides from both layers to prevent contradictory
+          // values being concatenated; preserve all source-specific headers.
+          request.headers = withoutIdentityOverrides(request.headers);
+          gotOptions.headers = { ...identity, ...withoutIdentityOverrides(gotOptions.headers) };
           gotOptions.useHeaderGenerator = false;
         }]),
     async (
-      { request }: CheerioCrawlingContext,
-      gotOptions: { headers?: Record<string, unknown> }
+      { request, proxyInfo }: CheerioCrawlingContext,
+      gotOptions: CheerioNavigationOptions
     ) => {
-      const cookie = await cookieJar.getCookieString(request.url);
-      // Crawlee merges gotOptions Cookie with any session cookies itself.
-      if (cookie) gotOptions.headers = { ...gotOptions.headers, Cookie: cookie };
+      await options.siteSession?.prepareRequest(proxyInfo?.url);
+      if (!options.source.disableHeaderGenerator && !options.crawlerOptions?.httpClient) {
+        // Impit reads this jar on each redirect hop. A fixed Cookie header
+        // would suppress that handling and replay stale cookies after redirects.
+        gotOptions.cookieJar = cookieJar;
+      } else {
+        // Crawlee's Got streaming adapter ignores its cookieJar option.
+        const cookie = await cookieJar.getCookieString(request.url);
+        if (cookie) gotOptions.headers = { ...gotOptions.headers, Cookie: cookie };
+      }
     },
   ];
   const postNavigationHooks = [
@@ -289,26 +259,20 @@ export function createDanishJsonLdCheerioCrawler(options: {
     async ({ request, response }: CheerioCrawlingContext) => {
       const raw = (response as { headers?: Record<string, unknown> } | undefined)?.headers?.["set-cookie"];
       const values = Array.isArray(raw) ? raw : typeof raw === "string" ? [raw] : [];
-      const url = request.loadedUrl ?? request.url;
+      // Crawlee fills loadedUrl only after post-navigation hooks. The final
+      // response URL supplies the correct host and default cookie path now.
+      const url = response?.url ?? request.loadedUrl ?? request.url;
       for (const value of values) {
         await cookieJar.setCookie(String(value), url, { ignoreError: true });
       }
     },
   ];
   return new CheerioCrawler({
-    // Headers alone cannot make a Node client look like Chrome. got-scraping
-    // negotiates TLS and HTTP/2 the way Node does - JA4 t13d1513h2..ff9cead5a15b
-    // with 13 extensions, HTTP/2 settings 2:0;4:33554432 and pseudo-headers in
-    // the order method, path, authority, scheme - while real Chrome sends JA4
-    // t13d1516h2_8daaf6152771_02713d6af862 and method, authority, scheme, path.
-    // Bot management compares the two and sees a client claiming Chrome that
-    // connects like Node. impit reproduces Chrome's handshake exactly, measured
-    // against tls.peet.ws. nemlig keeps got-scraping with its generated headers
-    // turned off, because its JSON transport is the one place a browser profile
-    // was deliberately removed.
+    // Keep the TLS/HTTP profile and HTTP identity together. Nemlig deliberately
+    // uses its existing JSON transport with browser header generation disabled.
     ...(options.source.disableHeaderGenerator
       ? {}
-      : { httpClient: new ImpitHttpClient({ browser: "chrome" }) }),
+      : { httpClient: new ImpitHttpClient({ browser: DANISH_JSONLD_IMPIT_PROFILE }) }),
     ...options.crawlerOptions,
     preNavigationHooks,
     postNavigationHooks,
@@ -316,6 +280,13 @@ export function createDanishJsonLdCheerioCrawler(options: {
       ? { proxyConfiguration: options.proxyConfiguration }
       : {}),
     ...resolveDanishJsonLdCrawlerSettings(options.source),
+    ...(options.siteSession ? {
+      // One response must not rotate/clear a shared session while another
+      // request is still using its relay or browser state.
+      maxConcurrency: 1,
+      useSessionPool: false,
+      persistCookiesPerSession: false,
+    } : {}),
     // Some sources serve recipe HTML under text/plain. Crawlee skips those by
     // default, which loses the page as a failed request; the body still parses
     // and extraction stays strict JSON-LD either way.
@@ -329,8 +300,23 @@ export function createDanishJsonLdPlaywrightCrawler(options: {
   source: DanishJsonLdSource;
   requestHandler: PlaywrightHandler;
   proxyConfiguration?: ProxyConfiguration;
+  siteSession?: DanishJsonLdSiteSession;
   crawlerOptions?: Omit<PlaywrightOptions, "requestHandler">;
 }) {
+  const browserGenerations = new WeakMap<object, number>();
+  const captureBrowserState = async (context: PlaywrightCrawlingContext) => {
+    if (!options.siteSession || !context.page) return;
+    const generation = browserGenerations.get(context.page);
+    if (generation === undefined) return;
+    if (generation !== options.siteSession.generation) {
+      // Retiring also discards localStorage and other state, not only cookies.
+      context.crawler.browserPool.retireBrowserController(context.browserController);
+      return;
+    }
+    // Crawlee may close a failed navigation's page before the error handler,
+    // while its context still holds response cookies needed by the retry.
+    await options.siteSession.captureBrowser(context.page.context(), generation);
+  };
   const launchContext = options.crawlerOptions?.launchContext;
   const browserPoolOptions = options.crawlerOptions?.browserPoolOptions;
   const hardenedLaunchContext = {
@@ -364,14 +350,21 @@ export function createDanishJsonLdPlaywrightCrawler(options: {
   const preNavigationHooks = [
     ...(options.crawlerOptions?.preNavigationHooks ?? []),
     jitterHook(options.source),
-    async ({ page }: PlaywrightCrawlingContext) => {
+    async ({ page, proxyInfo }: PlaywrightCrawlingContext) => {
+      if (options.siteSession) {
+        await options.siteSession.prepareRequest(proxyInfo?.url);
+        browserGenerations.set(page, await options.siteSession.restoreBrowser(page.context()));
+      }
       await page.addInitScript(DANISH_JSONLD_WEBDRIVER_INIT_SCRIPT);
-      await page.addInitScript(DANISH_JSONLD_WEBGL_INIT_SCRIPT);
     },
   ];
   return new PlaywrightCrawler({
     ...options.crawlerOptions,
     preNavigationHooks,
+    postNavigationHooks: [
+      ...(options.crawlerOptions?.postNavigationHooks ?? []),
+      captureBrowserState,
+    ],
     launchContext: hardenedLaunchContext,
     ...(options.proxyConfiguration
       ? {
@@ -383,6 +376,11 @@ export function createDanishJsonLdPlaywrightCrawler(options: {
         }
       : {}),
     ...resolveDanishJsonLdCrawlerSettings(options.source),
+    ...(options.siteSession ? {
+      maxConcurrency: 1,
+      useSessionPool: false,
+      persistCookiesPerSession: false,
+    } : {}),
     browserPoolOptions: {
       // See DANISH_JSONLD_BROWSER_USER_AGENT: one truthful identity instead of a
       // random fingerprint per launched browser.
@@ -394,6 +392,31 @@ export function createDanishJsonLdPlaywrightCrawler(options: {
       ...DANISH_JSONLD_PLAYWRIGHT_BROWSER_POOL_OPTIONS,
     },
     respectRobotsTxtFile: false,
-    requestHandler: options.requestHandler,
+    requestHandler: async (context) => {
+      try {
+        await options.requestHandler(context);
+      } finally {
+        // Includes cookies set while a page settles or the handler runs.
+        await captureBrowserState(context);
+      }
+    },
+    ...(options.crawlerOptions?.errorHandler ? {
+      errorHandler: async (context: PlaywrightErrorContext, error: Error) => {
+        try {
+          await options.crawlerOptions!.errorHandler!(context, error);
+        } finally {
+          await captureBrowserState(context);
+        }
+      },
+    } : {}),
+    ...(options.crawlerOptions?.failedRequestHandler ? {
+      failedRequestHandler: async (context: PlaywrightErrorContext, error: Error) => {
+        try {
+          await options.crawlerOptions!.failedRequestHandler!(context, error);
+        } finally {
+          await captureBrowserState(context);
+        }
+      },
+    } : {}),
   });
 }
