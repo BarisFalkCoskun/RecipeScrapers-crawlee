@@ -23,6 +23,7 @@ npm start -- --language da             # Crawl Danish-language sites
 npm start -- --language en             # Crawl English-language sites
 npm start -- --language da --list-sources # Preview the Danish selection
 npm start -- --list-sources             # List sites without crawling
+npm start -- --check                    # Check setup without crawling
 npm start -- --help                     # Show options
 npm start -- --resume RUN_ID --sources all
 ```
@@ -105,6 +106,16 @@ before changing any source to `cutover`.
   - `PLAYWRIGHT_WAIT_FOR_LOAD_STATE_TIMEOUT_MS`
 
 ## Operations
+
+Run `npm start -- --check` to validate the selected sources, writable storage,
+Chromium launch and a read-only MongoDB ping. Failed checks exit with code 1;
+the check does not crawl websites or write database records/indexes.
+
+During a crawl, progress on stderr shows finished, active, paused and lock-waiting
+sites, new/changed recipes and pending requests. A cooling site checkpoints its
+work so the batch can crawl other sites, then returns when the pause expires.
+Separate processes using the same local `CRAWLEE_STORAGE_DIR` serialize overlapping
+websites and protect their saved browser state.
 
 The dedicated runner conditionally fetches recipe pages using ETag/Last-Modified
 and shares website cooldowns across HTTP/browser requests and worker restarts.

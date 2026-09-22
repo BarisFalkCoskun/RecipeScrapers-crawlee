@@ -48,6 +48,8 @@ import { IncrementalRecipeCache, CacheMissRetryError, type CachedRecipeResponse 
 import { WebsiteCooldowns, CooldownPendingError, WebsiteResponseRetryError } from "./website-cooldowns.js";
 import { AdaptiveRequestPacing, PacingPendingError } from "./adaptive-pacing.js";
 import { requestProfileFor } from "./request-profile.js";
+import { sourceWebsiteHosts, tryWebsiteLock } from "./website-lock.js";
+import { waitForBatch, type BatchProgress } from "./batch-progress.js";
 
 export interface DanishJsonLdCrawlSelection extends DanishJsonLdCrawlOptions {
   sourceIds: string[];
@@ -236,6 +238,8 @@ export interface ExecuteSourceInput {
   pacing?: AdaptiveRequestPacing;
   vpnTransport?: DanishJsonLdVpnTransport;
   diagnosticSink?: (event: DanishJsonLdDiagnostic) => void;
+  deferWhenPaused?: boolean;
+  onObservation?: (observation: SourceRunObservation) => void;
 }
 export type ExecuteDanishJsonLdSource = (
   input: ExecuteSourceInput
@@ -243,6 +247,9 @@ export type ExecuteDanishJsonLdSource = (
   observation: SourceRunObservation;
   outcome: SourceRunOutcomeSummary;
   robotsEnforced?: false;
+  deferredUntil?: number;
+  waitingForWebsite?: boolean;
+  handledRequests?: number;
 }>;
 
 export async function runDanishJsonLdCrawl(input: {
@@ -255,13 +262,23 @@ export async function runDanishJsonLdCrawl(input: {
   signal?: AbortSignal;
   diagnosticSink?: (event: DanishJsonLdDiagnostic) => void;
   vpnTransport?: DanishJsonLdVpnTransport;
+  onProgress?: (progress: BatchProgress) => void;
 }): Promise<{
   summary: DanishJsonLdRunSummary;
   observations: SourceRunObservation[];
 }> {
   const executeSource = input.executeSource ?? executeDanishJsonLdSource;
-  const observations: SourceRunObservation[] = [];
-  const outcomes: SourceRunOutcomeSummary[] = [];
+  const latest = new Map<string, SourceRunObservation>();
+  const finished = new Map<string, SourceRunOutcomeSummary>();
+  const pending = input.selection.sources.map((source) => ({ source, readyAt: 0, waiting: false, started: false, used: 0 }));
+  let active: string | undefined;
+  const progress = () => input.onProgress?.({ total: input.selection.sources.length, finished: finished.size, active,
+    paused: pending.filter((p) => p.readyAt > Date.now() && !p.waiting).length,
+    waiting: pending.filter((p) => p.waiting).length, notStarted: pending.filter((p) => !p.started).length,
+    inserted: [...latest.values()].reduce((n, o) => n + (o.insertedRecipes ?? 0), 0),
+    changed: [...latest.values()].reduce((n, o) => n + (o.changedRecipes ?? 0), 0),
+    pending: [...latest.values()].reduce((n, o) => n + (o.workAccounting?.pending ?? 0), 0),
+  });
   const maxPages = input.selection.maxPages ?? Number.MAX_SAFE_INTEGER;
   const diagnosticOutput = input.diagnosticSink ?? ((event: DanishJsonLdDiagnostic) => {
     log.info(JSON.stringify(event));
@@ -279,13 +296,30 @@ export async function runDanishJsonLdCrawl(input: {
     }
   }
 
-  for (const source of input.selection.sources) {
+  const progressTimer = input.onProgress ? setInterval(progress, 5000) : undefined;
+  progressTimer?.unref();
+  try {
+  while (pending.length) {
     if (input.signal?.aborted) {
-      const observation: SourceRunObservation = { sourceId: source.id, discoveryComplete: false, interrupted: true };
-      observations.push(observation);
-      outcomes.push(classifySourceOutcome(observation));
+      for (const item of pending) {
+        const observation: SourceRunObservation = { sourceId: item.source.id, discoveryComplete: false,
+          ...latest.get(item.source.id), interrupted: true };
+        latest.set(item.source.id, observation);
+        finished.set(item.source.id, classifySourceOutcome(observation));
+      }
+      pending.length = 0;
+      break;
+    }
+    const index = pending.findIndex((item) => item.readyAt <= Date.now());
+    if (index < 0) {
+      await waitForBatch(Math.min(...pending.map((item) => item.readyAt)) - Date.now(), input.signal);
       continue;
     }
+    const item = pending.splice(index, 1)[0];
+    const { source } = item;
+    const wasWaiting = item.waiting;
+    active = source.id;
+    if (!wasWaiting) progress();
     const diagnosticSink = createBudgetedDiagnosticSink({
       maxEvents: 1_000,
       sink: diagnosticOutput,
@@ -296,19 +330,28 @@ export async function runDanishJsonLdCrawl(input: {
         store: input.store,
         crawlRunId: input.crawlRunId,
         crawlAttemptId: `${input.crawlRunId}:${source.id}`,
-        maxPages,
+        maxPages: Math.max(1, maxPages - item.used),
         checkpointDirectory: input.checkpointDirectory,
         checkpointIdentity: input.checkpointIdentity,
-        resume: Boolean(input.selection.resumeRunId || (input.checkpointDirectory && !input.executeSource)),
+        resume: Boolean(item.started || input.selection.resumeRunId || (input.checkpointDirectory && !input.executeSource)),
+        deferWhenPaused: Boolean(input.checkpointDirectory),
+        onObservation: (observation) => { latest.set(source.id, observation); },
         signal: input.signal,
         fullRefresh: input.selection.fullRefresh,
         refreshHours: input.selection.refreshHours,
         diagnosticSink,
         ...(input.vpnTransport ? { vpnTransport: input.vpnTransport } : {}),
       });
-      observations.push(result.observation);
-      outcomes.push(result.outcome);
+      if (!result.waitingForWebsite) latest.set(source.id, result.observation);
+      item.used += result.handledRequests ?? 0;
+      item.waiting = Boolean(result.waitingForWebsite);
+      if (result.deferredUntil && item.used < maxPages) {
+        item.readyAt = result.deferredUntil;
+        item.started ||= !result.waitingForWebsite;
+        pending.push(item);
+      } else finished.set(source.id, result.outcome);
     } catch (error) {
+      item.waiting = false;
       if (isFatalBatchError(error)) throw error;
       const observed = readFailureObservation(error, source.id);
       const observation: SourceRunObservation = {
@@ -317,8 +360,8 @@ export async function runDanishJsonLdCrawl(input: {
         failedRequests: Math.max(1, observed.failedRequests ?? 0),
         discoveryComplete: false,
       };
-      observations.push(observation);
-      outcomes.push(classifySourceOutcome(observation));
+      latest.set(source.id, observation);
+      finished.set(source.id, classifySourceOutcome(observation));
       diagnosticSink(
         createBoundedDiagnostic("source-failed", {
           sourceId: source.id,
@@ -327,7 +370,13 @@ export async function runDanishJsonLdCrawl(input: {
         })
       );
     }
+    active = undefined;
+    if (!wasWaiting || !item.waiting) progress();
   }
+  } finally { clearInterval(progressTimer); }
+  progress();
+  const observations = input.selection.sources.map((source) => latest.get(source.id)!);
+  const outcomes = input.selection.sources.map((source) => finished.get(source.id)!);
 
   return {
     summary: createDanishJsonLdRunSummary(outcomes),
@@ -337,10 +386,23 @@ export async function runDanishJsonLdCrawl(input: {
 
 export async function executeDanishJsonLdSource(
   input: ExecuteSourceInput
-): Promise<{
+): ReturnType<ExecuteDanishJsonLdSource> {
+  if (!input.checkpointDirectory) return executeUnlockedSource(input);
+  const release = await tryWebsiteLock(input.checkpointDirectory, sourceWebsiteHosts(input.source));
+  if (!release) {
+    const observation = { sourceId: input.source.id, discoveryComplete: false };
+    return { observation, outcome: classifySourceOutcome(observation), deferredUntil: Date.now() + 1000, waitingForWebsite: true };
+  }
+  try { return await executeUnlockedSource(input); }
+  finally { await release(); }
+}
+
+async function executeUnlockedSource(input: ExecuteSourceInput): Promise<{
   observation: SourceRunObservation;
   outcome: SourceRunOutcomeSummary;
   robotsEnforced: false;
+  deferredUntil?: number;
+  handledRequests?: number;
 }> {
   const diagnosticSink = createBudgetedDiagnosticSink({
     maxEvents: 1_000,
@@ -360,7 +422,7 @@ export async function executeDanishJsonLdSource(
     diagnostic: (data) => diagnosticSink(createBoundedDiagnostic("adaptive-pacing", data)) });
   // Register every source host before the pool starts: an earlier run may have
   // left a deadline even though this run has not yet seen a response.
-  for (const domain of input.source.allowedDomains) {
+  for (const domain of sourceWebsiteHosts(input.source)) {
     cooldowns.register(`https://${domain}`);
     pacing.register(`https://${domain}`);
   }
@@ -391,6 +453,7 @@ export async function executeDanishJsonLdSource(
   const session = new DanishJsonLdSourceSession({ ...input, diagnosticSink, checkpoint: journal.checkpoint });
   const initialCheckpoint = session.checkpointDelta();
   const previousDuration = session.observation.durationSeconds ?? 0;
+  let deferredUntil: number | undefined;
   const currentResult = () => {
     session.observation.workAccounting = journal.accounting();
     const accounted = new Set([...journal.entries.values()].filter((entry) => entry.request.kind === "recipe")
@@ -402,7 +465,8 @@ export async function executeDanishJsonLdSource(
     o.durationSeconds = previousDuration + (Date.now() - attemptStarted) / 1000;
     o.collectionComplete = !failed && o.discoveryComplete && !o.pageCapReached && !o.interrupted && o.workAccounting?.pending === 0
       && (o.unaccountedRecipeCandidates ?? 0) === 0 && (o.failedRequests ?? 0) === 0 && (o.blockedRequests ?? 0) === 0 && (o.mongoFailures ?? 0) === 0;
-    return { observation: session.observation, outcome: session.outcome(), robotsEnforced: false as const };
+    return { observation: session.observation, outcome: session.outcome(), robotsEnforced: false as const,
+      deferredUntil, handledRequests: session.handledRequestCount() };
   };
   const disposition = (before: SourceRunObservation, kind: DanishJsonLdRequestKind): WorkDisposition => {
     const after = session.observation;
@@ -419,6 +483,19 @@ export async function executeDanishJsonLdSource(
   const durable = async (operation: Promise<void>) => {
     try { await operation; } catch (error) { journalError = error; stopCrawlers?.(); throw error; }
   };
+  const ready = async (queue: RequestQueue): Promise<boolean> => {
+    if (input.signal?.aborted || deferredUntil || await queue.isEmpty()) return false;
+    const paused = Math.max(await cooldowns.pauseRemaining(), await pacing.pauseRemaining());
+    if (input.deferWhenPaused && input.checkpointDirectory && paused > 1000 && !session.isRequestCapReached()) {
+      deferredUntil = Date.now() + paused;
+      stopCrawlers?.();
+      return false;
+    }
+    return await cooldowns.ready() && await pacing.ready();
+  };
+  const observationTimer = input.onObservation ? setInterval(() => input.onObservation?.({ ...session.observation,
+    workAccounting: journal.accounting() }), 2000) : undefined;
+  observationTimer?.unref();
   const stateHosts = [...new Set([...input.source.allowedDomains, ...(input.source.listingDiscovery?.listingHosts ?? [])])];
   const siteSession = new DanishJsonLdSiteSession({ diagnosticSink, directory: input.checkpointDirectory,
     allowedDomains: stateHosts,
@@ -511,6 +588,7 @@ export async function executeDanishJsonLdSource(
         return {
           url: request.url,
           uniqueKey: workKey(fetchMode, request),
+          retryCount: journal.entries.get(workKey(fetchMode, request))?.retryCount ?? 0,
           label: request.kind,
           skipNavigation: Boolean(cached && cache.fresh(cached)),
           ...(request.method ? { method: request.method } : {}),
@@ -655,7 +733,7 @@ export async function executeDanishJsonLdSource(
     },
     crawlerOptions: {
       requestQueue: cheerioQueue,
-      autoscaledPoolOptions: { isTaskReadyFunction: async () => !input.signal?.aborted && !(await cheerioQueue.isEmpty()) && await cooldowns.ready() && await pacing.ready() },
+      autoscaledPoolOptions: { isTaskReadyFunction: () => ready(cheerioQueue) },
       preNavigationHooks: [async ({ request }, options) => {
         conditional.delete(request);
         const entry = request.userData["unconditionalFetch"] ? undefined : await cache.read(originalRequest(request));
@@ -689,6 +767,7 @@ export async function executeDanishJsonLdSource(
           error,
         });
         if (!allowRetry) request.noRetry = true;
+        if (!request.noRetry) await durable(journal.retried(String(request.userData["workKey"]), request.retryCount + 1));
         if (request.noRetry) await completeVpnRequest(request.userData);
       },
       failedRequestHandler: async (
@@ -789,7 +868,7 @@ export async function executeDanishJsonLdSource(
     },
     crawlerOptions: {
       requestQueue: playwrightQueue,
-      autoscaledPoolOptions: { isTaskReadyFunction: async () => !input.signal?.aborted && !(await playwrightQueue.isEmpty()) && await cooldowns.ready() && await pacing.ready() },
+      autoscaledPoolOptions: { isTaskReadyFunction: () => ready(playwrightQueue) },
       postNavigationHooks: [async ({ request, response }) => {
         if (response) await observeResponse(response.url(), response.status(), await response.allHeaders(), response);
       }],
@@ -814,6 +893,7 @@ export async function executeDanishJsonLdSource(
           error,
         });
         if (!allowRetry) request.noRetry = true;
+        if (!request.noRetry) await durable(journal.retried(String(request.userData["workKey"]), request.retryCount + 1));
         if (request.noRetry) await completeVpnRequest(request.userData);
       },
       failedRequestHandler: async (
@@ -847,12 +927,16 @@ export async function executeDanishJsonLdSource(
   for (let cycle = 0; cycle < 10; cycle += 1) {
     if (input.signal?.aborted) return currentResult();
     if (!(await cheerioQueue.isEmpty())) await cheerioCrawler.run();
+    if (journalError) throw journalError;
+    if (deferredUntil) return currentResult();
     if (session.isRequestCapReached()) {
       return currentResult();
     }
     if (input.signal?.aborted) return currentResult();
     if (journalError) throw journalError;
     if (!(await playwrightQueue.isEmpty())) await playwrightCrawler.run();
+    if (journalError) throw journalError;
+    if (deferredUntil) return currentResult();
     if (session.isRequestCapReached()) {
       return currentResult();
     }
@@ -875,6 +959,7 @@ export async function executeDanishJsonLdSource(
     currentResult();
     throw new SourceExecutionFailure(error, session.observation);
   } finally {
+    clearInterval(observationTimer);
     if (stopCrawlers) input.signal?.removeEventListener("abort", stopCrawlers);
     currentResult();
     const complete = !failed && !input.signal?.aborted && journal.accounting().pending === 0

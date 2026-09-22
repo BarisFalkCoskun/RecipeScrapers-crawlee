@@ -203,3 +203,25 @@ it("interrupts a long cooldown promptly, retaining pending work for resume", asy
     expect(f.sitemapHits()).toBe(1);
   } finally { await f.close(); }
 }, 30_000);
+
+it("defers a cooling website, then resumes without resetting exhausted HTTP retries", async () => {
+  let hits = 0;
+  const f = await fixture((_req, res) => {
+    hits++; res.statusCode = 429; res.setHeader("content-type", "text/html"); res.setHeader("Retry-After", "2"); res.end("Slow down");
+  });
+  let now = Date.now();
+  const cooldowns = new WebsiteCooldowns({ directory: f.directory, now: () => now });
+  const pacing = new AdaptiveRequestPacing({ minimumDelayMs: 0, maximumDelayMs: 0 });
+  try {
+    const first = await f.run({ crawlRunId: "deferred-retry", deferWhenPaused: true, cooldowns, pacing });
+    expect(first.deferredUntil).toBeGreaterThan(Date.now());
+    expect(hits).toBe(1);
+    expect(first.observation.workAccounting?.pending).toBe(1);
+    now += 120_000;
+    const second = await f.run({ crawlRunId: "deferred-retry", resume: true, deferWhenPaused: true, cooldowns, pacing });
+    expect(hits).toBe(2);
+    expect(second.observation.workAccounting?.pending).toBe(0);
+    expect(second.observation.blockedRequests).toBe(1);
+    expect(second.deferredUntil).toBeUndefined();
+  } finally { await f.close(); }
+}, 20000);

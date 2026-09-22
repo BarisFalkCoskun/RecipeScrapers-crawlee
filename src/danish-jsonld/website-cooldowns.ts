@@ -92,6 +92,11 @@ export class WebsiteCooldowns {
     for (const host of this.hosts) if (await this.remaining(`https://${host}`) > 0) return false;
     return true;
   }
+  async pauseRemaining(): Promise<number> {
+    let remaining = 0;
+    for (const host of this.hosts) remaining = Math.max(remaining, await this.remaining(`https://${host}`));
+    return remaining;
+  }
   async beforeRequest(url: string): Promise<void> {
     this.register(url);
     if (await this.remaining(url) > 0) throw new CooldownPendingError();

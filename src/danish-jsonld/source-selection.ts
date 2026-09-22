@@ -41,6 +41,7 @@ export interface DanishJsonLdCrawlOptions {
   resumeRunId?: string;
   fullRefresh?: boolean;
   refreshHours?: number;
+  check?: boolean;
   help?: boolean;
   listSources?: boolean;
 }
@@ -59,6 +60,9 @@ export function parseDanishJsonLdCrawlArgs(
       case "--help":
       case "-h":
         options.help = true;
+        break;
+      case "--check":
+        options.check = true;
         break;
       case "--list-sources":
         options.listSources = true;

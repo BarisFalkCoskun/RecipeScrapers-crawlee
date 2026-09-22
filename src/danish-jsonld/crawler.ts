@@ -259,6 +259,7 @@ export class DanishJsonLdSourceSession {
   isRequestCapReached(): boolean {
     return this.requestBudget.snapshot().capReached;
   }
+  handledRequestCount(): number { return this.requestBudget.snapshot().handledRequests; }
 
   /** Records actual queue admission; rejected discovery candidates never call this. */
   recordQueueAdmission(url: string): void {

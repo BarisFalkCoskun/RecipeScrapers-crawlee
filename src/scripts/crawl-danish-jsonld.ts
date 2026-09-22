@@ -8,7 +8,7 @@ config({ quiet: true });
 
 async function main() {
   const args = process.argv.slice(2);
-  if (!args.some((arg) => ["--help", "-h", "--list-sources"].includes(arg))) {
+  if (!args.some((arg) => ["--help", "-h", "--list-sources", "--check"].includes(arg))) {
     const resourceBudget = configureDanishJsonLdRuntimeResources({
       hostMemoryMbytes: totalmem() / (1024 * 1024),
     });
@@ -22,7 +22,7 @@ async function main() {
   process.once("SIGTERM", onTerminate);
   try {
     const result = await executeDanishJsonLdCli(args, { signal: controller.signal });
-    process.exitCode = interruptedCode ?? (result.informational ? 0 : crawlExitCode(result.summary));
+    process.exitCode = interruptedCode ?? result.exitCode ?? (result.informational ? 0 : crawlExitCode(result.summary));
   } finally {
     process.off("SIGINT", onInterrupt);
     process.off("SIGTERM", onTerminate);

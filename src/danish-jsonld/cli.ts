@@ -1,3 +1,5 @@
+import { runPreflight } from "./preflight.js";
+import { formatBatchProgress, type BatchProgress } from "./batch-progress.js";
 import { hashHtml } from "../utils/hash.js";
 import { runProvenance } from "../operations/run-provenance.js";
 import type { RecipeDocumentV2Store, CrawlStore } from "../storage/store.js";
@@ -40,18 +42,21 @@ export interface DanishJsonLdCliDependencies {
     checkpointDirectory?: string;
     checkpointIdentity?: string;
     signal?: AbortSignal;
+    onProgress?: (progress: BatchProgress) => void;
   }) => Promise<{ summary: DanishJsonLdRunSummary; observations: unknown[] }>;
   createVpnTransport: (country?: string) => DanishJsonLdVpnTransport;
   mkdir: (path: string, options: { recursive: true }) => Promise<unknown>;
   writeFile: (path: string, data: string, encoding: "utf8") => Promise<unknown>;
   output: (line: string) => void;
+  progress: (line: string) => void;
+  preflight: typeof runPreflight;
   signal?: AbortSignal;
 }
 
 export async function executeDanishJsonLdCli(
   args: string[],
   dependencies: Partial<DanishJsonLdCliDependencies> = {}
-): Promise<{ summary: DanishJsonLdRunSummary; observations: unknown[]; informational?: true }> {
+): Promise<{ summary: DanishJsonLdRunSummary; observations: unknown[]; informational?: true; exitCode?: number }> {
   const resolved: DanishJsonLdCliDependencies = {
     env: process.env,
     now: () => new Date(),
@@ -67,6 +72,8 @@ export async function executeDanishJsonLdCli(
     mkdir,
     writeFile,
     output: console.log,
+    progress: (line) => console.error(line),
+    preflight: runPreflight,
     ...dependencies,
   };
   const options = parseDanishJsonLdCrawlArgs(args);
@@ -79,6 +86,7 @@ sites with previous failures are attempted and their current outcomes reported.
 Options:
   --sources ID,ID       Crawl only these sites (or use "all")
   --language da|en      Select Danish or English sites (names or da,en also work)
+  --check              Check configuration, storage, Chromium and MongoDB without crawling
   --list-sources        List selected site IDs, domains and languages without crawling
   --max-pages N         Limit requests per site for this invocation
   --refresh-hours N    Reuse eligible recipe pages for up to N hours (default: 0)
@@ -105,6 +113,15 @@ Examples:
   if (options.listSources) {
     resolved.output(`${selection.sourceIds.length} sites\nID\tDomain\tLanguage\n${selection.sources.map((source) => `${source.id}\t${source.domain}\t${recipeSourceLanguage(source.id) ?? "und"}`).join("\n")}`);
     return { informational: true, summary: { robotsEnforced: false, sourceOutcomes: [] }, observations: [] };
+  }
+  if (options.check) {
+    const results = await resolved.preflight({ sources: selection.sources,
+      directory: resolved.env["CRAWLEE_STORAGE_DIR"] ?? "storage",
+      mongoUri: resolved.env["MONGODB_URI"] ?? "mongodb://localhost:27017",
+      database: options.database ?? resolved.env["DB_NAME"] ?? MONGODB_CONFIG.defaultDatabaseName });
+    for (const result of results) resolved.output(`${result.ok ? "PASS" : "FAIL"} ${result.name}: ${result.message}`);
+    return { informational: true, exitCode: results.every((result) => result.ok) ? 0 : 1,
+      summary: { robotsEnforced: false, sourceOutcomes: [] }, observations: [] };
   }
   const startedAt = resolved.now();
   const baseCrawlRunId = resolveCrawlRunId(startedAt, resolved.env);
@@ -135,6 +152,7 @@ Examples:
       checkpointDirectory,
       checkpointIdentity,
       signal: resolved.signal,
+      onProgress: (progress) => resolved.progress(formatBatchProgress(progress)),
       ...(vpnTransport ? { vpnTransport } : {}),
     });
     await store.insertDanishJsonLdRun({

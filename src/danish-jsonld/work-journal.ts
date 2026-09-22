@@ -12,6 +12,7 @@ export interface CrawlWork {
   request: DanishJsonLdRequest;
   disposition: WorkDisposition;
   queued: boolean;
+  retryCount?: number;
 }
 export interface WorkAccounting {
   admitted: number;
@@ -32,6 +33,7 @@ type JournalEvent =
   | { type: "identity"; fingerprint: string; runId?: string; sourceId?: string }
   | { type: "admit"; entries: CrawlWork[] }
   | { type: "queued"; keys: string[] }
+  | { type: "retry"; key: string; retryCount: number }
   | { type: "commit"; key: string; disposition: WorkDisposition; checkpoint: SessionCheckpoint }
   | { type: "stop"; checkpoint: SessionCheckpoint; complete: boolean };
 
@@ -120,6 +122,9 @@ export class CrawlWorkJournal {
     if (entries.length) await this.append({ type: "admit", entries });
   }
   async queued(keys: string[]): Promise<void> { if (keys.length) await this.append({ type: "queued", keys }); }
+  async retried(key: string, retryCount: number): Promise<void> {
+    await this.append({ type: "retry", key, retryCount });
+  }
   async commit(key: string, disposition: WorkDisposition, checkpoint: SessionCheckpoint): Promise<void> {
     if (!this.entries.has(key)) throw new Error(`Unaccounted request: ${key}`);
     await this.append({ type: "commit", key, disposition, checkpoint });
@@ -151,10 +156,15 @@ export class CrawlWorkJournal {
     await this.writes;
   }
   private apply(event: JournalEvent): void {
-    if (!event || !["identity", "admit", "queued", "commit", "stop"].includes(event.type)) {
+    if (!event || !["identity", "admit", "queued", "retry", "commit", "stop"].includes(event.type)) {
       throw new Error("Invalid checkpoint event");
     }
     if (event.type === "admit") for (const entry of event.entries) this.entries.set(entry.key, entry);
+    if (event.type === "retry") {
+      const entry = this.entries.get(event.key);
+      if (!entry || !Number.isSafeInteger(event.retryCount) || event.retryCount < 0) throw new Error("Invalid checkpoint retry");
+      entry.retryCount = event.retryCount;
+    }
     if (event.type === "queued") for (const key of event.keys) {
       const entry = this.entries.get(key);
       if (entry) entry.queued = true;

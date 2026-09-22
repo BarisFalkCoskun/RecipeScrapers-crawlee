@@ -145,6 +145,12 @@ events older than the 15-minute failure window are removed when that host is
 checked. Share the storage volume across workers to share cooldowns.
 Cooldowns group a hostname with its `www` alias; a source pauses if any of its
 registered hosts is cooling down. Other source workers can continue.
+The default CLI also defers a source when its cooldown or repeated-denial pause
+has more than one second remaining. It checkpoints pending work, closes the
+source resources, releases its website locks, runs ready sites, and returns to
+the paused source. If all sites are paused it waits interruptibly. Automatic
+resumes retain request retry counts and the invocation's remaining page budget;
+ordinary adaptive request intervals do not cause source switching.
 This controls scheduled page/API requests, not every browser subresource.
 
 ## Browser state and request languages
@@ -198,8 +204,10 @@ per minute limit. Existing random delays and website cooldowns still apply.
   Another denial after that pause extends it; successful responses reset the count.
 
 Pacing snapshots live under `CRAWLEE_STORAGE_DIR/pacing`, survive restarts and
-expire after seven days without use. The scheduler serializes overlapping source
-hosts; independent crawler processes do not share an atomic pacing reservation.
+expire after seven days without use. Durable CLI runs and scheduler workers
+sharing the same local storage directory acquire exclusive website locks before
+loading pacing/browser state and hold them until state is saved and resources
+are closed. Overlapping runs therefore cannot reserve requests concurrently.
 Website cooldowns continue to share the longest Retry-After deadline across
 processes. Neither pacing recovery nor a successful response shortens that deadline.
 
@@ -277,3 +285,34 @@ tests run there automatically. Local HTTP/browser fixtures never contact recipe
 websites. Tests cover interrupted and capped resume, duplicate delivery, torn
 journal writes, configuration mismatch, real unique/TTL indexes, candidate
 isolation, source health alerts, and concurrent scheduler workers.
+
+
+## Website locks and startup checks
+
+Website locks live in `CRAWLEE_STORAGE_DIR/website-locks`. Hostnames include the
+source domain, allowed/listing domains and seed URL hosts; `www` aliases share a
+lock. A source acquires every required host or releases its partial acquisition.
+When another process owns a host, the batch continues other sites and checks back.
+Locks do not expire while an owner process is alive, including a suspended process.
+A dead owner on the same machine can be recovered. Cross-machine lock owners
+fail closed; this is local process coordination, not a distributed lease service.
+In-memory probes without a checkpoint directory do not acquire these locks.
+
+Recovery retains `.retired-*` markers to prevent delayed reclaimers from removing
+a newer owner's lock. A crash during reclamation can leave a lock blocked; after
+stopping all crawlers sharing the directory, inspect and remove the abandoned
+lock and its markers. Never remove locks while crawlers are running.
+
+`npm start -- --check` accepts source/language and database selections. It checks
+source URLs/request profiles, performs a temporary storage write/read/delete,
+launches and closes headless Chromium, and opens a bounded single-connection
+MongoDB client for a read-only ping. It reports every check and exits 0 only when
+all pass. It does not initialize the VPN, crawl recipe sites, create indexes or
+write recipe records. A ping verifies connectivity/authentication, not collection
+write permissions. Raw connection errors are withheld to avoid leaking credentials.
+
+Progress is written to stderr at site transitions and every five seconds. Counters
+are cumulative within the logical run, including resumed checkpoints; they report
+finished sites (including unsuccessful outcomes), the active source, paused sites,
+lock waits, sites not yet started, new/changed recipes and pending requests. Final
+JSON evidence keeps one observation per selected source in selection order.

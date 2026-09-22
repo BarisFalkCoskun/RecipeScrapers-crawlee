@@ -77,6 +77,11 @@ export class AdaptiveRequestPacing {
     for (const host of this.hosts) if (await this.remaining(`https://${host}`) > 0) return false;
     return true;
   }
+  async pauseRemaining(): Promise<number> {
+    let remaining = 0;
+    for (const host of this.hosts) remaining = Math.max(remaining, (await this.state(host)).pauseUntil - this.now());
+    return remaining;
+  }
   async start(request: object, url: string): Promise<void> {
     this.register(url);
     if (await this.remaining(url) > 0) throw new PacingPendingError();
