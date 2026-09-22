@@ -84,6 +84,8 @@ export interface SitemapDiscoveryStrategy {
 
 export interface DanishJsonLdSource {
   id: string;
+  /** Optional regional override for HTTP Accept-Language and the browser locale/timezone. */
+  requestProfile?: { locale?: string; timezoneId?: string };
   domain: string;
   allowedDomains: string[];
   legacySpider: string;

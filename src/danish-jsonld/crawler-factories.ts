@@ -13,6 +13,8 @@ import { CookieJar } from "tough-cookie";
 import type { DanishJsonLdSource } from "./source-registry.js";
 import type { DanishJsonLdSiteSession } from "./site-session.js";
 import type { WebsiteCooldowns } from "./website-cooldowns.js";
+import type { AdaptiveRequestPacing } from "./adaptive-pacing.js";
+import { requestProfileFor } from "./request-profile.js";
 
 type CheerioHandler = (context: CheerioCrawlingContext) => Promise<void>;
 type PlaywrightHandler = (context: PlaywrightCrawlingContext) => Promise<void>;
@@ -145,20 +147,20 @@ export const DANISH_JSONLD_BROWSER_VIEWPORT = { width: 1920, height: 969 } as co
 export const DANISH_JSONLD_IMPIT_PROFILE = "chrome151" as const;
 export const DANISH_JSONLD_ACCEPT_LANGUAGE = "da-DK,da;q=0.9,en-US;q=0.8,en;q=0.7";
 
-export function createDanishJsonLdBrowserIdentity(): Record<string, string> {
+export function createDanishJsonLdBrowserIdentity(source?: DanishJsonLdSource): Record<string, string> {
   return {
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
     "sec-ch-ua": '"Not=A?Brand";v="99", "Google Chrome";v="151", "Chromium";v="151"',
     "sec-ch-ua-mobile": "?0",
     "sec-ch-ua-platform": '"Windows"',
-    "accept-language": DANISH_JSONLD_ACCEPT_LANGUAGE,
+    "accept-language": requestProfileFor(source).acceptLanguage,
   };
 }
 
 function withoutIdentityOverrides<T>(headers: Record<string, T> = {}): Record<string, T> {
   return Object.fromEntries(Object.entries(headers).filter(([name]) => {
     const lower = name.toLowerCase();
-    return lower !== "user-agent" && !lower.startsWith("sec-ch-ua");
+    return lower !== "user-agent" && lower !== "accept-language" && !lower.startsWith("sec-ch-ua");
   }));
 }
 
@@ -218,16 +220,21 @@ export function createDanishJsonLdCheerioCrawler(options: {
   proxyConfiguration?: ProxyConfiguration;
   siteSession?: DanishJsonLdSiteSession;
   cooldowns?: WebsiteCooldowns;
+  pacing?: AdaptiveRequestPacing;
   crawlerOptions?: Omit<CheerioOptions, "requestHandler">;
 }) {
-  const identity = createDanishJsonLdBrowserIdentity();
+  const identity = createDanishJsonLdBrowserIdentity(options.source);
   const cookieJar = options.siteSession?.cookieJar ?? new CookieJar();
   const preNavigationHooks = [
     ...(options.crawlerOptions?.preNavigationHooks ?? []),
     jitterHook(options.source),
     ...(options.source.disableHeaderGenerator
-      ? [async (_context: CheerioCrawlingContext, gotOptions: { useHeaderGenerator?: boolean }) => {
+      ? [async ({ request }: CheerioCrawlingContext, gotOptions: { useHeaderGenerator?: boolean; headers?: Record<string, unknown> }) => {
           gotOptions.useHeaderGenerator = false;
+          const withoutLanguage = (headers: Record<string, unknown> = {}) => Object.fromEntries(
+            Object.entries(headers).filter(([name]) => name.toLowerCase() !== "accept-language"));
+          request.headers = withoutLanguage(request.headers) as Record<string, string>;
+          gotOptions.headers = { ...withoutLanguage(gotOptions.headers), "accept-language": identity["accept-language"] };
         }]
       : [async (
           { request }: CheerioCrawlingContext,
@@ -255,9 +262,13 @@ export function createDanishJsonLdCheerioCrawler(options: {
         if (cookie) gotOptions.headers = { ...gotOptions.headers, Cookie: cookie };
       }
       await options.cooldowns?.beforeRequest(request.url);
+      await options.pacing?.start(request, request.url);
     },
   ];
   const postNavigationHooks = [
+    async ({ request, response }: CheerioCrawlingContext) => {
+      await options.pacing?.finish(request, response?.statusCode ?? 0);
+    },
     ...(options.crawlerOptions?.postNavigationHooks ?? []),
     async ({ request, response }: CheerioCrawlingContext) => {
       const raw = (response as { headers?: Record<string, unknown> } | undefined)?.headers?.["set-cookie"];
@@ -268,6 +279,7 @@ export function createDanishJsonLdCheerioCrawler(options: {
       for (const value of values) {
         await cookieJar.setCookie(String(value), url, { ignoreError: true });
       }
+      await options.siteSession?.persist();
     },
   ];
   return new CheerioCrawler({
@@ -296,6 +308,14 @@ export function createDanishJsonLdCheerioCrawler(options: {
     additionalMimeTypes: [...DANISH_JSONLD_ADDITIONAL_MIME_TYPES],
     respectRobotsTxtFile: false,
     requestHandler: options.requestHandler,
+    errorHandler: async (context, error) => {
+      await options.pacing?.finish(context.request, context.response?.statusCode ?? 0);
+      await options.crawlerOptions?.errorHandler?.(context, error);
+    },
+    failedRequestHandler: async (context, error) => {
+      await options.pacing?.finish(context.request, context.response?.statusCode ?? 0);
+      await options.crawlerOptions?.failedRequestHandler?.(context, error);
+    },
   });
 }
 
@@ -305,8 +325,10 @@ export function createDanishJsonLdPlaywrightCrawler(options: {
   proxyConfiguration?: ProxyConfiguration;
   siteSession?: DanishJsonLdSiteSession;
   cooldowns?: WebsiteCooldowns;
+  pacing?: AdaptiveRequestPacing;
   crawlerOptions?: Omit<PlaywrightOptions, "requestHandler">;
 }) {
+  const profile = requestProfileFor(options.source);
   const browserGenerations = new WeakMap<object, number>();
   const captureBrowserState = async (context: PlaywrightCrawlingContext) => {
     if (!options.siteSession || !context.page) return;
@@ -331,15 +353,20 @@ export function createDanishJsonLdPlaywrightCrawler(options: {
       // window. The chromium channel runs full Chrome in the new headless mode
       // instead: 5 plugins, window.chrome, and a consistent 1920x1080 screen.
       channel: "chromium",
-      locale: DANISH_JSONLD_BROWSER_LOCALE,
-      timezoneId: DANISH_JSONLD_BROWSER_TIMEZONE,
       screen: DANISH_JSONLD_BROWSER_SCREEN,
       viewport: DANISH_JSONLD_BROWSER_VIEWPORT,
       ...launchContext?.launchOptions,
+      locale: profile.locale,
+      timezoneId: profile.timezoneId,
+      extraHTTPHeaders: {
+        ...Object.fromEntries(Object.entries(launchContext?.launchOptions?.extraHTTPHeaders ?? {})
+          .filter(([name]) => name.toLowerCase() !== "accept-language")),
+        "Accept-Language": profile.acceptLanguage,
+      },
       args: [
         ...(launchContext?.launchOptions?.args ?? []),
         ...DANISH_JSONLD_AUTOMATION_LAUNCH_ARGS,
-        `--lang=${DANISH_JSONLD_BROWSER_LOCALE}`,
+        `--lang=${profile.locale}`,
         `--user-agent=${DANISH_JSONLD_BROWSER_USER_AGENT}`,
         `--window-size=${DANISH_JSONLD_BROWSER_WINDOW.width},${DANISH_JSONLD_BROWSER_WINDOW.height}`,
       ],
@@ -361,12 +388,14 @@ export function createDanishJsonLdPlaywrightCrawler(options: {
       }
       await page.addInitScript(DANISH_JSONLD_WEBDRIVER_INIT_SCRIPT);
       await options.cooldowns?.beforeRequest(request.url);
+      await options.pacing?.start(request, request.url);
     },
   ];
   return new PlaywrightCrawler({
     ...options.crawlerOptions,
     preNavigationHooks,
     postNavigationHooks: [
+      async ({ request, response }) => { await options.pacing?.finish(request, response?.status() ?? 0); },
       ...(options.crawlerOptions?.postNavigationHooks ?? []),
       captureBrowserState,
     ],
@@ -405,23 +434,21 @@ export function createDanishJsonLdPlaywrightCrawler(options: {
         await captureBrowserState(context);
       }
     },
-    ...(options.crawlerOptions?.errorHandler ? {
-      errorHandler: async (context: PlaywrightErrorContext, error: Error) => {
-        try {
-          await options.crawlerOptions!.errorHandler!(context, error);
-        } finally {
-          await captureBrowserState(context);
-        }
-      },
-    } : {}),
-    ...(options.crawlerOptions?.failedRequestHandler ? {
-      failedRequestHandler: async (context: PlaywrightErrorContext, error: Error) => {
-        try {
-          await options.crawlerOptions!.failedRequestHandler!(context, error);
-        } finally {
-          await captureBrowserState(context);
-        }
-      },
-    } : {}),
+    errorHandler: async (context: PlaywrightErrorContext, error: Error) => {
+      try {
+        await options.pacing?.finish(context.request, context.response?.status() ?? 0);
+        await options.crawlerOptions?.errorHandler?.(context, error);
+      } finally {
+        await captureBrowserState(context);
+      }
+    },
+    failedRequestHandler: async (context: PlaywrightErrorContext, error: Error) => {
+      try {
+        await options.pacing?.finish(context.request, context.response?.status() ?? 0);
+        await options.crawlerOptions?.failedRequestHandler?.(context, error);
+      } finally {
+        await captureBrowserState(context);
+      }
+    },
   });
 }

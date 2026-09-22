@@ -33,6 +33,8 @@ localized routes on international domains. It does not filter by cuisine or
 guarantee the language of every recipe on a multilingual site. Combine it with
 `--sources` to narrow that list further; an empty match fails before crawling.
 Site languages are maintained in `src/danish-jsonld/source-languages.ts`.
+Each source also uses matching request-language defaults; its registry entry can
+override the regional locale and timezone through `requestProfile`.
 
 See [crawl reliability and source health](docs/crawl-reliability.md) for resumable runs, completion accounting, rejected candidates, and monitoring.
 
@@ -106,6 +108,10 @@ before changing any source to `cutover`.
 
 The dedicated runner conditionally fetches recipe pages using ETag/Last-Modified
 and shares website cooldowns across HTTP/browser requests and worker restarts.
+It also learns slower request intervals from errors and rising response times,
+recovers gradually after healthy responses, and pauses repeatedly denied hosts.
+Cookies, local storage and IndexedDB survive compatible browser replacements and
+restarts using private snapshots with a 24-hour expiry.
 Use `--refresh-hours 12` for an explicit reuse interval, or `--full-refresh` to
 fetch every pending page again. See [incremental fetching and cooldowns](docs/crawl-reliability.md#incremental-fetching-and-website-cooldowns)
 for cache scope, retry behavior, and run counters.
@@ -113,7 +119,7 @@ for cache scope, retry behavior, and run counters.
 The dedicated Danish runner keeps one session per source attempt: one healthy
 VPN lease, a cookie jar shared by HTTP and browser requests, and one request in
 flight. The lease closes at source completion, failure, or page cap. Relay changes
-clear the jar and retire affected browsers; retry limits remain per request.
+clear cookies and saved browser storage and retire affected browsers; retry limits remain per request.
 Serialization prevents one request from rotating a relay while another uses it,
 and may reduce throughput for sources previously configured above concurrency one.
 

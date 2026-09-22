@@ -27,6 +27,8 @@ import {
 import {
   createDanishJsonLdCheerioCrawler,
   createDanishJsonLdPlaywrightCrawler,
+  DANISH_JSONLD_BROWSER_USER_AGENT,
+  DANISH_JSONLD_IMPIT_PROFILE,
 } from "./crawler-factories.js";
 import {
   createBoundedDiagnostic,
@@ -44,6 +46,8 @@ import { looksLikeBrowserCheckDocument } from "./discovery.js";
 import { DanishJsonLdSiteSession } from "./site-session.js";
 import { IncrementalRecipeCache, CacheMissRetryError, type CachedRecipeResponse } from "./incremental-cache.js";
 import { WebsiteCooldowns, CooldownPendingError, WebsiteResponseRetryError } from "./website-cooldowns.js";
+import { AdaptiveRequestPacing, PacingPendingError } from "./adaptive-pacing.js";
+import { requestProfileFor } from "./request-profile.js";
 
 export interface DanishJsonLdCrawlSelection extends DanishJsonLdCrawlOptions {
   sourceIds: string[];
@@ -167,7 +171,7 @@ export class BrowserCheckRetryError extends Error {
  * spend one relay per challenge until the pool is exhausted.
  */
 export function shouldRotateRelayOnFailure(error: unknown): boolean {
-  return !(error instanceof BrowserCheckRetryError || error instanceof WebsiteResponseRetryError || error instanceof CooldownPendingError || error instanceof CacheMissRetryError);
+  return !(error instanceof BrowserCheckRetryError || error instanceof WebsiteResponseRetryError || error instanceof CooldownPendingError || error instanceof CacheMissRetryError || error instanceof PacingPendingError);
 }
 
 interface DanishJsonLdAttemptQueue {
@@ -229,6 +233,7 @@ export interface ExecuteSourceInput {
   fullRefresh?: boolean;
   refreshHours?: number;
   cooldowns?: WebsiteCooldowns;
+  pacing?: AdaptiveRequestPacing;
   vpnTransport?: DanishJsonLdVpnTransport;
   diagnosticSink?: (event: DanishJsonLdDiagnostic) => void;
 }
@@ -346,11 +351,19 @@ export async function executeDanishJsonLdSource(
       }),
   });
   const attemptStarted = Date.now();
+  const requestProfile = requestProfileFor(input.source);
   const cooldowns = input.cooldowns ?? new WebsiteCooldowns({ directory: input.checkpointDirectory,
     diagnostic: (data) => diagnosticSink(createBoundedDiagnostic("website-cooldown", data)) });
+  const pacing = input.pacing ?? new AdaptiveRequestPacing({ directory: input.checkpointDirectory,
+    minimumDelayMs: Math.max(input.source.requestSettings.delaySeconds * 1000,
+      input.source.requestSettings.rateLimitPerMinute ? 60_000 / input.source.requestSettings.rateLimitPerMinute : 0),
+    diagnostic: (data) => diagnosticSink(createBoundedDiagnostic("adaptive-pacing", data)) });
   // Register every source host before the pool starts: an earlier run may have
   // left a deadline even though this run has not yet seen a response.
-  for (const domain of input.source.allowedDomains) cooldowns.register(`https://${domain}`);
+  for (const domain of input.source.allowedDomains) {
+    cooldowns.register(`https://${domain}`);
+    pacing.register(`https://${domain}`);
+  }
   const cache = new IncrementalRecipeCache({ directory: input.checkpointDirectory,
     identity: hashRecipe({ source: input.source, identity: input.checkpointIdentity ?? "probe" }),
     fullRefresh: input.fullRefresh, refreshHours: input.refreshHours,
@@ -371,7 +384,7 @@ export async function executeDanishJsonLdSource(
   });
   const originalRequest = (request: Request): DanishJsonLdRequest => journal.entries.get(String(request.userData["workKey"]))!.request;
   const retryWithoutPenalty = (request: Request, error: Error): boolean => {
-    if (!(error instanceof CooldownPendingError || error instanceof CacheMissRetryError)) return false;
+    if (!(error instanceof CooldownPendingError || error instanceof CacheMissRetryError || error instanceof PacingPendingError)) return false;
     request.retryCount -= 1; // Crawlee increments after this hook; no HTTP attempt was lost.
     return true;
   };
@@ -406,7 +419,12 @@ export async function executeDanishJsonLdSource(
   const durable = async (operation: Promise<void>) => {
     try { await operation; } catch (error) { journalError = error; stopCrawlers?.(); throw error; }
   };
-  const siteSession = new DanishJsonLdSiteSession({ diagnosticSink });
+  const stateHosts = [...new Set([...input.source.allowedDomains, ...(input.source.listingDiscovery?.listingHosts ?? [])])];
+  const siteSession = new DanishJsonLdSiteSession({ diagnosticSink, directory: input.checkpointDirectory,
+    allowedDomains: stateHosts,
+    identity: hashRecipe({ sourceId: input.source.id, hosts: stateHosts,
+      profile: requestProfile, browser: DANISH_JSONLD_BROWSER_USER_AGENT, http: DANISH_JSONLD_IMPIT_PROFILE }),
+  });
   const sourceVpnSessionId = input.vpnTransport
     ? siteVpnSessionId(input.source.id, input.crawlAttemptId)
     : undefined;
@@ -540,6 +558,7 @@ export async function executeDanishJsonLdSource(
     source: input.source,
     siteSession,
     cooldowns,
+    pacing,
     ...(input.vpnTransport
       ? { proxyConfiguration: input.vpnTransport.proxyConfiguration }
       : {}),
@@ -636,7 +655,7 @@ export async function executeDanishJsonLdSource(
     },
     crawlerOptions: {
       requestQueue: cheerioQueue,
-      autoscaledPoolOptions: { isTaskReadyFunction: async () => !input.signal?.aborted && await cooldowns.ready() && !(await cheerioQueue.isEmpty()) },
+      autoscaledPoolOptions: { isTaskReadyFunction: async () => !input.signal?.aborted && !(await cheerioQueue.isEmpty()) && await cooldowns.ready() && await pacing.ready() },
       preNavigationHooks: [async ({ request }, options) => {
         conditional.delete(request);
         const entry = request.userData["unconditionalFetch"] ? undefined : await cache.read(originalRequest(request));
@@ -700,6 +719,7 @@ export async function executeDanishJsonLdSource(
     source: input.source,
     siteSession,
     cooldowns,
+    pacing,
     ...(input.vpnTransport
       ? { proxyConfiguration: input.vpnTransport.proxyConfiguration }
       : {}),
@@ -769,7 +789,7 @@ export async function executeDanishJsonLdSource(
     },
     crawlerOptions: {
       requestQueue: playwrightQueue,
-      autoscaledPoolOptions: { isTaskReadyFunction: async () => !input.signal?.aborted && await cooldowns.ready() && !(await playwrightQueue.isEmpty()) },
+      autoscaledPoolOptions: { isTaskReadyFunction: async () => !input.signal?.aborted && !(await playwrightQueue.isEmpty()) && await cooldowns.ready() && await pacing.ready() },
       postNavigationHooks: [async ({ request, response }) => {
         if (response) await observeResponse(response.url(), response.status(), await response.allHeaders(), response);
       }],
@@ -861,6 +881,7 @@ export async function executeDanishJsonLdSource(
       && (session.observation.unaccountedRecipeCandidates ?? 0) === 0;
     try {
       try {
+        await siteSession.persist();
         if (!journalError) {
           const checkpoint = failed ? { ...(journal.checkpoint ?? initialCheckpoint), sets: {} } : session.checkpointDelta();
           await journal.stop(checkpoint, complete);

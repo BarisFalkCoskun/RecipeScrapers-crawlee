@@ -1,15 +1,23 @@
 import { describe, expect, it } from "vitest";
 import type { BrowserContext, Cookie as BrowserCookie } from "playwright";
 import { DanishJsonLdSiteSession } from "../../src/danish-jsonld/site-session.js";
+import { mkdtemp, readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 // Only the browser boundary is substituted; cookie scoping and persistence use
 // the real tough-cookie jar. Live HTTP/browser transfer is covered separately.
 function browserContext(initial: BrowserCookie[] = []) {
   let values = initial;
+  let origins: Awaited<ReturnType<BrowserContext["storageState"]>>["origins"] = [];
   return {
     cookies: async () => values,
     clearCookies: async () => { values = []; },
     addCookies: async (cookies: BrowserCookie[]) => { values = cookies; },
+    storageState: async () => structuredClone({ cookies: values, origins }),
+    setStorageState: async (state: { cookies: BrowserCookie[]; origins: typeof origins }) => {
+      values = structuredClone(state.cookies); origins = structuredClone(state.origins);
+    },
   } as unknown as BrowserContext;
 }
 
@@ -82,9 +90,90 @@ describe("site session state", () => {
     const session = new DanishJsonLdSiteSession();
     await session.cookieJar.setCookie("visitor=known; Path=/", "https://recipes.test/");
     const closedContext = {
-      cookies: async () => { throw new Error("browserContext.cookies: Target page, context or browser has been closed"); },
+      storageState: async () => { throw new Error("browserContext.storageState: Target page, context or browser has been closed"); },
     } as unknown as BrowserContext;
     await expect(session.captureBrowser(closedContext, session.generation)).resolves.toBeUndefined();
     expect(await session.cookieJar.getCookieString("https://recipes.test/")).toBe("visitor=known");
+  });
+
+  it("persists cookies and origin state privately across restarts with a fixed expiry and source isolation", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "browser-state-test-"));
+    let now = Date.now();
+    const diagnostics: unknown[] = [];
+    const options = { directory, identity: "source-a-en", allowedDomains: ["recipes.test"], now: () => now,
+      maxAgeMs: 1000, diagnosticSink: (event: unknown) => diagnostics.push(event) };
+    try {
+      const first = new DanishJsonLdSiteSession(options);
+      await first.prepareRequest();
+      const context = browserContext();
+      await context.setStorageState({ cookies: [{ name: "visitor", value: "private", domain: "recipes.test", path: "/",
+        expires: -1, httpOnly: true, secure: true, sameSite: "Lax" }], origins: [
+        { origin: "https://recipes.test", localStorage: [{ name: "preference", value: "private-value" }] },
+        { origin: "https://unrelated.test", localStorage: [{ name: "tracking", value: "discard" }] },
+      ] });
+      await first.captureBrowser(context, first.generation);
+      const file = join(directory, "browser-state", (await readdir(join(directory, "browser-state")))[0]);
+      expect((await stat(file)).mode & 0o777).toBe(0o600);
+      expect(JSON.parse(await readFile(file, "utf8")).state.origins).toHaveLength(1);
+      now += 500;
+      const resumed = new DanishJsonLdSiteSession(options);
+      await resumed.prepareRequest();
+      const restored = browserContext();
+      await resumed.restoreBrowser(restored);
+      expect((await restored.storageState()).origins).toEqual([
+        { origin: "https://recipes.test", localStorage: [{ name: "preference", value: "private-value" }] },
+      ]);
+      expect(await resumed.cookieJar.getCookieString("https://recipes.test/")).toBe("visitor=private");
+      const other = new DanishJsonLdSiteSession({ ...options, identity: "source-b-en" });
+      await other.prepareRequest();
+      expect(await other.cookieJar.getCookieString("https://recipes.test/")).toBe("");
+      await resumed.persist();
+      now += 501;
+      const expired = new DanishJsonLdSiteSession(options);
+      await expired.prepareRequest();
+      const empty = browserContext();
+      await expired.restoreBrowser(empty);
+      expect(await empty.storageState()).toEqual({ cookies: [], origins: [] });
+      expect(JSON.stringify(diagnostics)).not.toMatch(/private|tracking|preference/);
+    } finally { await rm(directory, { recursive: true, force: true }); }
+  });
+
+  it("preserves deletions and clears all origins on rotation without accepting stale snapshots", async () => {
+    const session = new DanishJsonLdSiteSession();
+    await session.prepareRequest("http://127.0.0.1:1000");
+    const browser = browserContext();
+    const oldGeneration = await session.restoreBrowser(browser);
+    await browser.setStorageState({ cookies: [], origins: [{ origin: "https://recipes.test", localStorage: [{ name: "key", value: "old" }] }] });
+    await session.captureBrowser(browser, oldGeneration);
+    const replacement = browserContext();
+    await session.restoreBrowser(replacement);
+    expect((await replacement.storageState()).origins).toHaveLength(1);
+    await replacement.setStorageState({ cookies: [], origins: [] });
+    await session.captureBrowser(replacement, oldGeneration);
+    const afterDeletion = browserContext();
+    await session.restoreBrowser(afterDeletion);
+    expect((await afterDeletion.storageState()).origins).toEqual([]);
+    await session.prepareRequest("http://127.0.0.1:1001");
+    await session.captureBrowser(browser, oldGeneration);
+    await session.restoreBrowser(browser);
+    expect(await browser.storageState()).toEqual({ cookies: [], origins: [] });
+  });
+
+  it("discards corrupt snapshots and state belonging to a different proxy", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "browser-state-test-"));
+    const options = { directory, identity: "source-a" };
+    try {
+      const first = new DanishJsonLdSiteSession(options);
+      await first.prepareRequest("http://proxy:1000");
+      await first.cookieJar.setCookie("visitor=old; Path=/", "https://recipes.test/");
+      await first.persist();
+      const changed = new DanishJsonLdSiteSession(options);
+      await changed.prepareRequest("http://proxy:1001");
+      expect(await changed.cookieJar.getCookieString("https://recipes.test/")).toBe("");
+      await changed.persist();
+      const file = join(directory, "browser-state", (await readdir(join(directory, "browser-state")))[0]);
+      await writeFile(file, '{"version":');
+      await expect(new DanishJsonLdSiteSession(options).prepareRequest("http://proxy:1001")).resolves.toBeUndefined();
+    } finally { await rm(directory, { recursive: true, force: true }); }
   });
 });

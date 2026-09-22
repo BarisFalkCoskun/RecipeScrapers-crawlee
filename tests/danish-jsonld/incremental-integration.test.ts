@@ -7,6 +7,7 @@ import { Configuration } from "crawlee";
 import { expect, it } from "vitest";
 import { executeDanishJsonLdSource, type ExecuteSourceInput } from "../../src/danish-jsonld/runner.js";
 import { WebsiteCooldowns } from "../../src/danish-jsonld/website-cooldowns.js";
+import { AdaptiveRequestPacing } from "../../src/danish-jsonld/adaptive-pacing.js";
 import type { DanishJsonLdSource } from "../../src/danish-jsonld/source-registry.js";
 import type { RecipeDocumentV2 } from "../../src/types.js";
 import type { CrawlStore, RecipeDocumentV2Store } from "../../src/storage/store.js";
@@ -60,6 +61,30 @@ function recipe(res: ServerResponse, title = "Cake") {
   res.end(`<html><script type="application/ld+json">${JSON.stringify({ "@type": "Recipe", name: title,
     recipeIngredient: ["100 g mel"], recipeInstructions: ["Bland og bag."] })}</script></html>`);
 }
+
+it("pauses a repeatedly denied website outside request handlers and resumes pending work after interruption", async () => {
+  const f = await fixture((_req, res) => recipe(res));
+  let now = Date.now();
+  const settings = { directory: f.directory, minimumDelayMs: 0, maximumDelayMs: 0, denialPauseMs: 120_000, now: () => now };
+  const pacing = new AdaptiveRequestPacing(settings);
+  const controller = new AbortController();
+  try {
+    for (let i = 0; i < 3; i++) await pacing.observe(f.origin, 403, 10);
+    const timer = setTimeout(() => controller.abort(), 250);
+    let stopped: Awaited<ReturnType<typeof f.run>>;
+    try { stopped = await f.run({ pacing, signal: controller.signal, crawlRunId: "pacing-resume" }); }
+    finally { clearTimeout(timer); }
+    expect(stopped.observation.interrupted).toBe(true);
+    expect(stopped.observation.workAccounting?.pending).toBe(1);
+    expect(f.sitemapHits()).toBe(0);
+    expect(await new AdaptiveRequestPacing(settings).remaining(f.origin)).toBe(120_000);
+    now += 120_001;
+    const resumed = await f.run({ pacing: new AdaptiveRequestPacing(settings), resume: true, crawlRunId: "pacing-resume" });
+    expect(resumed.outcome.outcome).toBe("succeeded");
+    expect(f.recipes.size).toBe(1);
+    expect(resumed.observation.failedRequests ?? 0).toBe(0);
+  } finally { await f.close(); }
+}, 15_000);
 
 it("handles 200 → 304 → cached → changed → full refresh without losing run coverage", async () => {
   let version = 1;

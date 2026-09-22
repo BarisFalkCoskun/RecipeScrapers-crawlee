@@ -53,7 +53,8 @@ Keep the original source selection, storage directory, database server,
 database name, source configuration, and build. `--resume` and `--force` are
 mutually exclusive. The page cap is per invocation and may be increased or
 omitted when resuming. A changed build or configuration is rejected rather than
-silently mixing incompatible state. New attempts use fresh transport sessions.
+silently mixing incompatible state. Compatible saved site state can be restored;
+the request queues and transport leases are new for each attempt.
 For a default all-sites run, use `npm start -- --resume RUN_ID --sources all`.
 For a language-selected run, repeat that filter, e.g.
 `npm start -- --resume RUN_ID --language da`. If the original command also used
@@ -145,6 +146,68 @@ checked. Share the storage volume across workers to share cooldowns.
 Cooldowns group a hostname with its `www` alias; a source pauses if any of its
 registered hosts is cooling down. Other source workers can continue.
 This controls scheduled page/API requests, not every browser subresource.
+
+## Browser state and request languages
+
+HTTP cookies, browser cookies, local storage and IndexedDB are saved under
+`CRAWLEE_STORAGE_DIR/browser-state`. A browser replacement or a subsequent run
+restores compatible state before page scripts execute. Cookie and storage
+deletions replace the snapshot; deleted values do not reappear after restart.
+Partitioned browser cookies stay in the browser and are never sent as ordinary
+HTTP cookies. Session storage, browser cache, and service workers are not saved.
+
+Snapshots expire 24 hours after the session starts, even if the file is updated.
+They are isolated by source, allowed hosts and request/browser profile, and bound
+to the current proxy URL (or direct connection). A proxy change clears cookies
+and origin storage. A new VPN bridge therefore starts fresh; a direct connection
+cannot detect an external IP change. Corrupt, expired and incompatible snapshots
+are discarded. Only registered source and listing hosts are retained. Individual
+snapshots are capped at 10 MiB. Writes are atomic and files have owner-only access;
+these files can contain session credentials and should remain on private storage.
+Remove `browser-state` while the crawler is stopped to start fresh.
+
+Request profiles follow the source language metadata: Danish sources use
+`da-DK` / `Europe/Copenhagen`; English sources use `en-US` / `UTC`. The profile
+sets HTTP Accept-Language, browser language and timezone. Chromium can reduce
+its Accept-Language header to the primary locale. To configure a regional
+profile for one source, add this to its registry entry:
+
+```typescript
+requestProfile: { locale: "en-GB", timezoneId: "Europe/London" },
+```
+
+Locale and timezone values are validated before crawling. Profiles apply to
+each source even in a mixed-language run; they do not relabel extracted recipes
+or change which sites `--language` selects. The Playwright minimum is 1.59.1 for
+native storage restoration, already resolved in the lockfile.
+
+## Adaptive request pacing
+
+Each source's HTTP and browser queues share a pacing controller. The lower bound
+is the larger of its configured delay and the interval implied by its requests
+per minute limit. Existing random delays and website cooldowns still apply.
+
+- Network failures, HTTP 429, server errors, and access-denial statuses increase
+  the learned interval by 50%, with a 1-second floor on an increased delay.
+- A successful response taking more than twice the recent average and more than
+  one second increases the interval by 25%.
+- Ten consecutive healthy responses reduce it by 10%, never below the configured
+  lower bound. The learned interval is capped at five minutes (or the configured
+  minimum, when that is longer).
+- Three consecutive HTTP 401/403/454/455 responses pause the website for 15 minutes.
+  Another denial after that pause extends it; successful responses reset the count.
+
+Pacing snapshots live under `CRAWLEE_STORAGE_DIR/pacing`, survive restarts and
+expire after seven days without use. The scheduler serializes overlapping source
+hosts; independent crawler processes do not share an atomic pacing reservation.
+Website cooldowns continue to share the longest Retry-After deadline across
+processes. Neither pacing recovery nor a successful response shortens that deadline.
+
+Waiting happens in queue readiness checks, outside timed request handlers.
+SIGINT/SIGTERM can interrupt a pause and leave pending work resumable. Cached
+recipe-page reuse does not contribute network latency samples. The
+`adaptive-pacing` diagnostic reports the hostname, status, new delay, pause
+deadline and reason without cookies or credentials.
 
 ## Rejected candidates
 

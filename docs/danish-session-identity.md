@@ -1,7 +1,8 @@
 # Danish session and identity changes
 
-Scope: implement the requested session continuity, coherent HTTP identity, and
-browser-patch audit. Host-wide Retry-After backoff is a separate change.
+Scope: session continuity, coherent HTTP identity, and browser-patch audit.
+The later state persistence, source language profiles, adaptive pacing and
+website cooldown behavior are documented in [crawl reliability](crawl-reliability.md).
 
 ## Investigation before behavior changes
 
