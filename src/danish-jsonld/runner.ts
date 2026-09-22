@@ -1,3 +1,7 @@
+import { randomUUID } from "node:crypto";
+import { canonicalizeUrl } from "../utils/canonicalize.js";
+import { hashRecipe } from "../utils/hash.js";
+import { CrawlWorkJournal, checkpointPath, workKey, type WorkDisposition } from "./work-journal.js";
 import {
   RequestQueue,
   log,
@@ -38,6 +42,8 @@ import {
 import { createDrListRequest } from "../custom/dr.js";
 import { looksLikeBrowserCheckDocument } from "./discovery.js";
 import { DanishJsonLdSiteSession } from "./site-session.js";
+import { IncrementalRecipeCache, CacheMissRetryError, type CachedRecipeResponse } from "./incremental-cache.js";
+import { WebsiteCooldowns, CooldownPendingError, WebsiteResponseRetryError } from "./website-cooldowns.js";
 
 export interface DanishJsonLdCrawlSelection extends DanishJsonLdCrawlOptions {
   sourceIds: string[];
@@ -161,7 +167,7 @@ export class BrowserCheckRetryError extends Error {
  * spend one relay per challenge until the pool is exhausted.
  */
 export function shouldRotateRelayOnFailure(error: unknown): boolean {
-  return !(error instanceof BrowserCheckRetryError);
+  return !(error instanceof BrowserCheckRetryError || error instanceof WebsiteResponseRetryError || error instanceof CooldownPendingError || error instanceof CacheMissRetryError);
 }
 
 interface DanishJsonLdAttemptQueue {
@@ -216,6 +222,13 @@ export interface ExecuteSourceInput {
   crawlRunId: string;
   crawlAttemptId: string;
   maxPages: number;
+  checkpointDirectory?: string;
+  checkpointIdentity?: string;
+  resume?: boolean;
+  signal?: AbortSignal;
+  fullRefresh?: boolean;
+  refreshHours?: number;
+  cooldowns?: WebsiteCooldowns;
   vpnTransport?: DanishJsonLdVpnTransport;
   diagnosticSink?: (event: DanishJsonLdDiagnostic) => void;
 }
@@ -232,6 +245,9 @@ export async function runDanishJsonLdCrawl(input: {
   store: CrawlStore & RecipeDocumentV2Store;
   crawlRunId: string;
   executeSource?: ExecuteDanishJsonLdSource;
+  checkpointDirectory?: string;
+  checkpointIdentity?: string;
+  signal?: AbortSignal;
   diagnosticSink?: (event: DanishJsonLdDiagnostic) => void;
   vpnTransport?: DanishJsonLdVpnTransport;
 }): Promise<{
@@ -246,7 +262,25 @@ export async function runDanishJsonLdCrawl(input: {
     log.info(JSON.stringify(event));
   });
 
+  // Allocate every source checkpoint before work starts, including sources a signal may leave unstarted.
+  if (input.checkpointDirectory && !input.selection.resumeRunId && !input.executeSource) {
+    for (const source of input.selection.sources) {
+      const checkpoint = await CrawlWorkJournal.open({
+        path: checkpointPath(input.checkpointDirectory, input.crawlRunId, source.id),
+        fingerprint: hashRecipe({ source, identity: input.checkpointIdentity ?? "probe" }),
+        runId: input.crawlRunId, sourceId: source.id,
+      });
+      await checkpoint.close();
+    }
+  }
+
   for (const source of input.selection.sources) {
+    if (input.signal?.aborted) {
+      const observation: SourceRunObservation = { sourceId: source.id, discoveryComplete: false, interrupted: true };
+      observations.push(observation);
+      outcomes.push(classifySourceOutcome(observation));
+      continue;
+    }
     const diagnosticSink = createBudgetedDiagnosticSink({
       maxEvents: 1_000,
       sink: diagnosticOutput,
@@ -258,6 +292,12 @@ export async function runDanishJsonLdCrawl(input: {
         crawlRunId: input.crawlRunId,
         crawlAttemptId: `${input.crawlRunId}:${source.id}`,
         maxPages,
+        checkpointDirectory: input.checkpointDirectory,
+        checkpointIdentity: input.checkpointIdentity,
+        resume: Boolean(input.selection.resumeRunId || (input.checkpointDirectory && !input.executeSource)),
+        signal: input.signal,
+        fullRefresh: input.selection.fullRefresh,
+        refreshHours: input.selection.refreshHours,
         diagnosticSink,
         ...(input.vpnTransport ? { vpnTransport: input.vpnTransport } : {}),
       });
@@ -305,7 +345,67 @@ export async function executeDanishJsonLdSource(
         log.info(JSON.stringify(event));
       }),
   });
-  const session = new DanishJsonLdSourceSession({ ...input, diagnosticSink });
+  const attemptStarted = Date.now();
+  const cooldowns = input.cooldowns ?? new WebsiteCooldowns({ directory: input.checkpointDirectory,
+    diagnostic: (data) => diagnosticSink(createBoundedDiagnostic("website-cooldown", data)) });
+  // Register every source host before the pool starts: an earlier run may have
+  // left a deadline even though this run has not yet seen a response.
+  for (const domain of input.source.allowedDomains) cooldowns.register(`https://${domain}`);
+  const cache = new IncrementalRecipeCache({ directory: input.checkpointDirectory,
+    identity: hashRecipe({ source: input.source, identity: input.checkpointIdentity ?? "probe" }),
+    fullRefresh: input.fullRefresh, refreshHours: input.refreshHours,
+    diagnostic: (data) => diagnosticSink(createBoundedDiagnostic("incremental-cache", data)) });
+  const conditional = new WeakMap<Request, CachedRecipeResponse>();
+  const observedResponses = new WeakSet<object>();
+  const observeResponse = async (url: string, status: number, headers: Record<string, string | string[] | undefined>, response?: object) => {
+    if (response && observedResponses.has(response)) return;
+    if (response) observedResponses.add(response);
+    await cooldowns.observe(url, status, headers);
+  };
+  const journal = await CrawlWorkJournal.open({
+    path: input.checkpointDirectory ? checkpointPath(input.checkpointDirectory, input.crawlRunId, input.source.id) : undefined,
+    fingerprint: hashRecipe({ source: input.source, identity: input.checkpointIdentity ?? "probe" }),
+    resume: input.resume,
+    runId: input.crawlRunId,
+    sourceId: input.source.id,
+  });
+  const originalRequest = (request: Request): DanishJsonLdRequest => journal.entries.get(String(request.userData["workKey"]))!.request;
+  const retryWithoutPenalty = (request: Request, error: Error): boolean => {
+    if (!(error instanceof CooldownPendingError || error instanceof CacheMissRetryError)) return false;
+    request.retryCount -= 1; // Crawlee increments after this hook; no HTTP attempt was lost.
+    return true;
+  };
+  const session = new DanishJsonLdSourceSession({ ...input, diagnosticSink, checkpoint: journal.checkpoint });
+  const initialCheckpoint = session.checkpointDelta();
+  const previousDuration = session.observation.durationSeconds ?? 0;
+  const currentResult = () => {
+    session.observation.workAccounting = journal.accounting();
+    const accounted = new Set([...journal.entries.values()].filter((entry) => entry.request.kind === "recipe")
+      .map((entry) => canonicalizeUrl(entry.request.url)));
+    session.observation.uniqueRecipeUrls = session.recipeCandidateUrls().length;
+    session.observation.unaccountedRecipeCandidates = session.recipeCandidateUrls().filter((url) => !accounted.has(url)).length;
+    if (input.signal?.aborted) session.observation.interrupted = true;
+    const o = session.observation;
+    o.durationSeconds = previousDuration + (Date.now() - attemptStarted) / 1000;
+    o.collectionComplete = !failed && o.discoveryComplete && !o.pageCapReached && !o.interrupted && o.workAccounting?.pending === 0
+      && (o.unaccountedRecipeCandidates ?? 0) === 0 && (o.failedRequests ?? 0) === 0 && (o.blockedRequests ?? 0) === 0 && (o.mongoFailures ?? 0) === 0;
+    return { observation: session.observation, outcome: session.outcome(), robotsEnforced: false as const };
+  };
+  const disposition = (before: SourceRunObservation, kind: DanishJsonLdRequestKind): WorkDisposition => {
+    const after = session.observation;
+    if ((after.blockedRequests ?? 0) > (before.blockedRequests ?? 0)) return "blocked";
+    if ((after.failedRequests ?? 0) > (before.failedRequests ?? 0) || (after.mongoFailures ?? 0) > (before.mongoFailures ?? 0)) return "failed";
+    if (kind !== "recipe" || (after.persistedRecipes ?? 0) > (before.persistedRecipes ?? 0)) return "fetched";
+    const rejected = (o: SourceRunObservation) => (o.rejectedIncompleteJsonLd ?? 0) + (o.rejectedMalformedJsonLd ?? 0)
+      + (o.rejectedIncompleteCustom ?? 0) + (o.rejectedMalformedCustom ?? 0);
+    return rejected(after) > rejected(before) ? "rejected" : "skipped";
+  };
+  let failed = false;
+  let stopCrawlers: (() => void) | undefined;
+  let journalError: unknown;
+  const durable = async (operation: Promise<void>) => {
+    try { await operation; } catch (error) { journalError = error; stopCrawlers?.(); throw error; }
+  };
   const siteSession = new DanishJsonLdSiteSession({ diagnosticSink });
   const sourceVpnSessionId = input.vpnTransport
     ? siteVpnSessionId(input.source.id, input.crawlAttemptId)
@@ -353,7 +453,7 @@ export async function executeDanishJsonLdSource(
     return relayPoolExhausted;
   };
   try {
-  const queueKey = sanitizeStorageKey(input.crawlAttemptId);
+  const queueKey = sanitizeStorageKey(input.crawlAttemptId) + (input.checkpointDirectory ? `-${randomUUID()}` : "");
   const cheerioQueue = await RequestQueue.open(`danish-jsonld-cheerio-${queueKey}`);
   ownedQueues.push({ kind: "cheerio", queue: cheerioQueue });
   const playwrightQueue = await RequestQueue.open(`danish-jsonld-playwright-${queueKey}`);
@@ -365,13 +465,17 @@ export async function executeDanishJsonLdSource(
     fetchMode: "cheerio" | "playwright"
   ): Promise<void> => {
     if (requests.length === 0) return;
+    await durable(journal.admit(fetchMode, requests));
+    requests = requests.filter((request) => !journal.isTerminal(workKey(fetchMode, request)));
     const addBatch = async (
       batch: DanishJsonLdRequest[],
       forefront: boolean
     ): Promise<void> => {
       if (batch.length === 0) return;
       await queue.addRequestsBatched(
-      batch.map((request) => {
+      await Promise.all(batch.map(async (request) => {
+        cooldowns.register(request.url);
+        const cached = fetchMode === "cheerio" ? await cache.read(request) : undefined;
         const requestId = input.vpnTransport
           ? requestVpnSessionId(
               input.source.id,
@@ -388,13 +492,15 @@ export async function executeDanishJsonLdSource(
         }));
         return {
           url: request.url,
-          uniqueKey: request.uniqueKey ?? `${request.kind}:${request.url}`,
+          uniqueKey: workKey(fetchMode, request),
           label: request.kind,
+          skipNavigation: Boolean(cached && cache.fresh(cached)),
           ...(request.method ? { method: request.method } : {}),
           ...(request.requestHeaders ? { headers: request.requestHeaders } : {}),
           ...(request.payload ? { payload: request.payload } : {}),
           userData: {
             kind: request.kind,
+            workKey: workKey(fetchMode, request),
             sourceId: input.source.id,
             ...(request.requestData ? { requestData: request.requestData } : {}),
             ...(sourceVpnSessionId
@@ -402,12 +508,13 @@ export async function executeDanishJsonLdSource(
               : {}),
           },
         };
-      }),
+      })),
       { waitForAllRequestsToBeAdded: true, forefront }
       );
     };
     await addBatch(requests.filter((request) => !request.forefront), false);
     await addBatch(requests.filter((request) => request.forefront), true);
+    await durable(journal.queued(requests.map((request) => workKey(fetchMode, request))));
     for (const request of requests) session.recordQueueAdmission(request.url);
   };
   const route = async (routes: {
@@ -420,7 +527,10 @@ export async function executeDanishJsonLdSource(
     ]);
   };
 
-  const initial = initialRequests(input.source);
+  const initial = input.resume && journal.entries.size > 0
+    ? { cheerioRequests: journal.pending().filter((entry) => entry.mode === "cheerio").map((entry) => entry.request),
+        playwrightRequests: journal.pending().filter((entry) => entry.mode === "playwright").map((entry) => entry.request) }
+    : initialRequests(input.source);
   await Promise.all([
     enqueue(cheerioQueue, initial.cheerioRequests, "cheerio"),
     enqueue(playwrightQueue, initial.playwrightRequests, "playwright"),
@@ -429,23 +539,46 @@ export async function executeDanishJsonLdSource(
   const cheerioCrawler = createDanishJsonLdCheerioCrawler({
     source: input.source,
     siteSession,
+    cooldowns,
     ...(input.vpnTransport
       ? { proxyConfiguration: input.vpnTransport.proxyConfiguration }
       : {}),
     requestHandler: async (context: CheerioCrawlingContext) => {
-      const body = typeof context.body === "string"
+      let cached = conditional.get(context.request);
+      const freshReuse = context.request.skipNavigation;
+      if (freshReuse) {
+        cached = await cache.read(originalRequest(context.request));
+        if (!cached || !cache.fresh(cached)) {
+          context.request.skipNavigation = false;
+          throw new CacheMissRetryError();
+        }
+      }
+      const statusCode = context.response?.statusCode ?? (freshReuse ? 200 : 0);
+      if (statusCode === 304 && (!cached || context.response.url !== cached.loadedUrl)) {
+        conditional.delete(context.request);
+        context.request.userData["unconditionalFetch"] = true;
+        await cache.remove(originalRequest(context.request));
+        throw new CacheMissRetryError();
+      }
+      const reused = freshReuse || statusCode === 304;
+      const body = reused ? cached!.body : typeof context.body === "string"
         ? context.body
         : context.body.toString();
       const response = {
         kind: requestKind(context.request.label, context.request.userData),
         fetchMode: "cheerio" as const,
         url: context.request.url,
-        loadedUrl: context.request.loadedUrl,
-        statusCode: context.response.statusCode ?? 200,
-        headers: normalizeHeaders(context.response.headers),
+        loadedUrl: reused ? cached!.loadedUrl : context.request.loadedUrl,
+        statusCode: reused ? 200 : statusCode,
+        headers: reused ? { ...cached!.headers, ...normalizeHeaders(context.response?.headers ?? {}), "content-type": cached!.headers["content-type"] } : normalizeHeaders(context.response.headers),
         body,
         ...requestData(context.request.userData),
       };
+      if ([429, 503].includes(statusCode) && context.request.retryCount < input.source.requestSettings.maxRetries) {
+        session.recordRetriedResponseDiagnostic(response);
+        throw new WebsiteResponseRetryError(statusCode);
+      }
+      if (!reused && statusCode < 500) await cache.remove(originalRequest(context.request));
       if (shouldEscalateBrowserCheck({
         statusCode: response.statusCode,
         fetchMode: response.fetchMode,
@@ -463,6 +596,7 @@ export async function executeDanishJsonLdSource(
           }],
         });
         await completeVpnRequest(context.request.userData);
+        await durable(journal.commit(String(context.request.userData["workKey"]), "skipped", session.checkpointDelta()));
         return;
       }
       const rotation = input.vpnTransport
@@ -483,12 +617,37 @@ export async function executeDanishJsonLdSource(
           rotation.reason ?? "eligible-response"
         );
       }
+      if (session.isRequestCapReached() || input.signal?.aborted) { stopCrawlers?.(); return; }
+      const key = String(context.request.userData["workKey"]);
+      if (journal.isTerminal(key)) return;
+      const before = structuredClone(session.observation);
       const routes = await session.handleResponse(response);
       await route(routes);
+      if (statusCode === 304) session.observation.notModifiedResponses = (session.observation.notModifiedResponses ?? 0) + 1;
+      if (freshReuse) session.observation.cachedRecipePages = (session.observation.cachedRecipePages ?? 0) + 1;
+      const clean = ["mongoFailures", "blockedRequests", "failedRequests", "rejectedIncompleteJsonLd", "rejectedMalformedJsonLd",
+        "rejectedIncompleteWprm", "rejectedMalformedWprm", "rejectedIncompleteCustom", "rejectedMalformedCustom"] as const;
+      if (!freshReuse && disposition(before, response.kind) === "fetched" && routes.playwrightRequests.length === 0
+        && clean.every((key) => (session.observation[key] ?? 0) === (before[key] ?? 0))) {
+        await cache.save(originalRequest(context.request), response, statusCode === 304 ? cached : undefined);
+      }
       await completeVpnRequest(context.request.userData);
+      await durable(journal.commit(key, disposition(before, response.kind), session.checkpointDelta()));
     },
     crawlerOptions: {
       requestQueue: cheerioQueue,
+      autoscaledPoolOptions: { isTaskReadyFunction: async () => !input.signal?.aborted && await cooldowns.ready() && !(await cheerioQueue.isEmpty()) },
+      preNavigationHooks: [async ({ request }, options) => {
+        conditional.delete(request);
+        const entry = request.userData["unconditionalFetch"] ? undefined : await cache.read(originalRequest(request));
+        if (entry) {
+          const validators = cache.validators(entry);
+          if (Object.keys(validators).length) { conditional.set(request, entry); options.headers = { ...options.headers, ...validators }; }
+        }
+      }],
+      postNavigationHooks: [async ({ request, response }) => {
+        await observeResponse(response.url ?? request.url, response.statusCode ?? 0, normalizeHeaders(response.headers), response);
+      }],
       useSessionPool: false,
       maxRequestsPerCrawl: input.maxPages,
       ...(input.vpnTransport?.requestHandlerTimeoutSecs
@@ -496,9 +655,11 @@ export async function executeDanishJsonLdSource(
         : {}),
       ignoreHttpErrorStatusCodes: httpErrorStatusCodesForSources([input.source]),
       errorHandler: async (
-        { request }: CheerioCrawlingContext,
+        { request, response }: CheerioCrawlingContext,
         error: Error
       ) => {
+        if (retryWithoutPenalty(request, error)) return;
+        if (response) await observeResponse(response.url ?? request.url, response.statusCode ?? 0, normalizeHeaders(response.headers), response);
         await handleVpnFailure(request, error);
         const allowRetry = await session.recordRetry({
           fetchMode: "cheerio",
@@ -512,9 +673,10 @@ export async function executeDanishJsonLdSource(
         if (request.noRetry) await completeVpnRequest(request.userData);
       },
       failedRequestHandler: async (
-        { request }: CheerioCrawlingContext,
+        { request, response }: CheerioCrawlingContext,
         error: Error
       ) => {
+        if (response) await observeResponse(response.url ?? request.url, response.statusCode ?? 0, normalizeHeaders(response.headers), response);
         const relayPoolExhausted = await handleVpnFailure(request, error);
         await session.recordFailedRequest({
           fetchMode: "cheerio",
@@ -528,12 +690,16 @@ export async function executeDanishJsonLdSource(
           error,
         });
         await completeVpnRequest(request.userData);
+        if (!journalError) await durable(journal.commit(String(request.userData["workKey"]),
+          [401, 403, 429, 454, 455, 526].includes(parseHttpStatusForDiagnostics(error, request.errorMessages) ?? 0) ? "blocked" : "failed",
+          session.checkpointDelta()));
       },
     },
   });
   const playwrightCrawler = createDanishJsonLdPlaywrightCrawler({
     source: input.source,
     siteSession,
+    cooldowns,
     ...(input.vpnTransport
       ? { proxyConfiguration: input.vpnTransport.proxyConfiguration }
       : {}),
@@ -557,6 +723,10 @@ export async function executeDanishJsonLdSource(
         body,
         ...requestData(context.request.userData),
       };
+      if ([429, 503].includes(response.statusCode) && context.request.retryCount < input.source.requestSettings.maxRetries) {
+        session.recordRetriedResponseDiagnostic(response);
+        throw new WebsiteResponseRetryError(response.statusCode);
+      }
       // A browser check is cleared by this browser session, so it is retried
       // before the relay logic sees it; rotating would discard that session.
       if (
@@ -588,21 +758,32 @@ export async function executeDanishJsonLdSource(
           rotation.reason ?? "eligible-response"
         );
       }
+      if (session.isRequestCapReached() || input.signal?.aborted) { stopCrawlers?.(); return; }
+      const key = String(context.request.userData["workKey"]);
+      if (journal.isTerminal(key)) return;
+      const before = structuredClone(session.observation);
       const routes = await session.handleResponse(response);
       await route(routes);
       await completeVpnRequest(context.request.userData);
+      await durable(journal.commit(key, disposition(before, response.kind), session.checkpointDelta()));
     },
     crawlerOptions: {
       requestQueue: playwrightQueue,
+      autoscaledPoolOptions: { isTaskReadyFunction: async () => !input.signal?.aborted && await cooldowns.ready() && !(await playwrightQueue.isEmpty()) },
+      postNavigationHooks: [async ({ request, response }) => {
+        if (response) await observeResponse(response.url(), response.status(), await response.allHeaders(), response);
+      }],
       useSessionPool: false,
       maxRequestsPerCrawl: input.maxPages,
       ...(input.vpnTransport?.requestHandlerTimeoutSecs
         ? { requestHandlerTimeoutSecs: input.vpnTransport.requestHandlerTimeoutSecs }
         : {}),
       errorHandler: async (
-        { request }: PlaywrightCrawlingContext,
+        { request, response }: PlaywrightCrawlingContext,
         error: Error
       ) => {
+        if (retryWithoutPenalty(request, error)) return;
+        if (response) await observeResponse(response.url(), response.status(), await response.allHeaders(), response);
         await handleVpnFailure(request, error);
         const allowRetry = await session.recordRetry({
           fetchMode: "playwright",
@@ -616,9 +797,10 @@ export async function executeDanishJsonLdSource(
         if (request.noRetry) await completeVpnRequest(request.userData);
       },
       failedRequestHandler: async (
-        { request }: PlaywrightCrawlingContext,
+        { request, response }: PlaywrightCrawlingContext,
         error: Error
       ) => {
+        if (response) await observeResponse(response.url(), response.status(), await response.allHeaders(), response);
         const relayPoolExhausted = await handleVpnFailure(request, error);
         await session.recordFailedRequest({
           fetchMode: "playwright",
@@ -632,34 +814,31 @@ export async function executeDanishJsonLdSource(
           error,
         });
         await completeVpnRequest(request.userData);
+        if (!journalError) await durable(journal.commit(String(request.userData["workKey"]),
+          [401, 403, 429, 454, 455, 526].includes(parseHttpStatusForDiagnostics(error, request.errorMessages) ?? 0) ? "blocked" : "failed",
+          session.checkpointDelta()));
       },
       launchContext: { launchOptions: { headless: true } },
     },
   });
 
+  stopCrawlers = () => { cheerioCrawler.stop(); playwrightCrawler.stop(); };
+  input.signal?.addEventListener("abort", stopCrawlers, { once: true });
   for (let cycle = 0; cycle < 10; cycle += 1) {
+    if (input.signal?.aborted) return currentResult();
     if (!(await cheerioQueue.isEmpty())) await cheerioCrawler.run();
     if (session.isRequestCapReached()) {
-      return {
-        observation: session.observation,
-        outcome: session.outcome(),
-        robotsEnforced: false,
-      };
+      return currentResult();
     }
+    if (input.signal?.aborted) return currentResult();
+    if (journalError) throw journalError;
     if (!(await playwrightQueue.isEmpty())) await playwrightCrawler.run();
     if (session.isRequestCapReached()) {
-      return {
-        observation: session.observation,
-        outcome: session.outcome(),
-        robotsEnforced: false,
-      };
+      return currentResult();
     }
+    if (journalError) throw journalError;
     if ((await cheerioQueue.isEmpty()) && (await playwrightQueue.isEmpty())) {
-      return {
-        observation: session.observation,
-        outcome: session.outcome(),
-        robotsEnforced: false,
-      };
+      return currentResult();
     }
   }
 
@@ -670,34 +849,46 @@ export async function executeDanishJsonLdSource(
     retryCount: 0,
     error: new Error("crawler routing did not reach a terminal queue state"),
   });
-  return {
-    observation: session.observation,
-    outcome: session.outcome(),
-    robotsEnforced: false,
-  };
+  return currentResult();
   } catch (error) {
+    failed = true;
+    currentResult();
     throw new SourceExecutionFailure(error, session.observation);
   } finally {
-    await cleanupDanishJsonLdAttemptQueues({
-      queues: ownedQueues,
-      sameDomainDelaySecs: input.source.requestSettings.delaySeconds,
-      sourceId: input.source.id,
-      crawlRunId: input.crawlRunId,
-      crawlAttemptId: input.crawlAttemptId,
-      diagnosticSink,
-    });
-    if (input.vpnTransport && sourceVpnSessionId) {
-      const [release] = await Promise.allSettled([input.vpnTransport.release(sourceVpnSessionId)]);
-      diagnosticSink(createBoundedDiagnostic("vpn-session-lifecycle", {
+    if (stopCrawlers) input.signal?.removeEventListener("abort", stopCrawlers);
+    currentResult();
+    const complete = !failed && !input.signal?.aborted && journal.accounting().pending === 0
+      && (session.observation.unaccountedRecipeCandidates ?? 0) === 0;
+    try {
+      try {
+        if (!journalError) {
+          const checkpoint = failed ? { ...(journal.checkpoint ?? initialCheckpoint), sets: {} } : session.checkpointDelta();
+          await journal.stop(checkpoint, complete);
+        }
+      } finally {
+        await journal.close();
+      }
+      // Durable journals own the unfinished frontier; temporary native queues can now be reclaimed.
+      if (complete || input.checkpointDirectory) await cleanupDanishJsonLdAttemptQueues({
+        queues: ownedQueues,
+        sameDomainDelaySecs: input.source.requestSettings.delaySeconds,
         sourceId: input.source.id,
-        sessionId: sourceVpnSessionId,
-        reason: release.status === "fulfilled"
-          ? "source-terminal-release"
-          : "source-terminal-release-failed",
-        ...(release.status === "rejected"
-          ? { error: release.reason instanceof Error ? release.reason.message : String(release.reason) }
-          : {}),
-      }));
+        crawlRunId: input.crawlRunId,
+        crawlAttemptId: input.crawlAttemptId,
+        diagnosticSink,
+      });
+    } finally {
+      if (input.vpnTransport && sourceVpnSessionId) {
+        const [release] = await Promise.allSettled([input.vpnTransport.release(sourceVpnSessionId)]);
+        diagnosticSink(createBoundedDiagnostic("vpn-session-lifecycle", {
+          sourceId: input.source.id,
+          sessionId: sourceVpnSessionId,
+          reason: release.status === "fulfilled" ? "source-terminal-release" : "source-terminal-release-failed",
+          ...(release.status === "rejected"
+            ? { error: release.reason instanceof Error ? release.reason.message : String(release.reason) }
+            : {}),
+        }));
+      }
     }
   }
 }

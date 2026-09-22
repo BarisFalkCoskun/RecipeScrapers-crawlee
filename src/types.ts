@@ -148,6 +148,8 @@ export type SourceRunOutcome =
   | "failed";
 
 export type SourceOutcomeReason =
+  | "unaccounted-requests"
+  | "interrupted"
   | "recipes-persisted"
   | "failed-requests"
   | "requests-blocked"
@@ -202,6 +204,7 @@ export interface DanishJsonLdCrawlRunDocument {
   sourceIds: string[];
   summary: DanishJsonLdRunSummary;
   observations: unknown[];
+  provenance?: { buildRevision: string; configHash: string; extractorVersion: string };
 }
 
 export interface ExtractionResult {
@@ -257,4 +260,22 @@ export interface CrawlRunDocument {
   recrawlCutoff: Date;
   seeds: string[];
   summary: CrawlMetricsSummary;
+}
+
+/** Diagnostic candidates are never returned as published recipes. */
+export interface RejectedRecipeCandidate {
+  _id?: ObjectId;
+  candidateKey: string;
+  sourceId: string;
+  pageUrl: string;
+  crawlRunId: string;
+  extractedAt: Date;
+  extractorVersion: string;
+  format: "json-ld" | "wprm-api" | "custom";
+  reasons: string[];
+  candidateCount: number;
+  rawRecipe?: Record<string, unknown>;
+  rawPayload?: Binary;
+  /** Distinguishes evidence from a verified diagnosis of an upstream omission. */
+  diagnosis: "incomplete-structured-data" | "malformed-structured-data" | "extractor-rejected";
 }

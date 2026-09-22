@@ -1,3 +1,5 @@
+import { hashHtml } from "../utils/hash.js";
+import { runProvenance } from "../operations/run-provenance.js";
 import type { RecipeDocumentV2Store, CrawlStore } from "../storage/store.js";
 import type { DanishJsonLdRunSummary } from "../types.js";
 import { RecipeStore } from "../storage/mongodb.js";
@@ -19,6 +21,7 @@ import {
   type DanishJsonLdVpnTransport,
 } from "./vpn-transport.js";
 import { createBoundedDiagnostic } from "./diagnostics.js";
+import { recipeSourceLanguage } from "./source-languages.js";
 
 interface CliStore extends CrawlStore, RecipeDocumentV2Store {
   connect(): Promise<void>;
@@ -34,17 +37,21 @@ export interface DanishJsonLdCliDependencies {
     store: CliStore;
     crawlRunId: string;
     vpnTransport?: DanishJsonLdVpnTransport;
+    checkpointDirectory?: string;
+    checkpointIdentity?: string;
+    signal?: AbortSignal;
   }) => Promise<{ summary: DanishJsonLdRunSummary; observations: unknown[] }>;
   createVpnTransport: (country?: string) => DanishJsonLdVpnTransport;
   mkdir: (path: string, options: { recursive: true }) => Promise<unknown>;
   writeFile: (path: string, data: string, encoding: "utf8") => Promise<unknown>;
   output: (line: string) => void;
+  signal?: AbortSignal;
 }
 
 export async function executeDanishJsonLdCli(
   args: string[],
   dependencies: Partial<DanishJsonLdCliDependencies> = {}
-): Promise<{ summary: DanishJsonLdRunSummary; observations: unknown[] }> {
+): Promise<{ summary: DanishJsonLdRunSummary; observations: unknown[]; informational?: true }> {
   const resolved: DanishJsonLdCliDependencies = {
     env: process.env,
     now: () => new Date(),
@@ -63,16 +70,54 @@ export async function executeDanishJsonLdCli(
     ...dependencies,
   };
   const options = parseDanishJsonLdCrawlArgs(args);
+  if (options.help) {
+    resolved.output(`Usage: npm start [-- options]
+
+With no options, crawl every registered site once. Aliases are deduplicated;
+sites with previous failures are attempted and their current outcomes reported.
+
+Options:
+  --sources ID,ID       Crawl only these sites (or use "all")
+  --language da|en      Select Danish or English sites (names or da,en also work)
+  --list-sources        List selected site IDs, domains and languages without crawling
+  --max-pages N         Limit requests per site for this invocation
+  --refresh-hours N    Reuse eligible recipe pages for up to N hours (default: 0)
+  --full-refresh       Fetch all pending pages without cached validators
+  --resume RUN_ID      Resume pending work; repeat the original source/language filters
+  --database NAME      Override DB_NAME
+  --json-out PATH      Save the run report
+  --force              Generate a new attempt ID
+  --vpn                Use the configured Mullvad transport
+  --vpn-country CODE   Select a VPN country (requires --vpn)
+  --help, -h           Show this help
+
+MongoDB: MONGODB_URI (default mongodb://localhost:27017), DB_NAME (default crawlee).
+Examples:
+  npm start
+  npm start -- --language da
+  npm start -- --language en
+  npm start -- --language da --list-sources
+  npm start -- --sources arla,gastrofun
+  npm start -- --resume RUN_ID --sources all`);
+    return { informational: true, summary: { robotsEnforced: false, sourceOutcomes: [] }, observations: [] };
+  }
   const selection = createDanishJsonLdCrawlSelection(options);
+  if (options.listSources) {
+    resolved.output(`${selection.sourceIds.length} sites\nID\tDomain\tLanguage\n${selection.sources.map((source) => `${source.id}\t${source.domain}\t${recipeSourceLanguage(source.id) ?? "und"}`).join("\n")}`);
+    return { informational: true, summary: { robotsEnforced: false, sourceOutcomes: [] }, observations: [] };
+  }
   const startedAt = resolved.now();
   const baseCrawlRunId = resolveCrawlRunId(startedAt, resolved.env);
-  const crawlRunId = options.force || resolved.env["CRAWL_RUN_ID"]
+  const crawlRunId = options.resumeRunId ?? (options.force || resolved.env["CRAWL_RUN_ID"]
     ? `${baseCrawlRunId}-attempt-${randomUUID()}`
-    : baseCrawlRunId;
+    : baseCrawlRunId);
   const database = options.database ?? resolved.env["DB_NAME"] ??
     MONGODB_CONFIG.defaultDatabaseName;
   const mongoUri = resolved.env["MONGODB_URI"] ?? "mongodb://localhost:27017";
   const runKind = crawlRunKind(selection);
+  const provenance = runProvenance({ sources: selection.sources, database, storageTarget: hashHtml(mongoUri), vpn: options.vpn, vpnCountry: options.vpnCountry }, resolved.env);
+  const checkpointIdentity = JSON.stringify({ ...provenance, database });
+  const checkpointDirectory = resolved.env["CRAWLEE_STORAGE_DIR"] ?? "storage";
   let store: CliStore | undefined;
   let vpnTransport: DanishJsonLdVpnTransport | undefined;
 
@@ -87,6 +132,9 @@ export async function executeDanishJsonLdCli(
       selection,
       store,
       crawlRunId,
+      checkpointDirectory,
+      checkpointIdentity,
+      signal: resolved.signal,
       ...(vpnTransport ? { vpnTransport } : {}),
     });
     await store.insertDanishJsonLdRun({
@@ -98,11 +146,16 @@ export async function executeDanishJsonLdCli(
       sourceIds: selection.sourceIds,
       summary: result.summary,
       observations: result.observations,
+      provenance,
     });
     const evidence = {
       crawlRunId,
       kind: runKind,
       selectedSources: selection.sourceIds,
+      selectedLanguages: options.languages ?? null,
+      provenance,
+      resumed: Boolean(options.resumeRunId),
+      incremental: { enabled: !options.fullRefresh, refreshHours: options.refreshHours ?? 0 },
       maxPages: selection.maxPages ?? null,
       database,
       vpn: options.vpn,

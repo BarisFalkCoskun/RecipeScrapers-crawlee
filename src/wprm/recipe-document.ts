@@ -24,6 +24,7 @@ export interface WprmExtractedRecipe {
 
 export interface WprmExtractionResult {
   recipes: WprmExtractedRecipe[];
+  rejectedCandidates: Array<{ rawRecipe: Record<string, unknown>; reasons: string[] }>;
   incompleteCount: number;
   malformedCount: number;
 }
@@ -389,7 +390,7 @@ export function parseWprmApiResponseBody(body: string): unknown | undefined {
 }
 
 export function extractWprmRecipes(payload: unknown): WprmExtractionResult {
-  const result: WprmExtractionResult = { recipes: [], incompleteCount: 0, malformedCount: 0 };
+  const result: WprmExtractionResult = { recipes: [], rejectedCandidates: [], incompleteCount: 0, malformedCount: 0 };
   if (!Array.isArray(payload)) {
     result.malformedCount += 1;
     return result;
@@ -416,6 +417,11 @@ export function extractWprmRecipes(payload: unknown): WprmExtractionResult {
       normalized.instructions.length === 0
     ) {
       result.incompleteCount += 1;
+      result.rejectedCandidates.push({ rawRecipe: post, reasons: [
+        ...(normalized.title === "" ? ["missing-title"] : []),
+        ...(normalized.ingredients.length === 0 ? ["missing-ingredients"] : []),
+        ...(normalized.instructions.length === 0 ? ["missing-instructions"] : []),
+      ] });
       continue;
     }
 

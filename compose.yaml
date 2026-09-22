@@ -12,6 +12,7 @@ services:
 
   danish-scheduler:
     build: .
+    stop_grace_period: 70s
     init: true
     restart: unless-stopped
     depends_on:
@@ -20,6 +21,8 @@ services:
     environment:
       MONGODB_URI: ${MONGODB_URI:-mongodb://mongodb:27017}
       DB_NAME: ${DB_NAME:-crawlee}
+      CRAWLEE_HEALTH_MAX_AGE_HOURS: ${CRAWLEE_HEALTH_MAX_AGE_HOURS:-36}
+      CRAWLEE_SCHEDULER_WORKERS: ${CRAWLEE_SCHEDULER_WORKERS:-2}
       CRAWLEE_SCHEDULER_ALLOWED_STATES: ${CRAWLEE_SCHEDULER_ALLOWED_STATES:-cutover}
       CRAWLEE_SCHEDULED_SOURCES: ${CRAWLEE_SCHEDULED_SOURCES:-}
       CRAWLEE_SCHEDULER_TIMEZONE: ${CRAWLEE_SCHEDULER_TIMEZONE:-Europe/Copenhagen}

@@ -12,6 +12,7 @@ import { stripTrackingParams } from "../utils/canonicalize.js";
 export interface CompleteJsonLdExtraction {
   rawScripts: string[];
   recipes: Record<string, unknown>[];
+  rejectedCandidates: Array<{ rawRecipe: Record<string, unknown>; reasons: string[] }>;
   rejectedReasons: Array<"incomplete-json-ld" | "malformed-json-ld">;
   incompleteJsonLdCount: number;
   malformedJsonLdCount: number;
@@ -67,6 +68,7 @@ export function extractCompleteJsonLdRecipes(
     : streamedJsonLdBodies(html);
   const rawScripts = [...scriptBodies, ...streamed];
   const recipes: Record<string, unknown>[] = [];
+  const rejectedCandidates: CompleteJsonLdExtraction["rejectedCandidates"] = [];
   const rejectedReasons: CompleteJsonLdExtraction["rejectedReasons"] = [];
   let incompleteJsonLdCount = 0;
   let malformedJsonLdCount = 0;
@@ -119,6 +121,7 @@ export function extractCompleteJsonLdRecipes(
       } else {
         rejectedReasons.push("incomplete-json-ld");
         incompleteJsonLdCount += 1;
+        rejectedCandidates.push({ rawRecipe: recipe, reasons: missingRecipeFields(candidate) });
       }
     }
   }
@@ -137,6 +140,7 @@ export function extractCompleteJsonLdRecipes(
   return {
     rawScripts,
     recipes: collapsed,
+    rejectedCandidates,
     rejectedReasons: Array.from(new Set(rejectedReasons)),
     incompleteJsonLdCount,
     malformedJsonLdCount,
@@ -745,6 +749,14 @@ function pageStatedTitle(html: string): string {
     if (text !== "") return text;
   }
   return "";
+}
+
+export function missingRecipeFields(recipe: Record<string, unknown>): string[] {
+  return [
+    ...(!firstString(recipe["name"], recipe["headline"], recipe["title"]) ? ["missing-title"] : []),
+    ...(normalizeIngredientStrings(recipe["recipeIngredient"] ?? recipe["ingredients"]).length === 0 ? ["missing-ingredients"] : []),
+    ...(normalizeInstructions(recipe["recipeInstructions"]).length === 0 ? ["missing-instructions"] : []),
+  ];
 }
 
 function isCompleteRecipe(recipe: Record<string, unknown>): boolean {

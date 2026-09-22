@@ -1,4 +1,5 @@
 import { DANISH_JSONLD_SOURCES } from "./source-registry.js";
+import { parseRecipeSourceLanguages, recipeSourceLanguage, type RecipeSourceLanguage } from "./source-languages.js";
 
 /**
  * Deliberately small, source-by-source migration cohort. Selecting this list
@@ -30,12 +31,18 @@ export const DANISH_WPRM_PILOT_SOURCE_IDS = [
 
 export interface DanishJsonLdCrawlOptions {
   sourceIds?: string[];
+  languages?: RecipeSourceLanguage[];
   maxPages?: number;
   database?: string;
   force: boolean;
   vpn: boolean;
   vpnCountry?: string;
   jsonOut?: string;
+  resumeRunId?: string;
+  fullRefresh?: boolean;
+  refreshHours?: number;
+  help?: boolean;
+  listSources?: boolean;
 }
 
 export function parseDanishJsonLdCrawlArgs(
@@ -49,6 +56,30 @@ export function parseDanishJsonLdCrawlArgs(
     const requiresValue = () => value !== undefined && !value.startsWith("--");
 
     switch (argument) {
+      case "--help":
+      case "-h":
+        options.help = true;
+        break;
+      case "--list-sources":
+        options.listSources = true;
+        break;
+      case "--language":
+        if (!requiresValue()) throw new Error("--language requires da (Danish) or en (English)");
+        options.languages = [...new Set([
+          ...(options.languages ?? []), ...parseRecipeSourceLanguages(value),
+        ])];
+        index += 1;
+        break;
+      case "--full-refresh":
+        options.fullRefresh = true;
+        break;
+      case "--refresh-hours":
+        if (!requiresValue() || !/^\d+(?:\.\d+)?$/u.test(value) || !Number.isFinite(Number(value)) || Number(value) > 168) {
+          throw new Error("--refresh-hours must be a number from 0 to 168");
+        }
+        options.refreshHours = Number(value);
+        index += 1;
+        break;
       case "--sources":
         if (!requiresValue()) {
           throw new Error("--sources requires a comma-separated value");
@@ -69,6 +100,11 @@ export function parseDanishJsonLdCrawlArgs(
       case "--database":
         if (!requiresValue()) throw new Error("--database requires a value");
         options.database = value;
+        index += 1;
+        break;
+      case "--resume":
+        if (!requiresValue()) throw new Error("--resume requires a crawl run id");
+        options.resumeRunId = value;
         index += 1;
         break;
       case "--force":
@@ -92,13 +128,24 @@ export function parseDanishJsonLdCrawlArgs(
     }
   }
 
+  if (options.resumeRunId && options.force) throw new Error("--resume and --force are mutually exclusive");
+  if (options.fullRefresh && options.refreshHours) throw new Error("--full-refresh and --refresh-hours cannot be combined");
+  if (options.resumeRunId && !options.sourceIds && !options.languages) {
+    throw new Error("--resume requires the original --sources or --language selection");
+  }
+
   if (options.vpnCountry && !options.vpn) {
     throw new Error("--vpn-country requires --vpn");
   }
 
+  if (options.sourceIds?.includes("all")) {
+    if (options.sourceIds.length !== 1) throw new Error("Use --sources all by itself, or name individual sources");
+    options.sourceIds = allRecipeSourceIds();
+  }
+
   for (const sourceId of options.sourceIds ?? []) {
     if (!DANISH_JSONLD_SOURCES.some((source) => source.id === sourceId)) {
-      throw new Error(`Unknown Danish recipe source: "${sourceId}"`);
+      throw new Error(`Unknown recipe source: "${sourceId}"`);
     }
   }
 
@@ -108,7 +155,24 @@ export function parseDanishJsonLdCrawlArgs(
 export function selectDanishJsonLdSources(
   options: DanishJsonLdCrawlOptions
 ): string[] {
-  return options.sourceIds ?? ["arla"];
+  const requested = options.sourceIds ?? allRecipeSourceIds();
+  if (!options.languages) return requested;
+  const selected = requested.filter((sourceId) => {
+    const source = DANISH_JSONLD_SOURCES.find((candidate) => candidate.id === sourceId);
+    const language = recipeSourceLanguage(source?.aliasFor ?? sourceId);
+    return language !== undefined && options.languages!.includes(language);
+  });
+  if (selected.length === 0) {
+    throw new Error(`No sources match --language ${options.languages.join(",")} in the requested selection`);
+  }
+  return selected;
+}
+
+/** Migration/availability evidence does not restrict an explicitly requested full crawl.
+ * Aliases remain accepted as input, but never cause a second crawl of the same source.
+ */
+function allRecipeSourceIds(): string[] {
+  return DANISH_JSONLD_SOURCES.filter((source) => !source.aliasFor).map((source) => source.id);
 }
 
 export function createDanishJsonLdCrawlSelection(

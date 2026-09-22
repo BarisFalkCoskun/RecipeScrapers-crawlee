@@ -174,6 +174,7 @@ describe("RecipeStore", () => {
   });
 
   it("creates a TTL index for crawl run retention", async () => {
+    (store as any).rejectedCandidates = { createIndex: vi.fn(async () => undefined) };
     await (
       store as never as { ensureIndexes: () => Promise<void> }
     ).ensureIndexes();

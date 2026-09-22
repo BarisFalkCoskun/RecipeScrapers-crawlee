@@ -1,5 +1,8 @@
 # Hetzner Server Deployment
 
+This guide describes the older seed-based crawler (`npm run crawl:legacy`).
+For the current all-sites `npm start` workflow, see [the README](../README.md).
+
 ## 1. Provision the server
 
 A CX21 (2 vCPU, 4 GB RAM) is sufficient. MongoDB and Playwright Chromium together need ~2 GB RAM.
@@ -76,13 +79,13 @@ for (const [from, to] of renames) {
 
 **One-off:**
 ```bash
-npm start
+npm run crawl:legacy
 ```
 
 **With auto-restart via PM2 (recommended):**
 ```bash
 sudo npm install -g pm2
-pm2 start "npm start" --name recipe-crawler
+pm2 start "npm run crawl:legacy" --name recipe-crawler
 pm2 save
 pm2 startup  # run the printed command to enable on reboot
 ```

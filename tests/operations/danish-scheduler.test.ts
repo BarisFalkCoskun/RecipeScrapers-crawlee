@@ -194,3 +194,55 @@ describe("Danish Crawlee scheduler", () => {
     expect(scheduledOutcomeIsHealthy(summary("succeeded", []), "missing")).toBe(false);
   });
 });
+
+it("runs independent sources within the worker limit and serializes concurrent ledger writes", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "crawlee-worker-pool-"));
+  const now = new Date("2026-09-22T00:20:00Z");
+  let active = 0;
+  let peak = 0;
+  const calls: string[] = [];
+  const scheduler = new DanishRecipeScheduler({
+    sourceIds: ["foodfanatic", "ketoliv", "arla"], allowedStates: ["configured"],
+    schedules: new Map(["foodfanatic", "ketoliv", "arla"].map((source) => [source, { minute: 20, hour: 2 }])),
+    timezone: "Europe/Copenhagen", catchupMinutes: 30, pollIntervalMs: 100, heartbeatIntervalMs: 60_000,
+    heartbeatPath: join(directory, "heartbeat.json"), ledgerPath: join(directory, "ledger.json"), evidenceDirectory: directory, workerCount: 2,
+  }, {
+    now: () => now, output: () => {}, runSource: async (source) => {
+      active++; peak = Math.max(peak, active); calls.push(source);
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      active--;
+      if (source === "ketoliv") throw new Error("fixture blocked");
+    },
+  });
+  await scheduler.initialize();
+  try {
+    expect(await scheduler.runDue()).toBe(3);
+    expect(peak).toBe(2);
+    expect(calls).toHaveLength(3);
+    const ledger = JSON.parse(await readFile(join(directory, "ledger.json"), "utf8"));
+    expect(Object.values(ledger.runs).map((entry: any) => entry.status).sort()).toEqual(["completed", "completed", "failed"]);
+    expect(await scheduler.runDue()).toBe(0);
+  } finally { await scheduler.dispose(); }
+});
+
+it("does not overlap workers whose source domains intersect", async () => {
+  const { sourcesShareDomain } = await import("../../src/operations/danish-scheduler.js");
+  expect(sourcesShareDomain("amuseyourbouche", "easycheesyvegetarian")).toBe(true);
+  const directory = await mkdtemp(join(tmpdir(), "crawlee-domain-workers-"));
+  const now = new Date("2026-09-22T00:20:00Z");
+  let active = 0;
+  let peak = 0;
+  const sourceIds = ["amuseyourbouche", "easycheesyvegetarian"];
+  const scheduler = new DanishRecipeScheduler({
+    sourceIds, allowedStates: ["configured"], schedules: new Map(sourceIds.map((id) => [id, { minute: 20, hour: 2 }])),
+    timezone: "Europe/Copenhagen", catchupMinutes: 30, pollIntervalMs: 100, heartbeatIntervalMs: 60_000,
+    heartbeatPath: join(directory, "heartbeat.json"), ledgerPath: join(directory, "ledger.json"), evidenceDirectory: directory, workerCount: 2,
+  }, { now: () => now, output: () => {}, runSource: async () => {
+    active++; peak = Math.max(peak, active);
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    active--;
+  } });
+  await scheduler.initialize();
+  try { expect(await scheduler.runDue()).toBe(2); expect(peak).toBe(1); }
+  finally { await scheduler.dispose(); }
+});

@@ -1,5 +1,8 @@
 # New Server Scraper Setup
 
+This guide describes the older seed-based crawler (`npm run crawl:legacy`).
+For the current all-sites `npm start` workflow, see [the README](../README.md).
+
 This guide sets up a fresh Ubuntu server for `RecipeScrapers-crawlee`.
 It assumes Ubuntu 24.04 LTS, a server with at least 8 GB RAM, and MongoDB running locally on the same machine.
 
@@ -207,7 +210,7 @@ RUN_ID=$(date -u +%Y%m%d-%H%M%S)
   df -h
   env | sort | grep -E '^(CRAWL|CHEERIO|PLAYWRIGHT|CRAWLEE|MONGODB|DB_NAME|NODE_OPTIONS)=' || true
 
-  PLAYWRIGHT_MEMORY_DIAGNOSTICS_INTERVAL=25 npm start
+  PLAYWRIGHT_MEMORY_DIAGNOSTICS_INTERVAL=25 npm run crawl:legacy
   STATUS=$?
 
   echo "=== crawl exit status: $STATUS ==="
@@ -308,7 +311,7 @@ After the setup is proven, PM2 is useful for auto-restart:
 
 ```bash
 sudo npm install -g pm2
-pm2 start "npm start" --name recipe-crawler
+pm2 start "npm run crawl:legacy" --name recipe-crawler
 pm2 save
 pm2 startup
 ```

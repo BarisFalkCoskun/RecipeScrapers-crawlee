@@ -1,3 +1,4 @@
+import { setTimeout as delay } from "node:timers/promises";
 import { hostname } from "node:os";
 import { open, mkdir, readFile, rename, unlink, writeFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
@@ -29,6 +30,7 @@ export interface SchedulerHeartbeat {
   updatedAt: string;
   scheduledSourceIds: string[];
   activeSourceId?: string;
+  activeSourceIds?: string[];
 }
 
 interface SchedulerLeaseDocument {
@@ -55,12 +57,15 @@ export interface DanishSchedulerConfig {
   heartbeatPath: string;
   ledgerPath: string;
   evidenceDirectory: string;
+  workerCount?: number;
 }
 
 export interface DanishSchedulerDependencies {
   now: () => Date;
   runSource: (sourceId: string, evidencePath: string) => Promise<void>;
   output: (line: string) => void;
+  signal?: AbortSignal;
+  onFatalError?: (error: unknown) => void;
 }
 
 export function createSchedulerConfigFromEnv(
@@ -89,6 +94,7 @@ export function createSchedulerConfigFromEnv(
     heartbeatPath: env["CRAWLEE_SCHEDULER_HEARTBEAT_PATH"] ?? "data/crawlee-scheduler-heartbeat.json",
     ledgerPath: env["CRAWLEE_SCHEDULER_LEDGER_PATH"] ?? "data/crawlee-scheduler-ledger.json",
     evidenceDirectory: env["CRAWLEE_SCHEDULER_EVIDENCE_DIR"] ?? "data/crawlee-scheduler-evidence",
+    workerCount: integerOption(env["CRAWLEE_SCHEDULER_WORKERS"], 2, "CRAWLEE_SCHEDULER_WORKERS", 1),
   };
 }
 
@@ -221,6 +227,7 @@ export function scheduleSlotKey(sourceId: string, scheduledFor: Date): string {
 
 export class SchedulerLedger {
   private document: SchedulerLedgerDocument = { schemaVersion: 1, runs: {} };
+  private writes: Promise<void> = Promise.resolve();
 
   constructor(private readonly path: string) {}
 
@@ -258,7 +265,7 @@ export class SchedulerLedger {
     await this.flush();
   }
 
-  async finish(key: string, status: "completed" | "failed", now: Date, error?: string): Promise<void> {
+  async finish(key: string, status: "completed" | "failed" | "interrupted", now: Date, error?: string): Promise<void> {
     const entry = this.document.runs[key];
     if (!entry) throw new Error(`Unknown scheduler ledger entry: ${key}`);
     entry.status = status;
@@ -268,10 +275,14 @@ export class SchedulerLedger {
   }
 
   private async flush(): Promise<void> {
-    await mkdir(dirname(this.path), { recursive: true });
-    const temporaryPath = `${this.path}.${process.pid}.tmp`;
-    await writeFile(temporaryPath, `${JSON.stringify(this.document, null, 2)}\n`, "utf8");
-    await rename(temporaryPath, this.path);
+    const snapshot = `${JSON.stringify(this.document, null, 2)}\n`;
+    this.writes = this.writes.then(async () => {
+      await mkdir(dirname(this.path), { recursive: true });
+      const temporaryPath = `${this.path}.${process.pid}.tmp`;
+      await writeFile(temporaryPath, snapshot, "utf8");
+      await rename(temporaryPath, this.path);
+    });
+    await this.writes;
   }
 }
 
@@ -417,7 +428,8 @@ function defaultProcessAlive(pid: number): boolean {
 }
 
 export class DanishRecipeScheduler {
-  private activeSourceId: string | undefined;
+  private readonly activeSourceIds = new Set<string>();
+  private heartbeatWrites: Promise<void> = Promise.resolve();
   private heartbeatTimer: NodeJS.Timeout | undefined;
   private readonly ledger: SchedulerLedger;
   private readonly lease: SchedulerLease;
@@ -442,6 +454,7 @@ export class DanishRecipeScheduler {
         void this.heartbeat().catch((error: unknown) => {
           const message = error instanceof Error ? error.message : String(error);
           this.dependencies.output(`Scheduler heartbeat failed: ${message}`);
+          this.dependencies.onFatalError?.(error);
         });
       }, this.config.heartbeatIntervalMs);
     } catch (error) {
@@ -451,33 +464,38 @@ export class DanishRecipeScheduler {
   }
 
   async runDue(): Promise<number> {
-    let completed = 0;
-    for (const sourceId of this.config.sourceIds) {
+    const now = this.dependencies.now();
+    const pending = this.config.sourceIds.flatMap((sourceId) => {
       const schedule = this.config.schedules.get(sourceId);
       if (!schedule) throw new Error(`Missing schedule for ${sourceId}`);
-      const scheduledFor = latestScheduleSlot({
-        now: this.dependencies.now(),
-        schedule,
-        timezone: this.config.timezone,
-        catchupMinutes: this.config.catchupMinutes,
-      });
-      if (!scheduledFor) continue;
-      const key = scheduleSlotKey(sourceId, scheduledFor);
-      const previous = this.ledger.get(key);
-      // A schedule slot is attempted at most once automatically. Repeating a
-      // failed slot every poll would create an unbounded retry storm; operators
-      // can use --run-now after correcting the fault.
-      if (previous) continue;
-      await this.runOne(sourceId, scheduledFor, key);
-      completed += 1;
+      const scheduledFor = latestScheduleSlot({ now, schedule, timezone: this.config.timezone, catchupMinutes: this.config.catchupMinutes });
+      if (!scheduledFor || this.ledger.get(scheduleSlotKey(sourceId, scheduledFor))) return [];
+      return [{ sourceId, scheduledFor }];
+    });
+    const running = new Set<Promise<void>>();
+    let attempted = 0;
+    while ((pending.length > 0 && !this.dependencies.signal?.aborted) || running.size > 0) {
+      while (!this.dependencies.signal?.aborted && running.size < (this.config.workerCount ?? 2)) {
+        const index = pending.findIndex(({ sourceId }) =>
+          ![...this.activeSourceIds].some((active) => sourcesShareDomain(sourceId, active)));
+        if (index < 0) break;
+        const { sourceId, scheduledFor } = pending.splice(index, 1)[0];
+        // Reserve before yielding to the ledger write so sibling workers see the domain lock.
+        this.activeSourceIds.add(sourceId);
+        const task = this.runOne(sourceId, scheduledFor).then(() => { attempted++; })
+          .finally(() => running.delete(task));
+        running.add(task);
+      }
+      if (running.size) await Promise.race(running);
+      else break;
     }
-    return completed;
+    return attempted;
   }
 
   async runOne(sourceId: string, scheduledFor = this.dependencies.now(), key = scheduleSlotKey(sourceId, scheduledFor)): Promise<boolean> {
     const startedAt = this.dependencies.now();
     await this.ledger.start(key, sourceId, scheduledFor, startedAt);
-    this.activeSourceId = sourceId;
+    this.activeSourceIds.add(sourceId);
     await this.heartbeat();
     const evidencePath = `${this.config.evidenceDirectory}/${sourceId}-${scheduledFor.toISOString().replaceAll(":", "-")}.json`;
     try {
@@ -487,38 +505,51 @@ export class DanishRecipeScheduler {
       return true;
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      await this.ledger.finish(key, "failed", this.dependencies.now(), message);
+      await this.ledger.finish(key, this.dependencies.signal?.aborted ? "interrupted" : "failed", this.dependencies.now(), message);
       this.dependencies.output(`Scheduled source failed: ${sourceId}: ${message}`);
       return false;
     } finally {
-      this.activeSourceId = undefined;
+      this.activeSourceIds.delete(sourceId);
       await this.heartbeat();
     }
   }
 
-  async runForever(): Promise<never> {
+  async runForever(): Promise<void> {
     await this.initialize();
-    while (true) {
-      await this.runDue();
-      await new Promise((resolve) => setTimeout(resolve, this.config.pollIntervalMs));
-    }
+    try {
+      while (!this.dependencies.signal?.aborted) {
+        await this.runDue();
+        await delay(this.config.pollIntervalMs, undefined, { signal: this.dependencies.signal }).catch((error: unknown) => {
+          if (!this.dependencies.signal?.aborted) throw error;
+        });
+      }
+    } finally { await this.dispose(); }
   }
 
   async dispose(): Promise<void> {
     if (this.heartbeatTimer) clearInterval(this.heartbeatTimer);
     this.heartbeatTimer = undefined;
-    await this.lease.release();
+    try { await this.heartbeatWrites; } finally { await this.lease.release(); }
   }
 
   private async heartbeat(): Promise<void> {
-    await this.lease.renew(this.dependencies.now());
-    await writeSchedulerHeartbeat(this.config.heartbeatPath, {
-      schemaVersion: 1,
-      pid: process.pid,
-      hostname: hostname(),
-      updatedAt: this.dependencies.now().toISOString(),
-      scheduledSourceIds: this.config.sourceIds,
-      ...(this.activeSourceId ? { activeSourceId: this.activeSourceId } : {}),
+    this.heartbeatWrites = this.heartbeatWrites.then(async () => {
+      await this.lease.renew(this.dependencies.now());
+      await writeSchedulerHeartbeat(this.config.heartbeatPath, {
+        schemaVersion: 1, pid: process.pid, hostname: hostname(), updatedAt: this.dependencies.now().toISOString(),
+        scheduledSourceIds: this.config.sourceIds, activeSourceIds: [...this.activeSourceIds],
+        ...(this.activeSourceIds.size === 1 ? { activeSourceId: [...this.activeSourceIds][0] } : {}),
+      });
     });
+    await this.heartbeatWrites;
   }
+}
+
+export function sourcesShareDomain(left: string, right: string): boolean {
+  const domains = (id: string) => {
+    const source = DANISH_JSONLD_SOURCES.find((entry) => entry.id === id);
+    return [...(source?.allowedDomains ?? [id]), ...(source?.listingDiscovery?.listingHosts ?? [])]
+      .map((domain) => domain.toLowerCase().replace(/^www\./u, ""));
+  };
+  return domains(left).some((a) => domains(right).some((b) => a === b || a.endsWith(`.${b}`) || b.endsWith(`.${a}`)));
 }

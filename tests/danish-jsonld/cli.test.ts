@@ -4,8 +4,81 @@ import { join } from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import { executeDanishJsonLdCli } from "../../src/danish-jsonld/cli.js";
 import type { DanishJsonLdRunSummary } from "../../src/types.js";
+import { DANISH_JSONLD_SOURCES } from "../../src/danish-jsonld/source-registry.js";
 
 describe("crawl:danish-jsonld CLI", () => {
+  it("hands every canonical site to the improved runner when invoked without arguments", async () => {
+    const store = { connect: vi.fn(), close: vi.fn(), insertDanishJsonLdRun: vi.fn() };
+    const runCrawl = vi.fn(async () => ({ summary: { robotsEnforced: false as const, sourceOutcomes: [] }, observations: [] }));
+    await executeDanishJsonLdCli([], { env: {}, createStore: () => store as never, runCrawl, output: () => {} });
+    expect(runCrawl).toHaveBeenCalledWith(expect.objectContaining({ selection: expect.objectContaining({
+      sourceIds: DANISH_JSONLD_SOURCES.filter((source) => !source.aliasFor).map((source) => source.id),
+      force: false, vpn: false,
+    }) }));
+    expect(store.insertDanishJsonLdRun).toHaveBeenCalledWith(expect.objectContaining({ kind: "danish-recipe-v2" }));
+    expect(store.close).toHaveBeenCalledOnce();
+  });
+
+  it.each(["--help", "-h", "--list-sources"])("supports %s without opening a database, VPN, or crawl", async (option) => {
+    const createStore = vi.fn();
+    const createVpnTransport = vi.fn();
+    const runCrawl = vi.fn();
+    const output = vi.fn();
+    const result = await executeDanishJsonLdCli([option], { env: {}, createStore, createVpnTransport, runCrawl, output });
+    expect(result.informational).toBe(true);
+    expect(createStore).not.toHaveBeenCalled();
+    expect(createVpnTransport).not.toHaveBeenCalled();
+    expect(runCrawl).not.toHaveBeenCalled();
+    const text = output.mock.calls[0][0] as string;
+    if (option === "--list-sources") {
+      expect(text).toContain("arla\tarla.dk");
+      expect(text.split("\n").slice(2)).toHaveLength(DANISH_JSONLD_SOURCES.filter((source) => !source.aliasFor).length);
+    } else expect(text).toContain("With no options, crawl every registered site once");
+  });
+
+  it("previews the language-filtered selection without connecting or crawling", async () => {
+    const createStore = vi.fn();
+    const createVpnTransport = vi.fn();
+    const runCrawl = vi.fn();
+    const output = vi.fn();
+    await executeDanishJsonLdCli(["--language", "english", "--list-sources"], {
+      env: {}, createStore, createVpnTransport, runCrawl, output,
+    });
+    expect(createStore).not.toHaveBeenCalled();
+    expect(createVpnTransport).not.toHaveBeenCalled();
+    expect(runCrawl).not.toHaveBeenCalled();
+    const lines = (output.mock.calls[0][0] as string).split("\n");
+    expect(lines[1]).toBe("ID\tDomain\tLanguage");
+    expect(lines).toContain("bbcgoodfood\tbbcgoodfood.com\ten");
+    expect(lines).toContain("scandikitchen\tscandikitchen.co.uk\ten");
+    expect(lines.slice(2).every((line) => line.endsWith("\ten"))).toBe(true);
+  });
+
+  it("passes only matching sites to the runner and records the language filter", async () => {
+    const store = { connect: vi.fn(), close: vi.fn(), insertDanishJsonLdRun: vi.fn() };
+    const runCrawl = vi.fn(async () => ({ summary: { robotsEnforced: false as const, sourceOutcomes: [] }, observations: [] }));
+    const output = vi.fn();
+    await executeDanishJsonLdCli(["--language", "da", "--sources", "arla,bbcgoodfood"], {
+      env: {}, createStore: () => store as never, runCrawl, output,
+    });
+    expect(runCrawl).toHaveBeenCalledWith(expect.objectContaining({ selection: expect.objectContaining({
+      sourceIds: ["arla"], languages: ["da"], sources: [expect.objectContaining({ id: "arla" })],
+    }) }));
+    expect(JSON.parse(output.mock.calls[0][0])).toMatchObject({ selectedLanguages: ["da"], selectedSources: ["arla"] });
+  });
+
+  it("rejects an empty language match before opening external resources", async () => {
+    const createStore = vi.fn();
+    const createVpnTransport = vi.fn();
+    const runCrawl = vi.fn();
+    await expect(executeDanishJsonLdCli(["--sources", "arla", "--language", "en", "--vpn"], {
+      env: {}, createStore, createVpnTransport, runCrawl,
+    })).rejects.toThrow(/No sources match/);
+    expect(createStore).not.toHaveBeenCalled();
+    expect(createVpnTransport).not.toHaveBeenCalled();
+    expect(runCrawl).not.toHaveBeenCalled();
+  });
+
   it("creates missing parent directories before writing JSON evidence", async () => {
     const temporaryRoot = await mkdtemp(join(tmpdir(), "danish-jsonld-cli-"));
     const jsonOut = join(temporaryRoot, "nested", "logs", "run.json");
@@ -354,4 +427,16 @@ describe("crawl:danish-jsonld CLI", () => {
     expect(runInputs[0].crawlRunId).not.toBe("fixed-run");
     expect(runInputs[1].crawlRunId).not.toBe(runInputs[0].crawlRunId);
   });
+});
+
+it("keeps the original logical run id and passes resume state to the runner", async () => {
+  const runCrawl = vi.fn(async () => ({ summary: { robotsEnforced: false as const, sourceOutcomes: [] }, observations: [] }));
+  await executeDanishJsonLdCli(["--sources", "arla", "--resume", "original-run", "--max-pages", "100"], {
+    env: { CRAWLEE_STORAGE_DIR: "/tmp/fixture-checkpoints" }, runCrawl,
+    createStore: () => ({ connect: async () => {}, close: async () => {}, insertDanishJsonLdRun: async () => {} }) as never,
+    output: () => {},
+  });
+  expect(runCrawl).toHaveBeenCalledWith(expect.objectContaining({ crawlRunId: "original-run", checkpointDirectory: "/tmp/fixture-checkpoints",
+    selection: expect.objectContaining({ resumeRunId: "original-run", maxPages: 100 }) }));
+  await expect(executeDanishJsonLdCli(["--sources", "arla", "--resume", "original-run", "--force"])).rejects.toThrow(/mutually exclusive/);
 });

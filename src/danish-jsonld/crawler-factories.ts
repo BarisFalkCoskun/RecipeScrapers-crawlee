@@ -8,10 +8,11 @@ import {
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { createRequire } from "node:module";
-import { ImpitHttpClient } from "@crawlee/impit-client";
+import { ConditionalImpitHttpClient } from "./conditional-http-client.js";
 import { CookieJar } from "tough-cookie";
 import type { DanishJsonLdSource } from "./source-registry.js";
 import type { DanishJsonLdSiteSession } from "./site-session.js";
+import type { WebsiteCooldowns } from "./website-cooldowns.js";
 
 type CheerioHandler = (context: CheerioCrawlingContext) => Promise<void>;
 type PlaywrightHandler = (context: PlaywrightCrawlingContext) => Promise<void>;
@@ -216,6 +217,7 @@ export function createDanishJsonLdCheerioCrawler(options: {
   requestHandler: CheerioHandler;
   proxyConfiguration?: ProxyConfiguration;
   siteSession?: DanishJsonLdSiteSession;
+  cooldowns?: WebsiteCooldowns;
   crawlerOptions?: Omit<CheerioOptions, "requestHandler">;
 }) {
   const identity = createDanishJsonLdBrowserIdentity();
@@ -252,6 +254,7 @@ export function createDanishJsonLdCheerioCrawler(options: {
         const cookie = await cookieJar.getCookieString(request.url);
         if (cookie) gotOptions.headers = { ...gotOptions.headers, Cookie: cookie };
       }
+      await options.cooldowns?.beforeRequest(request.url);
     },
   ];
   const postNavigationHooks = [
@@ -272,7 +275,7 @@ export function createDanishJsonLdCheerioCrawler(options: {
     // uses its existing JSON transport with browser header generation disabled.
     ...(options.source.disableHeaderGenerator
       ? {}
-      : { httpClient: new ImpitHttpClient({ browser: DANISH_JSONLD_IMPIT_PROFILE }) }),
+      : { httpClient: new ConditionalImpitHttpClient({ browser: DANISH_JSONLD_IMPIT_PROFILE }) }),
     ...options.crawlerOptions,
     preNavigationHooks,
     postNavigationHooks,
@@ -301,6 +304,7 @@ export function createDanishJsonLdPlaywrightCrawler(options: {
   requestHandler: PlaywrightHandler;
   proxyConfiguration?: ProxyConfiguration;
   siteSession?: DanishJsonLdSiteSession;
+  cooldowns?: WebsiteCooldowns;
   crawlerOptions?: Omit<PlaywrightOptions, "requestHandler">;
 }) {
   const browserGenerations = new WeakMap<object, number>();
@@ -350,12 +354,13 @@ export function createDanishJsonLdPlaywrightCrawler(options: {
   const preNavigationHooks = [
     ...(options.crawlerOptions?.preNavigationHooks ?? []),
     jitterHook(options.source),
-    async ({ page, proxyInfo }: PlaywrightCrawlingContext) => {
+    async ({ page, proxyInfo, request }: PlaywrightCrawlingContext) => {
       if (options.siteSession) {
         await options.siteSession.prepareRequest(proxyInfo?.url);
         browserGenerations.set(page, await options.siteSession.restoreBrowser(page.context()));
       }
       await page.addInitScript(DANISH_JSONLD_WEBDRIVER_INIT_SCRIPT);
+      await options.cooldowns?.beforeRequest(request.url);
     },
   ];
   return new PlaywrightCrawler({

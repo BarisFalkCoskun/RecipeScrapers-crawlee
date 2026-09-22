@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { DANISH_JSONLD_SOURCES } from "../../src/danish-jsonld/source-registry.js";
 import {
   createDanishJsonLdCrawlSelection,
   DANISH_JSONLD_PILOT_SOURCE_IDS,
@@ -37,7 +38,7 @@ describe("Danish JSON-LD source selection", () => {
 
   it("rejects unknown sources and malformed runtime options", () => {
     expect(() => parseDanishJsonLdCrawlArgs(["--sources", "missing"])).toThrow(
-      'Unknown Danish recipe source: "missing"'
+      'Unknown recipe source: "missing"'
     );
     expect(() => parseDanishJsonLdCrawlArgs(["--max-pages", "0"])).toThrow(
       "--max-pages must be a positive integer"
@@ -85,9 +86,70 @@ describe("Danish JSON-LD source selection", () => {
     expect(selection.sources.map((source) => source.id)).toEqual(["drdk"]);
   });
 
-  it("defaults to Arla rather than running every unverified source", () => {
+  it("defaults to every registered source once, including sources with previous failures", () => {
     const options = parseDanishJsonLdCrawlArgs([]);
-    expect(selectDanishJsonLdSources(options)).toEqual(["arla"]);
+    const selection = createDanishJsonLdCrawlSelection(options);
+    const canonical = DANISH_JSONLD_SOURCES.filter((source) => !source.aliasFor);
+    expect(selection.sources).toEqual(canonical);
+    expect(selectDanishJsonLdSources(options)).toEqual(canonical.map((source) => source.id));
+    expect(new Set(selection.sourceIds).size).toBe(selection.sourceIds.length);
+    expect(selection.sourceIds).toContain("arla");
+    expect(selection.sourceIds).toContain("gastrofun");
+    expect(selection.sourceIds).toContain("allrecipes");
+    expect(selection.sourceIds).toContain("netto");
+    expect(selection.sourceIds).toContain("drdk");
+    expect(selection.sourceIds).not.toContain("dr");
+    expect(selection.sourceIds).not.toContain("aarstiderne");
+    expect(options.maxPages).toBeUndefined();
+  });
+
+  it("accepts an explicit all-sites selection for resuming a default run", () => {
+    const defaults = createDanishJsonLdCrawlSelection(parseDanishJsonLdCrawlArgs([]));
+    const resumed = createDanishJsonLdCrawlSelection(parseDanishJsonLdCrawlArgs(["--resume", "run-1", "--sources", "all"]));
+    expect(resumed.sourceIds).toEqual(defaults.sourceIds);
+    expect(() => parseDanishJsonLdCrawlArgs(["--sources", "all,arla"])).toThrow(/by itself/);
+  });
+
+  it("selects separate Danish and English catalogues while preserving the all-sites default", () => {
+    const danish = createDanishJsonLdCrawlSelection(parseDanishJsonLdCrawlArgs(["--language", "da"]));
+    const english = createDanishJsonLdCrawlSelection(parseDanishJsonLdCrawlArgs(["--language", "en"]));
+    const all = createDanishJsonLdCrawlSelection(parseDanishJsonLdCrawlArgs([]));
+    expect(danish.sourceIds).toEqual(expect.arrayContaining(["arla", "gastrofun", "danishthings", "danishcrown"]));
+    expect(english.sourceIds).toEqual(expect.arrayContaining(["allrecipes", "bbcgoodfood", "scandikitchen"]));
+    expect(danish.sourceIds.filter((id) => english.sourceIds.includes(id))).toEqual([]);
+    expect([...danish.sourceIds, ...english.sourceIds].sort()).toEqual([...all.sourceIds].sort());
+    expect(createDanishJsonLdCrawlSelection(parseDanishJsonLdCrawlArgs(["--language", "da,en"])).sourceIds).toEqual(all.sourceIds);
+  });
+
+  it.each([
+    [" Danish ", ["da"]], ["dansk", ["da"]], ["ENGLISH", ["en"]], ["da,english,danish", ["da", "en"]],
+  ])("normalizes language names in %s", (value, expected) => {
+    expect(parseDanishJsonLdCrawlArgs(["--language", value as string]).languages).toEqual(expected);
+  });
+
+  it("combines repeated language options", () => {
+    expect(parseDanishJsonLdCrawlArgs(["--language", "da", "--language", "english"]).languages).toEqual(["da", "en"]);
+  });
+
+  it.each([[], [""], ["sv"], ["en,unknown"], ["da,"], ["--list-sources"]])("rejects malformed language values %j", (...values) => {
+    expect(() => parseDanishJsonLdCrawlArgs(["--language", ...values])).toThrow(/--language/);
+  });
+
+  it("intersects explicit sources with the language filter and resolves aliases", () => {
+    const args = ["--sources", "dr,bbcgoodfood,drdk,aarstiderne", "--language", "da"];
+    expect(createDanishJsonLdCrawlSelection(parseDanishJsonLdCrawlArgs(args)).sourceIds).toEqual(["drdk", "meny"]);
+    expect(createDanishJsonLdCrawlSelection(parseDanishJsonLdCrawlArgs(["--sources", "all", "--language", "en"])).sourceIds)
+      .toEqual(createDanishJsonLdCrawlSelection(parseDanishJsonLdCrawlArgs(["--language", "en"])).sourceIds);
+    expect(() => createDanishJsonLdCrawlSelection(parseDanishJsonLdCrawlArgs(["--sources", "arla", "--language", "en"])))
+      .toThrow(/No sources match --language en/);
+  });
+
+  it("accepts the original language filter when resuming", () => {
+    const original = createDanishJsonLdCrawlSelection(parseDanishJsonLdCrawlArgs(["--language", "da"]));
+    const resumed = createDanishJsonLdCrawlSelection(parseDanishJsonLdCrawlArgs(["--resume", "run-1", "--language", "da"]));
+    expect(resumed.sourceIds).toEqual(original.sourceIds);
+    expect(resumed.resumeRunId).toBe("run-1");
+    expect(() => parseDanishJsonLdCrawlArgs(["--resume", "run-1"])).toThrow(/original --sources or --language/);
   });
 
   it("creates a JSON-safe selected-source handoff without invoking a crawl", () => {

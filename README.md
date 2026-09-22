@@ -1,6 +1,40 @@
 # RecipeScrapers Crawlee
 
-Recipe crawling pipeline built on Crawlee, with Cheerio-first crawling, lazy Playwright fallback, Mongo-backed persistence, recrawl TTL checks, and run-level metrics.
+Recipe crawling pipeline built on Crawlee, with JSON-LD, WPRM and custom extractors,
+browser fallback, MongoDB persistence, incremental fetching, resumable runs, and
+website-wide cooldowns.
+
+With dependencies installed and MongoDB running, start a crawl of **every
+registered site** with:
+
+```bash
+npm start
+```
+
+The default run attempts each distinct source once, including sites that failed
+on earlier runs. Aliases are deduplicated, and each site's outcome is reported.
+There is no default per-site page cap. MongoDB defaults to
+`mongodb://localhost:27017`, database `crawlee`; configure `MONGODB_URI` and
+`DB_NAME` in `.env` when needed.
+
+```bash
+npm start -- --sources arla,gastrofun   # Crawl selected sites
+npm start -- --language da             # Crawl Danish-language sites
+npm start -- --language en             # Crawl English-language sites
+npm start -- --language da --list-sources # Preview the Danish selection
+npm start -- --list-sources             # List sites without crawling
+npm start -- --help                     # Show options
+npm start -- --resume RUN_ID --sources all
+```
+
+`--language` also accepts `danish`, `dansk`, `english`, or `da,en`.
+It selects sites by their configured recipe catalogue language, including
+localized routes on international domains. It does not filter by cuisine or
+guarantee the language of every recipe on a multilingual site. Combine it with
+`--sources` to narrow that list further; an empty match fails before crawling.
+Site languages are maintained in `src/danish-jsonld/source-languages.ts`.
+
+See [crawl reliability and source health](docs/crawl-reliability.md) for resumable runs, completion accounting, rejected candidates, and monitoring.
 
 ## Commands
 
@@ -9,6 +43,9 @@ Recipe crawling pipeline built on Crawlee, with Cheerio-first crawling, lazy Pla
 - `npm run smoke:crawl`: run a hermetic end-to-end crawl against a local fixture site. This exercises sitemap ingestion, TTL skips, Cheerio discovery, Playwright fallback, metrics, and crawl-run persistence.
 - `npm run diagnose:identity`: verify the Danish HTTP identity against its Impit profile and compare native/browser WebGL on a loopback fixture. Requires the bundled Chromium; contacts no recipe sites.
 - `npm run report:runs`: print recent `crawl_runs` summaries from Mongo.
+- `npm run report:health`: report source completeness, freshness, changes, and quality alerts; supports `--json`, `--html <file>`, and `--check`.
+- `npm run operations:checkpoints`: list resumable run journals; see the reliability guide for pruning completed journals.
+- `npm run test:integration`: test real MongoDB behavior using `MONGODB_TEST_URI`.
 - `npm run migration:readiness`: audit every legacy Danish command and fail
   until its effective Crawlee source is at `cutover` and the operational gates
   have auditable evidence supplied with `--operational-evidence <file>`.
@@ -16,7 +53,9 @@ Recipe crawling pipeline built on Crawlee, with Cheerio-first crawling, lazy Pla
   `--list` / `--run-now <source>` for preflight and controlled execution.
 - `npm run operations:healthcheck`: validate scheduler heartbeat freshness and
   process ownership.
-- `npm start`: run the real crawler against the configured seeds.
+- `npm start`: crawl every registered site with the improved runner.
+- `npm run crawl:danish-jsonld`: compatibility command for the same runner and defaults.
+- `npm run crawl:legacy`: run the older seed-based crawler.
 
 For the strict Danish JSON-LD migration pilot, consumer contract, and
 remote-only canary/shadow/cutover workflow, read
@@ -56,14 +95,20 @@ before changing any source to `cutover`.
 ## Runtime Notes
 
 - `npm start` expects MongoDB via `MONGODB_URI` and `DB_NAME`. Defaults are `mongodb://localhost:27017` and `crawlee`.
-- Recipe documents are stored in the `recipes` collection. The crawler tracks recipe language per document, so the collection name is intentionally generic unless a run is known to be Danish-only.
-- Each `npm start` uses run-scoped Crawlee queues and sitemap/link-filter state. Set `CRAWL_RUN_ID=<id>` to intentionally resume or re-run against the same local Crawlee storage.
+- `npm start` stores complete recipes in `recipes_v2`, rejected candidates in `recipe_candidates`, and run evidence in `crawl_runs`.
+- Each run has its own ID and durable checkpoints. Use `--resume RUN_ID --sources all` to continue a default run, or repeat the original `--sources` and/or `--language` filters for a restricted run (e.g. `--resume RUN_ID --language da`). `CRAWL_RUN_ID` sets the base ID for a new attempt; it does not resume old work.
 - Crawl-run summaries are stored in `crawl_runs` and pruned automatically with a Mongo TTL index. The retention window is configured in `src/config.ts`.
-- Playwright wait behavior is configurable through:
+- The older `crawl:legacy` command retains its seed list, `recipes` collection, TTL checks, and Playwright wait settings:
   - `PLAYWRIGHT_WAIT_FOR_LOAD_STATE`
   - `PLAYWRIGHT_WAIT_FOR_LOAD_STATE_TIMEOUT_MS`
 
 ## Operations
+
+The dedicated runner conditionally fetches recipe pages using ETag/Last-Modified
+and shares website cooldowns across HTTP/browser requests and worker restarts.
+Use `--refresh-hours 12` for an explicit reuse interval, or `--full-refresh` to
+fetch every pending page again. See [incremental fetching and cooldowns](docs/crawl-reliability.md#incremental-fetching-and-website-cooldowns)
+for cache scope, retry behavior, and run counters.
 
 The dedicated Danish runner keeps one session per source attempt: one healthy
 VPN lease, a cookie jar shared by HTTP and browser requests, and one request in

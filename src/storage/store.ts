@@ -1,5 +1,6 @@
 import type {
   CrawlRunDocument,
+  RejectedRecipeCandidate,
   DanishJsonLdCrawlRunDocument,
   PageDocument,
   RecipeDocument,
@@ -19,10 +20,13 @@ export interface CrawlStore {
 }
 
 export interface RecipeDocumentV2Store {
+  /** Optional for ephemeral probes; production stores persist rejection evidence. */
+  upsertRejectedCandidate?(candidate: Omit<RejectedRecipeCandidate, "_id">): Promise<void>;
   upsertRecipeV2(
     recipe: Omit<RecipeDocumentV2, "_id">
   ): Promise<{
     operation: "inserted" | "updated";
+    contentChanged?: boolean;
     contentMatches: RecipeContentMatch[];
   }>;
   insertDanishJsonLdRun(

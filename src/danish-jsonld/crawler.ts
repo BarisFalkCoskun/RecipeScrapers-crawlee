@@ -1,3 +1,4 @@
+import type { SessionCheckpoint } from "./work-journal.js";
 import * as cheerio from "cheerio";
 import { Binary } from "mongodb";
 import { gzipSync } from "node:zlib";
@@ -5,7 +6,7 @@ import type { RecipeDocumentV2Store, CrawlStore } from "../storage/store.js";
 import type { PageDocument, SourceOutcomeReason, SourceRunOutcomeSummary } from "../types.js";
 import { EXTRACTOR_VERSION } from "../config.js";
 import { canonicalizeUrl, normalizeDomain } from "../utils/canonicalize.js";
-import { hashHtml } from "../utils/hash.js";
+import { hashHtml, hashRecipe } from "../utils/hash.js";
 import { detectLanguage } from "../utils/language.js";
 import {
   buildWprmRecipeDocumentV2,
@@ -121,6 +122,17 @@ export interface DanishJsonLdRoutingResult {
 type DanishJsonLdStore = CrawlStore & RecipeDocumentV2Store;
 type SessionObservation = SourceRunObservation & { pageCapReached: boolean };
 
+/** Each checkpoint writes only newly discovered identities, even for very large catalogs. */
+class CheckpointSet extends Set<string> {
+  private additions: string[] = [];
+  override add(value: string): this {
+    if (!this.has(value)) this.additions.push(value);
+    return super.add(value);
+  }
+  restore(values: string[]): void { for (const value of values) super.add(value); }
+  takeAdditions(): string[] { return this.additions.splice(0); }
+}
+
 export class DanishJsonLdSourceSession {
   readonly observation: SessionObservation;
   private readonly source: DanishJsonLdSource;
@@ -128,14 +140,14 @@ export class DanishJsonLdSourceSession {
   private readonly crawlRunId: string;
   private readonly crawlAttemptId: string;
   private readonly diagnosticSink: (event: DanishJsonLdDiagnostic) => void;
-  private readonly admittedRecipeUrls = new Set<string>();
-  private readonly playwrightFallbackUrls = new Set<string>();
+  private readonly admittedRecipeUrls = new CheckpointSet();
+  private readonly playwrightFallbackUrls = new CheckpointSet();
   private helloFreshToken?: string;
   private madForFattigroeveBuildId?: string;
   private nemligStamp?: string;
-  private readonly nemligCategories = new Set<string>();
-  private readonly nemligGroups = new Set<string>();
-  private readonly nemligRecipes = new Set<string>();
+  private readonly nemligCategories = new CheckpointSet();
+  private readonly nemligGroups = new CheckpointSet();
+  private readonly nemligRecipes = new CheckpointSet();
   private readonly requestBudget;
 
   constructor(options: {
@@ -145,6 +157,7 @@ export class DanishJsonLdSourceSession {
     crawlAttemptId: string;
     maxPages: number;
     diagnosticSink?: (event: DanishJsonLdDiagnostic) => void;
+    checkpoint?: SessionCheckpoint;
   }) {
     this.source = options.source;
     this.store = options.store;
@@ -173,6 +186,17 @@ export class DanishJsonLdSourceSession {
       discoveryFailureReasons: [],
       pageCapReached: false,
     };
+    if (options.checkpoint) {
+      Object.assign(this.observation, options.checkpoint.observation, { interrupted: false, pageCapReached: false });
+      // A prior cap interrupted traversal; resuming can finish it. Other discovery failures remain sticky.
+      if (options.checkpoint.observation.pageCapReached && !(options.checkpoint.observation.discoveryFailureReasons?.length)) {
+        this.observation.discoveryComplete = true;
+      }
+      for (const [name, set] of Object.entries(this.checkpointSets())) {
+        set.restore(options.checkpoint.sets[name] ?? []);
+      }
+      Object.assign(this, options.checkpoint.values);
+    }
     this.emit("source-attempt", {
       discovery: options.source.discovery,
       fetchMode: options.source.fetchMode,
@@ -182,21 +206,48 @@ export class DanishJsonLdSourceSession {
     });
   }
 
+  recipeCandidateUrls(): string[] { return [...this.admittedRecipeUrls]; }
+
+  private checkpointSets(): Record<string, CheckpointSet> {
+    return { admittedRecipeUrls: this.admittedRecipeUrls, playwrightFallbackUrls: this.playwrightFallbackUrls,
+      nemligCategories: this.nemligCategories, nemligGroups: this.nemligGroups, nemligRecipes: this.nemligRecipes };
+  }
+
+  checkpointDelta(): SessionCheckpoint {
+    const sets: Record<string, string[]> = {};
+    for (const [name, set] of Object.entries(this.checkpointSets())) {
+      sets[name] = set.takeAdditions();
+    }
+    return { observation: structuredClone(this.observation), sets,
+      values: { helloFreshToken: this.helloFreshToken, madForFattigroeveBuildId: this.madForFattigroeveBuildId, nemligStamp: this.nemligStamp } };
+  }
+
   async handleResponse(
     response: DanishJsonLdResponse
   ): Promise<DanishJsonLdRoutingResult> {
     const budgeted = await this.requestBudget.handle(
       `${response.fetchMode}:${response.kind}:${response.url}`,
-      async () => this.processResponse(response)
+      async () => {
+        const before = structuredClone(this.observation);
+        const routes = await this.processResponse(response);
+        const differences = [
+          ["rejectedIncompleteCustom", "incomplete-custom-recipe"], ["rejectedMalformedCustom", "malformed-custom-payload"],
+          ["rejectedMalformedJsonLd", "malformed-json-ld"], ["rejectedMalformedWprm", "malformed-wprm"],
+        ] as const;
+        const reasons = differences.filter(([key]) => (this.observation[key] ?? 0) > (before[key] ?? 0));
+        if (reasons.length) await this.quarantine(response, {
+          format: reasons.some(([key]) => key === "rejectedMalformedJsonLd") ? "json-ld" : reasons.some(([key]) => key === "rejectedMalformedWprm") ? "wprm-api" : "custom",
+          reasons: reasons.map(([, reason]) => reason),
+          candidateCount: reasons.reduce((sum, [key]) => sum + (this.observation[key] ?? 0) - (before[key] ?? 0), 0),
+        });
+        return routes;
+      }
     );
     if (!budgeted.handled) {
       this.markPageCapReached();
       return emptyRoutes();
     }
-    if (budgeted.capReached) {
-      this.markPageCapReached();
-      return emptyRoutes();
-    }
+    if (budgeted.capReached) this.markPageCapReached();
     return budgeted.value;
   }
 
@@ -885,6 +936,8 @@ export class DanishJsonLdSourceSession {
       });
       try {
         const result = await this.store.upsertRecipeV2(document);
+        const counter = result.operation === "inserted" ? "insertedRecipes" : result.contentChanged === false ? "unchangedRecipes" : "changedRecipes";
+        this.observation[counter] = (this.observation[counter] ?? 0) + 1;
         this.observation.persistedRecipes =
           (this.observation.persistedRecipes ?? 0) + 1;
         this.emit("mongo-upsert", {
@@ -926,6 +979,9 @@ export class DanishJsonLdSourceSession {
     }
 
     const extraction = extractWprmRecipes(payload);
+    for (const rejected of extraction.rejectedCandidates) {
+      await this.quarantine(response, { ...rejected, format: "wprm-api", candidateCount: 1 });
+    }
     this.observation.rejectedIncompleteWprm =
       (this.observation.rejectedIncompleteWprm ?? 0) + extraction.incompleteCount;
     this.observation.rejectedMalformedWprm =
@@ -1032,6 +1088,8 @@ export class DanishJsonLdSourceSession {
       });
       try {
         const result = await this.store.upsertRecipeV2(document);
+        const counter = result.operation === "inserted" ? "insertedRecipes" : result.contentChanged === false ? "unchangedRecipes" : "changedRecipes";
+        this.observation[counter] = (this.observation[counter] ?? 0) + 1;
         this.observation.persistedRecipes =
           (this.observation.persistedRecipes ?? 0) + 1;
         this.emit("mongo-upsert", {
@@ -1301,6 +1359,9 @@ export class DanishJsonLdSourceSession {
     // terminal rendered extraction so rejection metrics and alerts do not
     // report the same upstream Recipe node twice.
     if (!fallbackReason) {
+      for (const rejected of extraction.rejectedCandidates) {
+        await this.quarantine(response, { ...rejected, format: "json-ld", candidateCount: 1 });
+      }
       this.observation.rejectedIncompleteJsonLd =
         (this.observation.rejectedIncompleteJsonLd ?? 0) +
         extraction.incompleteJsonLdCount;
@@ -1410,6 +1471,8 @@ export class DanishJsonLdSourceSession {
       });
       try {
         const result = await this.store.upsertRecipeV2(document);
+        const counter = result.operation === "inserted" ? "insertedRecipes" : result.contentChanged === false ? "unchangedRecipes" : "changedRecipes";
+        this.observation[counter] = (this.observation[counter] ?? 0) + 1;
         this.observation.persistedRecipes =
           (this.observation.persistedRecipes ?? 0) + 1;
         this.emit("mongo-upsert", {
@@ -1555,6 +1618,8 @@ export class DanishJsonLdSourceSession {
       });
       try {
         const result = await this.store.upsertRecipeV2(document);
+        const counter = result.operation === "inserted" ? "insertedRecipes" : result.contentChanged === false ? "unchangedRecipes" : "changedRecipes";
+        this.observation[counter] = (this.observation[counter] ?? 0) + 1;
         this.observation.persistedRecipes =
           (this.observation.persistedRecipes ?? 0) + 1;
         this.emit("mongo-upsert", {
@@ -1578,6 +1643,34 @@ export class DanishJsonLdSourceSession {
     return emptyRoutes();
   }
 
+  private async quarantine(response: DanishJsonLdResponse, input: {
+    format: "json-ld" | "wprm-api" | "custom";
+    rawRecipe?: Record<string, unknown>;
+    reasons: string[];
+    candidateCount: number;
+  }): Promise<void> {
+    if (!this.store.upsertRejectedCandidate) {
+      this.emit("quarantine-unavailable", { url: response.url, reasons: input.reasons });
+      return;
+    }
+    try {
+      await this.store.upsertRejectedCandidate({
+        candidateKey: hashRecipe({ source: this.source.id, run: this.crawlRunId, url: response.url,
+          content: input.rawRecipe ?? hashHtml(response.body), reasons: input.reasons }),
+        sourceId: this.source.id, pageUrl: response.loadedUrl ?? response.url,
+        crawlRunId: this.crawlRunId, extractedAt: new Date(), extractorVersion: EXTRACTOR_VERSION,
+        ...input,
+        ...(input.rawRecipe ? {} : { rawPayload: new Binary(gzipSync(Buffer.from(response.body))) }),
+        diagnosis: input.format === "custom" ? "extractor-rejected"
+          : input.rawRecipe ? "incomplete-structured-data" : "malformed-structured-data",
+      });
+      this.observation.quarantinedCandidates = (this.observation.quarantinedCandidates ?? 0) + input.candidateCount;
+    } catch (error) {
+      this.observation.mongoFailures = (this.observation.mongoFailures ?? 0) + 1;
+      throw new DanishJsonLdStoreFailure("Rejected candidate persistence failed", error);
+    }
+  }
+
   private admitRecipeUrls(urls: string[]): DanishJsonLdRequest[] {
     this.observation.discoveredRecipeCandidates =
       (this.observation.discoveredRecipeCandidates ?? 0) + urls.length;
@@ -1590,6 +1683,7 @@ export class DanishJsonLdSourceSession {
       const canonicalUrl = canonicalizeUrl(url);
       if (this.admittedRecipeUrls.has(canonicalUrl)) continue;
       this.admittedRecipeUrls.add(canonicalUrl);
+      this.observation.uniqueRecipeUrls = this.admittedRecipeUrls.size;
       requests.push({ kind: "recipe", url });
     }
     return requests;

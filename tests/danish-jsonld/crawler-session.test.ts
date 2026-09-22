@@ -1109,7 +1109,7 @@ describe("Danish JSON-LD source session", () => {
       </urlset>`,
     });
 
-    expect(routes.cheerioRequests).toEqual([]);
+    expect(routes.cheerioRequests.length).toBeGreaterThan(0); // Discovered work survives the cap for resume.
     expect(session.observation.discoveryComplete).toBe(false);
     expect(session.observation.pageCapReached).toBe(true);
     expect(session.outcome()).toEqual({

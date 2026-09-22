@@ -4,7 +4,8 @@
   "type": "module",
   "description": "Danish recipe web crawler",
   "scripts": {
-    "start": "tsx src/main.ts",
+    "start": "node --import tsx/esm src/scripts/crawl-danish-jsonld.ts",
+    "crawl:legacy": "tsx src/main.ts",
     "crawl:danish-jsonld": "tsx src/scripts/crawl-danish-jsonld.ts",
     "crawl:danish-wprm-pilot": "tsx src/scripts/crawl-danish-jsonld.ts --sources gastrofun,groedgrisen,ketoliv,madensverden,planteaederen",
     "migration:status": "node --import tsx/esm src/scripts/migration-status.ts",
@@ -25,7 +26,10 @@
     "report:runs": "tsx src/scripts/report-crawl-runs.ts",
     "smoke:crawl": "node --import tsx/esm src/scripts/smoke-crawl.ts",
     "diagnose:identity": "node --import tsx/esm src/scripts/diagnose-danish-jsonld-identity.ts --verify",
-    "postinstall": "playwright install --with-deps chromium"
+    "postinstall": "playwright install --with-deps chromium",
+    "report:health": "node --import tsx/esm src/scripts/source-health.ts",
+    "test:integration": "vitest run tests/integration",
+    "operations:checkpoints": "node --import tsx/esm src/scripts/crawl-checkpoints.ts"
   },
   "engines": {
     "node": ">=18.0.0"

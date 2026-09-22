@@ -33,11 +33,21 @@ class FakeV2RecipeCollection {
     };
   }
 
+  async findOneAndUpdate(
+    filter: Partial<StoredRecipeV2>,
+    update: { $set: Partial<StoredRecipeV2>; $setOnInsert?: Partial<StoredRecipeV2> },
+    options: { upsert?: boolean }
+  ): Promise<StoredRecipeV2 | null> {
+    const existing = await this.findOne(filter);
+    await this.updateOne(filter, update, options);
+    return existing;
+  }
+
   async updateOne(
     filter: Partial<StoredRecipeV2>,
-    update: { $set: Partial<StoredRecipeV2> },
+    update: { $set: Partial<StoredRecipeV2>; $setOnInsert?: Partial<StoredRecipeV2> },
     options?: { upsert?: boolean }
-  ): Promise<void> {
+  ): Promise<{ upsertedCount: number }> {
     const index = this.documents.findIndex((document) =>
       Object.entries(filter).every(
         ([key, value]) => document[key as keyof StoredRecipeV2] === value
@@ -46,8 +56,9 @@ class FakeV2RecipeCollection {
     if (index >= 0) {
       this.documents[index] = { ...this.documents[index], ...update.$set };
     } else if (options?.upsert) {
-      this.documents.push(update.$set);
+      this.documents.push({ ...update.$setOnInsert, ...update.$set } as StoredRecipeV2);
     }
+    return { upsertedCount: index < 0 && options?.upsert ? 1 : 0 };
   }
 }
 
@@ -192,11 +203,12 @@ describe("RecipeStore V2 persistence", () => {
 
     await expect(store.upsertRecipeV2(recipe())).resolves.toEqual({
       operation: "inserted",
+      contentChanged: true,
       contentMatches: [],
     });
     await expect(
       store.upsertRecipeV2(recipe({ crawlAttemptId: "attempt-2" }))
-    ).resolves.toEqual({ operation: "updated", contentMatches: [] });
+    ).resolves.toEqual({ operation: "updated", contentChanged: false, contentMatches: [] });
     await expect(
       store.upsertRecipeV2(
         recipe({
@@ -206,6 +218,7 @@ describe("RecipeStore V2 persistence", () => {
       )
     ).resolves.toEqual({
       operation: "inserted",
+      contentChanged: true,
       contentMatches: [
         { kind: "same-source", sourceId: "arla", sourceRecipeKey: "arla:one" },
       ],
@@ -220,6 +233,7 @@ describe("RecipeStore V2 persistence", () => {
       )
     ).resolves.toEqual({
       operation: "inserted",
+      contentChanged: true,
       contentMatches: [
         { kind: "cross-source", sourceId: "arla", sourceRecipeKey: "arla:one" },
         { kind: "cross-source", sourceId: "arla", sourceRecipeKey: "arla:two" },
@@ -240,6 +254,7 @@ describe("RecipeStore V2 persistence", () => {
     const recipesV2 = new FakeV2RecipeCollection();
     const contentMatches = new FakeContentMatchAuditCollection();
     const noOpCollection = { createIndex: vi.fn(async () => undefined) };
+    (store as any).rejectedCandidates = noOpCollection;
     (store as never as {
       pages: typeof noOpCollection;
       recipes: typeof noOpCollection;

@@ -1,6 +1,7 @@
 import { MongoClient, type Db, type Collection } from "mongodb";
 import type {
   CrawlRunDocument,
+  RejectedRecipeCandidate,
   DanishJsonLdCrawlRunDocument,
   PageDocument,
   RecipeDocument,
@@ -18,6 +19,7 @@ export class RecipeStore implements CrawlStore, RecipeDocumentV2Store {
   private pages!: Collection<PageDocument>;
   private recipes!: Collection<RecipeDocument>;
   private recipesV2!: Collection<RecipeDocumentV2>;
+  private rejectedCandidates!: Collection<RejectedRecipeCandidate>;
   private contentMatchAudits!: Collection<RecipeContentMatchAudit>;
   private crawlRuns!: Collection<CrawlRunDocument | DanishJsonLdCrawlRunDocument>;
 
@@ -38,6 +40,7 @@ export class RecipeStore implements CrawlStore, RecipeDocumentV2Store {
     this.recipesV2 = this.db.collection<RecipeDocumentV2>(
       MONGODB_CONFIG.collections.recipesV2
     );
+    this.rejectedCandidates = this.db.collection<RejectedRecipeCandidate>(MONGODB_CONFIG.collections.rejectedCandidates);
     this.contentMatchAudits = this.db.collection<RecipeContentMatchAudit>(
       MONGODB_CONFIG.collections.recipeContentMatches
     );
@@ -73,6 +76,10 @@ export class RecipeStore implements CrawlStore, RecipeDocumentV2Store {
       { unique: true }
     );
 
+    await this.rejectedCandidates.createIndex({ candidateKey: 1 }, { unique: true });
+    await this.rejectedCandidates.createIndex({ sourceId: 1, extractedAt: -1 });
+    await this.rejectedCandidates.createIndex({ extractedAt: 1 }, { expireAfterSeconds: crawlRunRetentionSeconds });
+    await this.crawlRuns.createIndex({ sourceIds: 1, finishedAt: -1 });
     await this.crawlRuns.createIndex({ startedAt: -1 });
     await this.crawlRuns.createIndex(
       { finishedAt: 1 },
@@ -115,21 +122,16 @@ export class RecipeStore implements CrawlStore, RecipeDocumentV2Store {
     recipe: Omit<RecipeDocumentV2, "_id">
   ): Promise<{
     operation: "inserted" | "updated";
+    contentChanged: boolean;
     contentMatches: RecipeContentMatch[];
   }> {
-    const existing = await this.recipesV2.findOne({
-      sourceRecipeKey: recipe.sourceRecipeKey,
-    });
-    await this.recipesV2.updateOne(
+    const { createdAt, ...mutableRecipe } = recipe;
+    // Read the pre-image atomically with the write so concurrent delivery cannot
+    // classify an unchanged record as newly inserted or overwrite its creation time.
+    const existing = await this.recipesV2.findOneAndUpdate(
       { sourceRecipeKey: recipe.sourceRecipeKey },
-      {
-        $set: {
-          ...recipe,
-          createdAt: existing?.createdAt ?? recipe.createdAt,
-          contentMatches: recipe.contentMatches,
-        },
-      },
-      { upsert: true }
+      { $set: mutableRecipe, $setOnInsert: { createdAt } },
+      { upsert: true, returnDocument: "before", includeResultMetadata: false }
     );
 
     const contentMatches = this.buildContentMatches(
@@ -144,8 +146,18 @@ export class RecipeStore implements CrawlStore, RecipeDocumentV2Store {
 
     return {
       operation: existing ? "updated" : "inserted",
+      contentChanged: !existing || existing.contentHash !== recipe.contentHash,
       contentMatches,
     };
+  }
+
+  async upsertRejectedCandidate(candidate: Omit<RejectedRecipeCandidate, "_id">): Promise<void> {
+    await this.rejectedCandidates.updateOne({ candidateKey: candidate.candidateKey }, { $set: candidate }, { upsert: true });
+  }
+
+  async recentDanishRecipeRuns(sourceIds: string[], limit = 1000): Promise<DanishJsonLdCrawlRunDocument[]> {
+    return this.crawlRuns.find({ kind: { $in: ["danish-jsonld-v2", "danish-wprm-v2", "danish-recipe-v2"] },
+      sourceIds: { $in: sourceIds } }).sort({ finishedAt: -1 }).limit(limit).toArray() as Promise<DanishJsonLdCrawlRunDocument[]>;
   }
 
   private buildContentMatches(

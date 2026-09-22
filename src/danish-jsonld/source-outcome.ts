@@ -1,3 +1,4 @@
+import type { WorkAccounting } from "./work-journal.js";
 import type {
   DanishJsonLdRunSummary,
   SourceOutcomeReason,
@@ -6,6 +7,20 @@ import type {
 
 export interface SourceRunObservation {
   sourceId: string;
+  workAccounting?: WorkAccounting;
+  collectionComplete?: boolean;
+  durationSeconds?: number;
+  interrupted?: boolean;
+  insertedRecipes?: number;
+  changedRecipes?: number;
+  unchangedRecipes?: number;
+  /** Responses with no transferred body, replayed through extraction and persistence. */
+  notModifiedResponses?: number;
+  /** Recipe pages reused within the explicitly selected refresh interval. */
+  cachedRecipePages?: number;
+  quarantinedCandidates?: number;
+  uniqueRecipeUrls?: number;
+  unaccountedRecipeCandidates?: number;
   persistedRecipes?: number;
   completedRequests?: number;
   failedRequests?: number;
@@ -82,6 +97,9 @@ export function createDanishJsonLdRunSummary(
 
 function hasIncompleteWork(observation: SourceRunObservation): boolean {
   return (
+    (observation.workAccounting?.pending ?? 0) > 0 ||
+    (observation.unaccountedRecipeCandidates ?? 0) > 0 ||
+    observation.interrupted === true ||
     (observation.failedRequests ?? 0) > 0 ||
     (observation.rejectedIncompleteJsonLd ?? 0) > 0 ||
     (observation.rejectedMalformedJsonLd ?? 0) > 0 ||
@@ -98,6 +116,8 @@ function hasIncompleteWork(observation: SourceRunObservation): boolean {
 
 function outcomeReasons(observation: SourceRunObservation): SourceOutcomeReason[] {
   const reasons: SourceOutcomeReason[] = [];
+  if ((observation.workAccounting?.pending ?? 0) > 0 || (observation.unaccountedRecipeCandidates ?? 0) > 0) reasons.push("unaccounted-requests");
+  if (observation.interrupted) reasons.push("interrupted");
   if ((observation.persistedRecipes ?? 0) > 0) reasons.push("recipes-persisted");
   if ((observation.failedRequests ?? 0) > 0) reasons.push("failed-requests");
   if ((observation.blockedRequests ?? 0) > 0) reasons.push("requests-blocked");
@@ -125,4 +145,10 @@ function outcomeReasons(observation: SourceRunObservation): SourceOutcomeReason[
   reasons.push(...(observation.discoveryFailureReasons ?? []));
   if (reasons.length === 0) reasons.push("no-recipe-candidates");
   return reasons.sort();
+}
+
+/** Strict CLI policy; the scheduler retains its explicit allowances for incomplete upstream recipes. */
+export function crawlExitCode(summary: DanishJsonLdRunSummary): number {
+  if (summary.sourceOutcomes.some((source) => source.outcomeReasons.includes("interrupted"))) return 130;
+  return summary.sourceOutcomes.length > 0 && summary.sourceOutcomes.every((source) => source.outcome === "succeeded") ? 0 : 1;
 }
