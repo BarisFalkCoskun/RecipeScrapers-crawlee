@@ -1064,7 +1064,9 @@ describe("Danish JSON-LD source registry", () => {
         startUrls: ["https://vegetariskhverdag.dk/opskrifter"],
         recipeUrlPatterns: ["^/\\d{4}/\\d{2}/[a-z0-9æøå-]+/?$"],
         fetchMode: "cheerio",
-        migrationState: "configured",
+        // Promoted 2026-09-23. Legacy discovered 20 of this site's 32 recipes;
+        // V2 discovered all 32 and each of the 12 extras was verified live.
+        migrationState: "shadow_passed",
         latestScrapyOutcome: "partial",
         latestCanary: "2026-08-19T16-23-14.879Z",
       });
