@@ -324,6 +324,26 @@ describe("Danish JSON-LD source registry", () => {
       .toMatch(/CORRECTION, 2026-09-20/u);
     expect(byId.get("starbucksathome")?.deferOrBlockReason)
       .toMatch(/pointed back at a service/u);
+    // starbucksathome publishes recipes under four URL shapes and the
+    // imported pattern matched one of them, so a run would have taken 34 of
+    // 45 and called discovery complete. Each shape is pinned by a live-checked
+    // example, and the flat pages that carry no Recipe node stay excluded.
+    {
+      const patterns = byId.get("starbucksathome")?.recipeUrlPatterns ?? [];
+      const matches = (url: string): boolean =>
+        patterns.some((pattern) => new RegExp(pattern, "u").test(url));
+      for (const slug of [
+        "/dk/opskrifter/caffe-americano",
+        "/dk/recipes/iced-cappuccino",
+        "/dk/recipe/iced-mocha",
+        "/dk/opskrift-iced-flat-white",
+      ]) {
+        expect(matches(`https://www.starbucksathome.com${slug}`)).toBe(true);
+      }
+      for (const slug of ["/dk/ristretto", "/dk/iskaffe", "/dk/cookies", "/dk/produkter/pike-place", "/dk/artikel/noget"]) {
+        expect(matches(`https://www.starbucksathome.com${slug}`)).toBe(false);
+      }
+    }
     // bbcgoodfood is the largest catalogue compared so far: 17351 records
     // matching on every material field. The 11 records legacy holds and it
     // does not are all stepless - ten roundup pages and one recipe the site
@@ -1044,7 +1064,9 @@ describe("Danish JSON-LD source registry", () => {
         startUrls: ["https://vegetariskhverdag.dk/opskrifter"],
         recipeUrlPatterns: ["^/\\d{4}/\\d{2}/[a-z0-9æøå-]+/?$"],
         fetchMode: "cheerio",
-        migrationState: "configured",
+        // Promoted 2026-09-23. Legacy discovered 20 of this site's 32 recipes;
+        // V2 discovered all 32 and each of the 12 extras was verified live.
+        migrationState: "shadow_passed",
         latestScrapyOutcome: "partial",
         latestCanary: "2026-08-19T16-23-14.879Z",
       });
