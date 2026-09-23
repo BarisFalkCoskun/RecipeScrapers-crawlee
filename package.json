@@ -24,6 +24,7 @@
     "test:watch": "vitest",
     "report:runs": "tsx src/scripts/report-crawl-runs.ts",
     "smoke:crawl": "node --import tsx/esm src/scripts/smoke-crawl.ts",
+    "diagnose:identity": "node --import tsx/esm src/scripts/diagnose-danish-jsonld-identity.ts --verify",
     "postinstall": "playwright install --with-deps chromium"
   },
   "engines": {

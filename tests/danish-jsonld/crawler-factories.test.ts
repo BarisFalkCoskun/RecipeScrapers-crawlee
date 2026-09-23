@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { createContext, runInContext } from "node:vm";
 import { ProxyConfiguration } from "crawlee";
+import type { CookieJar } from "tough-cookie";
 import {
   DANISH_JSONLD_ADDITIONAL_MIME_TYPES,
   DANISH_JSONLD_PLAYWRIGHT_BROWSER_POOL_OPTIONS,
@@ -8,7 +10,6 @@ import {
   createDanishJsonLdPlaywrightCrawler,
   resolveDanishJsonLdCrawlerSettings,
   danishJsonLdJitterMillis,
-  DANISH_JSONLD_WEBGL_INIT_SCRIPT,
   DANISH_JSONLD_BROWSER_USER_AGENT,
 } from "../../src/danish-jsonld/crawler-factories.js";
 import { DANISH_JSONLD_SOURCES } from "../../src/danish-jsonld/source-registry.js";
@@ -97,7 +98,10 @@ describe("Danish JSON-LD crawler factories", () => {
     const args = crawler.launchContext.launchOptions.args ?? [];
     const userAgentArg = args.find((arg) => arg.startsWith("--user-agent="));
     expect(userAgentArg).toBe(`--user-agent=${DANISH_JSONLD_BROWSER_USER_AGENT}`);
-    expect(DANISH_JSONLD_BROWSER_USER_AGENT).toMatch(/^Mozilla\/5\.0 \(X11; Linux x86_64\) .* Chrome\/\d+\.0\.0\.0 Safari\/537\.36$/u);
+    const platform = process.platform === "darwin" ? "Macintosh; Intel Mac OS X 10_15_7"
+      : process.platform === "win32" ? "Windows NT 10.0; Win64; x64" : "X11; Linux x86_64";
+    expect(DANISH_JSONLD_BROWSER_USER_AGENT).toContain(`(${platform})`);
+    expect(DANISH_JSONLD_BROWSER_USER_AGENT).toMatch(/ Chrome\/\d+\.0\.0\.0 Safari\/537\.36$/u);
     expect(DANISH_JSONLD_BROWSER_USER_AGENT).not.toMatch(/Headless|Chrome\/107/u);
     expect(crawler.browserPool.useFingerprints).toBe(false);
     // The window frame makes the outer window larger than a same-sized screen.
@@ -106,11 +110,25 @@ describe("Danish JSON-LD crawler factories", () => {
     expect(screen && windowArg[0] + 16 <= screen.width && windowArg[1] + 40 <= screen.height).toBe(true);
   });
 
-  it("reports a GPU instead of a software rasterizer", () => {
-    // A server has no GPU, so WebGL named llvmpipe or SwiftShader.
-    expect(DANISH_JSONLD_WEBGL_INIT_SCRIPT).toContain("0x9246");
-    expect(DANISH_JSONLD_WEBGL_INIT_SCRIPT).not.toMatch(/llvmpipe|SwiftShader/u);
-    expect(DANISH_JSONLD_WEBGL_INIT_SCRIPT).toContain("WebGL2RenderingContext");
+  it("preserves both native WebGL implementations under the default browser hooks", async () => {
+    const source = DANISH_JSONLD_SOURCES.find((entry) => entry.id === "arla")!;
+    const crawler = createDanishJsonLdPlaywrightCrawler({
+      source: { ...source, requestSettings: { ...source.requestSettings, delaySeconds: 0 } },
+      requestHandler,
+    }) as unknown as { preNavigationHooks: Array<(context: unknown) => Promise<void>> };
+    const vm = createContext({ navigator: {} });
+    runInContext(`
+      class WebGLRenderingContext { getParameter() { return 'native renderer'; } }
+      class WebGL2RenderingContext { getParameter() { return 'native renderer 2'; } }
+      const window = { WebGLRenderingContext, WebGL2RenderingContext };
+    `, vm);
+    const before = runInContext("[WebGLRenderingContext.prototype.getParameter, WebGL2RenderingContext.prototype.getParameter]", vm);
+    for (const hook of crawler.preNavigationHooks) {
+      await hook({ page: { addInitScript: async (script: string) => { runInContext(script, vm); } } });
+    }
+    const after = runInContext("[WebGLRenderingContext.prototype.getParameter, WebGL2RenderingContext.prototype.getParameter]", vm);
+    expect(after[0]).toBe(before[0]);
+    expect(after[1]).toBe(before[1]);
   });
 
   it("keeps caller launch args alongside the automation hardening", () => {
@@ -172,7 +190,7 @@ describe("Danish JSON-LD crawler factories", () => {
     }
   });
 
-  type HookOptions = { headers?: Record<string, unknown>; useHeaderGenerator?: boolean };
+  type HookOptions = { headers?: Record<string, unknown>; useHeaderGenerator?: boolean; cookieJar?: CookieJar };
   type Hooked = {
     preNavigationHooks: Array<(context: unknown, options: HookOptions) => Promise<void>>;
     postNavigationHooks: Array<(context: unknown) => Promise<void>>;
@@ -217,30 +235,60 @@ describe("Danish JSON-LD crawler factories", () => {
     expect(String(first.headers?.["sec-ch-ua"])).toContain(`v="${version}"`);
   });
 
-  it("never draws an identity whose client hints contradict its user agent", () => {
-    // About 1 draw in 80 did: no sec-ch-ua, a "MacOS" platform Chrome never
-    // sends, or a sec-ch-ua version different from the user agent's.
-    // Each identity builds its own generator, so 100 draws is the affordable sample.
-    for (let draw = 0; draw < 100; draw += 1) {
+  it("pins the HTTP identity and client hints to the supported Impit profile", () => {
+    const crawler = crawlerFor("arla") as unknown as { httpClient: { impitOptions: { browser: string } } };
+    expect(crawler.httpClient.impitOptions.browser).toBe("chrome151");
+    for (let draw = 0; draw < 3; draw += 1) {
       const headers = createDanishJsonLdBrowserIdentity();
       const major = headers["user-agent"]?.match(/Chrome\/(\d+)/u)?.[1];
+      expect(major).toBe("151");
       expect(headers["sec-ch-ua"]).toContain(`v="${major}"`);
       expect(headers["sec-ch-ua-mobile"]).toBe("?0");
-      expect(headers["sec-ch-ua-platform"]).toBe(/Windows NT/u.test(headers["user-agent"] ?? "") ? '"Windows"' : '"macOS"');
+      expect(headers["sec-ch-ua-platform"]).toBe('"Windows"');
     }
-  }, 60_000);
+  });
+
+  it("prevents case-insensitive request and hook identity overrides without dropping source headers", async () => {
+    const source = DANISH_JSONLD_SOURCES.find((entry) => entry.id === "arla")!;
+    const crawler = createDanishJsonLdCheerioCrawler({
+      source: { ...source, requestSettings: { ...source.requestSettings, delaySeconds: 0 } },
+      requestHandler,
+      crawlerOptions: { preNavigationHooks: [async (_context, options) => {
+        options.headers = { "uSeR-aGeNt": "Firefox/2", "Sec-CH-UA-Platform": '"Linux"', "SEC-CH-UA-FULL-VERSION-LIST": '"Chromium";v="2.0.0.0"', Referer: "https://source.example/" };
+      }] },
+    }) as unknown as Hooked;
+    const request = { url: "https://www.arla.dk/a", headers: {
+      "User-Agent": "Firefox/1", "Sec-CH-UA": '"Firefox";v="1"',
+      "Sec-CH-UA-Mobile": "?1", "SEC-CH-UA-ARCH": '"arm"',
+      Accept: "application/ld+json", "X-Source": "preserved", Authorization: "test-only-fixture",
+    } };
+    const options: HookOptions = {};
+    for (const hook of crawler.preNavigationHooks) await hook({ request }, options);
+    // This is Crawlee's final merge before the HTTP client normalizes casing.
+    const headers = new Headers({ ...request.headers, ...options.headers } as Record<string, string>);
+    expect(headers.get("user-agent")).toBe(createDanishJsonLdBrowserIdentity()["user-agent"]);
+    expect(headers.get("sec-ch-ua")).toBe(createDanishJsonLdBrowserIdentity()["sec-ch-ua"]);
+    expect(headers.get("sec-ch-ua-platform")).toBe('"Windows"');
+    expect(headers.get("sec-ch-ua-mobile")).toBe("?0");
+    expect(headers.has("sec-ch-ua-full-version-list")).toBe(false);
+    expect(headers.has("sec-ch-ua-arch")).toBe(false);
+    expect(headers.get("accept")).toBe("application/ld+json");
+    expect(headers.get("x-source")).toBe("preserved");
+    expect(headers.get("authorization")).toBe("test-only-fixture");
+    expect(headers.get("referer")).toBe("https://source.example/");
+  });
 
   it("sends back the cookies a site set", async () => {
-    // The runner does not use Crawlee's session pool, and a jar handed to got
-    // is bypassed by Crawlee's streaming request path, so no cookie was ever
-    // returned - 0 of 79 in a measured run.
+    // The Impit path receives the shared jar so cookies are recomputed on each
+    // redirect hop. A real wire-level test covers request emission and redirects.
     const crawler = crawlerFor("arla");
     await navigate(crawler, "https://www.arla.dk/a", ["visitor=abc; Path=/", "consent=yes; Path=/"]);
     const next = await navigate(crawler, "https://www.arla.dk/b");
-    expect(String(next.headers?.Cookie)).toContain("visitor=abc");
-    expect(String(next.headers?.Cookie)).toContain("consent=yes");
+    const sent = await next.cookieJar?.getCookieString("https://www.arla.dk/b");
+    expect(sent).toContain("visitor=abc");
+    expect(sent).toContain("consent=yes");
     const elsewhere = await navigate(crawler, "https://example.com/");
-    expect(elsewhere.headers?.Cookie).toBeUndefined();
+    expect(await elsewhere.cookieJar?.getCookieString("https://example.com/")).toBe("");
   });
 
   it("accepts the same dynamic proxy configuration for Cheerio and Playwright", () => {

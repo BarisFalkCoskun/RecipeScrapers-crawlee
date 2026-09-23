@@ -203,6 +203,25 @@ describe("Mullvad relay provider", () => {
     expect(verifyRelay).toHaveBeenCalledOnce();
   });
 
+  it("forgets completed request relay history without closing the healthy site lease", async () => {
+    let now = 1_000;
+    const { provider, closed } = createProvider({
+      country: "dk", relays: RELAYS.slice(0, 2), now: () => now,
+    });
+    await provider.initialize();
+    const first = await provider.acquire("site", "fixture.invalid");
+    const second = await provider.rotate("site", "fixture.invalid", "scope");
+    await provider.completeRequest("site");
+    expect(await provider.acquire("site", "fixture.invalid")).toEqual(second);
+    expect(closed).toEqual(["dk-cph-wg-001:1"]);
+
+    now += 60_001;
+    const laterRequest = await provider.rotate("site", "fixture.invalid", "scope");
+    expect(laterRequest?.relayLabel).toBe(first?.relayLabel);
+    await provider.cleanup();
+    expect(closed).toHaveLength(3);
+  });
+
   it("does not lease the same relay to concurrent request sessions", async () => {
     const { provider } = createProvider({ country: "dk" });
     await provider.initialize();

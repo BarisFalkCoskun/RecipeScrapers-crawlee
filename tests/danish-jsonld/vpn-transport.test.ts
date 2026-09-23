@@ -261,6 +261,34 @@ describe("Mullvad VPN transport", () => {
     });
   });
 
+  it("allows each request its own three rotations while retaining one site lease", async () => {
+    const relays = Array.from({ length: 14 }, (_, index) => ({
+      ...RELAYS[0], hostname: `dk-cph-wg-${100 + index}`,
+    }));
+    const { transport } = createTransport(relays);
+    const sessionId = "vpn-whole-site";
+    await transport.initialize();
+    for (let index = 0; index < 4; index += 1) {
+      const requestId = `request-${index}`;
+      await transport.proxyConfiguration.newUrl("ignored", {
+        request: requestWithSession(sessionId),
+      });
+      for (let rotation = 0; rotation < 3; rotation += 1) {
+        await expect(transport.handleResponse({
+          sessionId, requestId, statusCode: 429, body: "rate limited",
+        })).resolves.toMatchObject({ rotated: true, exhausted: false });
+      }
+      const retained = await transport.proxyConfiguration.newUrl("ignored", {
+        request: requestWithSession(sessionId),
+      });
+      await transport.completeRequest(sessionId, requestId);
+      await expect(transport.proxyConfiguration.newUrl("ignored", {
+        request: requestWithSession(sessionId),
+      })).resolves.toBe(retained);
+    }
+    await transport.cleanup();
+  });
+
   it("serializes concurrent rotation accounting at the three-rotation cap", async () => {
     const { transport, events } = createTransport();
     await transport.initialize();
@@ -326,7 +354,7 @@ describe("Mullvad VPN transport", () => {
     await transport.release("vpn-never-leased");
 
     expect(events.filter((event) =>
-      event.event === "vpn-request-lease-released"
+      event.event === "vpn-site-lease-released"
     )).toHaveLength(0);
   });
 

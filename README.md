@@ -7,6 +7,7 @@ Recipe crawling pipeline built on Crawlee, with Cheerio-first crawling, lazy Pla
 - `npm run build`: type-check the project.
 - `npm test`: run the unit and storage tests.
 - `npm run smoke:crawl`: run a hermetic end-to-end crawl against a local fixture site. This exercises sitemap ingestion, TTL skips, Cheerio discovery, Playwright fallback, metrics, and crawl-run persistence.
+- `npm run diagnose:identity`: verify the Danish HTTP identity against its Impit profile and compare native/browser WebGL on a loopback fixture. Requires the bundled Chromium; contacts no recipe sites.
 - `npm run report:runs`: print recent `crawl_runs` summaries from Mongo.
 - `npm run migration:readiness`: audit every legacy Danish command and fail
   until its effective Crawlee source is at `cutover` and the operational gates
@@ -63,6 +64,20 @@ before changing any source to `cutover`.
   - `PLAYWRIGHT_WAIT_FOR_LOAD_STATE_TIMEOUT_MS`
 
 ## Operations
+
+The dedicated Danish runner keeps one session per source attempt: one healthy
+VPN lease, a cookie jar shared by HTTP and browser requests, and one request in
+flight. The lease closes at source completion, failure, or page cap. Relay changes
+clear the jar and retire affected browsers; retry limits remain per request.
+Serialization prevents one request from rotating a relay while another uses it,
+and may reduce throughput for sources previously configured above concurrency one.
+
+HTTP uses the explicit Impit `chrome151` profile with matching headers. Rendered
+pages advertise Playwright's actual bundled Chromium version and host platform;
+these are distinct transport profiles, not an identical fingerprint across the
+HTTP/browser transition. The browser preserves native WebGL behavior. Upgrade
+the HTTP profile and headers together, then rerun `npm run diagnose:identity`.
+See [the implementation and validation notes](docs/danish-session-identity.md).
 
 - Use `npm run smoke:crawl` in CI or before landing crawler changes that affect queueing, routing, fallback, or recrawl behavior.
 - Use `npm run report:runs` to compare crawl yield, skip counts, and fallback rate across recent runs.

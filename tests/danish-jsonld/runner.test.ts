@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { randomUUID } from "node:crypto";
 import { Readable } from "node:stream";
-import { CheerioCrawler, Configuration, ProxyConfiguration, RequestQueue } from "crawlee";
+import { CheerioCrawler, Configuration, PlaywrightCrawler, ProxyConfiguration, RequestQueue, type PlaywrightCrawlingContext } from "crawlee";
 import {
   DANISH_JSONLD_OBSERVED_HTTP_ERROR_STATUS_CODES,
   cleanupDanishJsonLdAttemptQueues,
@@ -20,7 +20,8 @@ import {
 import { createDanishJsonLdCrawlSelection } from "../../src/danish-jsonld/source-selection.js";
 import type { CrawlStore, RecipeDocumentV2Store } from "../../src/storage/store.js";
 import type { DanishJsonLdSource } from "../../src/danish-jsonld/source-registry.js";
-import type { DanishJsonLdVpnTransport } from "../../src/danish-jsonld/vpn-transport.js";
+import { MullvadVpnTransport, type DanishJsonLdVpnTransport } from "../../src/danish-jsonld/vpn-transport.js";
+import { MullvadRelayProvider } from "../../src/danish-jsonld/mullvad-relay-provider.js";
 
 describe("dedicated Danish JSON-LD runner", () => {
   it("parses only contextual HTTP status codes from failures", () => {
@@ -547,13 +548,84 @@ describe("dedicated Danish JSON-LD runner", () => {
         event: "http-response",
         data: expect.objectContaining({ statusCode: 403, snippet: "access denied fixture" }),
       }));
+      expect(diagnostics).toContainEqual(expect.objectContaining({
+        event: "site-session-reset",
+        data: expect.objectContaining({ reason: "http-403", generation: 1 }),
+      }));
     } finally {
       requestFunction.mockRestore();
       configuration.set("memoryMbytes", previousMemoryMbytes);
     }
   });
 
-  it("releases both handled and unprocessed request leases when the source cap stops the crawl", async () => {
+  it.each([true, false])("uses settled browser status and resets only invalidated relay state (cleared=%s)", async (cleared) => {
+    const challenge = readFileSync(
+      new URL("../fixtures/simply-waf-browser-check.html", import.meta.url), "utf-8"
+    );
+    const diagnostics: Array<{ event: string; data: Record<string, unknown> }> = [];
+    const browserContext = {
+      clearCookies: async () => undefined,
+      addCookies: async () => undefined,
+      cookies: async () => [],
+    };
+    const run = vi.spyOn(PlaywrightCrawler.prototype, "run").mockImplementation(async function () {
+      const request = await this.requestQueue!.fetchNextRequest();
+      if (!request) return {} as never;
+      let reads = 0;
+      const context = {
+        request,
+        page: {
+          content: async () => cleared && reads++ === 0 ? challenge : cleared ? "<html></html>" : "access denied fixture",
+          waitForTimeout: async () => undefined,
+          context: () => browserContext,
+        },
+        response: { status: () => 403, allHeaders: async () => ({}) },
+      } as unknown as PlaywrightCrawlingContext;
+      await (this as unknown as { userProvidedRequestHandler: (context: PlaywrightCrawlingContext) => Promise<void> }).userProvidedRequestHandler(context);
+      await this.requestQueue!.markRequestHandled(request);
+      return {} as never;
+    });
+    const handleResponse = vi.fn(async (input: { statusCode: number }) => ({
+      rotated: false, eligible: input.statusCode === 403, exhausted: input.statusCode === 403,
+      ...(input.statusCode === 403 ? { reason: "http-403" } : {}),
+    }));
+    const release = vi.fn(async () => undefined);
+    const completeRequest = vi.fn(async () => undefined);
+    const vpnTransport: DanishJsonLdVpnTransport = {
+      proxyConfiguration: new ProxyConfiguration({ newUrlFunction: async () => "http://127.0.0.1:4314" }),
+      initialize: async () => undefined, cleanup: async () => undefined,
+      handleResponse,
+      handleFailure: async () => ({ rotated: false, eligible: false, exhausted: false }),
+      completeRequest, release,
+    };
+    const source: DanishJsonLdSource = {
+      id: "settled-status-fixture", domain: "fixture.invalid", allowedDomains: ["fixture.invalid"],
+      legacySpider: "SettledStatusFixtureSpider", legacyFamily: "JsonLdListingSpider",
+      discovery: "listing", sitemapUrls: [], startUrls: ["https://fixture.invalid/listing"],
+      recipeUrlPatterns: ["/opskrifter/"], fetchMode: "playwright",
+      requestSettings: { delaySeconds: 0, rateLimitPerMinute: null, maxConcurrency: 1, maxRetries: 0 },
+      requireCompleteJsonLd: true, migrationState: "configured", latestScrapyOutcome: "not_audited",
+    };
+    try {
+      await executeDanishJsonLdSource({
+        source, store: {} as CrawlStore & RecipeDocumentV2Store,
+        crawlRunId: "settled-status-run", crawlAttemptId: `settled-status-${randomUUID()}`,
+        maxPages: 2, vpnTransport, diagnosticSink: (event) => diagnostics.push(event),
+      });
+      expect(handleResponse.mock.calls[0][0].statusCode).toBe(cleared ? 200 : 403);
+      expect(diagnostics.filter((event) => event.event === "site-session-reset")).toHaveLength(cleared ? 0 : 1);
+      expect(completeRequest).toHaveBeenCalledOnce();
+      expect(release).toHaveBeenCalledOnce();
+    } finally {
+      run.mockRestore();
+    }
+  });
+
+  it.each([
+    { maxPages: 1, abort: false },
+    { maxPages: 5, abort: false },
+    { maxPages: 5, abort: true },
+  ])("keeps one source lease until final cleanup (cap=$maxPages, abort=$abort)", async ({ maxPages, abort }) => {
     const configuration = Configuration.getGlobalConfig();
     const previousMemoryMbytes = configuration.get("memoryMbytes");
     configuration.set("memoryMbytes", 1_024);
@@ -575,7 +647,14 @@ describe("dedicated Danish JSON-LD runner", () => {
       complete: true,
       url: "https://fixture.invalid/listing-a",
     }));
+    const originalRun = CheerioCrawler.prototype.run;
+    const run = abort ? vi.spyOn(CheerioCrawler.prototype, "run").mockImplementation(async function (...args) {
+      await originalRun.apply(this, args);
+      throw new Error("fixture source abort");
+    }) : undefined;
     const release = vi.fn(async () => undefined);
+    const sessions: string[] = [];
+    const diagnostics: Array<{ event: string; data: Record<string, unknown> }> = [];
     const noRotation = async () => ({
       rotated: false,
       eligible: false,
@@ -583,7 +662,11 @@ describe("dedicated Danish JSON-LD runner", () => {
     });
     const vpnTransport: DanishJsonLdVpnTransport = {
       proxyConfiguration: new ProxyConfiguration({
-        newUrlFunction: async () => "http://127.0.0.1:4312",
+        newUrlFunction: async (_sessionId, options) => {
+          expect(release).not.toHaveBeenCalled();
+          sessions.push(String(options?.request?.userData["vpnSessionId"]));
+          return "http://127.0.0.1:4312";
+        },
       }),
       initialize: async () => undefined,
       cleanup: async () => undefined,
@@ -617,33 +700,43 @@ describe("dedicated Danish JSON-LD runner", () => {
     };
 
     try {
-      await executeDanishJsonLdSource({
+      const execution = executeDanishJsonLdSource({
         source,
         store: {} as CrawlStore & RecipeDocumentV2Store,
         crawlRunId: "cap-release-run",
         crawlAttemptId: `cap-release-${randomUUID()}`,
-        maxPages: 1,
+        maxPages,
         vpnTransport,
+        diagnosticSink: (event) => diagnostics.push(event),
       });
 
-      expect(requestFunction).toHaveBeenCalledOnce();
-      expect(release).toHaveBeenCalledTimes(2);
-      expect(new Set(release.mock.calls.map(([sessionId]) => sessionId)).size).toBe(2);
+      if (abort) await expect(execution).rejects.toThrow("fixture source abort");
+      else await execution;
+
+      expect(requestFunction).toHaveBeenCalledTimes(maxPages === 1 ? 1 : 2);
+      expect(new Set(sessions).size).toBe(1);
+      expect(release).toHaveBeenCalledOnce();
+      expect(release).toHaveBeenCalledWith(sessions[0]);
     } finally {
+      run?.mockRestore();
       requestFunction.mockRestore();
       configuration.set("memoryMbytes", previousMemoryMbytes);
     }
   });
 
-  it("releases the request lease after a terminal transport failure", async () => {
+  it.each([
+    { label: "terminal proxy failure", maxRetries: 0, message: "SOCKS connection refused", attempts: 1, relayCount: 2, reason: "proxy-failure" },
+    { label: "repeated transport failure", maxRetries: 1, message: "fixture socket failed", attempts: 2, relayCount: 2, reason: "repeated-transport-failure" },
+    { label: "exhaustion before terminal handler", maxRetries: 1, message: "SOCKS connection refused", attempts: 1, relayCount: 1, reason: "proxy-failure" },
+  ])("accounts for $label once per failed attempt before final lease cleanup", async ({ maxRetries, message, attempts, relayCount, reason }) => {
     const configuration = Configuration.getGlobalConfig();
     const previousMemoryMbytes = configuration.get("memoryMbytes");
     configuration.set("memoryMbytes", 1_024);
-    const transportError = Object.assign(new Error("fixture socket failed"), {
+    const transportError = Object.assign(new Error(message), {
       code: "ECONNRESET",
     });
     transportError.stack = [
-      "Error: fixture socket failed",
+      `Error: ${message}`,
       "    at executeRequest (/srv/recipe/runner.ts:281:15)",
     ].join("\n");
     const requestFunction = vi.spyOn(
@@ -652,22 +745,24 @@ describe("dedicated Danish JSON-LD runner", () => {
       },
       "_requestFunction"
     ).mockRejectedValue(transportError);
-    const release = vi.fn(async () => undefined);
-    const noRotation = async () => ({
-      rotated: false,
-      eligible: false,
-      exhausted: false,
+    const closed: number[] = [];
+    let opened = 0;
+    const provider = new MullvadRelayProvider({
+      fetchRelays: async () => Array.from({ length: relayCount }, (_, index) => ({
+        hostname: `dk-fixture-${index}`, country_code: "dk", active: true,
+        type: "wireguard", socks_name: `10.64.0.${index + 1}`, socks_port: 1080,
+      })),
+      readCache: async () => [], writeCache: async () => undefined,
+      verifyRelay: async (relay) => ({ mullvadExitIp: true, countryCode: relay.country_code, hostname: relay.hostname }),
+      openBridge: async () => {
+        const sequence = ++opened;
+        return { proxyUrl: `http://127.0.0.1:${4400 + sequence}`, close: async () => { closed.push(sequence); } };
+      },
     });
-    const vpnTransport: DanishJsonLdVpnTransport = {
-      proxyConfiguration: new ProxyConfiguration({
-        newUrlFunction: async () => "http://127.0.0.1:4313",
-      }),
-      initialize: async () => undefined,
-      cleanup: async () => undefined,
-      handleResponse: noRotation,
-      handleFailure: noRotation,
-      release,
-    };
+    const vpnTransport = new MullvadVpnTransport({ provider });
+    const release = vi.spyOn(vpnTransport, "release");
+    const handleFailure = vi.spyOn(vpnTransport, "handleFailure");
+    await vpnTransport.initialize();
     const diagnostics: Array<{ event: string; data: Record<string, unknown> }> = [];
     const source: DanishJsonLdSource = {
       id: "terminal-release-fixture",
@@ -684,7 +779,7 @@ describe("dedicated Danish JSON-LD runner", () => {
         delaySeconds: 0,
         rateLimitPerMinute: null,
         maxConcurrency: 1,
-        maxRetries: 0,
+        maxRetries,
       },
       requireCompleteJsonLd: true,
       migrationState: "configured",
@@ -702,13 +797,20 @@ describe("dedicated Danish JSON-LD runner", () => {
         diagnosticSink: (event) => diagnostics.push(event),
       });
 
-      expect(requestFunction).toHaveBeenCalledOnce();
+      expect(requestFunction).toHaveBeenCalledTimes(attempts);
+      expect(handleFailure).toHaveBeenCalledTimes(attempts);
+      expect(opened).toBe(relayCount);
+      expect(closed).toEqual(Array.from({ length: relayCount }, (_, index) => index + 1));
+      expect(diagnostics.filter((event) => event.event === "site-session-reset")).toEqual([
+        expect.objectContaining({ data: expect.objectContaining({ reason, generation: 1 }) }),
+      ]);
       expect(release).toHaveBeenCalledOnce();
       expect(diagnostics).toContainEqual(expect.objectContaining({
         event: "request-failed",
         data: expect.objectContaining({ statusCode: "undefined" }),
       }));
     } finally {
+      await vpnTransport.cleanup();
       requestFunction.mockRestore();
       configuration.set("memoryMbytes", previousMemoryMbytes);
     }

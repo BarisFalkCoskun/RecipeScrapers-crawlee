@@ -3,6 +3,7 @@ import {
   log,
   type CheerioCrawlingContext,
   type PlaywrightCrawlingContext,
+  type Request,
 } from "crawlee";
 import type { RecipeDocumentV2Store, CrawlStore } from "../storage/store.js";
 import type { DanishJsonLdRunSummary, SourceRunOutcomeSummary } from "../types.js";
@@ -31,10 +32,12 @@ import {
   VpnRotationRetryError,
   isVpnRelayPoolExhaustedError,
   requestVpnSessionId,
+  siteVpnSessionId,
   type DanishJsonLdVpnTransport,
 } from "./vpn-transport.js";
 import { createDrListRequest } from "../custom/dr.js";
 import { looksLikeBrowserCheckDocument } from "./discovery.js";
+import { DanishJsonLdSiteSession } from "./site-session.js";
 
 export interface DanishJsonLdCrawlSelection extends DanishJsonLdCrawlOptions {
   sourceIds: string[];
@@ -303,16 +306,51 @@ export async function executeDanishJsonLdSource(
       }),
   });
   const session = new DanishJsonLdSourceSession({ ...input, diagnosticSink });
-  const sourceVpnSessions = new Set<string>();
+  const siteSession = new DanishJsonLdSiteSession({ diagnosticSink });
+  const sourceVpnSessionId = input.vpnTransport
+    ? siteVpnSessionId(input.source.id, input.crawlAttemptId)
+    : undefined;
   const ownedQueues: DanishJsonLdAttemptQueue[] = [];
-  const releaseVpnRequest = async (
+  const completeVpnRequest = async (
     userData: Record<string, unknown>
   ): Promise<void> => {
     if (!input.vpnTransport) return;
     const sessionId = vpnSessionId(userData);
-    if (!sourceVpnSessions.has(sessionId)) return;
-    await input.vpnTransport.release(sessionId);
-    sourceVpnSessions.delete(sessionId);
+    if (userData["vpnRequestCompleted"] === true) return;
+    const requestId = vpnRequestId(userData);
+    await input.vpnTransport.completeRequest?.(sessionId, requestId);
+    userData["vpnRequestCompleted"] = true;
+    diagnosticSink(createBoundedDiagnostic("vpn-session-lifecycle", {
+      sourceId: input.source.id,
+      sessionId,
+      requestId,
+      reason: "request-terminal",
+    }));
+  };
+  const handleVpnFailure = async (
+    request: Pick<Request, "userData" | "retryCount" | "errorMessages" | "noRetry">,
+    error: Error
+  ): Promise<boolean> => {
+    const relayPoolExhausted = isVpnRelayPoolExhaustion(error, request.errorMessages);
+    if (
+      !input.vpnTransport ||
+      request.userData["vpnFailureHandledAtRetryCount"] === request.retryCount
+    ) return relayPoolExhausted;
+    // Crawlee skips errorHandler on the last attempt, but can call both hooks
+    // when errorHandler sets noRetry. Account for each failed attempt once.
+    request.userData["vpnFailureHandledAtRetryCount"] = request.retryCount;
+    const rotation = shouldRotateRelayOnFailure(error)
+      ? await input.vpnTransport.handleFailure({
+          sessionId: vpnSessionId(request.userData),
+          requestId: vpnRequestId(request.userData),
+          error,
+        })
+      : undefined;
+    if (rotation?.rotated || rotation?.exhausted || relayPoolExhausted) {
+      await siteSession.reset(rotation?.reason ?? "vpn-relay-pool-exhausted");
+    }
+    if (rotation?.exhausted || relayPoolExhausted) request.noRetry = true;
+    return relayPoolExhausted;
   };
   try {
   const queueKey = sanitizeStorageKey(input.crawlAttemptId);
@@ -334,14 +372,20 @@ export async function executeDanishJsonLdSource(
       if (batch.length === 0) return;
       await queue.addRequestsBatched(
       batch.map((request) => {
-        const requestSessionId = input.vpnTransport
+        const requestId = input.vpnTransport
           ? requestVpnSessionId(
               input.source.id,
               `${fetchMode}:${request.kind}`,
-              request.url
+              request.uniqueKey ?? request.url
             )
           : undefined;
-        if (requestSessionId) sourceVpnSessions.add(requestSessionId);
+        if (sourceVpnSessionId) diagnosticSink(createBoundedDiagnostic("vpn-session-lifecycle", {
+          sourceId: input.source.id,
+          sessionId: sourceVpnSessionId,
+          requestId,
+          fetchMode,
+          reason: "request-admitted",
+        }));
         return {
           url: request.url,
           uniqueKey: request.uniqueKey ?? `${request.kind}:${request.url}`,
@@ -353,7 +397,9 @@ export async function executeDanishJsonLdSource(
             kind: request.kind,
             sourceId: input.source.id,
             ...(request.requestData ? { requestData: request.requestData } : {}),
-            ...(requestSessionId ? { vpnSessionId: requestSessionId } : {}),
+            ...(sourceVpnSessionId
+              ? { vpnSessionId: sourceVpnSessionId, vpnRequestId: requestId }
+              : {}),
           },
         };
       }),
@@ -382,6 +428,7 @@ export async function executeDanishJsonLdSource(
 
   const cheerioCrawler = createDanishJsonLdCheerioCrawler({
     source: input.source,
+    siteSession,
     ...(input.vpnTransport
       ? { proxyConfiguration: input.vpnTransport.proxyConfiguration }
       : {}),
@@ -415,16 +462,20 @@ export async function executeDanishJsonLdSource(
             ...requestData(context.request.userData),
           }],
         });
-        await releaseVpnRequest(context.request.userData);
+        await completeVpnRequest(context.request.userData);
         return;
       }
       const rotation = input.vpnTransport
         ? await input.vpnTransport.handleResponse({
             sessionId: vpnSessionId(context.request.userData),
-            statusCode: context.response.statusCode ?? 200,
+            requestId: vpnRequestId(context.request.userData),
+            statusCode: response.statusCode,
             body,
           })
         : undefined;
+      if (rotation?.rotated || rotation?.exhausted) {
+        await siteSession.reset(rotation.reason ?? "vpn-relay-changed");
+      }
       if (rotation?.exhausted) context.request.noRetry = true;
       if (rotation?.rotated) {
         session.recordRetriedResponseDiagnostic(response);
@@ -434,7 +485,7 @@ export async function executeDanishJsonLdSource(
       }
       const routes = await session.handleResponse(response);
       await route(routes);
-      await releaseVpnRequest(context.request.userData);
+      await completeVpnRequest(context.request.userData);
     },
     crawlerOptions: {
       requestQueue: cheerioQueue,
@@ -448,17 +499,7 @@ export async function executeDanishJsonLdSource(
         { request }: CheerioCrawlingContext,
         error: Error
       ) => {
-        const relayPoolExhausted = isVpnRelayPoolExhaustion(
-          error,
-          request.errorMessages
-        );
-        const rotation = input.vpnTransport
-          ? await input.vpnTransport.handleFailure({
-              sessionId: vpnSessionId(request.userData),
-              error,
-            })
-          : undefined;
-        if (rotation?.exhausted || relayPoolExhausted) request.noRetry = true;
+        await handleVpnFailure(request, error);
         const allowRetry = await session.recordRetry({
           fetchMode: "cheerio",
           kind: requestKind(request.label, request.userData),
@@ -468,16 +509,13 @@ export async function executeDanishJsonLdSource(
           error,
         });
         if (!allowRetry) request.noRetry = true;
-        if (request.noRetry) await releaseVpnRequest(request.userData);
+        if (request.noRetry) await completeVpnRequest(request.userData);
       },
       failedRequestHandler: async (
         { request }: CheerioCrawlingContext,
         error: Error
       ) => {
-        const relayPoolExhausted = isVpnRelayPoolExhaustion(
-          error,
-          request.errorMessages
-        );
+        const relayPoolExhausted = await handleVpnFailure(request, error);
         await session.recordFailedRequest({
           fetchMode: "cheerio",
           kind: requestKind(request.label, request.userData),
@@ -489,12 +527,13 @@ export async function executeDanishJsonLdSource(
             : {}),
           error,
         });
-        await releaseVpnRequest(request.userData);
+        await completeVpnRequest(request.userData);
       },
     },
   });
   const playwrightCrawler = createDanishJsonLdPlaywrightCrawler({
     source: input.source,
+    siteSession,
     ...(input.vpnTransport
       ? { proxyConfiguration: input.vpnTransport.proxyConfiguration }
       : {}),
@@ -534,10 +573,14 @@ export async function executeDanishJsonLdSource(
       const rotation = input.vpnTransport
         ? await input.vpnTransport.handleResponse({
             sessionId: vpnSessionId(context.request.userData),
-            statusCode: context.response?.status() ?? 200,
+            requestId: vpnRequestId(context.request.userData),
+            statusCode: response.statusCode,
             body,
           })
         : undefined;
+      if (rotation?.rotated || rotation?.exhausted) {
+        await siteSession.reset(rotation.reason ?? "vpn-relay-changed");
+      }
       if (rotation?.exhausted) context.request.noRetry = true;
       if (rotation?.rotated) {
         session.recordRetriedResponseDiagnostic(response);
@@ -547,7 +590,7 @@ export async function executeDanishJsonLdSource(
       }
       const routes = await session.handleResponse(response);
       await route(routes);
-      await releaseVpnRequest(context.request.userData);
+      await completeVpnRequest(context.request.userData);
     },
     crawlerOptions: {
       requestQueue: playwrightQueue,
@@ -560,17 +603,7 @@ export async function executeDanishJsonLdSource(
         { request }: PlaywrightCrawlingContext,
         error: Error
       ) => {
-        const relayPoolExhausted = isVpnRelayPoolExhaustion(
-          error,
-          request.errorMessages
-        );
-        const rotation = input.vpnTransport && shouldRotateRelayOnFailure(error)
-          ? await input.vpnTransport.handleFailure({
-              sessionId: vpnSessionId(request.userData),
-              error,
-            })
-          : undefined;
-        if (rotation?.exhausted || relayPoolExhausted) request.noRetry = true;
+        await handleVpnFailure(request, error);
         const allowRetry = await session.recordRetry({
           fetchMode: "playwright",
           kind: requestKind(request.label, request.userData),
@@ -580,16 +613,13 @@ export async function executeDanishJsonLdSource(
           error,
         });
         if (!allowRetry) request.noRetry = true;
-        if (request.noRetry) await releaseVpnRequest(request.userData);
+        if (request.noRetry) await completeVpnRequest(request.userData);
       },
       failedRequestHandler: async (
         { request }: PlaywrightCrawlingContext,
         error: Error
       ) => {
-        const relayPoolExhausted = isVpnRelayPoolExhaustion(
-          error,
-          request.errorMessages
-        );
+        const relayPoolExhausted = await handleVpnFailure(request, error);
         await session.recordFailedRequest({
           fetchMode: "playwright",
           kind: requestKind(request.label, request.userData),
@@ -601,7 +631,7 @@ export async function executeDanishJsonLdSource(
             : {}),
           error,
         });
-        await releaseVpnRequest(request.userData);
+        await completeVpnRequest(request.userData);
       },
       launchContext: { launchOptions: { headless: true } },
     },
@@ -656,13 +686,18 @@ export async function executeDanishJsonLdSource(
       crawlAttemptId: input.crawlAttemptId,
       diagnosticSink,
     });
-    if (input.vpnTransport) {
-      await Promise.allSettled(
-        [...sourceVpnSessions].map((sessionId) =>
-          input.vpnTransport?.release(sessionId)
-        )
-      );
-      sourceVpnSessions.clear();
+    if (input.vpnTransport && sourceVpnSessionId) {
+      const [release] = await Promise.allSettled([input.vpnTransport.release(sourceVpnSessionId)]);
+      diagnosticSink(createBoundedDiagnostic("vpn-session-lifecycle", {
+        sourceId: input.source.id,
+        sessionId: sourceVpnSessionId,
+        reason: release.status === "fulfilled"
+          ? "source-terminal-release"
+          : "source-terminal-release-failed",
+        ...(release.status === "rejected"
+          ? { error: release.reason instanceof Error ? release.reason.message : String(release.reason) }
+          : {}),
+      }));
     }
   }
 }
@@ -706,6 +741,11 @@ function vpnSessionId(userData: Record<string, unknown>): string {
     throw new Error("VPN request is missing its explicit relay session identity");
   }
   return value;
+}
+
+function vpnRequestId(userData: Record<string, unknown>): string | undefined {
+  const value = userData["vpnRequestId"];
+  return typeof value === "string" ? value : undefined;
 }
 
 function requestData(userData: Record<string, unknown>): {
